@@ -1,0 +1,161 @@
+<?php
+/*********************************************************************
+// 파 일 명		: list_TEM001.php
+// 설     명		: 카테고리 상품 리스트 템플릿
+// 상세설명	: 카테고리별 상품을 리스트로 진열 템플릿
+// 작 성 자		: hspark
+// 수 정 자		: 2016-02-01 / 유동혁
+//
+//
+*********************************************************************/
+?>
+
+<!-- 2016-01-22 리스트 -->
+<div id="contents">
+	<!-- 네비게이션 -->
+	<div class="top-page-local">
+		<ul>
+			<li><a href="/">HOME</a></li>
+			<!--  <li <?=$thisCate[1] ? "" : "class='on'" ?>><a href="<?=$Dir?>front/productlist.php?code=<?=substr($thisCate[0]->category, 0, 3)?>"><?=$thisCate[0]->code_name?></a></li>-->
+	<?php
+	$txt_tot_cate	= $thisCate[0]->code_name;
+	if( count( $thisCate ) > 0 ){
+	    $loop_cnt = count($thisCate);
+	    for ( $i = 0; $i < $loop_cnt; $i++ ) {
+	        $classOn = "";
+	        if ( $i == $loop_cnt - 1 ) {
+	            $classOn = "on";    // 마지막 카테고리에 on 처리 ?>
+	        <li class="<?=$classOn?>"><?=$thisCate[$i]->code_name?></li>
+	<?    }else{ ?>
+			<li><a href="<?=$Dir?>front/productlist.php?code=<?=$thisCate[$i]->category?>" ><?=$thisCate[$i]->code_name?></a></li>
+	<?	}
+			$txt_tot_cate	.= "/".$thisCate[$i]->code_name;
+	?>
+
+	<?
+	    } // end of for
+	}
+	?>
+		</ul>
+	</div>
+	<!-- //네비게이션-->
+	<main id="contents">
+		<div class="goods-list">
+
+			<!-- LNB -->
+			<?php include($Dir.TempletDir."product/product_category_TEM001.php");?>
+			<!-- //LNB -->
+			<?
+			$thisCateName = '';
+			$thisCateCnt = count( $thisCate );
+			if( $thisCateCnt == 1 ){ // 1차 카테고리
+				$thisCateName = $thisCate[0]->code_name;
+			}else if($thisCateCnt == 2){
+				$thisCateName = $thisCate[1]->code_name;
+			}else if( $thisCateCnt == 3 ){
+				$thisCateName = $thisCate[2]->code_name;
+			}
+			?>
+			<section class="goods-list-item">
+				<h3>
+                    <?=$thisCateName?><!--  <span class="num">(<?=number_format( $total_cnt )?>)</span>-->
+                    <label><input type=checkbox id=chksoldout class="CLS_brandchk" onchange="ChangeList()" <?=$selected[soldout]["1"]?>><span>품절 상품 제외</span></label>
+                </h3>
+						<div class="comp-select sorting">
+							<select title="상품정렬순"  id="sortlist" onchange="ChangeSort(this.value)">
+								<option value="recent"<?=$sort=="recent"?"selected":""?>>신상품</option>
+								<option value="best"<?=$sort=="best"?"selected":""?>>인기순</option>
+								<option value="marks"<?=$sort=="marks"?"selected":""?>>상품평순</option>
+								<option value="like"<?=$sort=="like"?"selected":""?>>좋아요순</option>
+								<option value="price" <?=$sort=="price"?"selected":""?>>낮은가격순</option>
+								<option value="price_desc" <?=$sort=="price_desc"?"selected":""?>>높은가격순</option>
+							</select>
+						</div>
+						<div class="comp-select prodview">
+							<select title="상품 갯수"  id="prodivew" onchange="ChangeProdView(this.value)">
+								<?foreach ($prod_view_code as $key => $val){ ?>
+								<option value="<?=$key ?>"<?=$listnum==$key?"selected":""?>><?=$val ?></option>
+								<?} ?>
+							</select>
+						</div>
+
+					<!--span class="total-ea">
+<?php
+if( count( $thisLowCate ) > 0 ){
+?>
+						<ul>
+<?php
+	foreach( $thisLowCate as $lowcate_Key=>$lowcate_Val ){
+		echo '<li><a href="'.$Dir.FrontDir.'productlist.php?code='.$lowcate_Val->page_code.'">'.$lowcate_Val->code_name.'</a></li>';
+	}
+?>
+						</ul>
+<?php
+} else {
+?>
+						<!-- 총 <?=number_format( $total_cnt )?>개의 상품이 있습니다. -->
+<?php
+} // $thisLowCate if
+?>
+					<!--</span>-->
+
+<?
+    if ( $code_d == '000' ) {
+
+        $sql  = "SELECT code_a,code_b,code_c,code_d, code_a||code_b||code_c||code_d as cate_code,code_name,idx FROM tblproductcode ";
+        $sql .= "WHERE code_a = '{$code_a}' AND code_b = '{$code_b}' AND code_c = '{$code_c}' AND code_d <> '000' ";
+        $sql .= "AND group_code !='NO' AND display_list is NULL ";
+        $sql .= "ORDER BY cate_sort ASC ";
+
+        $result = pmysql_query($sql);
+?>
+				<ul class="goods-list-depth4">
+<?
+        while ( $row = pmysql_fetch_object($result) ) {
+            $link_url = $Dir.FrontDir."productlist.php?code=" . $row->cate_code;
+?>
+			        <li><a href="<?=$link_url?>"><?=$row->code_name?></a></li>
+<?      } ?>
+				</ul>
+
+<?  } ?>
+
+<?php
+//상품리스트
+foreach( $list_array as $listKey=>$listVal ){
+	echo $listVal;
+}
+?>
+			</section>
+
+			<div class="list-paginate-wrap">
+				<!-- <div class="list-paginate">
+					<a href="#" class="prev-all">처음으로</a>
+					<a href="#" class="prev">이전</a>
+					<a href="#" class="on">1</a>
+					<a href="#">2</a>
+					<a href="#">3</a>
+					<a href="#">4</a>
+					<a href="#">5</a>
+					<a href="#">6</a>
+					<a href="#">7</a>
+					<a href="#">8</a>
+					<a href="#">9</a>
+					<a href="#">10</a>
+					<a href="#" class="next">다음</a>
+					<a href="#" class="next-all">끝으로</a>
+				</div> -->
+				<div class="list-paginate">
+<?php
+	if( $paging->pagecount > 1 ){
+		echo $paging->a_prev_page.$paging->print_page.$paging->a_next_page;
+	}
+?>
+				</div>
+			</div><!-- //.list-paginate-wrap -->
+
+
+		</div><!-- //.containerBody -->
+	</main>
+</div>
+<!-- //2016-01-22 리스트 -->

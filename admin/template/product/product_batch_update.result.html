@@ -1,0 +1,66 @@
+<div class="p_20 ta_c">
+	<h2 style="margin-top:0px">업데이트가 완료되었습니다</h2>
+
+	<table class="table-list">
+		<colgroup>
+			<col style="width:120px">
+			<col>
+		</colgroup>
+		<tr>
+			<th>전체데이터수</th>	
+			<td class="ta_l">{cnt.total}건</td>
+		</tr>
+		<tr>
+			<th>성공건수</th>
+			<td class="ta_l">{=number_format(cnt.success)}건</td>
+		</tr>
+		<tr>
+			<th>실패건수</th>
+			<td class="ta_l">{=number_format(cnt.error)}건</td>
+		</tr>
+	</table>
+
+	<h4 class="ta_l" style="margin-bottom:5px">오류로그</h4>
+	<table class="table-list">
+		<colgroup>
+			<col style="width:120px">
+			<col>
+		</colgroup>
+		<thead>
+			<tr>
+				<th>위치</th>
+				<th>오류내용</th>
+			</tr>
+		</thead>
+		<tbody>
+			{@ error}
+			<tr>
+				<td>{.key_}</td>
+				<td class="ta_l">{.value_}</td>
+			</tr>
+			{:}
+			<tr>
+				<td colspan="2">오류내용이 없습니다.</td>
+			</tr>
+			{/}
+		</tbody>
+	</table>
+
+	<div class="ta_c mt_10">
+		<button type="button" class="btn-basic h-small" onclick="ProductBatchUpdateResult.close();">확인</button>
+	</div>
+</div>
+
+<script type="text/javascript">
+var ProductBatchUpdateResult = {
+	init: function() {
+
+	},
+	close: function() {
+		var callback = {callback};
+		if($.isFunction(callback)) callback();
+		else ProductBatchUpdate.load();
+		UI.modalClose();
+	}
+}
+</script>

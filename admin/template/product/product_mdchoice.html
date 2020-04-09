@@ -1,0 +1,301 @@
+
+<div class="content-wrap">
+	<div class="title_depth3">{__NAV.page_tit}</div>
+	<div class="table_style01 mt_10">
+		<!--{* 검색:S *}-->
+		<form id="FrmMdchoiceSearch" name="FrmMdchoiceSearch" onsubmit="return false">
+			<input type="hidden" name="mode" value="mdchoice">
+			<input type="hidden" name="act" value="save">
+			<input type="hidden" name="sort" value="reg_desc" />
+			<!-- 정렬기준 -->
+			<input type="hidden" name="limit" value="20" />
+			<!-- 페이지당노출개수 -->
+
+
+			<table cellspacing="0" cellpadding="0" width="100%" border="0" class="table-view">
+				<colgroup>
+					<col width="140">
+					<col width="">
+				</colgroup>
+				<tbody>
+					<tr>
+						<th>
+							<span>카테고리선택</span>
+						</th>
+						<td>
+							<select name="category_d2" class="w200" onchange="ProductMdchoice.loadCategory(this)">
+								{@ category.c2}
+								<option value="{.code_all}">{.code_name}</option>
+								{:}
+								<option value="">등록된 카테고리가 없습니다.</option>
+								{/}
+							</select>
+							<!--{*
+
+							<select name="category_d3" id="category_d3" class="w200" onchange="ProductMdchoice.load()">
+								<option value="">선택</option>
+								{@ category.c3}
+								<option value="{.code_all}">{.code_name}</option>
+								{:}
+								<option value="">등록된 카테고리가 없습니다.</option>
+								{/}
+							</select>
+							*}-->
+						</td>
+					</tr>
+
+				</tbody>
+			</table>
+
+			<div class="ta_c mt_20">
+				<button type="button" id="btn_register" class="btn-point" onclick="ProductMdchoice.load()">조회</button>
+			</div>
+
+		</form>
+		<!--{* 검색:E *}-->
+	</div>
+
+	<!--{* 상단툴:S *
+	<div class="row mb_10">
+		<div class="pull-left">
+			<img src="/admin/images/icon_8a.gif" border="0"> 전체
+			<span id="count_total"></span>건 조회
+			<button type="button" class="btn-basic dark h-x-small" onclick="ProductList.excel()" style="vertical-align:middle">엑셀 다운로드</button>
+		</div>
+	</div>
+	}-->
+	<!--{* 상단툴:E *}-->
+
+	<!--{* 상품목록:S *}-->
+	<div id="inner" style="margin-top: 0px;"></div>
+</div>
+
+
+
+<!--{* 상품목록 템플릿:s *}-->
+<textarea id="tpl_tr" style="display:none">
+	<tr data-productcode="${\productcode}">
+		<td>${\idx}</td>
+		<td>${\thumbnail}</td>
+		<td class="ta_l">${\name}</td>
+		<td>${\prodcode}
+			<div class="fc-null">(${\productcode})</div>
+		</td>
+		<td>${\soldout}</td>
+		<td>${\price_consumer}</td>
+		<td>${\price_sell}</td>
+		<td>${\sale_rate}</td>
+		<td>${\stock}</td>
+		<td>
+			<button type="button" class="btn_type1" onclick="ProductBest.remove(this)">삭제</td>
+	</tr>
+</textarea>
+<!--{* 상품목록 템플릿:E *}-->
+
+
+
+
+<script type="text/javascript" src="/admin/static/js/template.js"></script>
+<script src="/static/js/blazy.min.js"></script>
+<script>
+	var ProductMdchoice = {
+		proc_url: '/admin/proc/product_best.proc.php',
+		max: 10, //최대등록가능개수
+		min: 0,
+		init: function () {
+			this.load();
+		},
+		loadCallback: function () {
+			//이동항목선택바인딩
+			$('#inner tr[data-productcode]').on('click.selected', function () {
+				$(this).siblings('tr').removeClass('selected');
+				$(this).addClass('selected');
+			})
+
+			//화살표키이벤트
+			$(document).keyup(function (evt) {
+				if (evt.keyCode == 38 || evt.keyCode == 40) {
+					ProductMdchoice.move(evt.keyCode);
+					evt.preventDefault();
+				}
+
+			});
+
+		},
+
+		load: function () {
+			UI.loading('inner');
+			var search = $('#FrmMdchoiceSearch').serialize();
+			$('#inner').load('/admin/product/product_mdchoice.inner.php', {
+					search: search
+				},
+				function () {
+					UI.loading('inner');
+					ProductMdchoice.loadCallback();
+				}
+			);
+		},
+		loadCategory: function (ele) {
+			var el = $(ele);
+			var parent_code = el.val();
+			var target = el.next('select');
+
+
+			//target.empty();
+
+			$.ajax({
+				url: '/admin/proc/product.proc.php',
+				data: {
+					mode: 'category',
+					act: 'get_children',
+					parent_code: parent_code
+				},
+				dataType: 'json',
+				type: 'POST',
+				success: function (r) {
+					if (r.success) {
+						el.nextAll('select').find('option[value!=""]').remove();
+						$.each(r.data, function (i, e) {
+							var opt = $('<option value="' + e.code_all + '">' + e.code_name + '</option>');
+							target.append(opt);
+						});
+						ProductMdchoice.load();
+					}
+				}
+			})
+		},
+		save: function () { //설정저장
+			var tr = ProductMdchoice.getProduct();
+			if (tr.length < ProductMdchoice.min) {
+				alert('최소 ' + ProductMdchoice.min + '개 이상 적용하셔야 합니다.');
+				return false;
+			}
+			if (tr.length > ProductMdchoice.max) {
+				alert('최대 ' + ProductMdchoice.max + '개까지만 적용가능합니다.');
+				return false;
+			}
+
+			if (!confirm('적용하시겠습니까?')) return false;
+
+			var formdata = $('#FrmMdchoiceSearch').serializeArray();
+			var productcode = tr.map(function () {
+				return $(this).attr('data-productcode');
+			}).get();
+			formdata.push({
+				name: 'productcode',
+				value: productcode
+			});
+			$.ajax({
+				url: this.proc_url,
+				type: 'POST',
+				data: formdata,
+				dataType: 'json',
+				success: function (r) {
+					alert(r.msg);
+					if (r.success) {
+						ProductMdchoice.load();
+					}
+				}
+			});
+		},
+		getProduct: function () { //기등록상품목록리턴
+			return $('#mdchoice_tbody').find('tr:not(.empty)');
+		},
+		open: function () { //상품추가모달열기
+			var search = $('#FrmMdchoiceSearch').serialize();
+			UI.modal('/admin/product_choice.php', '상품추가', {
+				search: search
+			}, 1100);
+		},
+		move: function (mode) { //위치이동
+			var tr = $('tr.selected');
+			if (tr.length < 1) {
+				alert('이동할 상품을 선택하세요.');
+				return false;
+			}
+			switch (mode) {
+				case 'top':
+					var li_top = ul.find('li').first();
+					li_top.before(li);
+					break;
+				case 'up':
+				case 38:
+					var tr_prev = $(tr).prev();
+					tr_prev.before(tr);
+					break;
+				case 'down':
+				case 40:
+					var tr_next = $(tr).next();
+					tr_next.after(tr);
+					break;
+				case 'bottom':
+					var tr_bottom = ul.find('li').last();
+					li_bottom.after(li);
+					break;
+			}
+			ProductMdchoice.resetSort();
+		},
+		resetSort: function () { //정렬번호재설정
+			var tr = ProductMdchoice.getProduct();
+			var sort = 1;
+			$.each(tr, function (i, e) {
+				$(e).find('td:eq(0)').html(i + 1);
+			});
+		},
+		remove: function (ele) { //삭제(단순감춤)
+			$(ele).closest('tr').remove();
+			var tr = ProductMdchoice.getProduct();
+			var cnt = tr.length;
+			if (cnt > 0) {
+				ProductMdchoice.resetSort();
+			} else {
+				$('#mbchoice_tbody').find('tr.empty').removeClass('hide');
+			}
+		}
+
+	}
+
+	//상품선택 콜백
+	var ChoiceCallback = function (tr_new) {
+		var tmpObj = TrimPath.parseDOMTemplate("tpl_tr");
+		var target = $('#mdchoice_tbody');
+		var tr = ProductMdchoice.getProduct();
+
+		//기등록상품수
+		var cnt = tr.length;
+
+		//기등록상품 리스트
+		var exist = tr.map(function () {
+			return $(this).attr('data-productcode');
+		}).get();
+
+		var idx = cnt;
+		$.each(tr_new, function (i, e) {
+			var prcode = $(e).attr('data-productcode');
+			if ($.inArray(prcode, exist) != -1) return true;
+			if (idx >= ProductMdchoice.max) {
+				alert('추천상품은 최대 ' + ProductMdchoice.max + '개까지 등록가능합니다.');
+				return false;
+			}
+
+			idx++;
+			target.find('tr.empty').addClass('hide');
+			var data = {
+				idx: idx
+			};
+			$.each($(e).find('td'), function (ii, ee) {
+				var field = $(ee).data('field');
+				if (typeof field == 'undefined') return true;
+				data[field] = $(ee).html();
+			});
+			var html = tmpObj.process(data);
+			target.append(html);
+		});
+
+		ProductMdchoice.loadCallback();
+	}
+
+	$(function () {
+		ProductMdchoice.init();
+	})
+</script>

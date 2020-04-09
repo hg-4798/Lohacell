@@ -1,0 +1,115 @@
+
+<div class="layer-contents layer_add_option">
+	<form id="FrmOptionAdd">
+		<input type="hidden" name="mode" value="option" >
+		<input type="hidden" name="act" value="add" >
+		<input type="hidden" name="group_no" value="{group_no}" >
+		<input type="hidden" name="productcode" value="{product.productcode}" >
+		<input type="hidden" name="pr_type" value="{product.pr_type}" >
+		<div class="title-section">상품정보</div>
+		<div class="goods-item is-mygoods">
+			<figure>
+				<div class="img"><a href=""><img src="{product.tinyimage}" alt="상품 썸네일"></a></div>
+				<figcaption>
+					<p class="code">{product.prodcode}</p>
+					<p class="goods-nm">{product.productname}</p>
+					<div class="price">
+						<strong>{=number_format(product.endprice)}</strong>{? product.endprice_dc_rate>0}<del>{=number_format(product.consumerprice)}</del><span class="discount-color">[{=number_format(product.endprice_dc_rate)}%]</span>{/}
+					</div>
+				</figcaption>
+			</figure>
+		</div>
+		<table class="th-left">
+			<caption>옵션 선택</caption>
+			<colgroup>
+				<col style="width:80px">
+				<col style="width:auto">
+			</colgroup>
+			<tbody>
+				<tr>
+					<th scope="row"><label>옵션 선택</label></th>
+					<td>
+						<div class="opt_select_wrp">
+							{? product.option_type=='C' //옵션타입이 컬러칩인경우에만 노출}
+							<!-- 컬러칩선택  -->
+							<div class="opt_colors mb-5">
+								{@ product.option_valid}
+								<input type="radio" name="color_choice" value="{.option_num}" id="colorchip_{.option_num}"  {=checked(.disabled, 'Y','disabled')}  ><label for="colorchip_{.option_num}" {? .colorchip.color_cls=='bright'}class="bright"{/}><img src="{.colorchip.color_img}" alt="{.colorchip.color_name}"></label> 
+								{/}
+							</div>
+							{/}
+							<div class="opt_select_add">
+								<select class="select_line validate[required]"  title="옵션 선택" name="select_option" data-errormessage-value-missing="옵션을 선택하세요." >
+									<option value="">선택</option>
+									{@ product.option_valid}
+									<option value="{.option_num}" data-price="{product.endprice}" data-colorchip="{.colorchip.color_code}" {=checked(.disabled, 'Y','disabled')}>{.option_name}</option>
+									{/}
+								</select>
+							</div>
+						</div>
+					</td>
+				</tr>
+			</tbody>
+		</table>
+		<div class="btn_area">
+			<ul class="ea2">
+				<li><button type="button" class="btn-line h-large" data-toggle="popup-close">취소</button></li>
+				<li><button type="submit" class="btn-point h-large">확인</button></li>
+			</ul>
+		</div>
+	</form>
+</div>
+
+
+<script type="text/javascript">
+	var OptionAdd = {
+		init: function() {
+			var me = this;
+			var option = $.extend({}, validation_option, {
+				validateNonVisibleFields: false,
+				onValidationComplete: function (form, status) {
+					if (status) me.save();
+				}
+			});
+			$("#FrmOptionAdd").validationEngine('attach', option);
+	
+			//컬러칩선택
+			$('[name="color_choice"]').on('click', function() {
+				$('#select_option').val(this.value);
+			})
+	
+	
+			$('#select_option').on('change', function() {
+				if(this.value) $('#colorchip_'+this.value).prop('checked', true); //컬러칩선택
+				else $('[name="color_choice"]').prop('checked',false);
+			});
+	
+			$('[data-toggle="popup-close"]').on('click', function() {
+				$('#jayjun_popup .btn_close').trigger('click');
+			});
+	
+		},
+		save: function() {
+			var formdata = $('#FrmOptionAdd').serialize();
+			$.ajax({
+				url:'/proc/basket.proc.php',
+				data:formdata,
+				dataType:'json',
+				type:'POST',
+				success: function(r) {
+					if(r.success) {
+						$('#jayjun_popup .btn_close').trigger('click');
+						Basket.reloadTab();
+					}
+					else {
+						UI.error(r.msg);
+					}
+				}
+			})
+		}
+	}
+	
+	$(function(){
+		OptionAdd.init();
+	})
+</script>

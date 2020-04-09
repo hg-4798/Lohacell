@@ -1,0 +1,103 @@
+
+	<div id="contents">
+		
+		<div class="layer-dimm-wrap">
+			<div class="dimm-bg"></div>
+			<div class="layer-inner brand-wishlist-add"> <!-- layer-class 부분은 width,height, - margin 값으로 구성되며 클래스명은 자유 -->
+				<h3 class="layer-title"></h3>
+				<button type="button" class="btn-close">창 닫기 버튼</button>
+				<div class="layer-content">
+					브랜드 위시리스트에 추가 되었습니다.
+					<div class="btn-place"><button class="btn-dib-function" type="button"><span>GO WISHLIST</span></button></div>
+				</div>
+			</div>
+		</div>
+		
+		<div class="containerBody sub-page">
+			
+			<div class="brand-section-wrap">
+
+				<div class="breadcrumb">
+					<ul>
+						<li><a href="/">HOME</a></li>
+						<li class="on"><a href="<?=$_SERVER["REQUEST_URI"]?>">BRAND</a></li>
+					</ul>
+				</div><!-- //.breadcrumb -->
+
+                <!-- 상단 롤링 배너 -->
+				<div class="banner-rolling with-btn-rolling-big">
+					<ul id="rolling-s1130">
+						<li><a href="#"><img src="../static/img/test/@banner_img1130_1.jpg" alt=""></a></li>
+						<li><a href="#"><img src="../static/img/test/@banner_img1130_2.jpg" alt=""></a></li>
+						<li><a href="#"><img src="../static/img/test/@banner_img1130_1.jpg" alt=""></a></li>
+						<li><a href="#"><img src="../static/img/test/@banner_img1130_2.jpg" alt=""></a></li>
+						<li><a href="#"><img src="../static/img/test/@banner_img1130_1.jpg" alt=""></a></li>
+						<li><a href="#"><img src="../static/img/test/@banner_img1130_2.jpg" alt=""></a></li>
+					</ul>
+				</div><!-- //.banner-rolling -->
+                <!-- 상단 롤링 배너 End -->
+
+				<div class="category-tab-wrap">
+					<div class="category-underline"></div>
+					<ul class="category-tab">
+                        <li class="on">ALL</li>
+<?php
+                        $arrCategoryCode = array("");
+                        // 대카테고리 정보 조회
+                        $sql  = "select * from tblproductcode where code_b = '000' order by cate_sort asc ";
+                        $categoryResult = pmysql_query($sql);
+
+                        while( $row = pmysql_fetch_array( $categoryResult ) ){
+    						echo "<li>" . $row['code_name'] . "</li>";
+                            array_push($arrCategoryCode, $row['code_a']);
+                        }
+?>
+					</ul>
+				</div><!-- //.category-tab-wrap -->
+
+<?php
+        foreach ( $arrCategoryCode as $categoryCode ) {
+            $sql  = "SELECT tblResult.bridx, tblResult.brandname, tblResult.vender, tvia.m_img ";
+            $sql .= "FROM ( ";
+            $sql .= "   SELECT tpb.bridx, tpb.brandname, tpb.vender ";
+            $sql .= "   FROM tblproductbrand tpb LEFT JOIN tblvenderinfo tvi ON tpb.vender = tvi.vender ";
+            if ( !empty($categoryCode) ) {
+                $sql .= "WHERE tpb.productcode_a = '" . $categoryCode . "' ";
+            }
+            $sql .= ") as tblResult LEFT JOIN tblvenderinfo_add tvia ON tblResult.vender = tvia.vender";
+
+            $brandResult = pmysql_query($sql);
+?>
+				<div class="tab-sub">
+					<ul class="brand-list">
+<?php
+                    while( $row = pmysql_fetch_array( $brandResult ) ){
+?>
+						<li>
+							<div class="brand-show">
+								<img src="/data/shopimages/vender/<?=$row['m_img']?>" alt="">
+								<p class="brand-nm"><?=$row['brandname']?></p>
+								<div class="brand-more">
+									<a href="#" class="view">BRAND VIEW</a>
+									<button class="wish-star on" type="button">위리시스트 추가</button><!-- 위시리스트 추가 될시 on 클래스 추가 -->
+								</div>
+							</div>
+						</li>
+<?php               
+                    }
+?>
+					</ul><!-- //.brand-list -->
+				</div>
+<?php
+        }
+?>
+
+				<div class="btn-more-wrap"><button class="btn-more">브랜드 더보기</button></div>
+			</div>
+
+			
+
+		</div><!-- //.containerBody -->
+	</div><!-- //contents -->
+	
+

@@ -1,0 +1,144 @@
+{? payment.res_cd == '0000'}
+<!-- AceCounter Mobile eCommerce (Cart_Inout) v7.5 Start -->
+{@ order_product_info}
+<script language='javascript'>
+    var AM_Cart=(function(){
+        var c={pd:'{.productcode}',pn:'{.productname}',am:'{.price_end}',qy:'{.qty}',ct:'{.category}'};
+        var u=(!AM_Cart)?[]:AM_Cart; u[c.pd]=c;return u;
+    })();
+</script>
+
+<script type="text/javascript" src="//wcs.naver.net/wcslog.js"></script> 
+<!-- Mobon Tracker v3.1 [주문상품정보변수값세팅] start -->
+<script type="text/javascript">
+    <!--
+    var pcode = "{.productcode}";
+    var pnm = encodeURIComponent(encodeURIComponent("{.productname}"));
+    var qty = "{.qty}";
+    //-->
+	var _nasa={};
+_nasa["cnv"] = wcs.cnv("1",'{.price_end}'); // 전환유형, 전환가치 설정해야함. 설치매뉴얼 참고
+</script>
+<!-- Mobon Tracker v3.1 [주문상품정보변수값세팅] end -->
+{/}
+
+<script language='javascript'>
+    var m_order_code='{order.order_num}';		// 주문코드 필수 입력
+    var m_buy="finish"; //구매 완료 변수(finish 고정값)
+</script>
+{/}
+<!-- 전환페이지 설정 -->
+
+<script type="text/javascript"> 
+
+</script> 
+<div id="page">
+<!-- 내용 -->
+<main id="content" class="subpage">
+	<section class="page_local">
+		<h2 class="page_title">
+			<a href="javascript:history.back();" class="prev">이전페이지</a>
+			<span>주문/결제</span>
+		</h2>
+		<div class="page_step">
+			<ul class="clear">
+				<li><span class="icon_order_step01"></span>장바구니</li>
+				<li><span class="icon_order_step02"></span>주문하기</li>
+				<li class="on"><span class="icon_order_step03"></span>{? payment.res_cd == '0000'}주문완료{:}주문실패{/}</li>
+			</ul>
+		</div>
+	</section><!-- //.page_local -->
+
+	<section class="orderpage">
+		<div class="order-end-box">
+			{? payment.res_cd == '0000' && order.order_status>0}
+			<h3 class="title">감사합니다!<br>고객님의 주문이 정상적으로 완료되었습니다.</h3>
+			<em class="point-color">{order.order_num}</em>
+			<p>주문은 <a href="{C.DIR_M}/mypage_orderlist.php">마이페이지 &gt; 주문조회</a>를 이용해 주시기 바랍니다.<br>
+			주문/배송 관련 문의사항은 <a href="{C.DIR_M}/mypage_personal.php">마이페이지 &gt; 1:1문의</a>를 이용해 주시기 바랍니다.</p>
+			{:}
+			<h3 class="title">Sorry!<br>고객님의 주문이 실패하였습니다.</h3>
+			<em class="oint-color">주문실패사유 : <span class="point-color">{payment.res_msg}</span></em>
+			<p><a href="{C.DIR_M}/basket.php" class="btn-basic w150"><span>재주문하기</span></a><br>
+			<p class="comment">반복적인 실패가 발생할 경우 <a href="{C.DIR_M}/mypage_personal.php">마이페이지 &gt; 1:1문의</a>를 접수해주시면 빠르게 답변해드리겠습니다.</p>
+
+			{/}
+		</div>
+		
+		{? payment.res_cd == '0000' && order.order_status>0}
+		<div class="title-section is-alone with-border"><h4 class="tit">결제방법</h4></div>
+		<ul class="payment-result">
+			{? order.pg_paymethod == 'vcnt'}
+			<li class="type">무통장입금(가상계좌)</li>
+			<li><em class="txt-toneA">{payment.res_info.bankname}</em> {payment.res_info.account} / {payment.res_info.depositor} <span class="txt-toneC">(입금대기중)</span></li>
+			<li>입금기한 : {=format(payment.res_info.va_date, 'Y-m-d')} <span class="txt-toneC">|</span> {=format(payment.res_info.va_date, 'H:i:s')}</li>
+			{: order.pg_paymethod == 'card'}
+
+			<li class="type">신용카드</li>
+			<li><em class="emphasis-color">{payment.res_info.card_name}</em> <span class="txt-toneC">[{=_Order->setPayInfo('card', payment.res_info)}]</span></li>
+			{:}
+			<li class="type">실시간 계좌이체</li>
+			{/}
+		</ul>
+		
+
+		<div class="title-section is-alone with-border"><h4 class="tit">결제정보</h4></div>
+		<div class="price-sum-total is-confirm">
+			<div class="inner">
+				<dl>
+					<dt>총 상품금액</dt>
+					<dd><strong class="emphasis-color">{=number_format(order.sum_consumer)}</strong> <span>원</span></dd>
+				</dl>
+				<dl>
+					<dt>할인</dt>
+					<dd class="discount-color">- {=number_format(order.sum_discount)} 원</dd>
+				</dl>
+				<dl>
+					<dt>쿠폰할인</dt>
+					<dd class="discount-color">- {=number_format(order.coupon_basket_discount+order.coupon_delivery_discount+order.coupon_product_discount)} 원</dd>
+				</dl>
+				<dl>
+					<dt>마일리지 사용</dt>
+					<dd class="discount-color">- {=number_format(order.use_mileage)} 원</dd>
+				</dl>
+				<dl>
+					<dt>포인트 사용</dt>
+					<dd class="discount-color">- {=number_format(order.use_point)} 원</dd>
+				</dl>
+				<dl>
+					<dt>배송비</dt>
+					<dd><span class="txt-toneA">+ {=number_format(order.pay_delivery-order.coupon_discount_delivery)}</span> <span>원</span></dd>
+				</dl>
+				<dl class="total">
+					<dt>총 결제금액</dt>
+					<dd><strong class="emphasis-color">{=number_format(order.pay_pg)}</strong> <span>원</span><p class="mileage">(적립 마일리지 <b>{=number_format(order.sum_mileage)}M</b>)</p></dd>
+				</dl>
+			</div>
+		</div>
+
+		<div class="box-sector no-line mt-10">
+			<div class="sector-inner">
+				<div class="btn_area">
+					<ul class="ea2">
+						<li><a href="{C.DIR_M}/mypage_orderlist.php" class="btn-line h-large">주문/배송 조회</a></li>
+						<li><a href="{C.DIR_M}/" class="btn-point h-large">쇼핑계속하기</a></li>
+					</ul>
+				</div>
+			</div>
+		</div>
+		{:}
+		<div class="box-sector no-line mt-10">
+			<div class="sector-inner">
+				<div class="btn_area">
+					<ul class="ea2">
+						<li><a href="{C.DIR_M}/basket.php" class="btn-line h-large">장바구니가기</a></li>
+						<li><a href="{C.DIR_M}/" class="btn-point h-large">쇼핑계속하기</a></li>
+					</ul>
+				</div>
+			</div>
+		</div>
+		{/}
+	</section><!-- //.orderpage -->
+</main>
+<!-- //내용 -->
+

@@ -1,0 +1,117 @@
+<div class="layer-content ">
+	
+	<h3 class="title-section">상품정보</h3>
+	<div class="opt-change-goods">
+		<div class="goods-in-td">
+			<div class="thumb-img"><a href="#"><img src="{product.tinyimage}" alt="썸네일"></a></div>
+			<div class="info">
+				<p class="code">{product.prodcode}</p>
+				<p class="goods-nm">{product.productname}</p>
+				<p class="price mt-5">{=number_format(product.endprice)} {? product.endprice_dc_rate>0}<del class="ml-5 txt-toneC">{=number_format(product.consumerprice)}</del> <span class="ml-5 point-color">[{=number_format(product.endprice_dc_rate)}%]</span>{/}</p>
+			</div>
+		</div>
+	</div>
+
+
+	
+	<form id="FrmOptionAdd" onsubmit="return false">
+	<input type="hidden" name="mode" value="option" >
+	<input type="hidden" name="act" value="add" >
+	<input type="hidden" name="group_no" value="{group_no}" >
+	<input type="hidden" name="productcode" value="{product.productcode}" >
+	<input type="hidden" name="pr_type" value="{product.pr_type}" >
+	<table class="th-left mt-20">
+		<caption>옵션 선택</caption>
+		<colgroup>
+			<col style="width:125px">
+			<col style="width:auto">
+		</colgroup>
+		<tbody>
+			<tr>
+				<th scope="row"><label>옵션 선택</label></th>
+				<td>
+					<div class="opt_select_wrp">
+						
+						{? product.option_type=='C' //옵션타입이 컬러칩인경우에만 노출}
+						<!-- 컬러칩선택  -->
+						<div class="opt_colors">
+							{@ product.option_valid}
+							<input type="radio" name="color_choice" value="{.option_num}" id="colorchip_{.option_num}"  {=checked(.disabled, 'Y','disabled')}  ><label for="colorchip_{.option_num}" {? .colorchip.color_cls=='bright'}class="bright"{/}><img src="{.colorchip.color_img}" alt="{.colorchip.color_name}"></label> 
+							{/}
+						</div>
+						{/}
+						<div class="opt_select_add mt-10">
+							<div class="select is-custom">
+								<select id="select_option" name="select_option" title="옵션 선택" class="validate[required]" data-errormessage-value-missing="옵션을 선택하세요.">
+									<option value="">선택</option>
+									{@ product.option_valid}
+									<option value="{.option_num}" data-price="{product.endprice}" data-colorchip="{.colorchip.color_code}" {=checked(.disabled, 'Y','disabled')}>{.option_name}</option>
+									{/}
+								</select>
+
+							</div>
+						</div>
+					</div>
+				</td>
+			</tr>
+		</tbody>
+	</table>
+	<div class="btnPlace mt-30">
+		<button type="button" class="btn-line h-medium" data-toggle="close" >취소</button>
+		<button type="submit" class="btn-point h-medium"><span>확인</span></button>
+	</div>
+	</form>
+</div><!-- //.layer-content -->
+
+<script type="text/javascript">
+var OptionAdd = {
+	init: function() {
+		var me = this;
+		var option = $.extend({}, validation_option, {
+			validateNonVisibleFields: false,
+			onValidationComplete: function (form, status) {
+				if (status) me.save();
+			}
+		});
+		$("#FrmOptionAdd").validationEngine('attach', option);
+
+		//컬러칩선택
+		$('[name="color_choice"]').on('click', function() {
+			$('#select_option').val(this.value);
+		})
+
+
+		$('#select_option').on('change', function() {
+			if(this.value) $('#colorchip_'+this.value).prop('checked', true); //컬러칩선택
+			else $('[name="color_choice"]').prop('checked',false);
+		});
+
+		$('[data-toggle="close"]').on('click', function() {
+			$('.btn-close').trigger('click');
+		});
+
+	},
+	save: function() {
+		var formdata = $('#FrmOptionAdd').serialize();
+		$.ajax({
+			url:'/proc/basket.proc.php',
+			data:formdata,
+			dataType:'json',
+			type:'POST',
+			success: function(r) {
+				if(r.success) {
+					$('.btn-close').trigger('click');
+					Basket.reloadTab();
+				}
+				else {
+					UI.error(r.msg);
+				}
+			}
+		})
+	}
+}
+
+$(function(){
+	OptionAdd.init();
+})
+</script>

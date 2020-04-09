@@ -1,0 +1,27 @@
+<div class="p_20">
+		<div id="displaylog_inner"></div>
+	</div>
+	
+	<script type="text/javascript">
+	var DisplayLog = {
+		page:1,
+		init: function() {
+			this.load();
+		},
+		load:function(page) {
+			UI.loading('displaylog_inner');
+			var p = page || DisplayLog.page;
+	
+			$('#displaylog_inner').load('/admin/product/display_log.inner.php',{page:p, productcode:'{productcode}'},
+				function() {
+					UI.modalCenter();
+					UI.loading('displaylog_inner');
+					DisplayLog.page = p;
+				}
+			);
+		}
+	}
+	$(function() {
+		DisplayLog.init();
+	})
+	</script>

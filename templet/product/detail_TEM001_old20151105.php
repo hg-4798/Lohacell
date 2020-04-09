@@ -1,0 +1,1896 @@
+<?
+
+include_once dirname(__FILE__)."/../../lib/product.class.php";
+$product = new PRODUCT();
+$dc_data = $product->getProductDcRate($productcode);
+
+$groupPriceList = $product->getProductGroupPrice($productcode);
+
+$option1Arr;$option2Arr;
+
+//배송비 세팅
+
+$staticDeliType = "0";
+$deliState_ = $product->getDeliState($_pdata);
+
+$item_deli_price = $_pdata->deli_price; // 아이템별 배송비 금액
+$shop_deli_price = $_data->deli_basefee; // 전체 배송비 설정 금액
+$shop_constant_deli_price = $_data->deli_miniprice; // 얼마 이상 무료 기준 금액
+$deli_state = $deliState_[itemState];
+//$deli_tpye = $_pdata->deli.$_data_deli;
+$deli_tpye_common = "";
+$deli_tpye_item = "";
+$deli_price = 0;
+switch ($deli_state) {
+	case "1" : $deli_price = $item_deli_price;
+		break;
+	case "2" : $deli_price = $item_deli_price;
+		break;
+	case "3" : $deli_price = 0;
+		break;
+	case "4" : $deli_price = 0;
+		break;
+	case "5" : $deli_price = 0;
+		break;
+	case "6" : $deli_price = 0;
+		break;
+	case "7" : $deli_price = $shop_deli_price;
+		break;
+	case "8" : $deli_price = $shop_deli_price;
+		break;
+	default : $deli_price = 0;
+}
+
+$codenavi=getCodeLoc3($code);
+
+
+// 상품 필수 옵션 값을 가져오기
+
+function get_item_options($it_id, $subject)
+{
+
+    if(!$it_id || !$subject)
+        return '';
+
+    $sql = " SELECT * FROM tblproduct_option WHERE option_type = '0' AND productcode = '".$it_id."' AND option_use = '1' ORDER BY option_num ASC ";
+	
+    $result = pmysql_query($sql);
+    if(!pmysql_num_rows($result))
+        return '';
+	
+    $str = '';
+    $subj = explode(',', $subject);
+    $subj_count = count($subj);
+
+    if($subj_count > 1) {
+        $options = array();
+
+        // 옵션항목 배열에 저장
+        for($i=0; $row=pmysql_fetch_array($result); $i++) {
+            $opt_id = explode(chr(30), $row['option_code']);
+
+            for($k=0; $k<$subj_count; $k++) {
+                if(!is_array($options[$k]))
+                    $options[$k] = array();
+
+                if($opt_id[$k] && !in_array($opt_id[$k], $options[$k]))
+                    $options[$k][] = $opt_id[$k];
+            }
+        }
+
+        // 옵션선택목록 만들기
+        for($i=0; $i<$subj_count; $i++) {
+            $opt = $options[$i];
+            $opt_count = count($opt);
+            $disabled = '';
+            if($opt_count) {
+                $seq = $i + 1;
+                if($i > 0)
+                    $disabled = ' disabled="disabled"';
+                $str .= '<tr>'.PHP_EOL;
+                $str .= '<th><label for="it_option_'.$seq.'">'.$subj[$i].'</label></th>'.PHP_EOL;
+
+                $select = '<select id="it_option_'.$seq.'" class="it_option"'.$disabled.' style="width: 225px" >'.PHP_EOL;
+                $select .= '<option value="">옵션을 선택해주세요.</option>'.PHP_EOL;
+                for($k=0; $k<$opt_count; $k++) {
+                    $opt_val = $opt[$k];
+                    if(strlen($opt_val)) {
+                        $select .= '<option value="'.$opt_val.'">'.$opt_val.'</option>'.PHP_EOL;
+                    }
+                }
+                $select .= '</select>'.PHP_EOL;
+
+                $str .= '<td>'.$select.'</td>'.PHP_EOL;
+                $str .= '</tr>'.PHP_EOL;
+            }
+        }
+    } else {
+        $str .= '<tr>'.PHP_EOL;
+        $str .= '<th><label for="it_option_1">'.$subj[0].'</label></th>'.PHP_EOL;
+
+        $select = '<select id="it_option_1" class="it_option" style="width: 225px" >'.PHP_EOL;
+        $select .= '<option value="">옵션을 선택해주세요.</option>'.PHP_EOL;
+        for($i=0; $row=pmysql_fetch_array($result); $i++) {
+			//exdebug($row);
+            if($row['option_price'] >= 0)
+                $price = '&nbsp;&nbsp;+ '.number_format($row['option_price']).'원';
+            else
+                $price = '&nbsp;&nbsp; '.number_format($row['option_price']).'원';
+
+            if($row['option_quantity'] < 1)
+                $soldout = '&nbsp;&nbsp;[품절]';
+            else
+                $soldout = '';
+
+            $select .= '<option value="'.$row['option_code'].','.$row['option_price'].','.$row['option_quantity'].'">'.$row['option_code'].$price.$soldout.'</option>'.PHP_EOL;
+        }
+        $select .= '</select>'.PHP_EOL;
+
+        $str .= '<td>'.$select.'</td>'.PHP_EOL;
+        $str .= '</tr>'.PHP_EOL;
+    }
+
+    return $str;
+}
+/*
+* 옵션의 select box에 들어가는 option tag 생성 2015 10 23 유동혁
+*/
+$optHtml = "";
+if( $_pdata->option1 ) {
+	
+	$opt1_sub = explode(",",$_pdata->option1);
+	if( $_pdata->option2 ) {
+		$opt2_sub = explode(",",$_pdata->option2);
+		$optHtml = get_item_options($productcode,$opt1_sub[0].",".$opt2_sub[0]);
+	} else {
+		$optHtml = get_item_options($productcode,$opt1_sub[0]);
+	}
+}
+
+?>
+
+<style>
+	.btn_opt_del {
+		cursor: pointer;
+	}
+</style>
+
+<script type="text/javascript" src="../js/jcarousellite_1.0.js" ></script>
+<script src="../js/jquery.elevatezoom.js" type="text/javascript"></script>
+<script type="text/javascript">
+	var gBlock = 0;
+	var gGotopage = 1;
+	var gqBlock = 0;
+	var gqGotopage = 1;
+	$(function(){
+		/*
+			구매 옵션
+		*/
+		$(".btn_opt_del").click(function(index){
+			//alert($(this).parent().parent().html());
+			alert(index);
+		});
+		/*
+			상품 Review Start
+		*/
+		$(".reviewStars li").click(function(){
+			$(this).parent().prev().html($(this).children().html());
+			$(this).parent().parent().removeClass('open');
+			$('#rmarks').val($(this).children().attr('star'));
+		})
+
+		$(document).on("click", ".reviewCommentReportAjax", function(){
+		});
+		$(document).on("click", ".reviewContentsDeleteAjax", function(){
+			if(confirm('해당 리뷰를 삭제하시겠습니까?')){
+				$.ajax({
+					type: "POST",
+					url: "../front/prreview_tem001_comment_proc.php",
+					data: "num="+$(this).prev().val()+"&productcode="+$("input[name='productcode']").val()+"&mode=deleteReview"
+				}).done(function ( data ) {
+					$("#reviewTotalCount").html(data);
+					$(".reviewTotalMenuBar").html("("+$("#reviewTotalCount").html()+")");
+					$(".goods_right_review_list").load("../front/prreview_tem001_right.php?productcode="+$("input[name='productcode']").val());
+					GoPageAjax(gBlock, gGotopage);
+				});
+			}
+		});
+
+		$(document).on("click", ".reviewCommentDeleteAjax", function(){
+			if(confirm('해당 리플을 삭제하시겠습니까?')){
+				var objComment = $(this).parent().parent().parent().parent();
+				$.ajax({
+					type: "POST",
+					url: "../front/prreview_tem001_comment_proc.php",
+					data: "no="+$(this).prev().val()+"&num="+$(this).prev().prev().val()+"&mode=deleteReviewContents"
+				}).done(function ( data ) {
+					$(objComment).html(data);
+				});
+			}
+		});
+
+		$(document).on("click", ".reviewCommentAjax", function(){
+			var objText = $(this).prev();
+			var objComment = $(this).parent().next();
+			$.ajax({
+				type: "POST",
+				url: "../front/prreview_tem001_comment_proc.php",
+				data: "num="+$(this).prev().prev().val()+"&contents="+$(this).prev().val()+"&mode=write"
+			}).done(function ( data ) {
+				$(objComment).html(data);
+				$(objText).val('');
+			});
+		});
+
+		$(".reviewTotalMenuBar").html("("+$("#reviewTotalCount").html()+")");
+		$(".goods_right_review_list").load("../front/prreview_tem001_right.php?productcode="+$("input[name='productcode']").val());
+		$(".view_list_wrap").load("../front/prvcount_tem001_right.php");
+		/*
+			상품 Review End
+		*/
+
+		/*
+			상품 QNA Start
+		*/
+		$(document).on("click", ".chkQnaPasswd", function(){
+			var obj = $(this);
+			$.ajax({
+				type: "POST",
+				url: "../front/prqna_tem001_pass_proc.php",
+				data: "passwd="+$(this).prev().val()+"&id_num="+$(this).attr('idx')
+			}).done(function ( data ) {
+				if(data == '1'){
+					$(obj).parent().hide();
+					$(obj).parent().next().show();
+				}else{
+					alert("비밀번호가 틀렸습니다.");
+					$(obj).prev().val('');
+					$(obj).prev().focus();
+					$(obj).parent().show();
+					$(obj).parent().next().hide();
+				}
+			});
+		})
+
+		/*
+			상품 QNA End
+		*/
+
+		/*
+			상품 할인율 Start
+		*/
+		if($("#ID_priceDcPercent").val() > 0){
+			$("#ID_priceDcPercentLayer").html("단독 "+$("#ID_priceDcPercent").val()+"% 할인");
+		}
+		/*
+			상품 할인율 End
+		*/
+
+		/*
+			URL복사 Start
+		*/
+		$(".CLS_urlcopy").click(function(){
+			var trb = $("#ID_faceboolMallUrl").val();
+			var IE=(document.all)?true:false;
+			if (IE) {
+				if(confirm("이 글의 트랙백 주소를 클립보드에 복사하시겠습니까?"))
+				window.clipboardData.setData("Text", trb);
+			} else {
+				temp = prompt("이 글의 트랙백 주소입니다. Ctrl+C를 눌러 클립보드로 복사하세요", trb);
+			}
+		})
+		/*
+			URL복사 End
+		*/
+		/*
+			혜택보기 창 팝업
+		*/
+		$("#priceLayerOn").on("click",function(){
+			$("#priceLayer").fadeIn(); 
+		});
+		$("#priceLayerClose").on("click",function(){
+			$("#priceLayer").fadeOut(); 
+		}); 
+
+		/*수령가능 매장 팝업창 */
+		$("#off_layer_close").on("click",function(){
+			$("#deli_off_layer").fadeOut(); 
+		}); 
+	});
+
+	function deli_off_layer_on(){
+		//alert("ok");
+		$("#deli_off_layer").fadeIn(); 
+	}
+
+	function setcardInfo() {
+		window.open("./setcardInfoForm.html","setcardInfoForm","height=570,width=590,scrollbars=yes");
+	}
+
+	function clickScoll(num){
+		var val = $('#tap'+num).offset();
+		$('body,html').animate({scrollTop:val.top},20);
+	}
+
+</script>
+
+<div id="body_contents"> <!-- 123 -->
+	<div class="line_map01">
+		<div class="container">
+			<? for($i=0;$i<count($codenavi);$i++) {?>
+				<? if($i != count($codenavi)-1) { ?>
+				<em>&gt;</em><a><?=$codenavi[$i]?></a>
+				<? } else { ?>
+				<em>&gt;</em><span><a><?=$codenavi[$i]?></a></span>
+				<? } ?>
+			<? } ?>
+			<span style="float:right;"><a href="javascript:window.history.back()">< 이전페이지</a></span>
+		</div>
+
+	</div>
+	<div class="containerBody">
+		<div class="goods_info_section">
+			<div class="detail_info_wrap">
+				<div class="thumb">
+					<ul class="small_thumb">
+
+<?php
+	##### 기본 이미지 썸네일
+	
+	if(strlen($_pdata->maximage)>0 && is_file($Dir.DataDir."shopimages/product/".$_pdata->maximage)) {
+		$width=GetImageSize($Dir.DataDir."shopimages/product/".$_pdata->maximage);
+
+		if($width[0]>=300) {
+			$width[0]=440;
+		} else if (strlen($width[0])==0) {
+			$width[0]=440;
+		}
+
+		if($changetype=="0"){
+			$ahref_def = "<a href=\"javascript:primg_preview_def('".$_pdata->maximage."','','')\" onmouseover=\"primg_preview4('".$_pdata->maximage."','','')\">";
+		}else{
+			$ahref_def = "<a href=\"javascript:primg_preview_def('".$_pdata->maximage."','{$imgsize[0]}','{$imgsize[1]}')\">";
+		}
+		
+		if ( strlen($_pdata->wideimage)>0 && is_file($Dir.DataDir."shopimages/product/".$_pdata->wideimage) ) {
+			$wideimage = $Dir.DataDir."shopimages/product/".$_pdata->wideimage;
+		} else {
+			$wideimage = $Dir.DataDir."shopimages/product/".$_pdata->maximage; 
+		}
+
+?>
+					<li>
+						<?=$ahref_def?>
+						<img src="<?=$Dir.DataDir?>shopimages/product/<?=$_pdata->minimage?>" lsrc="<?=$wideimage?>" alt="" style="width:78px;height:78px"/>
+						</a>
+					</li>
+<?php
+	} else { ?>
+					<li><a href=""><img src="<?=$Dir?>images/no_img.gif" lsrc="<?=$Dir?>images/no_img.gif" style="width:78px;height:78px" alt=""></a></li>
+<?php
+	}
+
+	##### //기본 이미지 썸네일
+	if($multi_img=="Y" && $yesimage[0]) {
+		$imagepath_multi=$Dir.DataDir."shopimages/multi/";
+		##### 나머지 ETC 이미지 썸네일
+		for($i=0;$i<$y;$i++) {
+			if($changetype=="0") {	//마우스 오버
+				$ahref_type =  "<a href=\"javascript:primg_preview('{$yesimage[$i]}','{$xsize[$i]}','{$ysize[$i]}')\" onmouseover=\"primg_preview2('{$yesimage[$i]}','{$xsize[$i]}','{$ysize[$i]}')\">";
+			} else {
+				$ahref_type = "<a href=\"javascript:primg_preview('{$yesimage[$i]}','{$xsize[$i]}','{$ysize[$i]}')\">";
+			}
+?>
+					<li><?=$ahref_type?><img src="<?=$imagepath_multi?>s<?=$yesimage[$i]?>" lsrc="<?=$imagepath_multi?><?=$yesimage[$i]?>"  alt="" /></a></li>
+<?php
+		}
+	}
+?>
+				</ul>
+<?php 	
+	if(is_file($Dir.DataDir."shopimages/product/".$_pdata->maximage)) { 	
+?>
+					<p class="big_thumb"><img id="zoom" lsrc="<?=$wideimage?>" src="<?=$Dir.DataDir."shopimages/product/".$_pdata->maximage?>"
+						name="primg" alt=""  /></p>
+<?php	
+	}else { 	
+?>
+					<p class="big_thumb"><a href="#"><img id="zoom" lsrc="<?=$Dir.DataDir."shopimages/product/".$_pdata->maximage?>" src="<?=$Dir?>images/no_img.gif" name="primg" alt="" style="width: 285px;" /></a></p>
+<?php	
+	}	
+?>
+				</div>
+
+<!-- 줌 이미지 스크립트 -->
+<script type="text/javascript" src="<?=$Dir?>js/jquery.zoomImage-do.min.js"></script>
+<script>
+var objImgSrc = document.getElementById("zoom").getAttribute("lsrc");
+$("#zoom").zoomImage({ zoomUrl:objImgSrc, bigBorderColor:"#000000", bigBorderWidth:5 });
+
+$(function(){
+	// thumb_list objImg
+	$(".small_thumb li").click(function(){
+		$("#zoom").attr("src",$(this).find("img").attr("src"));
+		$("#zoom").attr("lsrc",$(this).find("img").attr("lsrc"));
+
+		$("#zoom").trigger('destroy'); // 객체 초기화
+		objImgSrc = document.getElementById("zoom").getAttribute("lsrc");
+		$("#zoom").zoomImage({ zoomUrl:objImgSrc, bigBorderColor:"#000000", bigBorderWidth:5 });
+	});
+});
+
+</script>
+<!--// 줌 이미지 스크립트 -->
+				<div class="spec_info">
+					<form name="groupHiddenFrom" id= 'group_hidden_frm'>
+					<input type="hidden" name="s_cnt" value="<?=$s_cnt?>" />
+				<? if($s_price){ ?>
+					<? foreach($s_price as $sKey=>$sVal){ ?>
+					<input type="hidden" name="s_price[]" value="<?=$sVal['price']?>"/>
+					<input type="hidden" name="s_min[]" value="<?=$sVal['min_num']?>"/>
+					<input type="hidden" name="s_max[]" value="<?=$sVal['max_num']?>"/>
+					<? } ?>
+				<? } ?>
+					</form>
+					<form name=form1 id = 'ID_goodsviewfrm' method=post action="<?=$Dir.FrontDir?>basket.php">
+					<h3 class="name"><?=$_pdata->productname?></h3>
+					<p>모델번호 : </p>
+					<table class="detail_info" width="100%">
+						<caption>상품의 판매가격,제조사/원산지,제품등급,소재,사이즈,구성 정보와 총 주문 금액을 확인</caption>
+						<colgroup><col style="width:140px"/><col style="width:auto"/></colgroup>
+						<tr>
+							<th class="price">소비자가</th>
+							<td class="price">
+								<span class="price_c"><?=number_format($_pdata->consumerprice)?>원</span>
+							</td>
+						</tr>
+						<?
+							$reserveconv=getReserveConversion($_pdata->reserve,$_pdata->reservetype,$_pdata->sellprice,"Y");
+							$SellpriceValue=0;
+						if(true) {
+							if($_pdata->assembleuse=="Y") {
+						?>
+						<tr>
+							<th class="sale">할인가</th>
+							<td class="sale"><span class="price_d">
+								<?=number_format(($miniq>1?$miniq*$_pdata->sellprice:$_pdata->sellprice))?>원</span>
+								<input type=hidden name=price value="<?=number_format(($miniq>1?$miniq*$_pdata->sellprice:$_pdata->sellprice))?>">
+								<input type=hidden name=sprice value="<?=number_format($_pdata->sellprice)?>">
+								<input type=hidden name=consumer value="<?=number_format(($miniq>1?$miniq*$_pdata->consumerprice:$_pdata->consumerprice))?>">
+								<input type=hidden name=o_reserve value="<?=number_format(($miniq>1?$miniq*$_pdata->option_reserve:$_pdata->option_reserve))?>">
+							</td>
+						</tr>
+						<?
+							$SellpriceValue=($miniq>1?$miniq*$_pdata->sellprice:$_pdata->sellprice);
+							} else {
+						?>
+						<tr>
+						<?
+								$SellpriceValue=$_pdata->sellprice;
+								if($couponDownLoadFlag){
+									if($goods_sale_type <= 2){
+										$couponDcPrice = ($SellpriceValue*$goods_sale_money)*0.01;
+										$couponDcPrice = ($couponDcPrice / pow(10, $goods_amount_floor)) * pow(10, $goods_amount_floor);
+										$goods_dc_coupong = number_format($goods_sale_money);
+									}else{
+										$couponDcPrice = $goods_sale_money;
+										$goods_dc_coupong = number_format($goods_sale_money)."원";
+									}
+									if($goods_sale_max_money && $goods_sale_max_money < $couponDcPrice){
+										$couponDcPrice = $goods_sale_max_money;
+									}
+									$coumoney = $couponDcPrice;
+									//exdebug($coumoney);
+								}
+						?>
+						<?if($couponDownLoadFlag){?>
+							<?//if(!isdev()){?>
+							<!--<th class="sale">쿠폰적용할인가</th>-->
+							<?//}else{?>
+							<th class="sale">판매가</th>
+							<?//}?>
+							<td class="sale">
+								<span class="">
+									<?=number_format($SellpriceValue-$coumoney)?>원
+								</span>
+								<div class="coupon_wrap">
+									<span class="per">
+									<?if($goods_sale_type > 2){?>
+										<?=number_format($goods_dc_coupong)?>원 할인
+									<?}else{?>
+										<?=$goods_dc_coupong?>% 할인
+									<?}?>
+									</span>
+								</div>
+						<?}?>	
+								<!--<div class="coupon_wrap">
+									<a href="javascript:issue_coupon('<?=$goods_coupon_code?>');"><span class="per"><?=$goods_dc_coupong?></span><span class="txt">쿠폰 다운로드</span></a>
+								</div>-->
+								<input type=hidden name=price value="<?=number_format($_pdata->sellprice)?>">
+								<input type=hidden name=ID_sellprice id="ID_sellprice" value="<?=$_pdata->sellprice?>">
+								<input type=hidden name=sprice value="<?=number_format($_pdata->sellprice)?>">
+								<input type=hidden name=consumer value="<?=number_format($_pdata->consumerprice)?>">
+								<input type=hidden name=o_reserve value="<?=number_format($_pdata->option_reserve)?>">
+							</td>
+						</tr>
+						<?//if(isdev()){?>
+						<tr>
+							<th class="sale">혜택모음가</th>
+							<td class="sale">
+								<span class="price_d">
+								<?
+								if($_pdata->reserve>0){
+									$ReserveConversionPrice = 0;
+									$ReserveConversionPrice = getReserveConversion($_pdata->reserve, $_pdata->reservetype, $_pdata->sellprice,'Y');
+								}
+								?>
+									<?=number_format($SellpriceValue-$coumoney-$ReserveConversionPrice)?>원
+								</span> 
+								<a href="javascript:;" id="priceLayerOn" class="btn_D small">혜택보기</a>
+							</td>
+							
+							<!-- 혜택보기 -->
+							<div class="priceLayer" id="priceLayer">
+									<h6 class="title">혜택보기</h6>
+									<ul class="article">
+										<li>
+											<span class="label">소비자가</span>
+											<span class="detail"><?=number_format($_pdata->consumerprice)?>원</span>
+										</li>
+										<!--<li>
+											<span class="label">판매가</span>
+											<span class="detail"><?=number_format($_pdata->sellprice)?>원</span>
+										</li>-->
+										<?if($goods_dc_coupong){?>
+										<li>
+											<span class="label">
+												쿠폰할인가
+												<?if($goods_sale_type <= 2){?>
+													(<?=$goods_dc_coupong?>%)
+												<?}?>
+											</span>
+											<span class="detail"><?=number_format($_pdata->sellprice-$coumoney)?>원</span>  
+										</li>
+										<?}?>
+										<?if($_pdata->reserve>0){
+											$getReserveConversion = getReserveConversion($_pdata->reserve, $_pdata->reservetype, $_pdata->sellprice,'Y');
+										?>
+										<li>
+											<span class="label">즉시적립금할인</span>
+											<span class="detail"><?=number_format($getReserveConversion)?>원</span>
+										</li>
+										<?}?>
+									</ul>
+									<ul class="article total">
+										<li>
+											<span class="label">최종 결제금액</span>
+											<span class="detail"><strong class="strong"><?=number_format($SellpriceValue-$coumoney-$getReserveConversion)?>원</strong></span>
+										</li>
+									</ul>
+									<ul class="list-a">
+										<li class="em" style="margin-bottom: 15px;">    
+											*혜택가는 고객님께서 최종적으로 할인 받으실 수 있는 예상 금액 입니다.
+										</li>
+										<li>
+											<strong>*상품 쿠폰할인</strong>은 각 상품에 노출되어있는 할인쿠폰을 말하며,
+ 											쿠폰 다운로드 시 사용 가능합니다.
+											 <br>
+											<strong>*즉시적립금할인</strong>은 결제 시 적립되는 적립금을 바로 사용할 수 있는 적립금입니다.
+										</li>
+									</ul>
+									<a href="javascript:;" class="btn-close" id="priceLayerClose"></a>
+								</div>
+						</tr>
+						<?//}?>
+
+						<?
+								}
+								$priceindex=0;
+							}
+						?>
+						<?if($_pdata->reserve>0){
+							$getReserveConversion = getReserveConversion($_pdata->reserve, $_pdata->reservetype, $_pdata->sellprice,'Y');
+						?>
+						<tr>
+							<th class="origin">적립금</th>
+							<td class="origin" id="ID_displyReserv"><?=number_format($getReserveConversion)?> point</td>
+							<!--<td class="origin"><?=number_format($_pdata->reserve)?> point</td>-->
+							<input type="hidden" id="ID_reserv" value="<?=$_pdata->reserve?>" >
+						</tr>
+						<?}?>
+<?php
+#옵션 html
+if( $optHtml ) echo $optHtml;
+
+/*할인율 계산*/
+if($SellpriceValue != $_pdata->consumerprice && $_pdata->consumerprice > 0){
+	$priceDcPercent = floor(100 - ($SellpriceValue / $_pdata->consumerprice * 100));
+}else{
+	$priceDcPercent = 0;
+}
+?>
+					<input type='hidden' value='<?=$priceDcPercent?>' id = 'ID_priceDcPercent'>
+						<style>
+							.item_info_area{width:75%; float:left;}
+							.item_info_area > span {display:inline-block;}
+							.item_info_area > span.opt_name {}
+							.item_info_area > span.price {padding-left:5px; font-weight:bold; color:#ef4035;}
+							.item_editer_area{width:25%; float:right;}
+							.item_editer_area span{cursor:pointer;}
+							.item_editer_area img{margin-top: 0 !important;}
+							.opt_list li {display:block;width:100%;height: 20px; margin-bottom: 5px;} 
+						</style>
+						<tr>
+							<td colspan="2" id="sit_sel_option">
+								<ul class="sit_opt_added">
+
+								</ul>
+							</td>
+						</tr>
+
+
+						<!--<tr>
+							<th>부가정보</th>
+							<td></td>
+						</tr>-->
+						<tr style="display: none">
+							<th>배송비</th>
+							<td id="td_deli_price">
+								<p id="deli_price_result"></p>
+								<P><?=$deliState_[msg]?></P>
+							</td>
+							<input id="deli_price" type="hidden" value="<?=$deli_price?>" />
+							<!--<input id="deli_type" type="text" value="<?=$deli_type?>" />-->
+							<input id="deli_type" type="hidden" value="<?=$deli_state?>" />
+							<input id="deli_miniprice" type="hidden" value="<?=$_data->deli_miniprice?>" />
+						</tr>
+						<tr>
+							<td colspan=2>
+								<img src="../image/detail/icon_page.jpg" width="454" height="64" usemap="#Map2">
+								<map name="Map2" id="Map2">   
+								<area shape="rect" coords="223,2,309,61" href ="javascript:deli_off_layer_on();" /> 
+								
+
+								</map>
+							</td>
+						</tr>
+					
+					<tr>
+						<div class="priceLayer" id="deli_off_layer" style="width:300px;height:300px;" >
+								<h6 class="title" style="background:black;    font-weight:normal;"><center>
+								<font style="font-size:20px;color:white;">수령가능 매장</font></center></h6>
+								<div style="margin-top:50px;">
+									<ul class="article">
+										<li>
+										<center><font size=5>코엑스 도심공항점</font></center>
+										</li>
+									</ul>
+									<ul class="list-a">
+										<!--
+										<li class="em" style="margin-bottom: 15px;">    
+											*메우는 일하는거 좋아한다 메우
+										</li>
+										-->
+										<li>
+											<center>
+											서울특별시 강남구 삼성동 159-6 지하1층 R116호
+											<br>
+											TEL. 02-551-4204
+											</center>
+										</li>
+									</ul>
+								</div>
+							<a href="javascript:;" class="btn-close" id="off_layer_close"></a>
+						</div>
+					</tr>
+			
+						<tfoot>
+						<tr>
+							<th>총 주문금액</th>
+							<td>
+							<?php
+								//if(sizeof($option1Arr)>1 && sizeof($option2Arr)<1) {
+								if(false) {
+							?>
+								<p id="result_total_price" class="price">
+									<span class="price_d"><strong>
+										<?=number_format($SellpriceValue)?>원
+									</strong></span>
+								</p>
+								<input type = 'hidden' value = '<?=$SellpriceValue?>' id = 'ID_goodsprice' name="ID_goodsprice">
+							<?
+								} else if(sizeof($option1Arr)>0) {
+							?>
+								<p id="result_total_price" class="price">
+									<span class="price_d"><strong>
+										<?=number_format($SellpriceValue)?>원
+									</strong></span>
+								</p>
+								<input type = 'hidden' value = '<?=$SellpriceValue?>' id = 'ID_goodsprice' name="ID_goodsprice">
+							<?
+								} else {
+							?>
+								<p id="result_total_price" class="price">
+									<span class="price_d"><strong>
+									<?=number_format($SellpriceValue)?>원
+									</strong></span>
+								</p>
+								<input type = 'hidden' value = '<?=$SellpriceValue?>' id = 'ID_goodsprice' name="ID_goodsprice">
+							<?
+								}
+							?>
+							</td>
+
+							<input type = 'hidden' name = 'option1price' id = 'ID_option1price'>
+						</tr>
+
+						<tr style="display: none;">
+							<td colspan="2">
+
+								<?if( strlen($_pdata->option1) > 0  ){?>
+								<input type="text" readonly="true" name="quantity" id="quantity" value="1">
+								<?}?>
+								<input type="hidden" name="constant_quantity" id="constant_quantity" value="<?=$_pdata->quantity?>" />
+								<input type=hidden name=optionArr value="">
+								<input type=hidden name=priceArr value="">
+								<input type=hidden name=quantityArr value="">
+								<input type=hidden name=code value="<?=$code?>">
+								<input type="hidden" name="mainCode" value="<?=$_cdata->c_category?>">
+								<input type=hidden name=productcode value="<?=$productcode?>">
+								<input type=hidden name=productquantity id="productquantity" value="">
+								<input type=hidden name=ordertype>
+								<input type=hidden name=opts>
+								<input type=hidden name=vip_type value="<?=$vrow->vip_type?>">
+								<input type=hidden name=staff_type value="<?=$vrow->staff_type?>">
+								<?=($brandcode>0?"<input type=hidden name=brandcode value=\"".$brandcode."\">\n":"")?>
+							</td>
+						</tr>
+
+						</tfoot>
+
+					</table>
+					<ul class="buy_btn">
+
+						<?
+						if($_pdata->assembleuse!="Y"){
+							if(strlen($dicker)==0) {
+								$temp = $_pdata->option1;
+								$tok = explode(",",$temp);
+								$goods_count=count($tok);
+
+								$check_optea='0';
+								if($goods_count>"1"){
+									$check_optea="1";
+								}
+
+								//$optioncnt = explode(",",ltrim($_pdata->option_quantity,','));
+								$optionCntSql = "SELECT SUM(option_quantity) as optioncnt FROM tblproduct_option WHERE productcode = '".$productcode."' ";
+								$optionCntSql.= 'AND option_type = 0 ';
+								$optionCntSql.= 'GROUP BY productcode ';
+								$optionCntRes = pmysql_query( $optionCntSql, get_db_conn() );
+								$optionCntRow = pmysql_fetch_object( $optionCntRes );
+								
+								$optioncnt = $optionCntRow->optioncnt;
+								//exdebug( $_pdata->quantity ); exdebug( $optioncnt ); exdebug( is_null( $optioncnt ) );
+								?>
+					<?
+								if( $_pdata->quantity <= 0 ||  ( $optioncnt <= 0 && !is_null( $optioncnt ) ) ) {
+					?>
+						<li><FONT style="color:#F02800;"><b>품 절</b></FONT></li>
+					<?
+								}else {
+					?>
+									<?if (strlen($_ShopInfo->getMemid())>0 && $_ShopInfo->getMemid()!="deleted") {?>
+						<li><a href="javascript:CheckForm('ordernow','<?=$opti?>');" class="">
+							<img src="../img/btn/btn_buy_now.gif" alt="바로구매" />
+						</a></li>
+						<li><a href="javascript:CheckForm('','<?=$opti?>');" class="">
+							<img src="../img/btn/btn_cart.gif" alt="장바구니" />
+						</a></li>
+						<li><a href="javascript:CheckForm('wishlist','<?=$opti?>')" class="">
+							<img src="../img/btn/btn_wishlist.gif" alt="관심상품" />
+						</a></li>
+									<?} else {?>
+						<li><a href="javascript:CheckForm('ordernow','<?=$opti?>');" class="">
+							<img src="../img/btn/btn_buy_now.gif" alt="바로구매" />
+						</a></li>
+						<li><a href="javascript:CheckForm('','<?=$opti?>');" class="">
+							<img src="../img/btn/btn_cart.gif" alt="장바구니" />
+						</a></li>
+						<li><a href="javascript:check_login();" class="">
+							<img src="../img/btn/btn_wishlist.gif" alt="관심상품" />
+						</a></li>
+									<?}?>
+					<?
+								}
+							}
+						}
+					?>
+
+						<!--<li><a href="#"><img src="../img/btn/btn_buy_now.gif" alt="바로구매" /></a></li>
+						<li><a href="#"><img src="../img/btn/btn_cart.gif" alt="장바구니" /></a></li>
+						<li><a href="#"><img src="../img/btn/btn_wishlist.gif" alt="관심상품" /></a></li>-->
+					</ul>
+					</form>
+					<?if($couponDownLoadFlag){?>
+					<div class="ta_r">
+						<a href="javascript:issue_coupon('<?=$goods_coupon_code?>');" class="coupon_bg"><span><?=$goods_dc_coupong?></span></a>
+					</div>
+					<?}?>
+				</div>
+				<div class="product_news">상품 소문내기
+					<a href="<?=$facebookurl?>" target = "_blank">
+						<img src="../img/icon/icon_f.gif" alt="facebook" />
+					</a>
+					<a href="javascript:;" class="CLS_urlcopy">
+						<img src="../img/icon/icon_url.gif" alt="URL" />
+						<input type = 'hidden' value = '<?=$faceboolMallUrl?>' id = 'ID_faceboolMallUrl'>
+					</a>
+				</div>
+
+				<div class="grade_article_wrap">
+					<div class="grade_article">
+						<div class="card"><!--<h3>무이자 할부 카드 안내</h3>
+						<p>5만원이상 2,3개월 / 10만원 이상 2,3,5,6개월</p>
+						<a href="#"><img src="../img/icon/icon_kb.gif" alt="국민카드" /></a> <a href="#"><img src="../img/icon/icon_bc.gif" alt="BC card" /></a> <a href="#"><img src="../img/icon/icon_sh.gif" alt="신한카드" /></a> <a href="#"><img src="../img/icon/icon_ss.gif" alt="삼성카드" /></a></div>-->
+						<? if($mainBanner[card_banner]){ ?>
+						<a href="<?=$mainBanner[card_banner][1][banner_link]?>"><img style="max-width: 540px;" src="<?=$mainBanner[card_banner][1][banner_img]?>" alt="무이자 할부 카드 안내"/></a>
+						<? }else{ ?>
+						<? } ?>
+						</div>
+
+						<div class="exhibit">
+					<? // 기획전 출력
+					$currentdate = date('Ymd');
+					$date_sql = " (to_char(end_date,'YYYYMMDD') >=  '{$currentdate}' and to_char(start_date,'YYYYMMDD') <=  '{$currentdate}') ";
+
+					$psql = "SELECT idx, title FROM tblpromo WHERE (display_type='A' OR display_type='P') AND ".$date_sql." ORDER BY display_seq LIMIT 3 ";
+					$pres = pmysql_query($psql);
+					$pcnt = pmysql_num_rows($pres);
+					?>
+							<h3>관련기획전(<?=number_format($pcnt)?>개)</h3>
+							<p>
+							<? while($prow=pmysql_fetch_object($pres)){?>
+								<a href="promotion.php?pidx=<?=$prow->idx?>">- <?=$prow->title?></a><br>
+							<?}?>
+							</p>
+						</div>
+					</div>
+				</div><!-- //div.grade_article -->
+			</div><!-- //div.detail_info_wrap -->
+		</div><!-- //div.goods_info_section -->
+		<div id="detail">
+		<a name="tab01"></a>
+		<div class="tab_detail01">
+			<ul class="detail_tab">
+				<li><a class="on" href="#tab01">상세정보</a></li>
+				<li><a href="#tab02">상품리뷰</a></li>
+				<li><a href="#tab03">상품문의</a></li>
+				<li class="last"><a href="#tab04">배송/교환/환불</a></li>
+			</ul>
+
+			<!-- 상세 에디터영역 -->
+			<div class="detailimg">
+				<?
+					$_pdata_content = stripslashes($_pdata->content);
+					//exdebug($_pdata_content);
+					if(strlen($detail_filter)>0) {
+						$_pdata_content = preg_replace($filterpattern,$filterreplace,$_pdata_content);
+					}
+					if (strpos($_pdata_content,"table>")!=false || strpos($_pdata_content,"TABLE>")!=false)
+						echo "<pre>".$_pdata_content."</pre>";
+					else if(strpos($_pdata_content,"</")!=false)
+						echo nl2br($_pdata_content);
+					else if(strpos($_pdata_content,"img")!=false || strpos($_pdata_content,"IMG")!=false)
+						echo nl2br($_pdata_content);
+					else
+					echo str_replace(" ","&nbsp;",nl2br($_pdata_content));
+				?>
+			<!--정보 고시 영역 150617원재-->
+			<? $sabangnet_prop_option = explode("||",$_pdata->sabangnet_prop_option); ?>
+			<? $sabangnet_prop_val = explode("||",$_pdata->sabangnet_prop_val); ?>
+			<?// exdebug($sabangnet_prop_val);?>
+			<?if($sabangnet_prop_val[1]){?>
+			<div class="goods_notice">
+			<table class="commerce_info" width="100%">
+				<caption>전자상거래 상품정보제공 고시</caption>
+			<colgroup>
+			<col style="width:15%"><col style="width:35%"><col style="width:15%"><col style="width:35%">
+			</colgroup>
+			<tbody>
+				<tr>
+					<th><?=$sabangnet_prop_option[1]?></th>
+					<td><?=$sabangnet_prop_val[1]?></td>
+					<th><?=$sabangnet_prop_option[2]?></th>
+					<td><?=$sabangnet_prop_val[2]?></td>
+				</tr>
+				<tr>
+					<th><?=$sabangnet_prop_option[3]?></th>
+					<td><?=$sabangnet_prop_val[3]?></td>
+					<th><?=$sabangnet_prop_option[11]?></th>
+					<td><?=$sabangnet_prop_val[11]?></td>
+				</tr>
+				<tr>
+					<th><?=$sabangnet_prop_option[5]?></th>
+					<td><?=$sabangnet_prop_val[5]?></td>
+					<th><?=$sabangnet_prop_option[6]?></th>
+					<td><?=$sabangnet_prop_val[6]?></td>
+				</tr>
+				<tr>
+					<th><?=$sabangnet_prop_option[7]?></th>
+					<td><?=$sabangnet_prop_val[7]?></td>
+					<th><?=$sabangnet_prop_option[8]?></th>
+					<td><?=$sabangnet_prop_val[8]?></td>
+				</tr>
+				<tr>
+					<th><?=$sabangnet_prop_option[9]?></th>
+					<td colspan="3"><?=$sabangnet_prop_val[9]?></td>
+					<!-- <th><?=$sabangnet_prop_option[10]?></th>
+					<td><?=$sabangnet_prop_val[10]?></td> -->
+				</tr>
+				<tr>
+					<th><?=$sabangnet_prop_option[4]?></th>
+					<td colspan="3"><?=$sabangnet_prop_val[4]?></td>
+				</tr>
+			</tbody>
+			</table>
+			</div>
+			<?}?><!--정보고시영역 END-->
+			
+			</div><!-- //상세 에디터영역 -->
+		</div><!-- //.tab_detail01 -->
+
+		<a name="tab02"></a>
+		<div class="tab_detail02">
+			<ul class="detail_tab">
+				<li><a href="#tab01">상세정보</a></li>
+				<li><a class="on" href="#tab02">상품리뷰</a></li>
+				<li><a href="#tab03">상품문의</a></li>
+				<li class="last"><a href="#tab04">배송/교환/환불</a></li>
+			</ul>
+
+			<?if($_data->review_type!="N") {?>
+				<?php include($Dir.FrontDir."prreview_tem001.php"); ?>
+			<?}?>
+
+		<a name="tab03"></a>
+		<div class="tab_detail03">
+			<ul class="detail_tab">
+				<li><a href="#tab01">상세정보</a></li>
+				<li><a href="#tab02">상품리뷰</a></li>
+				<li><a class="on"  href="#tab03">상품문의</a></li>
+				<li class="last"><a href="#tab04">배송/교환/환불</a></li>
+			</ul>
+
+			<?php include($Dir.FrontDir."prqna_tem001.php"); ?>
+
+		</div><!-- //.tab_detail03 -->
+
+		<a name="tab04"></a>
+		<div class="tab_detail04">
+			<ul class="detail_tab">
+				<li><a href="#tab01">상세정보</a></li>
+				<li><a href="#tab02">상품리뷰</a></li>
+				<li><a href="#tab03">상품문의</a></li>
+				<li class="last"><a class="on" href="#tab04">배송/교환/환불</a></li>
+			</ul>
+			<div class="delivery_wrap">
+				<dl>
+					<dt>배송정보</dt>
+					<dd>
+						- 배송은 결제확인 후 3~4일 이내 이루어집니다.(주말, 공휴일 제외) <br>
+						- 배송은 결제완료 순으로 출고되며, 부득이한 사정으로 상품이 출고되지 못할 경우 2일 이내 연락 드립니다.(주말 제외)<br>
+						- 상품의 배송비는 전지역 무료입니다. (CJ대한통운 이용)<br>
+						- 제품 구매 후 교환 및 환불은 수령 후 7일 이내에 하셔야 합니다.
+					</dd>
+				</dl>
+				<dl>
+					<dt>취소, 교환 및 환불 안내</dt>
+					<dd>
+						- 상품 텍 제거 후, 포장 제거 후 반품은 불가합니다.<br>
+						- 미결제인 상태의 주문건의 경우 my page에서 직접 취소 가능합니다.<br>
+						- 결제 후 취소문의는 고객센터(070-8290-3187)로 연락 주시기 바랍니다.<br>
+						- 송장번호가 입력된 후에는 취소, 변경이 불가합니다.<br>
+						- 무통장 입금의 경우 4일 이내 입금되지 않으면 자동 주문 취소처리 됩니다.<br>
+						- 교환 및 반품 요청 시에는 고객센터(070-8290-3187)로만 접수 가능하며, 접수 후 CJ대한통운 택배사를 이용하여 반송처리 해주셔야 합니다.<br>
+						- 제품 불량으로 인한 교환 요청의 경우 택배비는 본사에서 부담합니다.(나머지 고객부담)
+					</dd>
+				</dl>
+			</div>
+		</div><!-- //.tab_detail04 -->
+	</div>
+	</div><!-- //containerBody -->
+	<div class="related_goods">
+			<h4>관련인기상품</h4>
+			<ul class="related">
+			<? foreach($popular_product as $popularVal){ ?>
+				<li>
+					<div class="goods_A">
+						<a href="<?=$Dir.FrontDir."productdetail.php?productcode=".$popularVal['productcode']?>">
+							<p><img src="<?=$Dir.DataDir."shopimages/product/".$popularVal['maximage']?>" width="150" height="150" alt=""></p>
+							<span class="subject"><?=$popularVal['productname']?></span>
+							<span class="price price_c"><?=number_format($popularVal['sellprice'])?>원</span>
+						</a>
+					</div>
+				</li>
+			<? } ?>
+			</ul>
+		</div><!-- //div.related_goods -->
+</div>	<!-- 123 -->
+
+<div style='clear:both;'>&nbsp;</div>
+
+
+<script language="JavaScript">
+
+	$(".jCarouselLite").jCarouselLite({
+		btnNext: ".coodi_pick_wrap .right",
+		btnPrev: ".coodi_pick_wrap .left",
+		visible: 5,
+	    auto: 2000,
+	    speed: 1000
+	});
+
+var miniq=<?=($miniq>1?$miniq:1)?>;
+var ardollar=new Array(3);
+ardollar[0]="<?=$ardollar[0]?>";
+ardollar[1]="<?=$ardollar[1]?>";
+ardollar[2]="<?=$ardollar[2]?>";
+<?
+if(strlen($optcode)==0) {
+	$maxnum=($count2-1)*10;
+	if($optioncnt>0) {
+		echo "num = new Array(";
+		for($i=0;$i<$maxnum;$i++) {
+			if ($i!=0) echo ",";
+			if(strlen($optioncnt[$i])==0) echo "100000";
+			else echo $optioncnt[$i];
+		}
+		echo ");\n";
+	}
+?>
+
+function change_price(temp,temp2,temp3) {
+
+<?=(strlen($dicker)>0)?"return;\n":"";?>
+	if(temp3=="") temp3=1;
+	price = new Array(<?if($priceindex>0) echo "'".number_format($_pdata->sellprice)."','".number_format($_pdata->sellprice)."',"; for($i=0;$i<$priceindex;$i++) { if ($i!=0) { echo ",";} echo "'".$pricetok[$i]."'"; } ?>);
+
+	sprice = new Array(<?if($priceindex>0) echo "'".number_format($_pdata->sellprice)."','".number_format($_pdata->sellprice)."',"; for($i=0;$i<$priceindex;$i++) { if ($i!=0) { echo ",";} echo "'".$spricetok[$i]."'"; } ?>);
+
+
+	consumer = new Array(<?if($priceindex>0) echo "'".number_format($_pdata->consumerprice)."','".number_format($_pdata->consumerprice)."',"; for($i=0;$i<$priceindex;$i++) { if ($i!=0) { echo ",";} echo "'".$consumertok[$i]."'"; } ?>);
+	o_reserve = new Array(<?if($priceindex>0) echo "'".number_format($_pdata->option_reserve)."','".number_format($_pdata->option_reserve)."',"; for($i=0;$i<$priceindex;$i++) { if ($i!=0) { echo ",";} echo "'".$reservetok[$i]."'"; } ?>);
+	doprice = new Array(<?if($priceindex>0) echo "'".number_format($_pdata->sellprice/$ardollar[1],2)."','".number_format($_pdata->sellprice/$ardollar[1],2)."',"; for($i=0;$i<$priceindex;$i++) { if ($i!=0) { echo ",";} echo "'".$pricetokdo[$i]."'"; } ?>);
+	if(temp==1) {
+		if (document.form1.option1.selectedIndex><? echo $priceindex+2 ?>)
+			temp = <?=$priceindex?>;
+		else temp = document.form1.option1.selectedIndex;
+		document.form1.price.value = price[temp];
+
+		document.all["idx_price"].innerHTML = document.form1.price.value+"원";
+
+
+		if(sprice[temp]!='0'){
+		document.form1.sprice.value = sprice[temp];
+		document.all["idx_sprice"].innerHTML = document.form1.sprice.value+"원";
+		}else{
+			if(sprice[0]!='0'){
+			document.form1.sprice.value = sprice[0];
+			document.all["idx_sprice"].innerHTML = document.form1.sprice.value+"원";
+			}
+		}
+
+
+		if(consumer[temp]!='0'){
+		document.form1.consumer.value = consumer[temp];
+		document.all["idx_consumer"].innerHTML = document.form1.consumer.value+"원";
+		}else{
+			if(consumer[0]!='0'){
+			document.form1.consumer.value = consumer[0];
+			document.all["idx_consumer"].innerHTML = document.form1.consumer.value+"원";
+			}
+		}
+		if(o_reserve[temp]!='0'){
+		document.form1.o_reserve.value = o_reserve[temp];
+		document.all["idx_reserve"].innerHTML = document.form1.o_reserve.value+"원";
+		}else{
+			if(o_reserve[0]!='0'){
+			document.form1.o_reserve.value = o_reserve[0];
+			document.all["idx_reserve"].innerHTML = document.form1.o_reserve.value+"원";
+			}
+		}
+
+<?if($_pdata->reservetype=="Y" && $_pdata->reserve>0) { ?>
+		if(document.getElementById("idx_reserve")) {
+			var reserveInnerValue="0";
+			if(document.form1.price.value.length>0) {
+				var ReservePer=<?=$_pdata->reserve?>;
+				var ReservePriceValue=Number(document.form1.price.value.replace(/,/gi,""));
+				if(ReservePriceValue>0) {
+					reserveInnerValue = Math.round(ReservePer*ReservePriceValue*0.01)+"";
+					var result = "";
+					for(var i=0; i<reserveInnerValue.length; i++) {
+						var tmp = reserveInnerValue.length-(i+1);
+						if(i%3==0 && i!=0) result = "," + result;
+						result = reserveInnerValue.charAt(tmp) + result;
+					}
+					reserveInnerValue = result;
+				}
+			}
+			document.getElementById("idx_reserve").innerHTML = reserveInnerValue+"원";
+		}
+<? } ?>
+		if(typeof(document.form1.dollarprice)=="object") {
+			document.form1.dollarprice.value = doprice[temp];
+			document.all["idx_dollarprice"].innerHTML=ardollar[0]+" "+document.form1.dollarprice.value+" "+ardollar[2];
+		}
+	}
+	packagecal(); //패키지 상품 적용
+}
+
+<? } else if(strlen($optcode)>0) { ?>
+
+function chopprice(temp){
+<?=(strlen($dicker)>0)?"return;\n":"";?>
+	ind = document.form1.mulopt[temp];
+	price = ind.options[ind.selectedIndex].value;
+	originalprice = document.form1.price.value.replace(/,/g, "");
+	document.form1.price.value=Number(originalprice)-Number(document.form1.opttype[temp].value);
+	if(price.indexOf(",")>0) {
+		optprice = price.substring(price.indexOf(",")+1);
+	} else {
+		optprice=0;
+	}
+	document.form1.price.value=Number(document.form1.price.value)+Number(optprice);
+	if(typeof(document.form1.dollarprice)=="object") {
+		document.form1.dollarprice.value=(Math.round(((Number(document.form1.price.value))/ardollar[1])*100)/100);
+		document.all["idx_dollarprice"].innerHTML=ardollar[0]+" "+document.form1.dollarprice.value+" "+ardollar[2];
+	}
+	document.form1.opttype[temp].value=optprice;
+	var num_str = document.form1.price.value.toString()
+	var result = ''
+
+	for(var i=0; i<num_str.length; i++) {
+		var tmp = num_str.length-(i+1)
+		if(i%3==0 && i!=0) result = ',' + result
+		result = num_str.charAt(tmp) + result
+	}
+	document.form1.price.value = result;
+	document.all["idx_price"].innerHTML=document.form1.price.value+"원";
+	packagecal(); //패키지 상품 적용
+}
+
+<?}?>
+<? if($_pdata->assembleuse=="Y") { ?>
+function setTotalPrice(tmp) {
+<?=(strlen($dicker)>0)?"return;\n":"";?>
+	var i=true;
+	var j=1;
+	var totalprice=0;
+	while(i) {
+		if(document.getElementById("acassemble"+j)) {
+			if(document.getElementById("acassemble"+j).value) {
+				arracassemble = document.getElementById("acassemble"+j).value.split("|");
+				if(arracassemble[2].length) {
+					totalprice += arracassemble[2]*1;
+				}
+			}
+		} else {
+			i=false;
+		}
+		j++;
+	}
+	totalprice = totalprice*tmp;
+	var num_str = totalprice.toString();
+	var result = '';
+	for(var i=0; i<num_str.length; i++) {
+		var tmp = num_str.length-(i+1);
+		if(i%3==0 && i!=0) result = ',' + result;
+		result = num_str.charAt(tmp) + result;
+	}
+	if(typeof(document.form1.price)=="object") { document.form1.price.value=totalprice; }
+	if(typeof(document.form1.dollarprice)=="object") {
+		document.form1.dollarprice.value=(Math.round(((Number(document.form1.price.value))/ardollar[1])*100)/100);
+		document.all["idx_dollarprice"].innerHTML=ardollar[0]+" "+document.form1.dollarprice.value+" "+ardollar[2];
+	}
+	if(document.getElementById("idx_assembleprice")) { document.getElementById("idx_assembleprice").value = result; }
+	if(document.getElementById("idx_price")) { document.getElementById("idx_price").innerHTML = result+"원"; }
+	if(document.getElementById("idx_price_graph")) { document.getElementById("idx_price_graph").innerHTML = result+"원"; }
+	<?if($_pdata->reservetype=="Y" && $_pdata->reserve>0) { ?>
+		if(document.getElementById("idx_reserve")) {
+			var reserveInnerValue="0";
+			if(document.form1.price.value.length>0) {
+				var ReservePer=<?=$_pdata->reserve?>;
+				var ReservePriceValue=Number(document.form1.price.value.replace(/,/gi,""));
+				if(ReservePriceValue>0) {
+					reserveInnerValue = Math.round(ReservePer*ReservePriceValue*0.01)+"";
+					var result = "";
+					for(var i=0; i<reserveInnerValue.length; i++) {
+						var tmp = reserveInnerValue.length-(i+1);
+						if(i%3==0 && i!=0) result = "," + result;
+						result = reserveInnerValue.charAt(tmp) + result;
+					}
+					reserveInnerValue = result;
+				}
+			}
+			document.getElementById("idx_reserve").innerHTML = reserveInnerValue+"원";
+		}
+	<? } ?>
+}
+<? } ?>
+
+function packagecal() {
+<?=(count($arrpackage_pricevalue)==0?"return;\n":"")?>
+	pakageprice = new Array(<? for($i=0;$i<count($arrpackage_pricevalue);$i++) { if ($i!=0) { echo ",";} echo "'".$arrpackage_pricevalue[$i]."'"; }?>);
+	var result = "";
+	var intgetValue = document.form1.price.value.replace(/,/g, "");
+	var temppricevalue = "0";
+	for(var j=1; j<pakageprice.length; j++) {
+		if(document.getElementById("idx_price"+j)) {
+			temppricevalue = (Number(intgetValue)+Number(pakageprice[j])).toString();
+			result="";
+			for(var i=0; i<temppricevalue.length; i++) {
+				var tmp = temppricevalue.length-(i+1);
+				if(i%3==0 && i!=0) result = "," + result;
+				result = temppricevalue.charAt(tmp) + result;
+			}
+			document.getElementById("idx_price"+j).innerHTML=result+"원";
+		}
+	}
+
+	if(typeof(document.form1.package_idx)=="object") {
+		var packagePriceValue = Number(intgetValue)+Number(pakageprice[Number(document.form1.package_idx.value)]);
+
+		if(packagePriceValue>0) {
+			result = "";
+			packagePriceValue = packagePriceValue.toString();
+			for(var i=0; i<packagePriceValue.length; i++) {
+				var tmp = packagePriceValue.length-(i+1);
+				if(i%3==0 && i!=0) result = "," + result;
+				result = packagePriceValue.charAt(tmp) + result;
+			}
+			returnValue = result;
+		} else {
+			returnValue = "0";
+		}
+		if(document.getElementById("idx_price")) {
+			document.getElementById("idx_price").innerHTML=returnValue+"원";
+		}
+		if(document.getElementById("idx_price_graph")) {
+			document.getElementById("idx_price_graph").innerHTML=returnValue+"원";
+		}
+		if(typeof(document.form1.dollarprice)=="object") {
+			document.form1.dollarprice.value=Math.round((packagePriceValue/ardollar[1])*100)/100;
+			if(document.getElementById("idx_price_graph")) {
+				document.getElementById("idx_price_graph").innerHTML=ardollar[0]+" "+document.form1.dollarprice.value+" "+ardollar[2];
+			}
+		}
+	}
+}
+</script>
+
+<SCRIPT LANGUAGE="JavaScript">
+
+var imagepath="<?=$imagepath_multi?>";
+var prdimagepath="<?=$Dir?>";
+var setcnt=0;
+
+function primg_preview(img,width,height) {
+
+	if($("img[name='primg']")!=null) {
+		setcnt=0;
+		$("img[name='primg']").attr("src",imagepath+img);
+		$("img[name='primg']").attr("data-zoom-image",imagepath+img);
+		/*if(width>0){
+			$("img[name='primg']").css("width",width+"px");
+		}
+		if(height>0){
+			$("img[name='primg']").css("height",height+"px");
+		}*/
+		//alert($("img[name='primg']").css("width"));
+	}
+	/*
+	else {
+		if(setcnt<=10) {
+			setcnt++;
+			setTimeout("primg_preview('"+img+"','"+width+"','"+height+"')",500);
+		}
+	}
+	*/
+}
+
+function primg_preview3(img,width,height) {
+
+	if($("img[name='primg']")!=null) {
+		$("img[name='primg']").attr("src",imagepath+img);
+
+		if(width>0){
+			$("img[name='primg']").css("width",width+"px");
+		}
+		if(height>0){
+			$("img[name='primg']").css("height",height+"px");
+		}
+	}
+}
+
+function primg_preview2(img,width,height) {
+	obj = event.srcElement;
+	clearTimeout(obj._tid);
+	obj._tid=setTimeout("primg_preview3('"+img+"','"+width+"','"+height+"')",500);
+}
+
+function primg_preview4(img,width,height){
+	obj = event.srcElement;
+	clearTimeout(obj._tid);
+
+	obj._tid=setTimeout(function(){
+		if($("img[name='primg']")!=null) {
+			setcnt=0;
+			$("img[name='primg']").attr("src",prdimagepath+"data/shopimages/product/"+img);
+
+			if(width>0){
+				$("img[name='primg']").css("width",width+"px");
+			}
+			if(height>0){
+				$("img[name='primg']").css("height",height+"px");
+			}
+		}
+	},500);
+}
+
+
+function primg_preview_def(img,width,height) {
+
+	if($("img[name='primg']")!=null) {
+		setcnt=0;
+		$("img[name='primg']").attr("src",prdimagepath+"data/shopimages/product/"+img);
+		$("img[name='primg']").attr("data-zoom-image",prdimagepath+"data/shopimages/product/"+img);
+
+		if(width>0){
+			$("img[name='primg']").css("width",width+"px");
+		}
+		if(height>0){
+			$("img[name='primg']").css("height",height+"px");
+		}
+		//alert($("img[name='primg']").css("width"));
+	} else {
+		if(setcnt<=10) {
+			setcnt++;
+			setTimeout("primg_preview('"+img+"','"+width+"','"+height+"')",500);
+		}
+	}
+}
+
+
+//primg_preview('<?=$yesimage[0]?>','<?=$xsize[0]?>','<?=$ysize[0]?>');
+
+
+		
+
+</SCRIPT>
+
+<!-- 레이어 팝업 스타일 -->
+<style type="text/css">
+	.layer {display:none; position:fixed; _position:absolute; top:0; left:0; width:100%; height:100%; z-index:100;}
+		.layer .bg {position:absolute; top:0; left:0; width:100%; height:100%; background:#000; opacity:.5; filter:alpha(opacity=50);}
+		.layer .pop-layer {display:block;}
+
+	.pop-layer {display:none; position: absolute; top: 50%; left: 50%; width: 855px; height:auto;  background-color:#fff; border: 5px solid #716d6c; z-index: 10;}
+	.pop-layer .pop-container {padding: 20px 25px;}
+	.pop-layer p.ctxt {color: #666; line-height: 25px;}
+	.pop-layer .btn-r {width: 100%; margin:10px 0 20px; padding-top: 10px; border-top: 1px solid #DDD; text-align:right;}
+
+	a.cbtn {display:inline-block; height:25px; padding:0 14px 0; border:1px solid #5e5e5e; background-color:#585858; font-size:13px; color:#fff; line-height:25px;}
+	a.cbtn:hover {border: 1px solid #5e5e5e; background-color:#5e5e5e; color:#fff;}
+
+	a.ibtn {display:inline-block; height:25px; padding:0 14px 0; border:1px solid #5e5e5e; background-color:#585858; font-size:13px; color:#fff; line-height:25px;}
+	a.ibtn:hover {border: 1px solid #5e5e5e; background-color:#5e5e5e; color:#fff;}
+</style>
+<!--// 레이어 팝업 스타일 -->
+
+<!--//레이어 팝업 스크립트 -->
+<script type="text/javascript">
+	function layer_open(el){
+
+		var temp = $('#' + el);
+		var bg = temp.prev().hasClass('bg');	//dimmed 레이어를 감지하기 위한 boolean 변수
+
+		if(bg){
+			//$('.layer').fadeIn();	//'bg' 클래스가 존재하면 레이어가 나타나고 배경은 dimmed 된다.
+			$('.' + el).fadeIn();	//'bg' 클래스가 존재하면 레이어가 나타나고 배경은 dimmed 된다.
+		}else{
+			temp.fadeIn();
+		}
+
+		// 화면의 중앙에 레이어를 띄운다.
+		if (temp.outerHeight() < $(document).height() ) temp.css('margin-top', '-'+temp.outerHeight()/2+'px');
+		else temp.css('top', '0px');
+		if (temp.outerWidth() < $(document).width() ) temp.css('margin-left', '-'+temp.outerWidth()/2+'px');
+		else temp.css('left', '0px');
+
+		temp.find('a.cbtn').click(function(e){
+			if(bg){
+				//$('.layer').fadeOut(); //'bg' 클래스가 존재하면 레이어를 사라지게 한다.
+				$('.' + el).fadeOut(); //'bg' 클래스가 존재하면 레이어를 사라지게 한다.
+			}else{
+				temp.fadeOut();
+			}
+			e.preventDefault();
+		});
+
+		$('.layer .bg').click(function(e){	//배경을 클릭하면 레이어를 사라지게 하는 이벤트 핸들러
+
+			if(bg){
+				//$('.layer').fadeOut(); //'bg' 클래스가 존재하면 레이어를 사라지게 한다.
+				$('.' + el).fadeOut(); //'bg' 클래스가 존재하면 레이어를 사라지게 한다.
+			}else{
+				temp.fadeOut();
+			}
+
+			//$('.layer').fadeOut();
+			e.preventDefault();
+		});
+
+	}
+</script>
+<!--//레이어 팝업 스크립트 -->
+
+<!-- 옵션 스크립트 -->
+<script>
+var option_add = false;
+var supply_add = false;
+var isAndroid = (navigator.userAgent.toLowerCase().indexOf("android") > -1);
+
+$(function() {
+    // 선택옵션
+    /* 가상커서 ctrl keyup 이베트 대응 */
+    /*
+    $(document).on("keyup", "select.it_option", function(e) {
+        var sel_count = $("select.it_option").size();
+        var idx = $("select.it_option").index($(this));
+        var code = e.keyCode;
+        var val = $(this).val();
+
+        option_add = false;
+        if(code == 17 && sel_count == idx + 1) {
+            if(val == "")
+                return;
+
+            sel_option_process(true);
+        }
+    });
+    */
+
+    /* 키보드 접근 후 옵션 선택 Enter keydown 이벤트 대응 */
+    $(document).on("keydown", "select.it_option", function(e) {
+        var sel_count = $("select.it_option").size();
+        var idx = $("select.it_option").index($(this));
+        var code = e.keyCode;
+        var val = $(this).val();
+
+        option_add = false;
+        if(code == 13 && sel_count == idx + 1) {
+            if(val == "")
+                return;
+
+            sel_option_process(true);
+        }
+    });
+
+    if(isAndroid) {
+        $(document).on("touchend", "select.it_option", function() {
+            option_add = true;
+        });
+    } else {
+        $(document).on("mouseup", "select.it_option", function() {
+            option_add = true;
+        });
+    }
+
+    $(document).on("change", "select.it_option", function() {
+        var sel_count = $("select.it_option").size();
+        var idx = $("select.it_option").index($(this));
+        var val = $(this).val();
+        var it_id = $("input[name='productcode']").val();
+
+        // 선택값이 없을 경우 하위 옵션은 disabled
+        if(val == "") {
+            $("select.it_option:gt("+idx+")").val("").attr("disabled", true);
+            return;
+        }
+
+        // 하위선택옵션로드
+        if(sel_count > 1 && (idx + 1) < sel_count) {
+            var opt_id = "";
+
+            // 상위 옵션의 값을 읽어 옵션id 만듬
+            if(idx > 0) {
+                $("select.it_option:lt("+idx+")").each(function() {
+                    if(!opt_id)
+                        opt_id = $(this).val();
+                    else
+                        opt_id += chr(30)+$(this).val();
+                });
+
+                opt_id += chr(30)+val;
+            } else if(idx == 0) {
+                opt_id = val;
+            }
+
+            $.post(
+                "ajax_option_change.php",
+                { it_id: it_id, opt_id: opt_id, idx: idx, sel_count: sel_count },
+                function(data) {
+                    $("select.it_option").eq(idx+1).empty().html(data).attr("disabled", false);
+					//console.log(data);
+                    // select의 옵션이 변경됐을 경우 하위 옵션 disabled
+                    if(idx+1 < sel_count) {
+                        var idx2 = idx + 1;
+                        $("select.it_option:gt("+idx2+")").val("").attr("disabled", true);
+                    }
+                }
+            );
+        } else if((idx + 1) == sel_count) { // 선택옵션처리
+            if(option_add && val == "")
+                return;
+
+            var info = val.split(",");
+            // 재고체크
+            if(parseInt(info[2]) < 1) {
+                alert("선택하신 선택옵션상품은 재고가 부족하여 구매할 수 없습니다.");
+                return false;
+            }
+
+            if(option_add)
+                sel_option_process(true);
+        }
+    });
+
+    // 추가옵션
+    /* 가상커서 ctrl keyup 이베트 대응 */
+    /*
+    $(document).on("keyup", "select.it_supply", function(e) {
+        var $el = $(this);
+        var code = e.keyCode;
+        var val = $(this).val();
+
+        supply_add = false;
+        if(code == 17) {
+            if(val == "")
+                return;
+
+            sel_supply_process($el, true);
+        }
+    });
+    */
+
+    /* 키보드 접근 후 옵션 선택 Enter keydown 이벤트 대응 */
+    $(document).on("keydown", "select.it_supply", function(e) {
+        var $el = $(this);
+        var code = e.keyCode;
+        var val = $(this).val();
+
+        supply_add = false;
+        if(code == 13) {
+            if(val == "")
+                return;
+
+            sel_supply_process($el, true);
+        }
+    });
+
+    if(isAndroid) {
+        $(document).on("touchend", "select.it_supply", function() {
+            supply_add = true;
+        });
+    } else {
+        $(document).on("mouseup", "select.it_supply", function() {
+            supply_add = true;
+        });
+    }
+
+    $(document).on("change", "select.it_supply", function() {
+        var $el = $(this);
+        var val = $(this).val();
+
+        if(val == "")
+            return;
+
+        if(supply_add)
+            sel_supply_process($el, true);
+    });
+
+    // 수량변경 및 삭제
+    $(document).on("click", "#sit_sel_option li button", function() {
+        var mode = $(this).text();
+        var this_qty, max_qty = 9999, min_qty = 1;
+        var $el_qty = $(this).closest("li").find("input[name^=ct_qty]");
+        var stock = parseInt($(this).closest("li").find("input.io_stock").val());
+
+        switch(mode) {
+            case "증가":
+                this_qty = parseInt($el_qty.val().replace(/[^0-9]/, "")) + 1;
+                if(this_qty > stock) {
+                    alert("재고수량 보다 많은 수량을 구매할 수 없습니다.");
+                    this_qty = stock;
+                }
+
+                if(this_qty > max_qty) {
+                    this_qty = max_qty;
+                    alert("최대 구매수량은 "+comma(String(max_qty))+" 입니다.");
+                }
+
+                $el_qty.val(this_qty);
+                price_calculate();
+                break;
+
+            case "감소":
+                this_qty = parseInt($el_qty.val().replace(/[^0-9]/, "")) - 1;
+                if(this_qty < min_qty) {
+                    this_qty = min_qty;
+                    alert("최소 구매수량은 "+comma(String(min_qty))+" 입니다.");
+                }
+                $el_qty.val(this_qty);
+                price_calculate();
+                break;
+
+            case "삭제":
+                if(confirm("선택하신 옵션항목을 삭제하시겠습니까?")) {
+                    var $el = $(this).closest("li");
+                    var del_exec = true;
+
+                    if($("#sit_sel_option .sit_spl_list").size() > 0) {
+                        // 선택옵션이 하나이상인지
+                        if($el.hasClass("sit_opt_list")) {
+                            if($(".sit_opt_list").size() <= 1)
+                                del_exec = false;
+                        }
+                    }
+
+                    if(del_exec) {
+                        $el.closest("li").remove();
+                        price_calculate();
+                    } else {
+                        alert("선택옵션은 하나이상이어야 합니다.");
+                        return false;
+                    }
+                }
+                break;
+
+            default:
+                alert("올바른 방법으로 이용해 주십시오.");
+                break;
+        }
+    });
+
+    // 수량직접입력
+    $(document).on("keyup", "input[name^=ct_qty]", function() {
+        var val= $(this).val();
+
+        if(val != "") {
+            if(val.replace(/[0-9]/g, "").length > 0) {
+                alert("수량은 숫자만 입력해 주십시오.");
+                $(this).val(1);
+            } else {
+                var d_val = parseInt(val);
+                if(d_val < 1 || d_val > 9999) {
+                    alert("수량은 1에서 9999 사이의 값으로 입력해 주십시오.");
+                    $(this).val(1);
+                } else {
+                    var stock = parseInt($(this).closest("li").find("input.io_stock").val());
+                    if(d_val > stock) {
+                        alert("재고수량 보다 많은 수량을 구매할 수 없습니다.");
+                        $(this).val(stock);
+                    }
+                }
+            }
+
+            price_calculate();
+        }
+    });
+});
+
+// 선택옵션 추가처리
+function sel_option_process(add_exec)
+{
+    var it_price = parseInt($("input#it_price").val());
+    var id = "";
+    var value, info, sel_opt, item, price, stock, run_error = false;
+    var option = sep = "";
+    info = $("select.it_option:last").val().split(",");
+
+    $("select.it_option").each(function(index) {
+        value = $(this).val();
+        item = $(this).closest("tr").find("th label").text();
+
+        if(!value) {
+            run_error = true;
+            return false;
+        }
+
+        // 옵션선택정보
+        sel_opt = value.split(",")[0];
+
+        if(id == "") {
+            id = sel_opt;
+        } else {
+            id += chr(30)+sel_opt;
+            sep = " / ";
+        }
+
+        option += sep + item + ":" + sel_opt;
+    });
+
+    if(run_error) {
+        alert(item+"을(를) 선택해 주십시오.");
+        return false;
+    }
+	
+    price = info[1];
+    stock = info[2];
+
+    // 금액 음수 체크
+    if(it_price + parseInt(price) < 0) {
+        alert("구매금액이 음수인 상품은 구매할 수 없습니다.");
+        return false;
+    }
+
+    if(add_exec) {
+        if(same_option_check(option))
+            return;
+		
+        add_sel_option(0, id, option, price, stock);
+    }
+}
+
+// 추가옵션 추가처리
+function sel_supply_process($el, add_exec)
+{
+    var val = $el.val();
+    var item = $el.closest("tr").find("th label").text();
+
+    if(!val) {
+        alert(item+"을(를) 선택해 주십시오.");
+        return;
+    }
+
+    var info = val.split(",");
+
+    // 재고체크
+    if(parseInt(info[2]) < 1) {
+        alert(info[0]+"은(는) 재고가 부족하여 구매할 수 없습니다.");
+        return false;
+    }
+
+    var id = item+chr(30)+info[0];
+    var option = item+":"+info[0];
+    var price = info[1];
+    var stock = info[2];
+
+    // 금액 음수 체크
+    if(parseInt(price) < 0) {
+        alert("구매금액이 음수인 상품은 구매할 수 없습니다.");
+        return false;
+    }
+
+    if(add_exec) {
+        if(same_option_check(option))
+            return;
+
+        add_sel_option(1, id, option, price, stock);
+    }
+}
+
+// 선택된 옵션 출력
+function add_sel_option(type, id, option, price, stock)
+{
+    var item_code = $("input[name='productcode']").val();
+    var opt = "";
+    var li_class = "sit_opt_list";
+    if(type)
+        li_class = "sit_spl_list";
+
+    var opt_prc;
+    if(parseInt(price) >= 0)
+        opt_prc = "(+"+comma(String(price))+"원)";
+    else
+        opt_prc = "("+comma(String(price))+"원)";
+
+    opt += "<li class=\""+li_class+"\">";
+    opt += "<input type=\"hidden\" name=\"io_type["+item_code+"][]\" value=\""+type+"\">";
+    opt += "<input type=\"hidden\" name=\"io_id["+item_code+"][]\" value=\""+id+"\">";
+    opt += "<input type=\"hidden\" name=\"io_value["+item_code+"][]\" value=\""+option+"\">";
+    opt += "<input type=\"hidden\" class=\"io_price\" value=\""+price+"\">";
+    opt += "<input type=\"hidden\" class=\"io_stock\" value=\""+stock+"\">";
+    opt += "<span class=\"sit_opt_subj\">"+option+"</span>";
+    opt += "<span class=\"sit_opt_prc\">"+opt_prc+"</span>";
+    opt += "<div><input type=\"text\" name=\"ct_qty["+item_code+"][]\" value=\"1\" class=\"frm_input\" size=\"5\">";
+    opt += "<button type=\"button\" class=\"sit_qty_plus btn_frmline\">증가</button>";
+    opt += "<button type=\"button\" class=\"sit_qty_minus btn_frmline\">감소</button>";
+    opt += "<button type=\"button\" class=\"sit_opt_del btn_frmline\">삭제</button></div>";
+    opt += "</li>";
+
+    if($("#sit_sel_option > ul").size() < 1) {
+        $("#sit_sel_option").html("<ul id=\"sit_opt_added\"></ul>");
+        $("#sit_sel_option > ul").html(opt);
+    } else{
+        if(type) {
+            if($("#sit_sel_option .sit_spl_list").size() > 0) {
+                $("#sit_sel_option .sit_spl_list:last").after(opt);
+            } else {
+                if($("#sit_sel_option .sit_opt_list").size() > 0) {
+                    $("#sit_sel_option .sit_opt_list:last").after(opt);
+                } else {
+                    $("#sit_sel_option > ul").html(opt);
+                }
+            }
+        } else {
+            if($("#sit_sel_option .sit_opt_list").size() > 0) {
+                $("#sit_sel_option .sit_opt_list:last").after(opt);
+            } else {
+                if($("#sit_sel_option .sit_spl_list").size() > 0) {
+                    $("#sit_sel_option .sit_spl_list:first").before(opt);
+                } else {
+                    $("#sit_sel_option > ul").html(opt);
+                }
+            }
+        }
+    }
+
+    price_calculate();
+}
+
+// 동일선택옵션있는지
+function same_option_check(val)
+{
+    var result = false;
+    $("input[name^=io_value]").each(function() {
+        if(val == $(this).val()) {
+            result = true;
+            return false;
+        }
+    });
+
+    if(result)
+        alert(val+" 은(는) 이미 추가하신 옵션상품입니다.");
+
+    return result;
+}
+
+// 가격계산
+function price_calculate()
+{
+    var it_price = parseInt($("#ID_sellprice").val());
+	
+    if(isNaN(it_price))
+        return;
+
+    var $el_prc = $("input.io_price");
+    var $el_qty = $("input[name^=ct_qty]");
+    var $el_type = $("input[name^=io_type]");
+    var price, type, qty, total = 0;
+
+    $el_prc.each(function(index) {
+        price = parseInt($(this).val());
+        qty = parseInt($el_qty.eq(index).val());
+        type = $el_type.eq(index).val();
+
+        if(type == "0") { // 선택옵션
+            total += (it_price + price) * qty;
+        } else { // 추가옵션
+            total += price * qty;
+        }
+    });
+
+    $("#result_total_price .price_d").empty().html("<strong> "+comma(String(total))+"원 </strong>");
+	$("#ID_goodsprice").val(total);
+}
+
+// php chr() 대응
+function chr(code)
+{
+    return String.fromCharCode(code);
+}
+</script>
+<!-- //옵션 스크립트 -->

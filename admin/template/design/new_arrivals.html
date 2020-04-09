@@ -1,0 +1,228 @@
+<div class="content-wrap">
+<div class="title_depth3">NEW ARRIVALS 관리 <span>NEW ARRIVALS 등록/수정/삭제 처리를 할 수 있습니다.</span></div>
+
+<form name='FrmNewArrivalsList' id='FrmNewArrivalsList' method='POST' enctype="multipart/form-data" onsumit="return false">
+<input type='hidden' name='mode' id='mode' value='newarrivals' >
+
+
+{@ list}
+<input type="hidden" name="productcode[{.idx}]" id="productcode_{.idx}" value="" >
+<input type="hidden" name="idx[{.idx}]" value="{.idx}"/>
+<!-- <input type="hidden" name="product_idx" value="{.idx}"/> -->
+<div class="title_depth4 design-tag" ><i class="fa fa-chevron-circle-right"></i> {.tag_title}</div>
+<table class="table-view">
+	<colgroup>
+		<col style="width:180px">
+		<col>
+	</colgroup>
+	<tbody>
+	<tr>
+		<th>
+			<span>노출여부</span>
+		</th>
+		<td >
+			<label>
+				<input type="radio" name="option_use[{.idx}]" id="option_use_{.idx}" value="Y" class="hj" {? .use_yn=="Y"}checked {/}>
+				<span class="lbl">사용함</span>
+			</label>
+			<label>
+				<input type="radio" name="option_use[{.idx}]" id="option_use2_{.idx}" value="N"  class="hj" {? .use_yn=="N"}checked {/}>
+				<span class="lbl">사용안함</span>
+			</label>
+		</td>
+	</tr>
+	<tr>
+		<th>
+			<span>태그명</span>
+		</th>
+		<td>
+			<input type="text" class="input" name="tag_title[{.idx}]" value="{.tag_title}"/>
+        </td>
+	</tr>
+	
+	<tr>
+		<th rowspan="2">
+			<span>노출상품</span>
+		</th>
+		<td><button type="button" class="btn btn-sm" onclick="NewArrivals.open('{.idx}')">상품선택</button></td>
+	</tr>
+	<tr>
+		<td style="padding:0px">
+			
+			<ul class="product_inner" id="product_inner_{.idx}" data-idx="{.idx}">
+				{@ .info}
+                <li data-productcode="{.productcode}" data-ul="{.idx}" id="{..key_}">
+                    <span><i class="fa fa-sort"></i></span>
+                    <span>{..key_}</span>
+                    <span>{..productname}</span>
+                    <span>{..consumerprice}</span>
+                    <span><i class="fa fa-times" onclick="NewArrivals.remove(this)"></i></span>
+                </li>
+                {/}
+                <li class="empty {? .info}hide{/}">선택된 상품이 없습니다.</li>
+			</ul>
+		</td>
+	</tr>
+</tbody>
+</table>
+
+{/}
+	<div class="title_depth3 design-tag" >
+		<div class="pull-right">
+			<button type="button" class="btn-point" onclick="NewArrivals.batch()">적용하기</button>
+		</div>
+	</div>
+
+</form>
+
+	<textarea id="tpl_li" style="display: none;">
+   		<li data-productcode="${\productcode}" data-ul="${\ul_idx}" id="${\productcode}">
+			<span><i class="fa fa-sort"></i></span>
+			<span>${\productcode}<input type="hidden" name="relationProduct${\ul_idx}" value="${\productcode}" data-idx="${\ul_idx}"></span>
+			<span>${\name}</span>
+			<span>${\price_consumer}</span>
+			<span><i class="fa fa-times" onclick="NewArrivals.remove(this)"></i></span>
+		</li>
+	</textarea>
+	<script type="text/javascript" src="/admin/static/js/template.js"></script><!--{* 상품목록 템플릿:E *}-->
+<script>
+
+var NewArrivals = {
+	idx:'',
+    proc_url:'/admin/proc/design.proc.php',
+	init: function() {
+		this.createSort();
+	},
+	createSort: function(idx) {
+		//console.log('createSort');
+		var me = this;
+		var sortable_option = {
+			axis: "y",
+			change:function() {
+
+			},
+			create: function() {
+				var idx = $(this).data('idx');
+				me.setSort(idx, $(this).sortable("toArray"));
+			},
+			update: function(event, ui) {
+				var idx = $(this).data('idx');
+				me.setSort(idx, $(this).sortable("toArray"));
+			}
+		}
+
+		if(idx) {
+			$( "#product_inner_"+idx).sortable(sortable_option);
+			me.setSort(idx, $( "#product_inner_"+idx).sortable("toArray"));
+		}
+		else {
+			$( ".product_inner").each(function() {
+				$(this).sortable(sortable_option);
+			});
+		}
+	   	
+	},
+	setSort: function(id, arr) {
+		$('#productcode_'+id).val(arr.join());
+	},
+    open: function (idx) { //상품추가모달열기
+    	this.idx=idx;
+        UI.modal('/admin/product_choice.php', '상품추가', {}, 1100);
+    },
+    getProduct: function() {//기등록상품목록리턴
+        return $('#product_inner_'+NewArrivals.idx).find('li:not(.empty)');
+    },
+    remove: function(ele) { //삭제(단순감춤)
+
+        $(ele).closest('li').remove();
+        NewArrivals.idx = $(ele).closest('li').data('ul');
+        var li = NewArrivals.getProduct()
+        var cnt = li.length;
+        if(cnt > 0) {
+            //NewArrivals.resetSort();
+        }
+        else {
+        	$('#product_inner_'+NewArrivals.idx).find('li.empty').removeClass('hide');
+        }
+    },
+    batch: function() {
+
+	    $('.product_inner').each(function() {
+	    	var idx = $(this).data('idx');
+
+	    	NewArrivals.createSort(idx);
+            var productcode = $("#product_inner_"+idx).sortable("toArray");
+		})
+
+
+
+	    if(!confirm("일괄변경하시겠습니까?")) return false;
+		var formdata = $('#FrmNewArrivalsList').serialize();
+		//console.log(formdata);
+        $.ajax({
+            url:this.proc_url,
+            data:formdata,
+            dataType:'json',
+            type:'POST',
+            async: false,
+            success: function(r) {
+               if(r.success) {
+                   alert(r.msg);
+                   window.location.reload();
+               }
+            }
+        });
+    }
+}
+//상품선택 콜백
+var ChoiceCallback = function (tr_new) {
+    //console.log(tr_new);
+    var tmpObj = TrimPath.parseDOMTemplate("tpl_li");
+    var target = $('#product_inner_'+NewArrivals.idx);
+    var li = NewArrivals.getProduct();
+	//console.log(tr_new);
+    //기등록상품수
+    var cnt = li.length;
+
+    //기등록상품 리스트
+    var exist = li.map(function () {
+        return $(this).attr('data-productcode');
+    }).get();
+
+    var idx = cnt;
+    $.each(tr_new, function (i, e) {
+    	//console.log(i,e);
+        var prcode = $(e).attr('data-productcode');
+        if ($.inArray(prcode, exist) != -1) return true;
+        if (idx >= NewArrivals.max) {
+            alert('추천상품은 최대 ' + NewArrivals.max + '개까지 등록가능합니다.');
+            return false;
+        }
+
+        idx++;
+        target.find('li.empty').addClass('hide');
+        var data = {
+        	ul_idx:NewArrivals.idx,
+            idx: idx
+        };
+
+        $.each($(e).find('td'), function (ii, ee) {
+            var field = $(ee).data('field');
+            if (typeof field == 'undefined') return true;
+            data[field] = $(ee).html();
+        });
+
+        //console.log(data);
+
+        var html = tmpObj.process(data);
+        target.append(html);
+        
+    });
+
+    NewArrivals.createSort(NewArrivals.idx);
+}
+
+$(function() {
+	NewArrivals.init();
+});
+</script>

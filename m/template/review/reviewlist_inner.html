@@ -1,0 +1,45 @@
+<ul class="pt_review_list">
+	{@ review_list}
+	<li>
+		<a href="javascript:;" class="btn_ptreview_view" onclick="ReviewList.detailOpen('{.num}');">
+			<div class="post">
+				{? .type=='1'}
+				<div class="img" style="background-image:url('{.upfile}')"></div>
+				{:}
+				<div class="img" style="background-image:url('{.tinyimage}')"></div>
+				{/}
+				<div class="score">
+					<img src="/jayjun/m/static/img/icon/rating_score{.marks}.png" alt="5점 만점중 {.marks}점">
+				</div>
+				<div class="subject">
+					<p class="goods">{.productname}</p>
+					<p class="title">{.subject} </p>
+				</div>
+				<div class="writer">
+					<span class="date">{=format(.date,'Y-m-d')}</span>
+					<span class="id">{=format(.id,'id')}</span>
+				</div>
+			</div>
+		</a>
+	</li>
+	{:}
+	<li class="no-content is-bdt-none">목록이 없습니다.</li>
+	{/}
+</ul>
+<p class="att">※ 리뷰 게시판은 제이준코스메틱 쇼핑몰 회원이 구매한 제품에 대한 이용후기를 공유하는 게시판입니다.</p>
+{this->xprint('_include/pagination.html')}
+
+<script type="text/javascript">
+
+    var ReviewInner = {
+        total:'{total}',
+        init: function(){
+            var me = this;
+            $('#total > strong').html('총 '+me.total+'건');
+        },
+    }
+
+    $(function() {
+        ReviewInner.init();
+    })
+</script>

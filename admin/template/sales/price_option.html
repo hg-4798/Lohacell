@@ -1,0 +1,152 @@
+<div class="content-wrap">
+	<div class="title_depth3">{__NAV.page_tit}</div>
+
+	<div class="tbl-search m-t-20">
+		<form id="FrmSearch" name="FrmSearch" onsubmit="return false">
+			<input type="hidden" name="sort" value="count_sales">
+			<table cellspacing="0" cellpadding="0" width="100%" border="0">
+				<colgroup>
+					<col width="140">
+					<col width="">
+				</colgroup>
+				<tbody>
+					<tr>
+						<th>
+							<span>주문일</span>
+						</th>
+						<td>
+							<input type="text" name="date_s" class="input calendar datepicker" readonly="" value="{search.date_s}"> ~
+							<input type="text" name="date_e" class="input calendar datepicker" readonly="" value="{search.date_e}">
+							<a href="javascript:;" onclick="PriceOption.setPeriod('today')">
+								<img src="/admin/images/btn_today01.gif" class="middle" />
+							</a>
+							<a href="javascript:;" onclick="PriceOption.setPeriod('7_days')">
+								<img src="/admin/images/btn_day07.gif" class="middle" />
+							</a>
+							<a href="javascript:;" onclick="PriceOption.setPeriod('14_days')">
+								<img src="/admin/images/btn_day14.gif" class="middle" />
+							</a>
+							<a href="javascript:;" onclick="PriceOption.setPeriod('1_months')">
+								<img src="/admin/images/btn_day30.gif" class="middle" />
+							</a>
+						</td>
+					</tr>
+					<tr>
+						<th>
+							<span>상품검색</span>
+						</th>
+						<td>
+							<select name="sf" >
+								<option value="product_name">상품명</option>
+								<option value="option_name">옵션명</option>
+							</select>
+							<input type="text" name="sw" value="" class="w500">
+						</td>
+					</tr>
+				</tbody>
+			</table>
+
+			<div class="area-button">
+				<button type="button" id="btn_register" onclick="PriceOption.search()" class="btn-point">조회</button>
+				<button type="button" id="btn_cancel" onclick="PriceOption.searchReset()" class="btn-basic">초기화</button>
+			</div>
+		</form>
+	</div>
+
+	<div class="tools mb_10">
+		<div class="pull-left">
+			<button type="button" class="btn-basic dark h-x-small" onclick="PriceOption.excel()" style="vertical-align:middle">엑셀 다운로드</button>
+		</div>
+		<div class="pull-right">
+			<select name="sort" onchange="PriceOption.search('sort',this.value)">
+				<option value="count_buy">결제수량순</option>
+				<option value="count_refund">환불수량순</option>
+				<option value="count_sales" selected>판매수량순</option>
+				<option value="price">판매금액순</option>
+			</select>
+		</div>
+	</div>
+	
+	<div id="inner"></div>
+
+	<div class="sub_manual_wrap">
+		<div class="title">
+			<p>품목별 조회 도움말</p>
+		</div>
+		<ul class="help">
+			<li class="tit">· 품목별 조회</li>
+			<li class="sub">- 쇼핑몰에 등록된 상품 옵션별 판매순위 및 판매합계를 확인할 수 있습니다.</li>
+			<li class="sub">- 순위는 상품 옵션별 순매출의 실결제액이 가장 높은 순으로 적용되며, 동일한 값이 있는 경우 상품명의 오름차순으로 적용됩니다.</li>
+			<li class="tit">· 결제수량</li>
+			<li class="sub">- 주문결제, 상품추가, 상품교환 시 고객이 실제 결제한 상품의 수량입니다.</li>
+			<li class="tit">· 환불수량</li>
+			<li class="sub">- 환불완료 처리된 상품의 수량입니다.</li>
+			<li class="tit">· 판매수량</li>
+			<li class="sub">- 판매수량 = 결제수량 – 환불수량</li>
+			<li class="tit">· 판매합계</li>
+			<li class="sub">- 판매합계 = 판매금액(판매시점기준) * 판매수량</li>
+			<li class="sub">- 쿠폰 및 적립금 할인은 반영되지 않으며, 판매가가 변동될 수 있어 실결제액으로 품목별 매출통계를 확인하시길 바랍니다. </li>
+			<li class="tit">· 검색기간</li>
+			<li class="sub">검색 가능한 기간은 최대 90일입니다 .</li>
+		</ul>
+	</div>
+</div>
+
+<form name="FrmCommentExcel" method="POST" action="/admin/common/excel.download.php">
+	<input type="hidden" name="type" value="sales_price_option">
+	<input type="hidden" name="column" value="*">
+	<input type="hidden" name="search" value="">
+</form>
+
+
+<script type="text/javascript" src="/admin/static/js/moment.js"></script>
+<script type="text/javascript">
+	var PriceOption = {
+		init: function () {
+			var me = this;
+			$('.datepicker').datepicker();
+			me.load();
+		},
+		load: function () {
+			//검색기간체크(최대 90일)
+			var s = moment($('#date_s').val(),'YYYY-MM-DD');
+			var e = moment($('#date_e').val(),'YYYY-MM-DD');
+			if(e.diff(s, "days") > 90) {
+				UI.error('검색가능한 기간은 최대 90일입니다.');
+				return false;
+			}
+
+			UI.ing('데이터를 불러오는 중입니다...');
+			var search = $('#FrmSearch').serialize();
+			$('#inner').load('/admin/sales/price_option.inner.php', {
+				search: search
+			}, function () {
+				$("td").filter(function () {
+					return $(this).text() === "0";
+				}).css("color", "#ddd");
+				UI.ing();
+			});
+		},
+		search: function (field, value) {
+			if (field && value) $('#FrmSearch').find('[name="' + field + '"]').val(value);
+			this.load(1);
+		},
+		searchReset: function() {
+			document.FrmSearch.reset();
+			this.load();
+		},
+		setPeriod: function (sub) {
+			var period = UTIL.period('<?=TIMESTAMP?>', sub);
+			document.FrmSearch.date_s.value = period.start;
+			document.FrmSearch.date_e.value = period.end;
+		},
+		excel: function() {
+			document.FrmCommentExcel.search.value = $('#FrmSearch').serialize();
+			document.FrmCommentExcel.submit();
+		}
+	}
+
+	$(function () {
+		PriceOption.init();
+	})
+</script>

@@ -1,0 +1,46 @@
+
+<div> 총 : {total} 건</div>
+	<table class="th-top">
+		<caption>주문정보 리스트</caption>
+		<colgroup>
+			<col style="width:60px"><col style="width:120px"><col style="width:120px"><col style="width:auto"><col style="width:75px"><col style="width:75px"><col style="width:75px">
+		</colgroup>
+		<thead>
+		<tr>
+			<th scope="row">번호</th>
+			<th scope="row">주문일</th>
+			<th scope="row">주문번호</th>
+			<th scope="row">상품명</th>
+			<th scope="row">상품금액</th>
+			<th scope="row">결제수단</th>
+			<th scope="row">처리단계</th>
+		</tr>
+		</thead>
+
+		{@ list}
+		<tr>
+			<td>{.no}</td>
+			<td>{.date_order_1}</td>
+			<td><A href="javascript:;">{.order_num}</A></td>
+			<td class="ta-l">
+				<br>&nbsp;
+				{.productname}
+				{? .option_type=='option'}
+				<p class="mt-15" style="padding-left: 10px;">[옵션] {.info.option_name}</p>
+				{:}
+				<p class="mt-15" style="padding-left: 10px;">[추가] {.info.productname}</p>
+				{/}
+			</td>
+			<td>{=format(.price_end,'price')}</td>
+			<td>{__CONFIG['pay_method'][.pg_paymethod]}</td>
+			<td>{.step}</td>
+		</tr>
+		{:}
+		<tr>
+			<td colspan="7" class="ta-c">주문 내역이 없습니다.</td>
+		</tr>
+		{/}
+
+</table>
+
+	{this->xprint('include/pagination.html')}

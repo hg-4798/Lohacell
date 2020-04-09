@@ -1,0 +1,115 @@
+<div id="contents">
+	<!-- 네비게이션 -->
+	<div class="top-page-local">
+		<ul>
+			<li><a href="/">HOME</a></li>
+			<li class="on">SEARCH</li>
+		</ul>
+	</div>
+	<!-- //네비게이션-->
+	<div class="">
+		<main class="search_wrap">
+			<div class="goods-list">
+
+				<!-- LNB -->
+				<?
+				if ($all_t_count > 0) {
+					include($Dir.TempletDir."product/product_category_TEM001.php");
+				} else {
+					include($Dir.TempletDir."search/search_keyword_TEM001.php");
+				}
+				?>
+				<!-- //LNB -->
+
+				<section class="goods-list-item">
+					<form name="formSearch" id="formSearch" method="POST" action="productsearch.php" onSubmit="GoSearch();return false;">
+					<input type=hidden name=block value="<?=$block?>">
+					<input type=hidden name=gotopage value="<?=$gotopage?>">
+					<input type=hidden name=listnum value="<?=$listnum?>">
+					<input type=hidden name=s_sort value="<?=$s_sort?>">
+					<input type=hidden name=addwhere value = "<?=$strAddQuery?>">
+					<input type=hidden name=brand value = "<?=$brand?>">
+					<input type="hidden" name="color" id="color" value="<?=$color_name?>">
+					<input type="hidden" name="size" id="size" value="<?=$size ?>">
+					<input type=hidden name=sel_cate_code value = "<?=$sel_cate_code?>">
+					<input type="hidden" name="thr" value="sw" />
+					<fieldset>
+						<legend>상품 검색을 찾기 위한 입력폼</legend>
+						<div class="search-form">
+							<input type="checkbox" id="re-search" name="reSearch" value="1" <?=$checked['reSearch']?> class="checkbox-def">
+							<label for="re-search">결과 내 재검색</label>
+							<input type="text" id="sm_search" name="sm_search" class="input-def" title="검색어 입력자리" value="<?=$searchTitle?>">
+							<button class="btn-type1 c1" type="submit"><span>검색</span></button>
+						</div>
+					</fieldset>
+					</form>
+				<?if ($t_count > 0) {?>
+					<div class="text_result">" <em><?=$searchTitle?></em> " 가 총 <em><?=number_format($t_count)?></em> 개 검색되었습니다.</div>
+
+				<?
+				$thisCateName = '';
+				$thisCateCnt = count( $thisCate );
+				if( $thisCateCnt == 0 ){ // 1차 카테고리
+					$thisCateName = "ALL";
+				} else if( $thisCateCnt == 1 ){ // 1차 카테고리
+					$thisCateName = $thisCate[0]->code_name;
+				} else if($thisCateCnt == 2){
+					$thisCateName = $thisCate[1]->code_name;
+				} else if( $thisCateCnt == 3 ){
+					$thisCateName = $thisCate[2]->code_name;
+				} else if( $thisCateCnt == 4 ){
+					$thisCateName = $thisCate[3]->code_name;
+				}
+				?>
+					<div class="comp-select-area">
+						<h3>
+						<?=$thisCateName?><!--  <span class="num">(<?=number_format($t_count)?>)</span>-->
+						<label><input type=checkbox id=chksoldout class="CLS_brandchk" onchange=""><span>품절 상품 제외</span></label>
+						</h3>
+						<div class="comp-select sorting">
+							<select title="상품정렬순"  id="sortlist" onchange="ChangeSort(this.value)">
+								<option value="best"<?=$s_sort=="best"?"selected":""?>>인기순</option>
+								<option value="marks"<?=$s_sort=="marks"?"selected":""?>>상품평순</option>
+								<option value="like"<?=$s_sort=="like"?"selected":""?>>좋아요순</option>
+								<option value="price" <?=$s_sort=="price"?"selected":""?>>낮은가격순</option>
+								<option value="price_desc" <?=$s_sort=="price_desc"?"selected":""?>>높은가격순</option>
+							</select>
+						</div>
+						<div class="comp-select prodview">
+							<select title="상품 갯수"  id="prodivew" onchange="ChangeProdView(this.value)">
+								<?foreach ($prod_view_code as $key => $val){ ?>
+								<option value="<?=$key ?>"<?=$listnum==$key?"selected":""?>><?=$val ?></option>
+								<?} ?>
+							</select>
+						</div>
+					</div>
+					<?=$list_array[0]?>
+					<div class="list-paginate mt-30">
+					<?php
+						if( $paging->pagecount > 1 ){
+							echo $paging->a_prev_page.$paging->print_page.$paging->a_next_page;
+						}
+					?>
+					</div>
+				<?} else {?>
+					<section class="no_result_search">
+						<div class="no_result">
+							<div class="text_result">" <em><?=$searchTitle?></em> " 가 총 <em>0</em> 개 검색되었습니다.</div>
+							<p>
+								입력한 검색어와 일치하는 정보가 없습니다.<br>
+								검색어가 정확한지 다시 한번 확인해 주세요.
+							</p>
+						</div>
+						<div class="result_info">
+							<p>
+								입력한 단어가 정확하지 않을 수 있습니다. 다시 한번 확인하신 후 검색해 보세요.<br>
+								아직 핫티에 입점 되지 않은 상품일 수 있습니다. 고객센터로 문의해 주시면 안내해 드리겠습니다. 1544-9556
+							</p>
+						</div>
+					</section>
+				<?}?>
+				</section>
+			</div>
+		</main>
+	</div>
+</div><!-- //#contents -->

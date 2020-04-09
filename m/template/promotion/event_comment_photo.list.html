@@ -1,0 +1,73 @@
+{? !end_yn}
+<div class="photo_submit btn_area">
+	<ul>
+		{? login.id }
+		<li><button class="btn_photo_submit btn-point h-input" onclick="EventDetail.photoReg('{pidx}');">
+			<span>포토등록</span>
+		</button>
+		</li>
+		{:}
+		<li><button class="btn_photo_submit btn-point h-input" onclick="location.href='{C.DIR_M}/login.php?chUrl={C.DIR_M}/promotion/event_detail.php?idx={pidx}&status=ing'">
+			<span>로그인 후 포토등록</span>
+		</button>
+		</li>
+		{/}
+	</ul>
+	{? login.id }{:}<p class="notice">※ 로그인 후 작성이 가능합니다.</p>{/}
+</div><!-- //.photo_submit -->
+{/}
+
+<div class="reply_list" id="comment_list">
+	<p class="count">댓글 {total}</span></p>
+	<ul>
+		{@ list}
+		<li>
+			<div class="info">
+				<span class="writer">{=format(.c_mem_id,'id')}</span><span class="date">{=format(.writetime,'Y-m-d H:i')}</span>
+			</div>
+			<p class="content" onclick="CommentPhotoList.photoView('{.num}','{end_yn}')">{=nl2br(.comment)}{? .photo_img}<i class="icon-photo"></i>{/}</p>
+			{? .owner && !end_yn}
+			<div class="btns">
+				<!--<button class="btn-line" type="button" onclick="EventDetail.toggleComment('{.num}')"><span id="btn_modify_{.num}">수정</span></button>-->
+				<button class="btn-basic" type="button" onclick="EventDetail.removeComment('{.num}')">삭제</button>
+			</div>
+			{/}
+
+		</li>
+		{:}
+		<li>
+			<div class="reply">
+				<div class="comment editor-output">
+					<p style="word-wrap: break-word;">
+						댓글이 없습니다. 첫 댓글의 주인이 되어주세요.
+					</p>
+				</div>
+			</div>
+		</li>
+		{/}
+	</ul>
+</div><!-- //.reply_list -->
+
+<div class="list-paginate mt-20" id="photo_paging_area">
+	{= this->xfetch('_include/pagination.html')}
+</div>
+<!-- //.list-paginate -->
+
+<script>
+    var CommentPhotoList = {
+        init: function () {
+        },
+        photoView: function (bcnum,end_yn) {
+            UI.popup('/m/promotion/event_comment_photo_view.php', '포토댓글보기', {
+                bcnum: bcnum, end_yn: end_yn
+            }, function () {
+                new Blazy(); //이미지 바인딩
+            });
+        }
+    };
+
+    $(function () {
+        CommentPhotoList.init();
+    });
+
+</script>

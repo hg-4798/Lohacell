@@ -1,0 +1,57 @@
+<table class="th-top">
+	<caption>포인트 목록</caption>
+	<colgroup>
+		<col style="width:100px">
+		<col style="width:auto">
+		<col style="width:125px">
+		<col style="width:125px">
+	</colgroup>
+	<thead>
+		<tr>
+			<th scope="col">날짜</th>
+			<th scope="col">상세내역</th>
+			<th scope="col">적립마일리지</th>
+			<th scope="col">사용마일리지</th>
+		</tr>
+	</thead>
+	<tbody>
+		{@ list}
+		<tr>
+			<td class="txt-toneB">{=format(.date_insert,'Y-m-d')}</td>
+			<td class="txt-toneA subject">
+				{.mileage_reason}
+				{? .mileage > 0}
+				<div class="txt-toneC mt-5">유효기간 : {=format(.date_expire,'Y-m-d')}</div>
+				{/}
+				{? .mileage_reason_flag == 'order'}
+				<div class="txt-toneC mt-5">주문번호 : {.order_num}</div>
+				{/}
+			</td>
+			<td class="txt-toneA">{? .mileage > 0}+{=number_format(.mileage)}{/}</td>
+			<td class="txt-toneA">{? .mileage < 0}{=number_format(.mileage)}{/}</td>
+		</tr>
+		{:}
+		<tr>
+			<td colspan="4">내역이 없습니다.</td>
+		</tr>
+		{/}
+	</tbody>
+</table>
+<div class="list-paginate mt-20">
+	{this->xprint('_include/pagination.html')}
+</div>
+
+<script type="text/javascript">
+
+    var MileageInner = {
+        total:'{total}',
+        init: function(){
+            var me = this;
+            $('.p_count').html(me.total);
+        },
+    }
+
+    $(function() {
+        MileageInner.init();
+    })
+</script>

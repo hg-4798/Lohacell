@@ -1,0 +1,384 @@
+<script type="text/javascript" src="/admin/static/js/jquery.validationEngine.js?{C.VER}"></script>
+<script type="text/javascript" src="/admin/static/js/jquery.validationEngine-kr.js?{C.VER}"></script>
+<script type="text/javascript" src="/admin/static/js/jquery.form.js?{C.VER}"></script>
+
+<style>
+.gift-preview img{height:58px;width:58px;float:left;margin-right:10px;border:solid 1px #ddd;}
+</style>
+
+
+<div class="admin_linemap"><div class="line"><p>현재위치 : 마케팅지원 &gt; 프로모션 관리 &gt; <span>고객 사은품 관리 {? act == 'insert'}등록{:}수정{/}</span></p></div></div>
+<table cellpadding="0" cellspacing="0" width="100%" style="table-layout:fixed">
+	<colgroup>
+		<col width=240 id="menu_width">
+		<col width=10>
+		<col width="*">
+		<col width=20>
+	</colgroup>
+	<tr>
+		<td valign="top">
+			{=include("menu_market.php")}
+		</td>
+		<td></td>
+		<td valign="top">
+			<div class="title_depth3">고객 사은품 관리 {? act == 'insert'}등록{:}수정{/} <span>사은품 상품을 관리합니다.</span></div>
+			<form id="FrmMarketGTRegister" onsubmit="return false" autocomplete="off">
+			<input type="hidden" name="mode" value="register">
+			<input type="hidden" name="act" value="{act}">
+			<input type="hidden" name="no" value="{row.no}">
+			<table cellspacing="0" cellpadding="0" width="100%" border="0" class="table-view mt_10">
+				<colgroup>
+					<col width="140">
+					<col width="">
+				</colgroup>
+				<tbody>
+					<tr>
+						<th><span>사은품코드</span></th>
+						<td>
+							<input type="text" name="gift_code" style="width:150px"  class="validate[required]"  value="{row.gift_code}" data-errormessage-value-missing="사은품코드를 입력하세요." maxlength="15" placeholder="사은품코드" /> <span class="field-comment">* ABCD1234 (품번)</span> 
+						</td>
+					</tr>
+					<tr>
+						<th><span>이벤트명(타이틀)</span></th>
+						<td>
+							<input type="text" name="gift_title" style="width:50%" class="validate[required]" value="{row.gift_title}" data-errormessage-value-missing="이벤트명(타이틀)을 입력하세요." maxlength="120" placeholder="이벤트명(타이틀)" /> 
+						</td>
+					</tr>
+					
+					<tr>
+						<th><span>사용여부</span></th>
+						<td>
+							<label><input type="radio" name="display_yn" value="Y" {=checked(row.display_yn, 'Y')} checked class="hj"><span class="lbl">사용</span></label>
+							<label><input type="radio" name="display_yn" value="N" {=checked(row.display_yn, 'N')} class="hj"><span class="lbl">사용안함</span></label>
+						</td>
+					</tr>
+					<tr>
+						<th><span>노출기간</span></th>
+						<td>
+							<input type="text" class="calendar validate[required, custom[date]]" data-errormessage-value-missing="노출기간(시작일)을 입력하세요." name="display_date_start" onclick="Calendar(event)" value="{=substr(row.display_date_start,0,10)}">
+							~ 
+							<input type="text" class="calendar validate[required, custom[date]]" data-errormessage-value-missing="노출기간(종료일)을 입력하세요." name="display_date_end" onclick="Calendar(event)" value="{=substr(row.display_date_end,0,10)}"> <span class="field-comment">* 시작일 00:00:00 ~ 종료일 23:59:59</span>
+						</td>
+					</tr>
+					<tr>
+						<th><span>사은품명</span></th>
+						<td>
+							<input type="text" name="gift_name" style="width:50%" class="validate[required]" value="{row.gift_name}" data-errormessage-value-missing="사은품명을 입력하세요." maxlength="100" placeholder="사은품명" />
+						</td>
+					</tr>
+
+					<tr>
+						<th rowspan="2"><span>사은품 이미지</th>
+						<td>
+							<label><input type="checkbox" name="gift_image_display" value="N" {=checked(row.gift_image_display, 'N')} class="hj"><span class="lbl">미노출</span></label>
+						</td>
+						
+					</tr>
+					<tr>
+						<td>
+							<div class="gift-preview">
+								<img src="{=preview(row.gift_image_path,'square')}" id="gift_image_preview">
+							</div>
+
+							<button type="button" class="btn-basic h-x-small dark attach" data-file="gift_image_path">이미지찾기</button>
+							<span>이미지를 선택하세요. (권장사이즈 58 X 58)</span>
+							<input type="file" data-ext="img" name="gift_image_path" class="hide" data-preview="gift_image_preview">
+							<input type="hidden" name="gift_image_path_old" value="{row.gift_image_path}">
+						</td>
+					</tr>
+
+					<tr>
+						<th><span>재고</span></th>
+						<td>
+							<input class="input_bd_st01" type="text" name="gift_quantity" value="{=number_format(row.gift_quantity)}"  data-filter="numeric" placeholder="숫자로만 입력"/>
+						</td>
+					</tr>
+
+					<tr>
+						<th><span>사은품 지급조건</span></th>
+						<td>
+							<label><input type="radio" name="gift_type" value="M" {=checked(row.gift_type, 'M')} class="hj" /><span class="lbl">금액조건</span></label>
+							<label><input type="radio" name="gift_type" value="C" {=checked(row.gift_type, 'C')} class="hj" /><span class="lbl">특정상품구매</span></label>
+						</td>
+					</tr>
+					
+					<tr id="gift_type_M" data-group="gift_type" class="{=checked(row.gift_type, 'C','hide')}">
+						<th><span>금액조건</span></th>
+						<td>
+							<input type="text" name="gift_type_price_min" class="input_bd_st01 validate[required, min[1], custom[numeric]]" value="{row.gift_type_price_min}"  data-filter="numeric" placeholder="숫자로만 입력" data-errormessage-range-underflow="1원 이상 입력해주세요." data-errormessage-value-missing="사은품 지급 금액조건을 입력해주세요." /> 원 이상
+						</td>
+					</tr>
+					
+				</tbody>
+			</table>
+
+			<div id="gift_type_C" data-group="gift_type" class="{=checked(row.gift_type, 'M','hide')}">
+				<div class="mt_30">
+					<button type="button" class="btn-basic dark h-x-small" onclick="MarketGiftRegister.open()" style="vertical-align:middle">적용상품 추가</button>
+				</div>
+				<div class="table_style02 form">
+					<table border="0" cellpadding="0" cellspacing="0" width="100%" class="table-hover mt_5">
+						<colgroup>
+							<col width="100">
+							<col width="150">
+							<col width="*">
+							<col width="200">
+							<col width="100">
+							<col width="150">
+							<col width="100">
+							<col width="100">
+							<col width="100">
+							<col width="100">
+						</colgroup>
+						<thead>
+							<tr>
+								<th>순서</th>
+								<th>상품이미지</th>
+								<th>상품명</th>
+								<th>상품코드</th>
+								<th>판매상태</th>
+								<th>정상가</th>
+								<th>판매가</th>
+								<th>할인율</th>
+								<th>재고</th>
+								<th>삭제</th>
+							</tr>
+						</thead>
+						<tbody id="gift_tbody">
+							{@ row.product}
+							<tr data-productcode="{.productcode}">
+								<td>{.index_+1}</td>
+								<td><img src="{=preview(.minimage)}" alt="" class="thumbnail"></td>
+								<td class="ta_l">{.productname}</td>
+								<td>{.prodcode}<div class="fc-null">({.productcode})</div></td>
+								<td>{class.product->trans('soldout',.soldout)}</td>
+								<td>{=number_format(.consumerprice)}</td>
+								<td>{=number_format(.sellprice)}</td>
+								<td>{.sellprice_dc_rate}%</td>
+								<td>{=number_format(.quantity)}</td>
+								<td><button type="button" class="btn_type1" onclick="MarketGiftRegister.remove(this)">삭제</button></td>
+							</tr>
+							{/}
+							<tr height="28" class="empty {? row.product}hide{/}">
+								<td colspan="10" align="center">사은품 적용 상품을 추가하세요.</td>
+							</tr>
+						</tbody>
+					</table>
+				</div>
+			</div>
+						
+
+
+			<div class="row">
+				<div class="pull-center  mt_20">
+					<button type="button" onclick="MarketGiftRegister.goList()" class="btn-basic">목록</button>
+					{? act == 'update'}
+					<button type="submit" class="btn-point">수정</button>
+					{:}
+					<button type="submit" class="btn-point">등록</button>
+					{/}
+				</div>
+				
+			</div>
+			</form>
+
+			<div class="sub_manual_wrap mt_100">
+				<div class="title"><p>매뉴얼</p></div>
+				<dl>
+					<dt><span>고객사은품 관리</span></dt>
+					<dd>
+						- 문구 정해 주세요~!
+					</dd>
+				</dl>
+			</div>
+		</td>
+	</tr>
+</table>
+
+
+<!--{* 상품목록 템플릿:s *}-->
+<textarea id="tpl_tr" style="display:none">
+	<tr data-productcode="${\productcode}">
+		<td>${\idx}</td>
+		<td>${\thumbnail}</td>
+		<td class="ta_l">${\name}</td>
+		<td>${\prodcode} <div class="fc-null">(${\productcode})</div></td>
+		<td>${\soldout}</td>
+		<td>${\price_consumer}</td>
+		<td>${\price_sell}</td>
+		<td>${\sale_rate}</td>
+		<td>${\stock}</td>
+		<td><button type="button" class="btn_type1" onclick="MarketGiftRegister.remove(this)">삭제</td>
+	</tr>
+</textarea>
+<!--{* 상품목록 템플릿:E *}-->
+
+<script type="text/javascript" src="/admin/static/js/template.js"></script>
+<script type="text/javascript" src="calendar.js"></script>
+<script type="text/javascript">
+on_menu_sub(0,4);
+
+
+
+var MarketGiftRegister = {
+	proc_url:'/admin/proc/market_gift.proc.php',
+	act:'{act}',
+	init: function() {
+		var me = this;
+		var option = $.extend({},validation_option, {
+			validateNonVisibleFields:false,
+			onValidationComplete: function(form, status){
+				if(status) me.save();
+			}
+		});
+		$("#FrmMarketGTRegister").validationEngine('attach',option);
+
+
+		$('[data-filter="numeric"]').on('keydown input', function (evt) {
+			var v = $(this).val();
+			v = v.replace(/[^0-9]/g, '');
+			$(this).val(v);
+		});
+
+		//이미지찾기
+		$('button[data-file]').on('click', function () {
+			var target = $(this).data('file');
+			$('input[name="' + target + '"]').trigger('click');
+		})
+
+		//이미지파일 체크
+		$('input[data-ext="img"]').on('change', me.createAttach);
+
+		$('input[name=gift_type]').click(function(){
+			var type = $(this).val();
+			$('[data-group]').addClass('hide');
+			$('#gift_type_'+type).removeClass('hide');
+			
+		});
+	},
+	createAttach: function () {
+		var input = this;
+		var path = input.value;
+		var accept = (/\.(gif|png|jpg|jpeg)$/i).test(path);
+		if (!accept) {
+			alert('이미지 파일만 업로드 가능합니다.');
+			return false;
+		}
+
+		$(input).prev('span').text(this.value);
+
+		var preview_id = $(input).data('preview');
+
+		//preview
+		var isIE = (navigator.appName == "Microsoft Internet Explorer");
+		if (isIE) {
+			$('#' + preview_id).attr('src', path);
+		} else {
+			if (input.files[0]) {
+				var reader = new FileReader();
+				reader.onload = function (e) {
+					$('#' + preview_id).attr('src', e.target.result);
+				}
+				reader.readAsDataURL(input.files[0]);
+			}
+		}
+	},
+	save: function() {
+
+		var gift_type = $("input:radio[name=gift_type]:checked").val();
+		if(gift_type == 'C') {
+			var tr = MarketGiftRegister.getProduct();
+
+			if(tr.length < 1) {
+				alert('사은품 지급대상 상품을 1개 이상 추가하세요.');
+				return false;
+			}
+
+			var productcode = tr.map(function () {return $(this).attr('data-productcode');}).get();
+		}
+		if(!confirm('적용하시겠습니까?')) return false;
+
+		
+
+		var options = {
+			url:this.proc_url,
+			type:'POST',
+			data:{
+				productcode:productcode
+			},
+			dataType:'json',
+			success : function(r) {
+				alert(r.msg);
+				if(r.success) {
+					MarketGiftRegister.goList();
+				}
+			}
+		}
+		$('#FrmMarketGTRegister').ajaxSubmit(options);
+	},
+	getProduct: function() {//기등록상품목록리턴
+		return $('#gift_tbody').find('tr:not(.empty)');
+	},
+	open: function() {
+		var search = $('#FrmMarketGTRegister').serialize();
+		UI.modal('/admin/product_choice.php','상품등록', {search:search}, 1100);
+	},
+	remove: function(ele) { //삭제(단순감춤)
+		$(ele).closest('tr').remove();
+		var tr = MarketGiftRegister.getProduct();
+		var cnt = tr.length;
+		if(cnt > 0) {
+			MarketGiftRegister.resetSort();
+		}
+		else {
+			$('#gift_tbody').find('tr.empty').removeClass('hide');
+		}
+	},
+	resetSort: function() {
+		var tr = ProductTSRegister.getProduct();
+		var sort = 1;
+		$.each(tr, function(i,e) {
+			$(e).find('td:eq(0)').html(i+1);
+		});
+	},
+	goList: function() {
+		document.location.href="/admin/market_gift_list.php";
+	}
+}
+
+//상품선택 콜백
+var ChoiceCallback = function(tr_new){
+	var tmpObj = TrimPath.parseDOMTemplate("tpl_tr");
+	var target = $('#gift_tbody');
+	var tr = MarketGiftRegister.getProduct();
+
+	//기등록상품수
+	var cnt = tr.length;
+
+	//기등록상품 리스트
+	var exist = tr.map(function () {return $(this).attr('data-productcode');}).get();
+
+	var idx = cnt;
+	$.each(tr_new, function(i,e) {
+		var prcode = $(e).attr('data-productcode');
+		if($.inArray(prcode, exist) != -1) return true;
+
+		idx++;
+		target.find('tr.empty').addClass('hide');
+		var data = {idx:idx};
+		$.each($(e).find('td'), function(ii,ee) {
+			var field = $(ee).data('field');
+			if(typeof field == 'undefined') return true;
+			data[field] = $(ee).html();
+		});
+		var html  = tmpObj.process(data);
+		target.append(html);
+	});
+
+}
+
+$(function() {
+	MarketGiftRegister.init();
+})
+
+</script>

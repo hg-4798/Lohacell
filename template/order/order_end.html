@@ -1,0 +1,217 @@
+{? payment.res_cd == '0000'}
+<!-- AceCounter eCommerce (Cart_Inout) v7.5 Start -->
+<!-- Function and Variables Definition Block Start -->
+<script language='javascript'>
+    var _JV="AMZ2017020801";//script Version
+    var _UD='undefined';var _UN='unknown';
+    var _ace_countvar = 0;
+    var _DC = document.cookie ;
+    function _IDV(a){return (typeof a!=_UD)?1:0}
+    var _CRL='http://'+'gtc18.acecounter.com:8080/';
+    var _GCD='AS4A42742374057';
+    if( document.URL.substring(0,8) == 'https://' ){ _CRL = 'https://gtc18.acecounter.com/logecgather/' ;};
+    if(!_IDV(_A_i)) var _A_i = new Image() ;if(!_IDV(_A_i0)) var _A_i0 = new Image() ;if(!_IDV(_A_i1)) var _A_i1 = new Image() ;if(!_IDV(_A_i2)) var _A_i2 = new Image() ;if(!_IDV(_A_i3)) var _A_i3 = new Image() ;if(!_IDV(_A_i4)) var _A_i4 = new Image() ;
+    function _RP(s,m){if(typeof s=='string'){if(m==1){return s.replace(/[#&^@,]/g,'');}else{return s.replace(/[#&^@]/g,'');} }else{return s;} };
+    if(!_IDV(_ll)) var _ll=''; if(!_IDV(_AEC_order_code)) var _AEC_order_code='';
+    function _AGC(nm) { var cn = nm + "="; var nl = cn.length; var cl = _DC.length; var i = 0; while ( i < cl ) { var j = i + nl; if ( _DC.substring( i, j ) == cn ){ var val = _DC.indexOf(";", j ); if ( val == -1 ) val = _DC.length; return unescape(_DC.substring(j, val)); }; i = _DC.indexOf(" ", i ) + 1; if ( i == 0 ) break; } return ''; }
+    function _ASC( nm, val, exp ){var expd = new Date(); if ( exp ){ expd.setTime( expd.getTime() + ( exp * 1000 )); document.cookie = nm+"="+ escape(val) + "; expires="+ expd.toGMTString() +"; path="; }else{ document.cookie = nm + "=" + escape(val);};}
+    function AEC_B_L(){var _AEC_order_code_cookie='';var olt=[];var oll=[];var olk=[];var oct=0;if(document.cookie.indexOf('AECORDERCODE')>=0){_AEC_order_code_cookie=_AGC('AECORDERCODE');};if(_AEC_order_code!=''&&_AEC_order_code==_AEC_order_code_cookie){return'';}else{_ASC("AECORDERCODE",_AEC_order_code,86400*30*12);_ll='';for(var i=0;i<_A_pl.length;i++){var _a=_A_pn[i];var _o=olt[_a];olt[_a]=[_RP(_A_ct[i]),_RP(_a),parseInt(_RP(_A_amt[i],1))+((_o)?_o[2]:0),parseInt(_RP(_A_nl[i],1))+((_o)?_o[3]:0)];if(!_o){oll.push(olt[_a].join('@'));olk[_a]=oct;oct++;}else{oll[olk[_a]]=olt[_a].join('@');}};_ll=oll.join("^");};};
+    function AEC_S_F(str,md,idx){ var i = 0,_A_cart = ''; var k = eval('_A_i'+idx); md=md.toLowerCase(); if( md == 'b' || md == 'i' || md == 'o'){ _A_cart = _CRL+'?cuid='+_GCD ; _A_cart += '&md='+md+'&ll='+(str)+'&'; k.src = _A_cart;window.setTimeout('',2000);};};
+    if(!_IDV(_A_pl)) var _A_pl = Array(1) ;
+    if(!_IDV(_A_nl)) var _A_nl = Array(1) ;
+    if(!_IDV(_A_ct)) var _A_ct = Array(1) ;
+    if(!_IDV(_A_pn)) var _A_pn = Array(1) ;
+    if(!_IDV(_A_amt)) var _A_amt = Array(1) ;
+</script>
+<!-- Function and Variables Definition Block End-->
+
+
+<!-- AceCounter eCommerce (Cart_InOut) v7.5 Start -->
+<!-- Data Allocation (Cart_InOut) -->
+{@ order_product_info}
+<script language='javascript'>
+    _A_amt[_ace_countvar]= '{.price_end}'; //'제품소계'
+    _A_nl[_ace_countvar]= '{.qty}'; //'제품수량';
+    _A_pl[_ace_countvar]= '{.productcode}'; //'제품ID';
+    _A_pn[_ace_countvar]= '{.productname}'; //'제품명';
+    _A_ct[_ace_countvar]= '{.category}'; //'제품카테고리명';
+    _ace_countvar++;
+</script>
+
+<script type="text/javascript" src="//wcs.naver.net/wcslog.js"></script>
+<!-- Mobon Tracker v3.1 [결제전환] start -->
+<script type="text/javascript">
+    <!--
+    function mobConv(){
+        var cn = new EN();
+        cn.setData("uid",  "iknowione");
+        cn.setData("ordcode",  "{order.order_num}");
+        if(typeof qty=="undefined"||qty=="") var qty = "1";
+        if(typeof price=="undefined"||price=="") var price = "{order.pay_pg}";
+        cn.setData("pcode",  '{.productcode}');
+        cn.setData("qty",  '{.qty}');
+        cn.setData("price",  '{.price_end}');
+        cn.setData("pnm",  '{.productname}');
+        cn.setSSL(true);
+        cn.sendConv();
+    }
+    //-->
+	var _nasa={};
+_nasa["cnv"] = wcs.cnv("1",'{.price_end}');
+</script>
+<script src="https://cdn.megadata.co.kr/js/enliple_min2.js" defer="defer" onload="mobConv()" ></script>
+<!-- Mobon Tracker v3.1 [결제전환] end -->
+{/}
+
+<!-- AceCounter eCommerce (Buy_Finish) v7.5 Start -->
+<!-- AceCounter eCommerce (Buy_Finish) v7.5 End -->
+<script language='javascript'>
+    var _AEC_order_code='{order.order_num}';		// 주문코드
+    var _amt = '{order.pay_pg}' ;              // 총 구매액
+    AEC_B_L();			// 구매완료 함수
+</script>
+{/}
+<!-- NAVER SCRIPT -->
+
+<script type="text/javascript">
+</script>
+<!-- NAVER SCRIPT End -->
+<div id="contents">
+	<div class="cartOrder-page">
+		<article class="cart-order-wrap">
+			<header class="progess-title">
+				<h2>주문/결제</h2>
+				<ul class="flow clear">
+					<li>
+						<div><i></i><span>STEP 1</span>장바구니</div>
+					</li>
+					<li>
+						<div><i></i><span>STEP 2</span>주문하기</div>
+					</li>
+					<li class="active">
+						<div><i></i><span>STEP 3</span>{? payment.res_cd == '0000'}주문완료{:}주문실패{/}</div>
+					</li>
+				</ul>
+			</header>
+			<div class="order-end-message">
+				{? payment.res_cd == '0000' && order.order_status>0}
+				<h3>감사합니다!<br>고객님의 주문이 정상적으로 완료되었습니다.</h3>
+				<p class="ord-number">주문번호 : <span class="point-color">{order.order_num}</span></p>
+				<a href="{C.DIR_FRONT}/mypage_orderlist.php" class="btn-basic w150"><span>주문조회</span></a>
+				{? MEMID}
+				<p class="comment">주문은 <a href="{C.DIR_FRONT}/mypage_orderlist.php">마이페이지 &gt; 주문조회</a>를 이용해 주시기 바랍니다.<br>주문/배송 관련 문의사항은 <a href="{C.DIR_FRONT}/mypage_personal.php">마이페이지 &gt; 1:1문의</a>를 이용해 주시기 바랍니다.</p>
+				{/}
+				{:}
+				<h3>Sorry!<br>고객님의 주문이 실패하였습니다.</h3>
+				<p class="ord-number">주문실패사유 : <span class="point-color">{payment.res_msg}</span></p>
+				<a href="{C.DIR_FRONT}/basket.php" class="btn-basic w150"><span>재주문하기</span></a>
+				<p class="comment">반복적인 실패가 발생할 경우 <a href="{C.DIR_FRONT}/mypage_personal.php">마이페이지 &gt; 1:1문의</a>를 접수해주시면 빠르게 답변해드리겠습니다.</p>
+				{/}
+			</div>
+
+			{? payment.res_cd == '0000' && order.order_status>0}
+			<div class="order-group-detail">
+				<div class="divide clear">
+					<div class="cover">
+						<div class="board-title"><div class="title">결제수단</div></div>
+						
+
+						<!--{* 무통장입금(가상계좌):S *}-->
+						{? order.pg_paymethod == 'vcnt'}
+						<ul class="payment-info">
+							<li>
+								<label><strong>무통장 입금</strong><span class="text-tone-a">(가상계좌)</span></label>
+							</li>
+							<li class="narrow">
+								<div class="item fz-13">{payment.res_info.bankname} <span class="text-tone-a">{payment.res_info.account}</span></div>
+								<div class="item">입금기한 : {=format(payment.res_info.va_date, 'Y-m-d | H:i:s')}</div>
+							</li>
+						</ul>
+						{/}
+						<!--{* 무통장입금(가상계좌):E *}-->
+						
+						
+						{? order.pg_paymethod == 'card'}
+						<ul class="payment-info ">
+							<li>
+								<label><strong>신용카드</strong></label>
+							</li>
+							<li class="narrow">
+								<div class="item fz-13">{payment.res_info.card_name}</div>
+								<div class="item text-tone-a">[ {=_Order->setPayInfo('card', payment.res_info)} ]</div>
+							</li>
+						</ul>
+						{/}
+						<!--{* 신용카드:E *}-->
+
+						<!-- 실시간 계좌이체 -->
+						{? order.pg_paymethod == 'acnt'}
+						<ul class="payment-info">
+							<li>
+								<label><strong>실시간 계좌이체</strong></label>
+							</li>
+							<li class="narrow">
+								<div class="item fz-13">{payment.res_info.bank_name} {? payment.escrow_yn == 'Y'} / 에스크로{/} </div>
+								<!-- <div class="item text-tone-a fz-13">ㅇㅇㅁㄴㅇㄹㄴㄹ</div> -->
+							</li>
+						</ul>
+						{/}
+						<!--{* 실시간계좌이체:E *}-->
+						
+					</div>
+
+					<div class="cover">
+						<div class="board-title"><div class="title">결제정보</div></div>
+						<ul class="payment-info">
+							<li>
+								<label>총 상품금액</label>
+								<p><strong class="emphasis-color fz-15">{=number_format(order.sum_consumer)}</strong> 원</p>
+							</li>
+							<li class="narrow">
+								<div class="item">
+									<label class="text-tone-b">할인</label>
+									<p class="discount-color"><span class="fz-13">- {=number_format(order.sum_discount)}</span> 원</p>
+								</div>
+								{? C.MEMID}
+								<div class="item">
+									<label class="text-tone-b">쿠폰할인</label>
+									<p class="discount-color"><span class="fz-13">- {=number_format(order.coupon_basket_discount+order.coupon_product_discount)}</span> 원</p>
+								</div>
+								<div class="item">
+									<label class="text-tone-b">마일리지사용</label>
+									<p class="discount-color"><span class="fz-13">- {=number_format(order.use_mileage)}</span> M</p>
+								</div>
+								
+								<div class="item">
+									<label class="text-tone-b">포인트사용</label>
+									<p class="discount-color"><span class="fz-13">- {=number_format(order.use_point)}</span> P</p>
+								</div>
+								{/}
+								
+								<div class="item">
+									<label>배송비</label>
+									<p><span class="text-tone-a fz-13">+{=number_format(order.pay_delivery-order.coupon_delivery_discount)}</span> 원</p>
+								</div>
+							</li>
+							<li class="total">
+								<label>총 결제금액</label>
+								<p class="ta-r"><strong>{=number_format(order.pay_pg)}</strong> 원<br>(적립 마일리지 <b>{=number_format(order.sum_mileage)}M</b>)</p>
+							</li>
+						</ul>
+					</div>
+				</div>
+			</div>
+			<div class="btnPlace mt-70">
+				<a href="/front/mypage_orderlist.php" class="btn-line h-large w200">주문/배송 조회</a>
+				<a href="{C.DIR_FRONT}" class="btn-point h-large w200">쇼핑계속하기</a>
+			</div>
+			{:}
+			<div class="btnPlace mt-70">
+				<a href="{C.DIR_FRONT}/basket.php" class="btn-line h-large w200">장바구니 바로가기</a>
+				<a href="{C.DIR_FRONT}/" class="btn-point h-large w200">쇼핑계속하기</a>
+			</div>
+			{/}
+			
+		</article><!-- //.cart-order-wrap -->
+	</div>
+</div><!-- //#contents -->

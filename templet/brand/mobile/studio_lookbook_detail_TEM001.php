@@ -1,0 +1,49 @@
+<?php 
+include ($Dir.TempletDir."studio/mobile/navi_TEM001.php"); 
+
+// =====================================================================================================================
+// 가장 처음 노출된 룩북에 해당하는 상품들을 출력
+// =====================================================================================================================
+$sql  = "SELECT productcodes FROM tbllookbook_content WHERE lbno = {$lbno} ORDER BY sort asc LIMIT 1";
+list($prodCodes) = pmysql_fetch($sql);
+
+$prodWhere = "'" . implode("','", explode("|", $prodCodes)) . "'";
+
+$sql = "SELECT * FROM tblproduct WHERE productcode in ( {$prodWhere} ) ORDER BY FIELD (productcode, {$prodWhere}) ";
+$list_array = productlist_print( $sql, $type = 'W_015' );
+?>
+
+<!-- 룩북 비주얼 -->
+<div class="js-studio-lookbook-visual">
+    <h2><?=$lookbook_title?></h2>
+    <div class="js-carousel-list">
+        <ul id="lookbook_ul">
+            <?=$content_rolling_html?>
+        </ul>
+        <button class="js-carousel-arrow" data-direction="prev" type="button" id="lookbook_left_arrow"><img src="./static/img/btn/btn_slider_arrow_prev.png" alt="이전"></button>
+        <button class="js-carousel-arrow" data-direction="next" type="button" id="lookbook_right_arrow"><img src="./static/img/btn/btn_slider_arrow_next.png" alt="다음"></button>
+    </div>
+    <div class="page">
+        <ul id="lookbook_thumb_list">
+            <?=$bottom_rolling_html?>
+        </ul>
+    </div>
+    <div class="js-menu-list">
+        <button class="js-btn-toggle" title="펼쳐보기"><span class="ir-blind">룩북 목록</span></button>
+        <div class="js-list-content">
+            <ul>
+                <?=$lookbook_list?>
+            </ul>
+        </div>
+    </div>
+</div>
+<!-- 룩북 비주얼 -->
+
+<!-- 상품 리스트 -->
+<div class="goods-list studio-lookbook-list">
+    <ul class="js-goods-list" id="lookbook_prod_list">
+        <?=$list_array[0]?>
+    </ul>
+</div>
+<!-- // 상품 리스트 -->
+

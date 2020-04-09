@@ -1,0 +1,107 @@
+<div id="contents">
+	<div class="inner_width">
+		<ul class="breadcrumb">
+			<li>
+				<a href="/">HOME</a>
+			</li>
+			<li>
+				<a href="">BRAND</a>
+			</li>
+			<li class="now">
+				<a href="">Stores</a>
+			</li>
+		</ul>
+		<div class="sub_tit_area">
+			<h2 class="title">Stores</h2>
+		</div>
+		<form name="FrmStoreSearch" id="FrmStoreSearch" onsubmit="return false;">
+		<div class="search-wrap">
+			<div class="inner">
+				<div class="search-bar-cover clear">
+					<!--
+					<div class="select-cover">
+						<select title="매장타입 선택" name="category" id="category" onchange="StoreList.search()">
+							<option value="">전체</option>
+							{@ store_category}
+							<option value="{.key_}">{.value_}</option>
+							{/}
+						</select>
+					</div>
+					-->
+					<div class="select-cover">
+						<select title="시/도 선택" name="area_code" id="area_code" onchange="StoreList.search()">
+							<option value="">시/도</option>
+							{@ store_area}
+							<option value="{.key_}">{.value_}</option>
+							{/}
+						</select>
+					</div>
+					<div class="search-bar">
+						<input type="text" name="store" id="store" placeholder="직접입력 (EX.역삼동)"/>
+						<button type="button"><span>검색하기</span></button>
+					</div>
+				</div>
+			</div>
+		</div>
+		<input type="hidden" name="sort" id="sort" value="date" >
+		</form>
+		<div class="search-result clear">
+			<div class="search-detail">
+				<div class="top clear">
+					<p class="total">총 <span id="total"></span> 건</p>
+					<ul class="sort clear" id="sort_ul">
+						<li class="active" data-sort="date">최근순</li>
+						<li data-sort="name">가나다순</li>
+					</ul>
+				</div>
+
+				<ul class="store-list" id="store-list"></ul>
+			</div>
+
+			<div class="store_map" id="map" style="height: 696px;"></div>
+			
+		</div>
+
+	</div>
+</div>
+
+<!--<script src="http://dmaps.daum.net/map_js_init/postcode.v2.js"></script>-->
+<script src="https://spi.maps.daum.net/imap/map_js_init/postcode.v2.js"></script>
+<script src="//dapi.kakao.com/v2/maps/sdk.js?appkey=052ced9432ff069991ac27a825f7dc9b&libraries=services"></script>
+
+<script type="text/javascript">
+
+    var StoreList = {
+
+		init: function(){
+            var me = this;
+            me.load(me.coordinate);
+			$('#sort_ul > li').on("click", function(){
+             	var sort = $(this).data('sort');
+             	$('#sort').val(sort);
+             	$(this).addClass("active").siblings().removeClass("active");
+             	me.search();
+			});
+            $("#store").keydown(function (e) {
+				if (e.keyCode == 13){
+                    StoreList.search();//실행할 이벤트
+                }
+            });
+		},
+		load: function () {
+            var search = $('#FrmStoreSearch').serialize();
+            console.log(search);
+            $('#store-list').load('/front/brand/store_inner.php', {
+                search:search
+			});
+        },
+		search: function () {
+		    this.load();
+        }
+    }
+
+    $(function() {
+        StoreList.init();
+    })
+</script>
+

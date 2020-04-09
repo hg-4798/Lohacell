@@ -1,0 +1,51 @@
+<div class="table_style02 mt_30">
+	<table width="100%" cellpadding="0" cellspacing="0" border="0" style="table-layout:fixed">
+		<colgroup>
+			<col style="width:50px" />
+			<col style="width:200px" /><!-- 구분 -->
+			<col /><!-- 조견표명 -->
+			<col style="width:200px" /><!-- 최종업데이트일 -->
+			<col style="width:200px" /><!-- 등록자 -->
+		</colgroup>
+		
+		<tr>
+			<th>No</th>
+			<th>구분</th>
+			<th>조견표명</th>
+			<th>최종업데이트일</th>
+			<th>등록자</th>
+		</tr>
+		{@ list}
+		<tr>
+			<td>{.no}</td>
+			<td>{.size_grp}</td>
+			<td><a href="javascript:;" onclick="ProductSize.modify('{.idx}')">{.size_name}</a> {? .size_image}<i class="fa fa-file-picture-o blue"></i>{/}</td>
+			<td>{=format(.date_update, 'Y-m-d H:i')}</td>
+			<td>{.updater_name}({.updater_id})</td>
+		</tr>
+		{:}
+		<tr height="28">
+			<td colspan="5" align="center">조회된 내용이 없습니다.</td>
+		</tr>
+		{/}
+	</table>
+
+	{this->xprint('include/pagination.html')}
+
+	<div class="ta_r">
+		<button type="button" class="btn-point" onclick="document.location.href='/admin/product_size.register.php'">등록</button>
+	</div>
+</div>
+
+
+<script type="text/javascript">
+var ProductSizeInner = {
+	init: function() {
+		
+	}
+}
+
+$(function() {
+	ProductSizeInner.init();
+})
+</script>

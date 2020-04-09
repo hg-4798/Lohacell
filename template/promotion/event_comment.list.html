@@ -1,0 +1,139 @@
+
+<!-- 댓글 -->
+<section class="reply-list-wrap mt-80" id="reple_area">
+	{? !end_yn}
+	<header>
+		<h2>댓글 입력과 댓글 리스트 출력</h2>
+	</header>
+	<div class="reply-count clear">
+		<div class="fl-l">댓글
+			<strong class="fz-16">
+				<span id="total_comment"></span>
+			</strong>
+		</div>
+		<div class="byte ">
+			<span class="point-color" id="textarea_length">0</span> / 300</div>
+	</div>
+	<div class="reply-reg-box">
+		<div class="box">
+			<form id="FrmComment" onsubmit="return false;">
+				<input type="hidden" name="board" value="event">
+				<input type="hidden" name="parent" value="{pidx}">
+				<input type="hidden" name="mode" value="comment">
+				<input type="hidden" name="act" value="insert">
+				<fieldset>
+					<legend>댓글 입력 창</legend>
+					<textarea placeholder="{? login.id} ※ 댓글을 등록해 주세요. "{:} ※ 로그인 후 작성이 가능합니다. " disabled{/} id="comment_textarea" name="comment" onkeydown="EventDetail.lengchk(this,'textarea_length');"
+					onkeyup="EventDetail.lengchk(this,'textarea_length');" maxlength="300" class="validate[required,max[300]]" data-errormessage-value-missing="댓글을 입력하세요." ></textarea>
+					{? login.id }
+					<button class="btn-point" type="submit">
+						<span>등록</span>
+					</button>
+					{:}
+					<button class="btn-point" type="button" onclick="location.href='{C.DIR_FRONT}/login.php?chUrl={_SERVER.REQUEST_URI}'">
+						<span>로그인</span>
+					</button>
+					{/}
+				</fieldset>
+			</form>
+		</div>
+	</div>
+	{/}
+</section>
+
+<section class="reply-list-wrap photo-reply mt-20">
+	<header>
+		<h2>댓글 입력과 댓글 리스트 출력</h2>
+	</header>
+	<div class="reply-count clear">
+		<div class="fl-l">댓글
+			<strong class="fz-16" id="total_photo">{total}</strong>
+		</div>
+	</div>
+
+	<!-- //.reply-list -->
+	<ul class="reply-list" id="comment_list">
+		{@ list}
+		<li>
+			<div class="reply">
+				{? .owner && !end_yn}
+				<div class="btn">
+
+					<button class="btn-basic h-small" type="button" onclick="EventDetail.toggleComment('{.num}')">
+						<span id="btn_modify_{.num}">수정</span>
+					</button>
+					<button class="btn-line h-small" type="button" onclick="EventDetail.removeComment('{.num}')">
+						<span>삭제</span>
+					</button>
+				</div>
+				{/}
+				<p class="name">
+					<!--{* @TODO 아이디 별처리 *}-->
+					<strong>{=format(.c_mem_id,'id')}</strong>
+					<span class="pl-5">{=format(.writetime,'Y-m-d H:i')}</span>
+				</p>
+				<div class="comment editor-output">
+					<p style="word-wrap: break-word;">{=nl2br(.comment)}</p>
+				</div>
+			</div>
+
+
+			{? .owner && !end_yn}
+
+			<div id="modify_{.num}" class="reply-reg-box hide">
+				<form id="FrmModComment_{.num}" onsubmit="return false;">
+					<input type="hidden" name="comment_num" value="{.num}">
+					<input type="hidden" name="mode" value="comment">
+					<input type="hidden" name="act" value="modify">
+					<span class="point-color" id="textarea_length_{.num}">{? .comment}{=strlen(.comment)}{:}0{/}</span> / 300
+					<div class="box" style="margin-top:0px;margin-bottom:10px;">
+						<fieldset>
+							<legend>댓글 입력 창</legend>
+							<textarea placeholder="" id="comment_textarea" name="comment" onkeydown="EventDetail.lengchk(this,'textarea_length_{.num}');" onkeyup="EventDetail.lengchk(this,'textarea_length_{.num}');" maxlength="300" class="validate[required,max[300]]" data-errormessage-value-missing="댓글을 입력하세요.">{.comment}</textarea>
+							<button class="btn-point" type="submit">
+								<span>수정</span>
+							</button>
+						</fieldset>
+					</div>
+				</form>
+			</div>
+
+			{/}
+
+		</li>
+		{:}
+		<li>
+			<div class="reply">
+				<div class="comment editor-output">
+					<p style="word-wrap: break-word;">
+						댓글이 없습니다. 첫 댓글의 주인이 되어주세요.
+					</p>
+				</div>
+			</div>
+		</li>
+		{/}
+	</ul>
+	<!-- //.reply-list -->
+
+	<div class="list-paginate mt-20" id="photo_paging_area">
+		{= this->xfetch('_include/pagination.html')}
+	</div>
+	<!-- //.list-paginate -->
+</section>
+<script>
+    var EventComment = {
+        init: function () {
+            this.option = $.extend({}, validation_option, {
+                validateNonVisibleFields: false,
+                onValidationComplete: function (form, status) {
+                    if (status) EventDetail.setComment(form);
+                }
+            });
+            $("#FrmComment").validationEngine('attach', this.option);
+        }
+    }
+
+    $(function(){
+        EventComment.init();
+	});
+</script>

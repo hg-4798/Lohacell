@@ -1,0 +1,19 @@
+<style>
+.timesale-product {}
+.timesale-product li {padding:10px;border-bottom:solid 1px #ddd;}
+.timesale-product li img {height:30px;vertical-align: middle;padding-right:10px;}
+</style>
+<div class="p_0">
+	<ul class="timesale-product">
+		{@ list}
+		<li>
+			<span><img src="{=preview(.minimage)}" alt="" class="thumbnail"></span>
+			<span>{.productname}</span>
+		</li>
+		{/}
+	</ul>
+
+	<div class="ta_c p_20">
+	<button type="button" class="btn-basic dark h-small" onclick="UI.modalClose()">확인</button>
+	</div>
+</div>

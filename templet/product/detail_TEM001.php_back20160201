@@ -1,0 +1,628 @@
+<div id="wrap">
+   
+    <div id="container">
+        <div id="content">
+
+            <!-- page_nav -->
+            <div class="page_categroy">
+                <ul class="page_category_nav">
+                    <li>홈</li>
+                    <li>
+						<?=$thisCate[0]?>
+						<!-- <select class="cate_select">
+						</select> -->
+                    </li>
+					<li>
+						<?=$thisCate[1]?>
+					</li>
+                    <li>
+						<select class="cate_select" id='categoryChange' >
+<?php
+	if( count($cateLoc) > 0 ){
+		foreach( $cateLoc as $locKey=>$locVal ){
+?>						
+							<option value='<?=$locVal['prcode']?>' <? if( $locVal['prcode'] == $_cdata->c_category ){ echo 'SELECTED'; } ?> ><?=$locVal['code_name']?></option>	
+<?php
+		}
+	} else {
+?>
+							<option> 선택 </option>
+<?php
+	}
+?>
+						</select>
+                    </li>
+                </ul>
+            </div>
+            <!-- //page_nav -->
+
+            <div class="detale_view">
+
+                <!-- 상품 detail 이미지 -->
+                <div class="detail_img_block">
+				<form name=form1 id = 'ID_goodsviewfrm' method=post action="<?=$Dir.FrontDir?>basket.php">
+                    <div class="detail_img_block1">
+						<div class="upload_img">
+<?php
+	# 상품 큰 이미지
+	if( is_file( $imagepath_product.$_pdata->maximage ) ){
+?>
+							<img src="<?=$imagepath_product.$_pdata->maximage?>" alt=" " name="primg" >
+<?php
+	} else {
+?>
+							<img src="<?=$Dir?>images/common/noimage.gif" alt=" " name="primg" >
+<?php
+	}
+?>
+						</div>
+<?php
+	if ( $multi_img=="Y" && $yesimage[0] ) {
+?>
+						<div class="thub" >
+						<a href="#" class="btn_thum_prev" id='thub_prev' ><img src="<?=$Dir?>images/content/btn_thum_prev.gif" alt="이전" ></a>
+						<ul id='thub_img'>
+<?php
+	# 상품 큰 이미지
+	if( is_file( $imagepath_product.$_pdata->maximage ) ){
+?>
+							<li>
+								<a href="javascript:primg_preview('<?=$imagepath_product?>','<?=$_pdata->maximage?>');">
+									<img src="<?=$imagepath_product.$_pdata->maximage?>" alt=" " class='img-size-small' >
+								</a>
+							</li>
+
+<?php
+	}
+?>
+
+<?php
+		foreach( $yesimage as $mImgKey=>$mImgVal ){
+?>
+							<li>
+								<a href="javascript:primg_preview('<?=$imagepath_multi?>','<?=$mImgVal?>');">
+									<img src="<?=$imagepath_multi.$mImgVal?>"  alt="" class='img-size-small' >
+								</a>
+							</li>
+<?php
+		}
+?>
+
+						</ul>
+						<a href="#" class="btn_thum_next" id='thub_next' ><img src="<?=$Dir?>images/content/btn_thum_next.gif" alt="다음"  width="20"></a>
+						</div>
+<?php
+	}
+?>
+					</div>
+
+                    <div class="detail_img_block2">
+						<!-- 아이콘? -->
+                        <!-- <img src="<?=$Dir?>images/content/ico_outdely.gif" alt="해외배송" > -->
+<?php
+	# 아이콘
+	$icon = $_pdata->icon;
+	$num=strlen($icon) ;
+	for($i=0;$i<$num;$i+=2){
+		$temp=$icon[$i].$icon[$i+1];
+		if(preg_match("/^(U)[1-6]$/",$temp) && $iconyes[$temp]=="Y") {
+			$iconname.=" <img src=\"".$Dir.DataDir."shopimages/etc/icon{$temp}.gif\" align=absmiddle border=0 >";
+		} elseif(strlen($temp) && !preg_match("/^(U)[1-6]$/",$temp)) {
+			$iconname.=" <img src=\"{$Dir}images/common/icon{$temp}.gif\" align=absmiddle border=0 >";
+		}
+	}
+	if( strlen( $iconname ) > 0 ){
+?>
+						<?=$iconname?>
+<?php
+	}
+?>
+                        <h2 class="tit_pro_name"><?=$_pdata->productname?></h2>
+                        <div class="tbl_detail">
+                            <table>
+                            <caption>
+                            상품정보
+                            </caption>
+                            <tr>
+                                <th scope="row">정상가</th>
+								<td><del><?=number_format($_pdata->buyprice)?>원</del></td>
+                            </tr>
+							 <tr>
+                                <th scope="row">인터넷최저가</th>
+								<td>
+									<del><strong class="c_black"><?=number_format($_pdata->consumerprice)?>원</strong></del>
+									<span class="sale_i c_black"><? if( $cPercent > 0 ){ ?> (<?=$cPercent?>%할인) <? } ?></span>
+								</td>
+                            </tr>
+							 <tr>
+                                <th scope="row"><strong>교육할인가</strong></th>
+								<td>
+<?php
+	if( strlen( $_ShopInfo->getMemid() ) > 0 ){
+?>
+									<span class="c_red_price"><?=number_format($_pdata->sellprice)?>원 
+										<span><? if( $sPercent > 0 ){ ?> (<?=$sPercent?>%할인) <? } ?></span>
+									</span>
+<?php
+	} else {
+?>
+									<img src="../images/common/ico_memberonly_sub.gif" alt="members only">
+<?php
+	}
+?>
+								</td>
+                            </tr>                            
+                            </table>
+                        </div>
+						<div class="tbl_detail">
+                            <table>
+                            <caption>
+                            상품정보
+                            </caption>
+                            <tr>
+                                <th scope="row">모델명</th>
+								<td><strong><?=$_pdata->selfcode?></strong></td>
+                            </tr>
+							<tr>
+                                <th scope="row">제조사/브랜드</th>
+								<td>
+									<?=$_pdata->production?>
+									<? if( !is_null($_pdata->brand) ){ echo '/'; } ?>
+									<?=$_pdata->brand?>
+								</td>
+                            </tr>
+							<tr>
+                                <th scope="row">포인트</th>
+								<td>
+<?php
+	# 적립금 확인
+	if($_pdata->reserve>0){
+		echo number_format( getReserveConversion($_pdata->reserve, $_pdata->reservetype, $_pdata->sellprice,'Y') ).'P';
+		if( $_pdata->reservetype == 'Y' ){
+			echo '('.$_pdata->reserve.'%)';
+		}
+	} else {
+		echo '0P';
+	}
+								 
+?>
+								</td>
+                            </tr>
+							<tr>
+                                <th scope="row">배송비</th>
+								<td><?=$deliState_['msg']?></td>
+                            </tr>
+							<tr>
+                                <th scope="row">신용카드 혜택</th>
+								<td>
+<?php
+	if( strlen( trim($cardMsg) ) > 0 ){
+		echo trim($cardMsg).'<br>';
+	}
+
+	//exdebug( $_data->bank_account );
+?>
+								<a href="javascript:cardinfo_pop();" class="link">자세히보기 <img src="<?=$Dir?>images/content/ico_page.png" alt="" ></a>
+								<div class="card_info" style='display:none;'>
+									<h4 class="tit_card">신용카드 혜택 
+										<a href="javascript:cardinfo_pop();" class="btn_card_close"><img src="../images/content/btn_card_close.gif" alt="닫기"></a>
+									</h4>
+									<div class="card_txt" >
+										<iframe id="cardinfo" name = cardinfo src="https://admin8.kcp.co.kr/html/popup/event_thismonth.html" frameborder="0" marginwidth="0" marginheight="0" width="100%" height="350" scrolling="yes"></iframe>
+									</div>	
+								</div>
+								</td>
+                            </tr>
+							                         
+                            </table>
+                        </div>	
+						<div class="tbl_detail">
+                            <table>
+                            <caption>
+                            상품정보
+                            </caption>
+<?php
+#옵션 html
+if( $optHtml ) echo $optHtml;
+if( $optSupplyHtml ) echo $optSupplyHtml;
+?>
+
+<?php
+	if( strlen($_pdata->option1) == 0 && $_pdata->quantity > 0  ){
+?>
+                            </tr>
+                                <th scope="row">수량</th>
+								<td>
+									<div class="option_num">
+										<input type="text" name='quantity' id="quantity" value="1" >
+										<button type="button" class="btn_num_up" onclick="change_quantity('up')" ></button>
+										<button type="button" class="btn_num_dawn" onclick="change_quantity('dn')" ></button>
+									</div>
+								</td>
+                            </tr>
+<?php
+	}
+	if(  $_pdata->quantity <= 0 ) {
+?>
+							 </tr>
+                                <th scope="row" colspan='2'><span class="goods-view-solidout">품절</span></th>
+                            </tr>
+<?php
+	}
+?>
+							</table>
+							</div>
+<?php
+	if(  $_pdata->quantity > 0 ) {
+?>						
+							<div class="select_goods_name">
+							<table>
+							<caption>
+							내가선택한옵션
+							</caption>
+							<colgroup>							
+							<col >
+							<col style="width:80px">
+							<col style="width:130px">
+							</colgroup>
+							<tbody id="sit_sel_option" <? if(  strlen( $_ShopInfo->getMemid() ) == 0 ) { echo "style='display: none;'"; } ?> >
+								<tr>
+									<th colspan="3">
+										총 상품금액(수량)  
+										<span id='result_total_price' class="last_price">
+											<?=number_format($_pdata->sellprice)?>원
+										</span>
+									</th>
+								</tr>
+							</tbody>
+							</table>
+							</div>
+							<div class="btn_group">
+<?php
+		if( strlen( $_ShopInfo->getMemid() ) == 0 ){
+?>
+							<a href="javascript:pushLogin();" class="btn_buy">바로구매</a>
+							<a href="javascript:pushLogin();" class="btn_cart">장바구니</a>
+							<a href="javascript:pushLogin();" class="btn_fav">찜</a>
+<?php
+		} else {
+?>
+							<a href="javascript:CheckForm('ordernow','')" class="btn_buy">바로구매</a>
+							<a href="javascript:CheckForm('','');" class="btn_cart">장바구니</a>
+							<a href="javascript:CheckForm('wishlist','');" class="btn_fav">찜</a>
+<?php
+		}
+?>
+							</div>
+<?php
+	}
+?>
+					</div>
+					<div style='display:none;'>
+						<input id="deli_price" type="hidden" value="<?=$deli_price?>" />
+						<input id="deli_type" type="hidden" value="<?=$deli_state?>" />
+						<input id="deli_miniprice" type="hidden" value="<?=$_data->deli_miniprice?>" />
+						<input type = 'hidden' value = '<?=$SellpriceValue?>' id = 'ID_goodsprice' name="ID_goodsprice">
+						<input type = 'hidden' name = 'option1price' id = 'ID_option1price'>
+<?php
+	if( strlen($_pdata->option1) > 0  ){
+?>
+						<input type="hidden" name="quantity" id="quantity" value="0">
+<?php
+	}
+?>
+						<input type=hidden name=price value="<?=number_format($_pdata->sellprice)?>">
+						<input type=hidden name=ID_sellprice id="ID_sellprice" value="<?=$_pdata->sellprice?>">
+						<input type=hidden name=sprice value="<?=number_format($_pdata->sellprice)?>">
+						<input type=hidden name=consumer value="<?=number_format($_pdata->consumerprice)?>">
+						<input type=hidden name=o_reserve value="<?=number_format($_pdata->option_reserve)?>">
+						<input type="hidden" name="constant_quantity" id="constant_quantity" value="<?=$_pdata->quantity?>" />
+						<input type=hidden name=optionArr value="">
+						<input type=hidden name=priceArr value="">
+						<input type=hidden name=quantityArr value="">
+						<input type=hidden name=code value="<?=$code?>">
+						<input type="hidden" name="mainCode" value="<?=$_cdata->c_category?>">
+						<input type=hidden name=productcode value="<?=$productcode?>">
+						<input type=hidden name=productquantity id="productquantity" value="">
+						<input type=hidden name=ordertype>
+						<input type=hidden name=opts>
+						<input type=hidden name=vip_type value="<?=$vrow->vip_type?>">
+						<input type=hidden name=staff_type value="<?=$vrow->staff_type?>">
+					</div>
+				</form>	
+                </div>
+                <!-- 상품 detail 이미지 -->
+
+
+                <!-- 베스트상품 -->
+                <div class="best_pro_mini">
+                    <div class="tit_mini">
+                        베스트 상품
+                        <span class="best_page">
+							<a href="javascript:bestChange('prev');">
+								<img src="<?=$Dir?>images/content/btn_page_mini_prev.gif" alt="이전">
+							</a>
+<?php
+	$selectBestCount = 0;
+	if( $bestCount[0] > 0 ){
+		echo '1/'.ceil( $bestCount[0] / $bestLimit );
+		$selectBestCount = 1;
+	} else {
+		echo '-';
+	}
+?>
+							<a href="javascript:bestChange('next');">
+								<img src="<?=$Dir?>images/content/btn_page_mini_next.gif" alt="다음">
+							</a>
+						</span>
+						<input type='hidden' id='bestcount' value='<?=ceil( $bestCount[0] / $bestLimit )?>' >
+						<input type='hidden' id='selectBestCount' value='<?=$selectBestCount?>' >
+                    </div>
+
+                    <ul class="mini_best_goods">
+<?php
+	if( count( $bestProduct ) > 0 ) {
+		foreach( $bestProduct as $bKey=>$bVal ) {
+?>
+                        <li>
+							<a href="<?=$Dir.FrontDir.'productdetail.php?productcode='.$bVal['productcode']?>">
+<?php
+			if( is_file( $imagepath_product.$bVal['tinyimage'] ) ){
+?>
+								<img src="<?=$imagepath_product.$bVal['tinyimage']?>" class="mini_pro img-size-small" >
+<?php
+			} else {
+?>
+								<img src="<?=$Dir?>images/common/noimage.gif" alt=" " class="mini_pro img-size-small">
+<?php
+			}
+?>
+								 <dl>
+									<dt><?=$bVal['productname']?></dt>
+									 <dd>
+										<del><?=number_format($bVal['buyprice'])?>원</del> <br>
+<?php		
+			if( strlen( $_ShopInfo->getMemid() ) > 0 ){
+?>
+										<span class="price"><?=number_format($bVal['sellprice'])?>원</span>
+<?php
+			} else {
+?>
+										<img src="../images/common/ico_memberonly_sub.gif" alt="members only">
+<?php
+			}
+?>
+									</dd>
+								</dl>
+							 </a>
+                        </li>
+<?php
+		}
+	}
+?>
+                    </ul>
+                </div>
+                <!-- 베스트상품-->
+
+            </div>
+<?php
+	if( $_pdata->overseas_type == '1' ) {
+?>
+            <div class="sale_info">
+                <img src='<?=$odfilePATH.$vimage?>'>
+            </div>
+<?php
+	}
+?>
+            <div class="sale_info">
+
+                <!-- 상세보기 -->
+                <ul class="tab_info" id="tab1">
+                    <li class="on"><a href="#tab1">상세보기</a></li>
+                    <li><a href="#tab2">구매평</a></li>
+                    <li><a href="#tab3">질문과 답변</a></li>
+                    <li><a href="#tab4">반품 교환정보 </a></li>
+                </ul>
+                <div class="admin_img">
+                    <!-- 등록한 이미지 -->
+<?php
+	$_pdata_content = stripslashes($_pdata->content);
+	if( strlen($detail_filter) > 0 ) {
+		$_pdata_content = preg_replace($filterpattern,$filterreplace,$_pdata_content);
+	}
+	if ( strpos($_pdata_content,"table>")!=false || strpos($_pdata_content,"TABLE>")!=false)
+		echo "<pre>".$_pdata_content."</pre>";
+	else if(strpos($_pdata_content,"</")!=false)
+		echo nl2br($_pdata_content);
+	else if(strpos($_pdata_content,"img")!=false || strpos($_pdata_content,"IMG")!=false)
+		echo nl2br($_pdata_content);
+	else
+	echo str_replace(" ","&nbsp;",nl2br($_pdata_content));
+?>
+                </div>
+                <!-- //상세보기 -->
+
+                <!-- 구매평 -->
+                <ul class="tab_info" id="tab2">
+                    <li><a href="#tab1">상세보기</a></li>
+                    <li  class="on"><a href="#tab2">구매평</a></li>
+                    <li><a href="#tab3">질문과 답변</a></li>
+                    <li><a href="#tab4">반품 교환정보 </a></li>
+                </ul>
+
+<?php
+	include($Dir.FrontDir."prreview_tem001.php"); 
+?>
+				<!-- // 구매평 -->
+
+                <!-- 질문과 답변 -->
+                <ul class="tab_info" id="tab3">
+                    <li><a href="#tab1">상세보기</a></li>
+                    <li><a href="#tab2">구매평</a></li>
+                    <li class="on"><a href="#tab3">질문과 답변</a></li>
+                    <li><a href="#tab4">반품 교환정보 </a></li>
+                </ul>
+<?php 
+	include($Dir.FrontDir."prqna_tem001.php"); 
+?>
+				 <!-- // 질문과 답변 -->
+				<!-- 반품 교환정보 -->
+				<ul class="tab_info" id="tab4">
+					<li><a href="#tab1">상세보기</a></li>
+					<li><a href="#tab2">구매평</a></li>
+					<li><a href="#tab3">질문과 답변</a></li>
+					<li class="on"><a href="#tab4">반품 교환정보 </a></li>
+				</ul>
+				<div class="buy_info">
+					<?=$deli_info?>
+				</div>
+				<!-- //반품 교환정보 -->
+
+			</div>
+
+
+
+
+		</div>
+	</div>
+</div>
+<!-- 질문 작성하기 -->
+	<div class="qanda_pop">
+		<h3 class="tit_qanda_pop">질문 작성하기 <a href="javascript:;" onclick="qandaClose('qanda_pop','all_body')" class="btn_rpop_close"><img src="../images/content/btn_popup_close.gif" alt="닫기" ></a></h3>
+		<div class="board_block">
+			<div class="tbl_pop">
+				<table>
+				<caption>
+				질문작성하기
+				</caption>
+				<colgroup>
+				<col style="width:90px">
+				<col >
+				</colgroup>
+				<tr>
+					<th>이메일</th>
+					<td>
+						<input type="text" title="이메일 입력" class="small" id='qna_mail1' value="<?=$mem_email[0]?>"> @ <input type="text" title="이메일 입력" class="small" id='qna_mail2' value="<?=$mem_email[1]?>">
+						<p>작성한 이메일로 답변이 전송됩니다.</p>
+					</td>
+				</tr>
+				<tr>
+					<th>휴대폰</th>
+					<td>
+					   <input type="text" title="휴대폰 번호 입력" class="small" id='qna_mobile' >
+					</td>
+				</tr>
+				<tr>
+					<th>제목</th>
+					<td><input type="text" title="제목입력" id='qna_title' ></td>
+				</tr>
+				<tr>
+					<th>질문</th>
+					<td>
+						<textarea title="내용을 입력하세요" id='qna_content'></textarea>
+					</td>
+				</tr>
+				<tr>
+					<th>옵션</th>
+					<td>
+						<input type="checkbox" id="secret" value='1' ><label for="secret">비밀글</label> 
+					</td>
+				</tr>
+				</table>
+			</div>
+			<div class="btn_group_c">
+				<a href="javascript:chk_writeForm();" class="btn_black">등록하기</a>
+			</div>
+		</div>
+	</div>
+	<!-- //질문 작성하기 -->
+
+	<!-- 구매평 작성하기 -->
+	<div class="review_pop">
+		<h3 class="tit_review_pop">구매평 작성하기 <a href="javascript:;" onclick="reviewClose('review_pop','all_body')" class="btn_rpop_close"><img src="../images/content/btn_popup_close.gif" alt="닫기" ></a></h3>
+		<div class="board_block">
+			<div class="tbl_pop">
+				<table>
+				<caption>
+				구매평
+				</caption>
+				<colgroup>
+				<col style="width:90px">
+				<col >
+				</colgroup>
+				<tr>
+					<th>평가</th>
+					<td>
+						<select class="star_select" id='rmarks' >
+						<option value='5' >★★★★★</option>
+						<option value='4' >★★★★☆</option>
+						<option value='3' >★★★☆☆</option>
+						<option value='2' >★★☆☆☆</option>
+						<option value='1' >★☆☆☆☆</option>
+						</select>
+					</td>
+				</tr>
+				<tr>
+					<th>제목</th>
+					<td><input type="text" id="rsubject" title="제목 입력"></td>
+				</tr>
+				<tr>
+					<th>상품평</th>
+					<td>
+						<textarea id="rcontent" title="내용입력"></textarea><br>
+						<p>구매후기에 적합하지 않은 내용은 통보없이 비공개 될 수 있습니다.</p>
+					</td>
+				</tr>
+				</table>
+			</div>
+			<div class="btn_group_c">
+				<a href="javascript:CheckReview();" class="btn_black">상품평 등록하기</a>
+			</div>
+		</div>
+	</div>
+	<!-- //구매평 작성하기 -->
+
+	<!-- 구매평 수정하기 -->
+	<div class="revie_modify_pop"  >
+		<h3 class="tit_review_pop">구매평 수정하기 <a href="javascript:;" onclick="reviewClose('revie_modify_pop','all_body')" class="btn_rpop_close"><img src="../images/content/btn_popup_close.gif" alt="닫기" ></a></h3>
+		<div class="board_block">
+			<div class="tbl_pop">
+				<table>
+				<caption>
+				구매평
+				</caption>
+				<colgroup>
+				<col style="width:90px">
+				<col >
+				</colgroup>
+				<tr>
+					<th>평가</th>
+					<td>
+						<select class="star_select" id='rmarks_m' >
+						<option value='5' >★★★★★</option>
+						<option value='4' >★★★★☆</option>
+						<option value='3' >★★★☆☆</option>
+						<option value='2' >★★☆☆☆</option>
+						<option value='1' >★☆☆☆☆</option>
+						</select>
+					</td>
+				</tr>
+				<tr>
+					<th>제목</th>
+					<td><input type="text" id="rsubject_m" title="제목 입력"></td>
+				</tr>
+				<tr>
+					<th>상품평</th>
+					<td>
+						<textarea id="rcontent_m" title="내용입력"></textarea><br>
+						<p>구매후기에 적합하지 않은 내용은 통보없이 비공개 될 수 있습니다.</p>
+					</td>
+				</tr>
+				</table>
+			</div>
+			<div class="btn_group_c">
+				<a href="javascript:ModifyReview();" class="btn_black">상품평 수정하기</a>
+			</div>
+		</div>
+	</div>
+	<!-- //구매평 수정하기 -->

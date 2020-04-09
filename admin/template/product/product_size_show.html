@@ -1,0 +1,133 @@
+<div class="admin_linemap"><div class="line"><p>현재위치 : 상품관리 &gt; 상품관리 &gt; <span>사이즈 조견표 노출관리</span></p></div></div>
+<table cellpadding="0" cellspacing="0" width="100%" style="table-layout:fixed">
+	<colgroup>
+		<col width=240 id="menu_width">
+		<col width=10>
+		<col width="*">
+		<col width=20>
+	</colgroup>
+	<tr>
+		<td valign="top">
+			{=include("menu_product.php")}
+		</td>
+		<td></td>
+		<td valign="top">
+			<div class="title_depth3">사이즈 조견표 노출관리 <span>사이즈 조견표가 우선노출되는 조건을 등록/수정/삭제할 수 있습니다.</span></div>
+
+			
+			<!--{* 검색:S *}-->
+			<form id="FrmSizeShowSearch" onsubmit="return false">
+			<input type="hidden" name="limit" value="10" />
+			<div class="table_style01 pt_20">
+				<table cellpadding="0" cellspacing="0" border="0" width="100%" class="">
+					<tbody>
+						<tr>
+							<th><span>조견표 구분</span></th>
+							<td>
+								<select name="size_idx" style="width:300px">
+									<option value="">전체</option>
+									{@ size}
+									<option value="{.idx}">{.size_grp} &gt; {.size_name}</option>
+									{/}
+								</select>
+							</td>
+						</tr>
+					</tbody>
+				</table>
+				<p class="ta_r"><button type="butotn" class="btn-point" onclick="ProductSizeShow.search()" >조회</button></p>
+			</div>
+			</form>
+
+			<!--{* 노출목록:S *}-->
+			<div id="inner"></div>
+			<!--{* 노출목록:E *}-->
+		</td>
+	</tr>
+</table>
+
+<script type="text/javascript" src="/admin/static/js/jquery.validationEngine.js?{C.VER}"></script>
+<script type="text/javascript" src="/admin/static/js/jquery.validationEngine-kr.js?{C.VER}"></script>
+<script type="text/javascript">
+var ProductSizeShow ={
+	page:1,
+	proc_url:'/admin/proc/product_size.proc.php',
+	init: function(){
+		this.load();
+	},
+	search: function() {
+		this.load(1);
+	},
+	load:function(page) {
+		var p = page || ProductSizeShow.page;
+		var search = $('#FrmSizeShowSearch').serialize();
+		$('#inner').load('/admin/product_size_show.inner.php',{page:p, search:search},
+			function() {
+				ProductSizeShow.page = p;
+			}
+		);
+	},
+	/*
+	loadSize: function(ele) {
+		
+		var el = $(ele);
+		var grp = el.val();
+		var target = el.next('select');
+		target.find('option[value!=""]').remove();
+		if(!grp) {
+			el.next('select').addClass('hide');
+			return false;
+		}
+		
+		$.ajax({
+			url:'/admin/proc/product_size.proc.php',
+			data:{
+				mode:'size',
+				act:'get_sizename',
+				size_grp:grp
+			},
+			dataType:'json',
+			type:'POST',
+			success: function(r) {
+				console.log(r);
+				if(r.success){
+					$.each(r.data, function(i,e){
+						var opt = $('<option value="'+e.size_name+'">'+e.size_name+'</option>');
+						target.append(opt);
+					});
+					el.next('select').removeClass('hide');
+				}
+
+			}
+		})
+	},
+	*/
+	register: function(idx) {
+		UI.modal('/admin/product_size_show.register.php',"사이즈 조견표 노출관리", {idx:idx}, 800);
+	},
+	remove: function(show_idx) {
+		if(!confirm('삭제하시겠습니까?')) return false;
+		$.ajax({
+			url:this.proc_url,
+			data:{
+				mode:'size_show',
+				act:'delete',
+				show_idx:show_idx
+			},
+			dataType:'json',
+			type:'POST',
+			success: function(r) {
+				if(r.success){
+					ProductSizeShow.load(1);
+				}
+				else alert(r.msg);
+			}
+		})
+	}
+
+}
+
+
+$(function() {
+	ProductSizeShow.init();
+});
+</script>

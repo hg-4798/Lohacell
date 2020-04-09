@@ -1,0 +1,105 @@
+<div id="contents">
+	<div class="promotion-page">
+
+		<article class="promotion-wrap">
+			<ul class="breadcrumb">
+				<li>
+					<a href="/">HOME</a>
+				</li>
+				<li>
+					<a href="">EVENT</a>
+				</li>
+				<li class="now">
+					<a href="">EVENT</a>
+				</li>
+			</ul>
+			<header>
+				<h2 class="promotion-title" id="page_title">EVENT</h2>
+			</header>
+			<div class="promotionList-slider-wrap">
+				<ul class="promotionList-slider">
+					{@ banner_list}
+					{? .banner_link}
+					<a href="{.banner_link}">
+					{/}
+					<li>
+						<img src="/data/shopimages/mainbanner/{.banner_img}" alt="">
+					</li>
+						{? .banner_link}
+					</a>
+							{/}
+					{/}
+				</ul>
+			</div>
+			<div class="promotion-list-wrap ta-c" data-ui="TabMenu">
+
+				<div class="tabs" id="menu_event">
+					<button data-content="menu" data-id="ing" class="active">
+						<span>진행중 이벤트</span>
+					</button>
+					<button data-content="menu" data-id="close">
+						<span>종료된 이벤트</span>
+					</button>
+				</div>
+
+				<!--{ * 탭컨텐츠:S *}-->
+				<div id="event_inner"></div>
+				<!--{ * 탭컨텐츠:S *}-->
+			</div>
+
+		</article>
+
+	</div>
+</div>
+<!-- //#contents -->
+
+<script type="text/javascript">
+var Event = {
+    page:1,
+	tab_id:'ing',
+	init: function() {
+		var me = this;
+		$('[data-content="menu"]').on('click.tab', function() {
+		    me.page = 1;
+			me.load($(this).data('id'));
+		});
+		
+		me.load();
+
+		$('.promotionList-slider').bxSlider({
+			sliderWidth:1100,
+			auto:true,
+			pause:5000,
+			controls:false,
+			infiniteLoop:false
+		});
+	},
+	load: function(tab_id, page) {
+        //UI.loading('event_inner');
+        var p = page || Event.page;
+		var tab_id = tab_id || Event.tab_id;
+		var uri;
+		switch(tab_id) {
+			default :
+				uri = "event.list.php";
+			break;
+		}
+		$('#event_inner').load("{C.DIR_FRONT}/promotion/"+uri, {type:tab_id, page:p},
+            function() {
+                //UI.modalCenter();
+                //UI.toggleCheck();
+                //UI.loading('event_inner');
+                Event.page = p;
+                Event.tab_id = tab_id;
+            }
+		);
+	},
+	paging: function(page) {
+        Event.load(Event.tab_id,page);
+    }
+}
+
+$(function() {
+	Event.init();
+})
+</script>

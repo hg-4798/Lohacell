@@ -1,0 +1,196 @@
+<div id="contents">
+	<div class="promotion-page">
+		<article class="promotion-wrap">
+			<header>
+				<h2 class="promotion-title" id="page_title">이벤트</h2>
+			</header>
+			<div class="editor-view">
+				<div class="bulletin-info mb-10">
+					
+					<ul class="title">
+						<li id="event_title">{promoinfo.title}</li>
+						<li class="txt-toneC">{=format(promoinfo.start_date,'Y-m-d')}~{=format(promoinfo.end_date,'Y-m-d')}</li>
+					</ul>
+					<ul class="share-like clear">
+						<li>
+							<a id="url_index" href="/front/promotion/event.php">
+								<i class="icon-list">리스트 이동</i>
+							</a>
+						</li>
+						<li>
+							<button type="button" data-hottcode="{promoinfo.idx}" data-section="event" data-cnt="{promoinfo.promo_like_cnt}">
+												<span>
+													<i class="icon-like mr-10 {? promoinfo.is_liked}on{/}"></i>좋아요
+												</span>
+								<span class="point-color">{=number_format(promoinfo.promo_like_cnt)}</span>
+							</button><!-- [D] 좋아요 선택시 .on 클래스 추가 -->
+						</li>
+						<!-- [D] 좋아요 i 태그에 .on 추가 -->
+<!--@TODO 이벤트 공유하기-->
+						<li>
+							<div class="share_wrp">
+								<button type="button"><span><i class="icon-share-btn">SNS 공유하기</i></span></button>
+								<div class="links ta-r">
+									<!-- <a href="javascript:;" title="카카오 스토리"><i class="icon-share-kas">카카오 스토리</i></a> -->
+									<a href="javascript:;" onclick="Share.facebook()" title="페이스북"><i class="icon-share-facebook">페이스북</i></a>
+									<!-- <a href="javascript:;" title="트위터"><i class="icon-share-twit">트위터</i></a> -->
+									<a href="javascript:;" onclick="Share.naverblog('{}')" title="블로그"><i class="icon-share-blog">블로그</i></a>
+									<a href="javascript:;" onclick="Share.urlCopy()" title="링크"><i class="icon-share-url">링크</i></a>
+								</div>
+							</div>
+						</li>
+					</ul>
+				</div>
+				<!-- //.bulletin-info -->
+
+
+				<!-- 컨텐츠상세공통 -->
+				<div class="editor-output">
+					{promoinfo.content}
+					<!--<p id="event_main_img">
+						<img src="/data/shopimages/promotion/20180821_122438.png" title="기획전배너">
+					</p>-->
+					<!--{*내용이 필요한가?
+					<p id="event_main_winner_content">
+						내용???
+					</p>
+					*}-->
+				</div>
+				<div class="prev-next clear">
+					{? prev.idx}<a href="/front/promotion/{? prev.event_type==1}promo{:}event{/}_detail.php?idx={prev.idx}&status={type}">{/}
+					<div class="prev clear" id="prev">
+						<span class="mr-20">PREV</span>
+						<a>{? prev.idx}{ prev.title}{:}이전글이 없습니다.{/}</a>
+					</div>
+					{? prev.idx}</a>{/}
+					{? next.idx}<a href="/front/promotion/{? next.event_type==1}promo{:}event{/}_detail.php?idx={next.idx}&status={type}">{/}
+					<div class="next clear" id="next">
+						<span class="ml-20">NEXT</span>
+						<a>{? next.idx}{ next.title}{:}다음글이 없습니다.{/}</a>
+					</div>
+					{? next.idx}</a>{/}
+				</div>
+				<!-- //.prev-next -->
+			</div>
+
+			<!--이벤트 댓글/포토 -->
+			<div id="event_zone">
+			</div>
+
+		</article>
+
+	</div>
+</div>
+
+
+<!--{* 이벤트 > 포토작성 모달:S *}-->
+<div class="layer-dimm-wrap pop-photoReg" id="photo_edit"></div>
+<!--{* 이벤트 > 포토작성 *}-->
+<script src="/static/js/clipboard.min.js"></script>
+<!-- //#contents -->
+<script type="text/javascript">
+var EventDetail = {
+    page:1,
+    idx:'{promoinfo.idx}',
+	event_type:'{promoinfo.event_type}',
+	init: function() {
+
+        var me = this;
+      	this.option = $.extend({}, validation_option, {
+            validateNonVisibleFields: false,
+            onValidationComplete: function (form, status) {
+                if (status) me.setComment(form);
+            }
+        });
+        $("#FrmComment").validationEngine('attach',this.option);
+
+        //UI.loading('inner');
+        EventDetail.load(this.event_type,this.page);
+        //UI.loading('inner');
+	},
+	load: function(event_type, page){
+        $("#comment_textarea").val("");
+        $('#event_zone').load('/front/promotion/event_comment.list.php', {idx: EventDetail.idx, event_type:event_type, page:page}, function(){
+        });
+	},
+	photoReg: function(pidx) {
+/*        UI.modal('/front/promotion/event_comment_photo_reg.php', '포토댓글등록', {
+            pidx:pidx
+        }, function () {
+            new Blazy(); //이미지 바인딩
+        });*/
+		$('#photo_edit').load('/front/promotion/event_comment_photo_reg.php', {pidx:pidx}, function(){
+			$(this).css('display','block');
+		});
+	},
+    setComment: function(form) { //댓글등록/수정처리
+		var formdata = $(form).serialize();
+        $.ajax({
+            url: '/proc/promotion.proc.php',
+            data: formdata,
+            dataType: 'json',
+            type: 'POST',
+            success: function (r) {
+                alert(r.msg);
+                EventDetail.page=1;
+                EventDetail.load(EventDetail.event_type,EventDetail.page);
+            }
+        });
+	},
+	removeComment: function(num) {
+	    if(confirm("삭제하시겠습니까?")) {
+            $.ajax({
+                url: '/proc/promotion.proc.php',
+                data: {
+                    comment_num: num,
+                    mode: 'comment',
+                    act: 'delete'
+                },
+                dataType: 'json',
+                type: 'POST',
+                success: function (r) {
+                    alert(r.msg);
+                    EventDetail.page = 1;
+                    EventDetail.load(EventDetail.event_type, EventDetail.page);
+                }
+            });
+        }
+	},
+	toggleComment: function(num) { //수정창 보이기/감추기
+		var target = $('#modify_'+num);
+		var target_btn = $('#btn_modify_'+num);
+		var target_form = target.find('form');
+
+		if(target.is(':visible')) {
+			target_form.validationEngine('detach');
+			target.addClass('hide');
+			target_btn.text('수정');
+		}
+		else {
+			target_form.validationEngine('attach',EventDetail.option);
+			target_btn.text('취소');
+			target.removeClass('hide');
+		}
+	},
+    paging: function(page) {
+	    EventDetail.page=page;
+        EventDetail.load(EventDetail.event_type, page);
+    },
+    /*글자수제한300자 공통*/
+    lengchk: function(map, countid) {
+
+        if (map.value.length > 300) {
+            alert('글자수 제한 300자');
+            var res = map.value.substr(0, 300);
+            map.value = res;
+        }
+        if (countid) {
+            $('#' + countid).html(map.value.length);
+        }
+    }
+}
+
+$(function () {
+    EventDetail.init();
+});
+</script>

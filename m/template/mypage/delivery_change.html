@@ -1,0 +1,120 @@
+<div class="layer-contents regist_lyr">
+	<div class="board-title">
+		<div class="no-padding"><strong class="point-color">*</strong> 필수입력</div>
+	</div>
+	<form name="FrmChange" id="FrmChange" onsubmit="return false;">
+		<input type="hidden" name="mode" value="delivery_change">
+		<input type="hidden" name="order_num" value="{order_num}">
+	<table class="th-left">
+		<caption>배송지 정보 변경</caption>
+		<colgroup>
+			<col style="width:80px">
+			<col style="width:auto">
+		</colgroup>
+		<tbody>
+		<tr>
+			<th scope="row"><label class="required" for="receiver_name">받는분</label></th>
+			<td>
+				<input type="text" class="w100-per validate[required]" title="주문자명 입력자리" value="{member.name}" name="receiver_name" id="receiver_name" placeholder="이름을 입력하세요." data-errormessage-value-missing="받는분 이름을 입력해주세요.">
+			</td>
+		</tr>
+		<tr>
+			<th scope="row" class="va-top"><label class="required" for="pop_delivery_adress">주소</label></th>
+			<td>
+				<div class="form-multi">
+					<input type="text" id="pop_delivery_adress" title="우편번호 출력자리" class="validate[required]" value="{member.home_post}" style="width:145px" data-errormessage-value-missing="주소를 입력해주세요." name="receiver_zipcode" data-post="zonecode" readonly="" onclick="OrderAddress.post()">
+					<button type="button" onclick="OrderAddress.post()" class="btn-basic h-input" style="padding:0 6px">우편번호찾기</button>
+				</div>
+				<div class="form-multi"><input type="text" name="receiver_addr" class="validate[required] w100-per" data-errormessage-value-missing="주소를 입력해주세요." title="주소 입력자리" value="{member.home_addr}" data-post="address" onclick="OrderAddress.post()" readonly=""></div>
+				<div class="form-multi"><input type="text" name="receiver_addr_detail" id="receiver_addr_detail" class="w100-per validate[required]" title="상세 주소 입력" placeholder="상세 주소를 입력하세요." data-post="buildingName" value="{member.home_addr_detail}" data-errormessage-value-missing="상세주소를 입력해주세요." ></div>
+			</td>
+		</tr>
+		<tr>
+			<th scope="row" class="va-top"><label class="required" for="receiver_mobile_1">휴대전화</label></th>
+			<td>
+				<div class="tel-cover">
+					<div>
+						<select name="receiver_mobile[0]" title="휴대전화 첫번째 번호" id="receiver_mobile_1" class="select_line validate[required]" data-errormessage-value-missing="휴대전화번호를 입력해주세요." >
+							<option value="">선택</option>
+							{@ _arrMobile}
+							<option value="{.value_}" {=checked(member.mobile_arr[0],.value_,'selected')}>{.value_}</option>
+							{/}
+						</select>
+					</div>
+					<div><input type="tel" name="receiver_mobile[1]" value="{member.mobile_arr[1]}" title="휴대전화 번호 가운데 입력자리" id="receiver_mobile_2" data-filter="numeric" class="validate[required, minSize[4], maxSize[4]]" data-errormessage-value-missing="휴대전화번호를 입력해주세요." maxlength="4"></div>
+					<div><input type="tel" name="receiver_mobile[2]" value="{member.mobile_arr[2]}" title="휴대전화 번호 마지막 입력자리" id="receiver_mobile_3" data-filter="numeric" class="validate[required, minSize[4], maxSize[4]]" data-errormessage-value-missing="휴대전화번호를 입력해주세요." maxlength="4"></div>
+				</div>
+			</td>
+		</tr>
+		<tr>
+			<th scope="row"><label for="receiver_tel_1">전화번호</label></th>
+			<td>
+				<div class="tel-cover">
+					<div>
+						<select name="receiver_tel[0]" title="전화번호 첫번째 번호" id="receiver_tel_1" class="select_line" >
+							<option value="">선택</option>
+							{@ _arrTel}
+							<option value="{.value_}" {=checked(member.home_tel_arr[0],.value_,'selected')}>{.value_}</option>
+							{/}
+						</select>
+
+					</div>
+					<div><input type="text" name="receiver_tel[1]" value="{member.home_tel_arr[1]}" title="전화번호 중간 번호" id="receiver_tel_2" data-filter="numeric" maxlength="4"></div>
+					<div><input type="text" name="receiver_tel[2]" value="{member.home_tel_arr[2]}" title="전화번호 마지막 번호" id="receiver_tel_3" data-filter="numeric" maxlength="4"></div>
+				</div>
+			</td>
+		</tr>
+		</tbody>
+	</table>
+	<div class="btn_area">
+		<ul class="ea2">
+			<li><a href="javascript:;" class="btn-line h-large" data-toggle="close">취소</a></li>
+			<li><button type="submit" class="btn-point h-large">등록</button></li>
+		</ul>
+	</div>
+	</form>
+</div>
+
+
+<script type="text/javascript">
+    var DeliveryChange = {
+        proc_url:'/proc/order.proc.php',
+        changed:false,
+        init: function() {
+            var me = this;
+            $('[data-toggle="close"]').on('click', function() {
+                $('.btn_close').trigger('click');
+            });
+            var option = $.extend({}, validation_option, {
+                validateNonVisibleFields: false,
+                onValidationComplete: function (form, status) {
+                    if (status) me.save();
+                }
+            });
+            $("#FrmChange").validationEngine('attach', option);
+        },
+        save: function () {
+            UI.confirm('배송지를 변경하시겠습니까?', function () {
+                var formdata = $('#FrmChange').serialize();
+                $.ajax({
+                    url:DeliveryChange.proc_url,
+                    type:'POST',
+                    data:formdata,
+                    dataType:'json',
+                    success : function(r) {
+                        UI.alert(r.msg, function() {
+                            if(r.success) {
+                                window.location.reload();
+                            };
+                        });
+                    }
+                });
+            })
+        }
+
+    }
+
+    $(function() {
+        DeliveryChange.init();
+    })
+</script>

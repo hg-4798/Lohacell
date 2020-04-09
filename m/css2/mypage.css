@@ -1,0 +1,211 @@
+@charset "utf-8";
+
+/* 마이페이지 - 상단 */
+#header nav.mypagetop{}
+#header nav.mypagetop ul.menu{border-bottom:1px solid #3b3b3b;background:#3b3b3b}
+#header nav.mypagetop ul.menu:after{clear:both;content:"";display:block}
+#header nav.mypagetop ul.menu li{float:left;width:20%}
+#header nav.mypagetop ul.menu li a{height:38px;color:#fff;font-size:13px;font-weight:bold;text-align:center;line-height:38px;overflow:hidden;display:block}
+#header nav.mypagetop ul.menu li.on a{color:#ff4e08}
+
+#header nav.mypagetop ul.tab{border-bottom:1px solid #bfbfbf;background:#f2f2f2}
+#header nav.mypagetop ul.tab:after{clear:both;content:"";display:block}
+#header nav.mypagetop ul.tab li{float:left;position:relative;width:33.33%}
+#header nav.mypagetop ul.tab li:before{position:absolute;height:13px;border-left:1px solid #acacac;left:0;top:8px;content:"";display:block}
+#header nav.mypagetop ul.tab li:first-child:before{border:0}
+#header nav.mypagetop ul.tab li a{height:29px;color:#424242;font-size:13px;font-weight:bold;text-align:center;line-height:30px;overflow:hidden;display:block}
+#header nav.mypagetop ul.tab li.on a{color:#ff4e08}
+
+/* 주문 내역 리스트 */
+ul.orderlist{border-bottom:1px solid #e4e4e4}
+
+article.order{position:relative;border-top:1px solid #7c7c7c}
+article.order .heading > a{display:block}
+article.order .heading span.box{height:28px;padding-left:10px;color:#424242;font-size:13px;line-height:28px;background:#f2f2f2;overflow:hidden;display:block}
+article.order .heading span.date{font-size:12px;vertical-align:0;display:inline-block}
+article.order strong.condition{position:absolute;right:10px;top:0;color:#424242;font-size:13px;line-height:28px}
+
+article.order nav.button{padding:6px 0;border-top:1px solid #d6d6d6;background:#f7f7f7}
+article.order nav.button ul{margin:0 3px}
+article.order nav.button ul:after{clear:both;content:"";display:block}
+article.order nav.button li{float:left;width:25%}
+article.order nav.button li a{margin:0 3px;color:#fff;font-size:12px;font-weight:bold;text-align:center;background:#555;display:block}
+article.order nav.button li a .box{padding:1px}
+article.order nav.button li a span{height:21px;border:1px solid #898989;line-height:22px;overflow:hidden;display:block}
+article.order nav.button li a.red{background:#ff4e08}
+article.order nav.button li a.red span{border-color:#ff9e78}
+
+article.order .productwrap li{height:115px;border-top:1px solid #e4e4e4;border-bottom:0}
+article.order .productwrap li img.item{margin-right:5px}
+article.order .productwrap .infobox{padding-top:16px}
+article.order .productwrap .infobox span.option{margin-top:2px;color:#272727;font-size:13px;display:block}
+
+/* 마이페이지 */
+.mypage{}
+.mypage h2{height:34px;padding-left:10px;border-bottom:1px solid #bfbfbf;font-size:15px;font-weight:normal;line-height:34px;letter-spacing:-1px;background:linear-gradient(#d5d5d5,#f3f3f3);background:-webkit-linear-gradient(#d5d5d5,#f3f3f3);overflow:hidden}
+.mypage h2 strong{color:#ff4e08;font-weight:normal}
+
+.mypage section{position:relative;margin-top:30px}
+.mypage section h3{padding:0 0 9px 10px;color:#424242;font-size:15px}
+.mypage section a.btn_all{position:absolute;width:65px;height:23px;border:1px solid #c1c1c1;right:10px;top:-5px;color:#666;font-size:12px;font-weight:bold;text-align:center;line-height:24px;background:linear-gradient(#f4f4f4,#dadada);background:-webkit-linear-gradient(#f4f4f4,#dadada);overflow:hidden;display:block}
+
+/* 마이페이지 - 혜택안내 */
+.mypage section.benefit{padding:5px;border-top:1px solid #ccc;border-bottom:1px solid #d0d0d0;margin-top:0;background:#dedede}
+.mypage section.benefit .benefitbox{position:relative;border:1px solid #d0d0d0;border-radius:3px;background:#fff}
+.mypage section.benefit .benefitbox h3{height:28px;padding-left:9px;border-bottom:1px solid #d0d0d0;margin-bottom:0;font-size:14px;line-height:28px;overflow:hidden}
+.mypage section.benefit .benefitbox ul{padding:8px;background:#f0f0f0}
+.mypage section.benefit .benefitbox li{margin-top:6px;color:#424242;font-size:13px;line-height:20px;letter-spacing:-1px}
+.mypage section.benefit .benefitbox li:first-child{margin-top:0}
+.mypage section.benefit .benefitbox li span.icon{float:left;width:55px;height:20px;border-radius:2px;margin-right:10px;color:#fff;font-size:11px;text-align:center;background:#071232;overflow:hidden;display:block}
+.mypage section.benefit .benefitbox a.btn_more{position:absolute;height:28px;padding:0 5px;right:0;top:0;color:#666;font-size:12px;font-weight:bold;line-height:28px;overflow:hidden}
+
+.mypage section.benefit .pointbox{border:1px solid #d0d0d0;border-radius:3px;margin-top:5px;background:#fff}
+.mypage section.benefit .pointbox ul:after{clear:both;content:"";display:block}
+.mypage section.benefit .pointbox li{float:left;position:relative;width:33.33%;padding:12px 0;text-align:center}
+.mypage section.benefit .pointbox li:before{position:absolute;height:100%;border-left:1px solid #d0d0d0;left:0;top:0;content:"";display:block}
+.mypage section.benefit .pointbox li:first-child:before{border:0}
+.mypage section.benefit .pointbox li .box{text-align:left;display:inline-block}
+.mypage section.benefit .pointbox li .box h4{color:#424242;font-size:12px;font-weight:normal}
+.mypage section.benefit .pointbox li .box .content{height:15px;margin:4px 0 0 1px;color:#ff4e08;font-size:12px;line-height:16px;overflow:hidden}
+.mypage section.benefit .pointbox li .box .content span.icon{width:15px;height:15px;border-radius:2px;margin-right:5px;color:#fff;font-size:11px;text-align:center;line-height:16px;background:#071232;overflow:hidden;display:inline-block}
+
+/* 마이페이지 - 진행중인 주문 */
+.mypage section.progress h3 span{font-size:13px;vertical-align:0;display:inline-block}
+.mypage section.progress ul{border-top:1px solid #7c7c7c;border-bottom:1px solid #b7b7b7}
+.mypage section.progress ul:after{clear:both;content:"";display:block}
+.mypage section.progress li{float:left;width:20%;text-align:center}
+.mypage section.progress li h4{position:relative;height:32px;color:#424242;font-size:13px;line-height:32px;background:#ddd}
+.mypage section.progress li h4:before{position:absolute;height:12px;border-left:1px solid #b4b7c1;left:0;top:10px;content:"";display:block}
+.mypage section.progress li:first-child h4:before{border:0}
+.mypage section.progress li .content{position:relative;padding:10px 0 8px;background:#f6f6f6}
+.mypage section.progress li .content:before{position:absolute;height:100%;border-left:1px solid #e2e2e2;left:0;top:0;content:"";display:block}
+.mypage section.progress li:first-child .content:before{border:0}
+.mypage section.progress li .content img{width:auto;height:23px}
+.mypage section.progress li .content span{margin-top:7px;color:#ff4e08;font-size:13px;display:block}
+
+/* 마이페이지 - 최근 주문내역 */
+.mypage section.lately{}
+
+/* 마이페이지 - 나의 위시리스트 */
+.mypage section.wishlist .productwrap > ul{border-top:1px solid #e4e4e4}
+.mypage section.wishlist .productwrap > ul > li{border-color:1px solid #e4e4e4}
+.mypage section.wishlist .productwrap img.item{margin-right:15px}
+.mypage section.wishlist .productwrap .infobox{padding-top:6px}
+.mypage section.wishlist .productwrap .infobox span.option{margin-top:2px;color:#272727;font-size:13px;display:block}
+.mypage section.wishlist .productwrap .infobox nav.button{margin-top:3px}
+.mypage section.wishlist .productwrap .infobox nav.button ul:after{clear:both;content:"";display:block}
+.mypage section.wishlist .productwrap .infobox nav.button li{float:left;width:75px;margin-left:8px}
+.mypage section.wishlist .productwrap .infobox nav.button li:first-child{margin-left:0}
+.mypage section.wishlist .productwrap .infobox nav.button li a{height:23px;color:#fff;font-size:12px;font-weight:bold;text-align:center;line-height:24px;background:#555;overflow:hidden;display:block}
+
+/* 마이페이지 - 나의 쿠폰내역 */
+.mypage section.coupon{}
+.mypage section.coupon table{border-top:1px solid #7c7c7c}
+.mypage section.coupon table caption{}
+.mypage section.coupon table th{padding:10px 0;color:#424242;background:#ddd}
+.mypage section.coupon table th strong{position:relative;display:block}
+.mypage section.coupon table th strong:before{position:absolute;height:13px;border-left:1px solid #b4b7c1;left:0;top:0;content:"";display:block}
+.mypage section.coupon table th:first-child strong:before{border:0}
+.mypage section.coupon table td{height:34px;border-bottom:1px solid #d6d6d6;color:#5b5b5b}
+.mypage section.coupon table td.left{padding-left:10px;text-align:left;letter-spacing:-1px}
+.mypage section.coupon table td span.date{color:#999;font-size:12px;white-space:nowrap;display:inline-block}
+
+/* 마이페이지 - 나의 1:1상담내역 */
+.mypage section.advice{}
+.mypage section.advice table{border-top:1px solid #7c7c7c}
+.mypage section.advice table th{padding:10px 0;color:#424242;background:#ddd}
+.mypage section.advice table th strong{position:relative;display:block}
+.mypage section.advice table th strong:before{position:absolute;height:13px;border-left:1px solid #b4b7c1;left:0;top:0;content:"";display:block}
+.mypage section.advice table th:first-child strong:before{border:0}
+.mypage section.advice table td{height:34px;border-bottom:1px solid #d6d6d6;color:#5b5b5b}
+.mypage section.advice table td.left{padding-left:10px;text-align:left;letter-spacing:-1px}
+
+/* 마이페이지 - attention */
+.mypage section.attention{margin:43px 10px 25px}
+.mypage section.attention h3{padding:0;margin-bottom:3px;color:#ff4e08;font-size:15px}
+.mypage section.attention .box{padding:8px 6px;border:1px solid #d0d0d0;border-radius:3px;background:#f1f1f1}
+.mypage section.attention .box p{position:relative;color:#424242;font-size:13px; padding:3px 0px 3px 10px}
+.mypage section.attention .box p:before{position:absolute;left:0;top:3px;font-size:11px;content:">";display:block}
+.mypage section.attention .box nav.button{margin-top:14px;text-align:center}
+.mypage section.attention .box nav.button ul{display:inline-block}
+.mypage section.attention .box nav.button li{float:left;width:65px;margin-left:5px}
+.mypage section.attention .box nav.button li:first-child{margin-left:0}
+.mypage section.attention .box nav.button li a{height:23px;color:#fff;font-size:12px;font-weight:bold;text-align:center;line-height:24px;background:#555;overflow:hidden;display:block}
+
+/* 주문정보 - 주문/배송조회 */
+.myorderpage{}
+.myorderpage section.period{padding:10px;border-top:1px solid #ccc;border-bottom:1px solid #d0d0d0;background:#dedede}
+.myorderpage section.period h3{color:#424242;font-size:15px}
+.myorderpage section.period .content{position:relative;margin-top:4px}
+.myorderpage section.period .content:after{clear:both;content:"";display:block}
+.myorderpage section.period .content .selectbox{position:absolute;left:0;right:75px;top:0}
+.myorderpage section.period .content a.btn_period{float:right;width:68px;height:26px;border:1px solid #c1c1c1;color:#666;font-size:13px;font-weight:bold;text-align:center;line-height:26px;background:linear-gradient(#f4f4f4,#dadada);background:-webkit-linear-gradient(#f4f4f4,#dadada);overflow:hidden;display:block}
+
+.myorderpage section.lately{margin-top:25px}
+.myorderpage section.lately h2{padding:0 0 9px 10px;color:#424242;font-size:15px}
+.myorderpage .paginate{margin-top:25px}
+
+.myorderpage section.attention{margin:48px 10px 25px}
+.myorderpage section.attention h3{padding:0;margin-bottom:3px;color:#ff4e08;font-size:15px}
+.myorderpage section.attention ul{padding:6px 6px 4px;border:1px solid #d0d0d0;border-radius:3px;background:#f1f1f1}
+.myorderpage section.attention li{position:relative;padding-left:10px;font-size:13px;line-height:1.4}
+.myorderpage section.attention li:before{position:absolute;left:0;top:0;font-size:11px;content:">";display:block}
+
+/* 주문정보 - 주문내역 상세보기 */
+.myorderpage caption a.btn_address{position:absolute;width:68px;height:23px;right:10px;top:2px;color:#fff;font-size:11px;font-weight:bold;text-align:center;line-height:24px;background:#555;overflow:hidden;display:block}
+.myorderpage caption a.btn_arrow{position:absolute;width:19px;height:19px;border:1px solid #d6d6d6;border-radius:3px;right:10px;top:3px;text-align:center;background:linear-gradient(#fff,#ededed);background:-webkit-linear-gradient(#fff,#ededed);display:block}
+.myorderpage caption a.btn_arrow img{width:11px;height:5px;margin-top:7px}
+
+.myorderpage a.btn_list{width:100px;margin:25px auto;color:#fff;font-size:12px;font-weight:bold;text-align:center;background:#555;display:block}
+.myorderpage a.btn_list .box{padding:1px}
+.myorderpage a.btn_list span{height:27px;border:1px solid #898989;line-height:28px;overflow:hidden;display:block}
+
+/* 주문정보 - 주문내역 테이블 */ 
+table.info{border-bottom:1px solid #d6d6d6;margin-top:-1px;color:#424242;font-size:12px;line-height:1.3}
+table.info:nth-of-type(1){margin-top:0px}
+table.info caption{position:relative;padding:7px 10px 5px;border-top:1px solid #7c7c7c;font-weight:bold;background:#f2f2f2}
+table.info tr{border-top:1px solid #d6d6d6}
+table.info th{padding-left:10px;font-weight:normal;text-align:left}
+table.info td{padding:9px 10px 9px 0;text-align:left}
+table.info td.cell_join{padding:9px 10px;text-align:left}
+table.info td strong.red{color:#ff4e08}
+table.info input[type="text"]{float:left;height:26px;border:1px solid #c1c1c1;margin-right:5px; text-indent:10px}
+table.info .per100 {width:100%}
+
+/* 주문정보 - 취소,반품,교환 */
+section.my_step {margin-top:0px; height:38px; text-align:center; background:url(../images/mypage_step_arrow.png) no-repeat center 10px; background-size:8px 17px; position:relative; border-bottom:0px !important}
+section.my_step > span {display:block; position:absolute; top:12px; width:110px}
+section.my_step > span.step1 {margin-left:-110px; left:46%; text-align:right}
+section.my_step > span.step2 {margin-right:-110px; right:47%; text-align:left}
+section.my_step a.detail_btn {display:block; position:absolute; right:5px; top:12px; text-align:right; color:#999; cursor:pointer}
+section.my_step div.reques_info_detail {display:none;width:100%;position:absolute; top:38px; left:0px; border-top:1px solid #d6d6d6; border-bottom:1px solid #3b3b3b; background-color:#f6f6f6; padding:10px 0px; z-index:5;}
+section.my_step div.reques_info_detail a.detail_close {display:block; position:absolute; right:5px; top:-27px; text-align:right; color:#999; background-color:#FFF;cursor:pointer}
+
+div.reuest_end_ment {border-top:1px solid #d6d6d6; padding:30px 0px}
+div.reuest_end_ment ul li {font-size:18px; color:#d8ba98; text-align:center; font-weight:bold}
+div.reuest_end_ment ul li:first-child {font-size:14px; font-weight:lighter; padding-bottom:6px}
+
+ul.refund_step_box {position:absolute; top:7px; left:7px; z-index:5}
+ul.refund_step_box li {background-color:#999; color:#fff; text-align:center; height:16px; line-height:1.5; padding:0px 3px; margin-bottom:6px;text-transform:uppercase; font-size:13px}
+ul.refund_step_box li.point {background-color:#ff4e08}
+ul.refund_step_box li.line2 {margin-top:21px}
+
+ul.refund_step {margin-left:60px; position:relative}
+ul.refund_step:before {display:block; content:""; background-color:#868686; height:100%; width:2px; position:absolute; left:-31px; top:0px; z-index:0}
+ul.refund_step > li {text-align:left; margin-top:8px}
+ul.refund_step > li:first-child {margin-top:0px}
+ul.refund_step > li > span {display:inline-block; width:70px; position:relative}
+ul.refund_step > li > span:before {display:block; content:""; background-color:#999; height:12px; width:1px; position:absolute; right:10px; top:0px}
+ul.refund_step > li > p {margin-left:70px; font-size:13px; padding-top:2px;}
+
+
+/* 레이어 -  배송지정보 수정 */
+#layer_address .layerwrap{width:310px;min-width:320px;max-height:100%;transform:translate(-50%,-50%);-webkit-transform:translate(-50%,-50%)}
+
+#layer_address .layerwrap nav.button{margin:25px 0;text-align:center}
+#layer_address .layerwrap nav.button ul{display:inline-block}
+#layer_address .layerwrap nav.button li{float:left;width:100px;margin:0 3px}
+#layer_address .layerwrap nav.button li a{padding:1px;color:#fff;font-size:13px;font-weight:bold;text-align:center;background:#555;display:block}
+#layer_address .layerwrap nav.button li a span{height:27px;border:1px solid #898989;line-height:28px;overflow:hidden;display:block}
+#layer_address .layerwrap nav.button li a.red{background:#ff4e08}
+#layer_address .layerwrap nav.button li a.red span{border-color:#ff9e78}

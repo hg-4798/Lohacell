@@ -1,0 +1,921 @@
+<?
+
+// 리뷰 작성 가능 리스트 조회
+$sql  = "SELECT tblResult.ordercode, tblResult.idx ";
+$sql .= "FROM ";
+$sql .= "   ( ";
+$sql .= "       SELECT a.*, b.regdt  ";
+$sql .= "       FROM tblorderproduct a LEFT JOIN tblorderinfo b ON a.ordercode = b.ordercode ";
+// 구매확정 이후 작성 가능하게 수정...2016-10-10
+//$sql .= "       WHERE a.productcode = '" . $productcode . "' AND b.id = '" . $_ShopInfo->getMemid()  . "' and ( (b.oi_step1 = 3 AND b.oi_step2 = 0) OR (b.oi_step1 = 4 AND b.oi_step2 = 0) ) ";
+$sql .= "       WHERE a.productcode = '" . $productcode . "' AND b.id = '" . $_ShopInfo->getMemid()  . "' and ( a.op_step = 4 and a.order_conf = '1' ) ";
+$sql .= "       ORDER BY a.idx DESC ";
+$sql .= "   ) AS tblResult LEFT ";
+$sql .= "   OUTER JOIN tblproductreview tpr ON tblResult.productcode = tpr.productcode and tblResult.ordercode = tpr.ordercode and tblResult.idx = tpr.productorder_idx ";
+#해당 상품의 리뷰가 있으면 작성 불가
+$sql .= "WHERE tpr.productcode is null ";
+$sql .= "ORDER BY tblResult.idx asc ";
+$sql .= "LIMIT 1 ";
+// exdebug($sql);
+$result = pmysql_query($sql);
+list($review_ordercode, $review_order_idx) = pmysql_fetch($sql);
+pmysql_free_result($result);
+
+// 상품 간략정보 
+// echo $_pdata->pr_content;
+$_pdata_prcontent = stripslashes($_pdata->pr_content);
+if( strlen($detail_filter) > 0 ) {
+	$_pdata_prcontent = preg_replace($filterpattern,$filterreplace,$_pdata_prcontent);
+}
+
+// 멀티이미지
+$urlpath=$Dir.DataDir."shopimages/product/";
+$product_multi_imgs[] = array();
+if(strlen($productcode)>0){
+	$sql = "SELECT * FROM tblmultiimages ";
+	$sql.= "WHERE productcode = '{$productcode}' ";
+	$result=pmysql_query($sql,get_db_conn());
+	if($row=pmysql_fetch_object($result)){
+		$mulimg_name = array ("01"=>&$row->primg01,"02"=>&$row->primg02,"03"=>&$row->primg03,"04"=>&$row->primg04,"05"=>&$row->primg05,"06"=>&$row->primg06,"07"=>&$row->primg07,"08"=>&$row->primg08,"09"=>&$row->primg09,"10"=>&$row->primg10);
+	}
+	foreach($mulimg_name as $img){
+		$product_multi_imgs[] = $img;
+	}
+}
+
+
+
+$_pdata=getProductInfo($productcode);
+// include 'detail_TEM001_sql.php';
+
+?>
+
+<script type="text/javascript" src="//maps.googleapis.com/maps/api/js?sensor=true&libraries=places&key=AIzaSyBfqdKUCNcgufydVZoN3KKu6LpRD6dvcfY"></script>
+<script type="text/javascript" src="../static/js/product.js"></script>
+<script type="text/javascript">
+	$(function(){
+
+		// 배송방법 선택시 위민트 170201
+		$("[name='delivery_type']").on("click", function(){
+			var type = $(this).data("type");
+			$(".store-select").removeClass("hide").hide();
+			$("#store-select-"+type).show();
+		});
+	});
+</script>
+<?php 
+// echo "product [".$_pdata."]";
+?>
+
+<!-- 상품상세 - 리뷰 -->
+<? include($Dir.FrontDir."prreview_tem001.php"); ?>
+<!-- // 상품상세 - 리뷰 -->
+
+<!-- 상품상세 - Q&A -->
+<? include($Dir.FrontDir."prqna_tem001.php"); ?>
+<!-- // 상품상세 - Q&A -->
+
+
+<div id="contents">
+	<div class="goodsView-page goodsView">
+		<article class="goods-view-wrap">
+		
+			<form name='prForm' id='prForm' method='POST' action="<?=$Dir.FrontDir?>basket.php" >
+				<input type='hidden' name='prcode' id='prcode' value='<?=$_pdata->group_productcode?>' >
+				<input type='hidden' name='pridx' id='pridx' value='<?=$_pdata->pridx?>' >
+				<input type="hidden" name="constant_quantity" id="constant_quantity" value="<?=$_pdata->quantity?>" >
+				<input type='hidden' name="up_name" id="up_name" value="<?=$_ShopInfo->getmemname()?>" >
+				<input type="hidden" id="brand_name" value="<?=$_pdata->brand?>">
+				<input type="hidden" id="link-label" value="HOTT 온라인 매장">
+				<input type="hidden" id="link-title" value="<?=$_pdata->brand?> <?=$_pdata->productname?>">
+				<input type="hidden" id="link-image" value="<?=$_pdata->maximage?>" data-width='200' data-height='300'>
+				<input type="hidden" id="link-url" value="<?=$link_url ?>">
+				<input type="hidden" id="link-img-path"value="<?=$imgPath ?>">
+				<input type="hidden" id="link-code"value="<?=$productcode ?>">
+				<input type="hidden" id="link-menu"value="product">
+				<input type="hidden" id="link-memid" value="<?=$_ShopInfo->getMemid()?>">	
+					
+				<div class="goods-info-area clear">
+					<div class="thumb-box">
+						<div class="big-thumb" id="thumb-zoomView">
+							<ul class="thumbList-big">
+								<li><img src="<?=$urlpath.$_pdata->maximage?>" alt="상품 대표 썸네일"></li>
+								<?php 
+								for($i=0; $i<count($product_multi_imgs); $i++){
+									if($product_multi_imgs[$i]){
+								?>
+								<li><img src="<?=$urlpath.$product_multi_imgs[$i]?>" alt="상품 대표 썸네일"></li>
+								<?php
+									}							
+								}?>
+							</ul>
+						</div>
+						<ul class="thumbList-small clear">
+							<li><a data-slide-index="0"><img src="<?=$urlpath.$_pdata->maximage?>" alt="상품 대표 썸네일"></a></li>
+							<?php 
+								$muti_img_cnt = 1;
+								for($i=0; $i<count($product_multi_imgs); $i++){
+									if($product_multi_imgs[$i]){
+								?>
+							<li><a data-slide-index="<?=$muti_img_cnt?>"><img src="<?=$urlpath.$product_multi_imgs[$i]?>" alt="상품 대표 썸네일"></a></li>
+							<?php
+										$muti_img_cnt++;
+									}
+								}
+							?>
+						</ul>
+					</div><!-- //.thumb-box -->
+					<div class="specification">
+						<section class="box-intro">
+							<h2>브랜드,상품명,금액,간략소개</h2>
+							<p class="brand-nm"><?=$_pdata->brand?></p>
+							<p class="goods-nm"><?=strip_tags($_pdata->productname)?></p>
+							<p class="goods-code"><?php if($_pdata->prodcode){?>(<?=strip_tags($_pdata->prodcode)?>)<?php }?></p>
+							<div class="price">
+								<strong>\<?=number_format( $_pdata->sellprice )?></strong><del>\<?=number_format( $_pdata->consumerprice )?></del>
+								<div class="discount"><span><?=$_pdata->price_percent?></span>% <i class="icon-dc-arrow">할인</i></div>
+								<input type="hidden" name="sellprice" id="sellprice" value="<?=$_pdata->sellprice?>" />
+							</div>
+							<div class="summarize-ment">
+								<p<?=$_pdata_prcontent?></p>
+							</div>
+						</section><!-- //.box-intro -->
+						<section class="box-summary">
+							<h2>상품의 포인트, 할인정보, 배송비 정보</h2>
+							<ul class="goods-summaryList">
+								<li>
+									<label>포인트 적립</label>
+									<div><?=number_format($_pdata->reserve_info['point_value'])?> P (<?=$_pdata->reserve_info['reserv_value']?> <?=$_pdata->reserve_info['reserv_txt']?>)</div>
+								</li>
+								<li>
+									<label>할인정보</label>
+									<div class="coupon-down">
+										<div class="btn-line"><span>쿠폰 다운로드<i class="icon-download"></i></span></div>
+										<ul class="list">
+										<?php 
+										foreach ($_pdata->coupon as $coupon){?>
+											<li>
+												<p><?=$coupon['coupon_name']?></p>
+												<button type="button" class="btn-line"><span>쿠폰 다운로드<i class="icon-download"></i></span></button>
+											</li>
+										<?php }?>
+										</ul>
+									</div>
+								</li>
+								<li>
+									<label>배송비</label>
+									<div>
+										<p class="delivery-ment"><?=number_format($_pdata->deli_miniprice)?>원 이상 무료배송 </p>
+										<div class="question-btn ml-5">
+											<i class="icon-question">무료배송기준 설명</i>
+											<div class="comment">
+												<dl>
+													<dt>배송비 안내</dt>
+													<dd><strong>택배수령:</strong> <?=number_format($_pdata->deli_miniprice)?>원 이상 결제시 무료배송</dd>
+													<dd><strong>당일수령:</strong> 거리별 추가 배송비 발생</dd>
+													<dd><strong>매장픽업:</strong> 배송비 발생하지 않음</dd>
+												</dl>
+											</div>
+										</div>
+									</div>
+								</li>
+							</ul>
+						</section><!-- //.box-summary -->
+						<section class="box-opt">
+							<h2>상품의 색상,사이즈,수량</h2>
+							<div class="goods-colorChoice">
+								<?php 
+								foreach ($_pdata->color as $color){
+									$isActive = "";
+									if($_pdata->color_code == $color['color_code']){
+										$isActive = "active";
+									}
+								?>
+								<label class="<?=$isActive?>" style="background-color: <?=$color['color_rgb']?>;">
+									<input type="radio" name="add_option[]" value="<?=$color['color_code']?>">
+									<span><?=$color['color_name']?></span>
+								</label>
+								<?php }?> 
+							</div>
+							<div class="opt-size-wrap">
+								<div class="opt-size mt-10">
+									<?php
+									if( strlen( $_pdata->option1 ) > 0 && $_pdata->quantity > 0  && $_pdata->option_type == '0' ){ // 조합형 옵션
+										foreach( $optionNames as $nameKey=>$nameVal ) {
+											?>
+											<div class="comp-select size">
+												<select name='op_opt[]' class="my_value CLS_option_value" title="<?=$nameVal?>" data-option-code='' onchange="javascript:option_select( this.value, '<?=$nameKey?>' );">
+													<option value="" data-qty='' data-code=''><?=$nameVal?></option>
+													<?php
+													if( $nameKey == 0 ) {
+														foreach( $options as $oKey=>$oVal ) {
+															$option_qty = $oVal['qty'];
+															$option_disable = '';
+															$option_text = '';
+															$priceText = '';
+															if(  $option_depth == 1 && $oVal['price'] > 0 ){
+																$priceText = ' ( + '.number_format($oVal['price']).' 원 )';
+															} else if( $option_depth == 1 && $oVal['price'] < 0 ) {
+																$priceText = ' ( - '.number_format($oVal['price']).' 원 )';
+															}
+			
+															if(
+																( $option_qty !== null && $option_qty <= 0 ) &&
+																( ( $option_depth > 0 && $nameKey != 0 ) || ( $option_depth == 1 && $nameKey == 0 ) ) &&
+																$_pdata->quantity < 999999999
+															){
+																$option_disable = ' disable';
+																$option_text = '[품절]';
+															}
+															?>
+															<option value="<?=$oVal["code"]?>" <?=$option_disable?> data-qty='<?=$option_qty?>' data-code='<?=$oVal["code"]?>'><?=$option_text.$oVal["code"].$priceText?></option>
+															<?php
+														} // foreach $options
+													} // nameKey if
+													?>
+												</select>
+											</div>
+											<?php
+										} // optionNames foreach
+									} else if( strlen( $_pdata->option1 ) > 0 && $_pdata->quantity <= 0  && $_pdata->option_type == '0' ) { // if $_pdata->option1 품절된 옵션
+										foreach( $optionNames as $nameKey=>$nameVal ) {
+											?>
+											<div>
+												<input type="radio" name="op_opt[]" class="my_value CLS_option_value" disabled title="<?=$nameVal?>" value="품절">
+												<label for="size<?=$oVal["code"]?>"><?=$oVal["code"]?></label>
+											</div>
+											<?php
+										} // optionNames foreach
+									}
+									$tf_arr = explode( '@#', $_pdata->option1_tf );
+									if( strlen( $_pdata->option1 ) > 0 && $_pdata->quantity > 0  && $_pdata->option_type == '1' ){ // 독립형 옵션
+										foreach( $optionNames as $nameKey=>$nameVal ) {
+											?>
+											<div class="comp-select size">
+												<select name='alone_option[]' class="my_value" title="<?=$nameVal?><?=($tf_arr[$nameKey] == 'T')?' (필수)':' (선택)'?>" data-option-code='' data-option-qty='' onchange="javascript:option_select( this.value, '<?=$nameKey?>' );">
+													<option value="" data-qty='' data-code='' data-tf=''><?=$nameVal?><?=($tf_arr[$nameKey] == 'T')?' (필수)':' (선택)'?></option>
+													<?php
+													foreach( $options[$nameVal] as $oKey=>$oVal ) {
+														if( $oVal->option_tf == 'T' ) $tf_text = '*필수';
+														//exdebug( $oVal );
+														$option_disable = '';
+														$option_text = '';
+														$priceText = '';
+														if( $oVal->option_price > 0 ){
+															$priceText = ' ( + '.number_format($oVal->option_price).' 원 )';
+														}else if( $oVal->option_price < 0 ) {
+															$priceText = ' ( - '.number_format($oVal->option_price).' 원 )';
+														}
+														if(
+															( $oVal->option_quantity !== null && $oVal->option_quantity < 0 ) &&
+															$_pdata->quantity < 999999999
+														){
+															$option_disable = ' disable';
+															$option_text = '[품절]';
+														}
+														?>
+														<option value="<?=$oVal["code"]?>" <?=$option_disable?> data-qty='<?=$oVal->option_quantity?>' data-code='<?=$oVal->option_code?>' data-tf='<?=$oVal->option_tf?>'><?=$option_text.$oKey.$priceText?></option>
+														<?php
+													}
+													?>
+												</select>
+												<input type='hidden' name='alone_option_tf[]' value='<?=$oVal->option_tf?>' >
+											</div>
+											<?php
+										} // $optionName foreach
+									} else if( strlen( $_pdata->option1 ) > 0 && $_pdata->quantity <= 0  && $_pdata->option_type == '1' ) { // option_type if
+										foreach( $optionNames as $nameKey=>$nameVal ) {
+											?>
+											<div class="comp-select size">
+												<select name='op_opt[]' class="my_value CLS_option_value" title="<?=$nameVal?>" data-option-code='' >
+													<option value="" data-qty='' data-code='' selected>품절</option>
+												</select>
+											</div>
+											<?php
+										}
+									}
+									if( strlen( $_pdata->option2 ) > 0 && $_pdata->quantity > 0 ){
+										foreach( $addOptionNames as $addKey=>$addVal ){
+											?>
+											<div class="qty comp-input">
+												<input type="text" class="input-def" name ='addoption[]' data-option-code='<?=$addVal?>' data-option-tf='<?=$addOption_tf[$addKey]?>' maxlength='<?=$addOption_maxlen[$addKey]?>'>
+												<input type='hidden' name='addoption_tf[]' value='<?=$addOption_tf[$addKey]?>' >
+												<span class="byte hide">(<strong>0</strong>/<?=$addOption_maxlen[$addKey]?>)</span>
+											</div>
+											<?php
+										} // addoption foreach
+									} else if( strlen( $_pdata->option2 ) > 0 && $_pdata->quantity <= 0 ) {// addoption if
+										foreach( $addOptionNames as $addKey=>$addVal ){
+											?>
+											<div class="qty comp-input">
+												<input type="text" name ='addoption[]' data-option-code='<?=$addVal?>' data-option-tf='<?=$addOption_tf[$addKey]?>' maxlength='<?=$addOption_maxlen[$addKey]?>' disabled value='품절' >
+												<input type='hidden' name='addoption_tf[]' value='<?=$addOption_tf[$addKey]?>' >
+												<span class="byte hide">(<strong>0</strong>/<?=$addOption_maxlen[$addKey]?>)</span>
+											</div>
+											<?php
+										} // addoption foreach
+									}
+									?>		
+									<?php
+										if( $nameKey == 0 ) {
+											foreach( $options as $oKey=>$oVal ) {
+												$option_qty = $oVal['qty'];
+												$option_disable = '';
+												$option_disable_txt = ' disable';
+												$option_text = '';
+												$priceText = '';
+												if(  $option_depth == 1 && $oVal['price'] > 0 ){
+													$priceText = ' ( + '.number_format($oVal['price']).' 원 )';
+												} else if( $option_depth == 1 && $oVal['price'] < 0 ) {
+													$priceText = ' ( - '.number_format($oVal['price']).' 원 )';
+												}
+
+												if(
+													( $option_qty !== null && $option_qty <= 0 ) &&
+													( ( $option_depth > 0 && $nameKey != 0 ) || ( $option_depth == 1 && $nameKey == 0 ) ) &&
+													$_pdata->quantity < 999999999
+												){
+													$option_disable = $option_disable_txt;
+// 													$option_text = '[품절]';
+												}
+												?>
+												<div>
+													<input type="radio" name="optSize" id="size<?=$oVal["code"]?>" value="<?=$oVal["code"]?>" <?php if($option_disable == $option_disable_txt){?>disabled<?php }?>>
+													<label for="size<?=$oVal["code"]?>"><?=$oVal["code"]?></label>
+												</div>
+												<?php /*
+												<option value="<?=$oVal["code"]?>" <?=$option_disable?> data-qty='<?=$option_qty?>' data-code='<?=$oVal["code"]?>'><?=$option_text.$oVal["code"].$priceText?></option>
+												*/?>
+												<?php
+											} // foreach $options
+										} // nameKey if
+									?>
+								</div>
+								<a href="javascript:void();" class="btn-size-guide">사이즈 가이드</a>
+							</div>
+							<div class="quantity mt-10">
+								<input type="text" value="1" name="add_quantity[]" readonly>
+								<button class="plus"></button>
+								<button class="minus"></button>
+							</div>
+						</section><!-- //.box-opt -->
+						<section class="box-delivery">
+							<h2>상품수령방법 선택 - 택배수령,당일수령,매장픽업</h2>
+							<div class="delivery-type mt-20" data-ui="TabMenu">
+								<div class="type">
+									<?foreach($arrDeliveryType as $k => $v){?>
+									<div class="radio" >
+										<input type="radio" class="CLS_delivery_type" id="deliver_type<?=$k?>" name="delivery_type" data-type="<?=$k?>" value="<?=$k?>" <?if($k=='0'){?>checked<?}?>>
+										<label for="deliver_type<?=$k?>"><?=$v?></label>
+									</div>
+									<?php }?>
+<!-- 									<div class="radio" > -->
+<!-- 										<input type="radio" name="delivery_type" id="deliver_typeA" checked data-type="A" value="A"> -->
+<!-- 										<label for="deliver_typeA">택배수령</label> -->
+<!-- 									</div> -->
+<!-- 									<div class="radio"> -->
+<!-- 										<input type="radio" name="delivery_type" id="deliver_typeB" data-type="B" value="B"> -->
+<!-- 										<label for="deliver_typeB">당일수령</label> -->
+<!-- 									</div> -->
+<!-- 									<div class="radio"> -->
+<!-- 										<input type="radio" name="delivery_type" id="deliver_typeC" data-type="C" value="C"> -->
+<!-- 										<label for="deliver_typeC">매장픽업</label> -->
+<!-- 									</div> -->
+									<div class="question-btn">
+										<i class="icon-question">타이틀</i>
+										<div class="comment">
+											<dl>
+												<dt>배송방법 안내</dt>
+												<dd><strong>택배수령:</strong> 택배로 발송하는 기본 배송 서비스</dd>
+												<dd><strong>당일수령:</strong> 당일수령이 가능한 라이더 배송 서비스</dd>
+												<dd><strong>매장픽업:</strong> 원하는 날짜, 원하는 매장에서 상품을 <br><span style="padding-left:54px"></span>받아가는 맞춤형 배송 서비스</dd>
+											</dl>
+										</div>
+									</div>
+								</div><!-- //.type -->
+								<div id="store-select-1" class="store-select hide">&nbsp;
+									<button class="btn-basic" type="button" id="btn-shopToday"><span>매장 선택</span></button> 
+								</div>
+								<div id="store-select-2" class="store-select hide">&nbsp;
+									<button class="btn-basic" type="button" id="btn-shopPickup"><span>매장 선택</span></button> 
+								</div>
+							</div>
+						</section><!-- //.box-delivery -->
+						
+						<section class="box-price">
+							<h2>총 금액확인, 구매버튼, 장바구니버튼, 좋아요버튼</h2>
+							<div class="total clear"><span>총 합계</span><strong id="sellprice_txt">\<?=number_format( $_pdata->sellprice )?></strong></div>
+							<div class="buy-btn clear">
+							
+								<?if( $_pdata->quantity <= 0 || $_pdata->soldout == 'Y' ) {?>
+								<a href="javascript:alert('품절된 상품입니다.');" class="btn-point w100-per">바로구매</a>
+								<?php 
+								} else {
+									$mem_auth_type	= getAuthType($_ShopInfo->getMemid());
+									if($mem_auth_type!='sns') {
+									?>
+								<a href="javascript:order_check('<?=strlen( $_ShopInfo->getMemid() )?>','N');" class="btn-point w100-per">바로구매</a>	
+									<?php 	 
+									} else {
+									?>
+								<a href="javascript:chkAuthMemLoc('','pc');" class="btn-point w100-per">바로구매</a>	
+									<?php 
+									}
+								}?>
+								<ul class="mt-10">
+									<?if( $_pdata->quantity <= 0 || $_pdata->soldout == 'Y' ) {
+										if ($_pdata->hotdealyn=='N') {?>
+									<li><button class="btn-line" type="button"><span><i class="icon-cart mr-10"></i>장바구니</button></span></li>
+									<?php 
+										}
+									} else {
+										$mem_auth_type	= getAuthType($_ShopInfo->getMemid());
+										if($mem_auth_type!='sns') {
+											if ($_pdata->hotdealyn=='N') {?>
+									<li><button class="btn-line" type="button" onclick="basket_check();"><span><i class="icon-cart mr-10"></i>장바구니</button></span></li>
+											<?}
+										} else {
+											if ($_pdata->hotdealyn=='N') {?>
+									<li><button class="btn-line" type="button" href="javascript:chkAuthMemLoc('','pc');"><span><i class="icon-cart mr-10"></i>장바구니</button></span></li>
+											<?}
+										}
+									}?>
+									<?if($like_info->section){ ?>
+										<li>	
+											<button class="btn-line like_p<?=$like_info->productcode?>" type="button" onclick="detailSaveLike('<?=$like_info->productcode?>','on','product','<?=$_ShopInfo->getMemid()?>','<?=$_pdata->brand?>')">
+												<span><i class="icon-like mr-10 on"></i>좋아요 <span class="point-color like-cnt-txt">(<?=$like_info->hott_cnt ?>)</span>
+											</button></span>
+										</li>
+									<?}else{ ?>
+										<li>	
+											<button class="btn-line like_p<?=$like_info->productcode?>" type="button" onclick="detailSaveLike('<?=$like_info->productcode?>','off','product','<?=$_ShopInfo->getMemid()?>','<?=$_pdata->brand?>')">
+												<span class="like_pcount_<?=$like_info->productcode ?>"><i class="icon-like mr-10"></i>좋아요 <span class="point-color like-cnt-txt">(<?=$like_info->hott_cnt ?>)</span>
+											</button></span>
+										</li>
+									<?} ?>
+								</ul>
+							</div>
+						</section><!-- //.box-price -->
+						
+						
+						<ul class="layer-view-menu">
+							<li><button type="button" id="btn-detailPop"><span>상품상세정보1</span></button><i class="icon-crosshair"></i></li>
+							<li><button type="button" id="btn-deliveryPop"><span>배송반품</span></button><i class="icon-crosshair"></i></li>
+						</ul><!-- //.layer-view-menu -->
+						<div class="board-share">
+							<div class="board-btn">
+								<button class="btn-line" type="button" id="btn-reviewList"><span>리뷰<span class="point-color">(<?=$t_count_review?>)</span></span></button>
+								<button class="btn-line" type="button" id="btn-qnaList"><span>Q&amp;A<span class="point-color">(<?=$t_count_qna?>)</span></span></button>
+							</div>
+							<div class="share">
+								<button type="button" type="button"><span><i class="icon-share">상품 공유하기</i></span></button>
+								<div class="links">
+									<a href="javascript:kakaoStory();"><i class="icon-kas">카카오 스토리</i></a>
+									<a id="facebook-link" href="javascript:;"><i class="icon-facebook-dark">페이스북</i></a>
+									<a id="twitter-link" href="javascript:;"><i class="icon-twitter">트위터</i></a>
+									<a id="band-link" href="javascript:;"><i class="icon-band">밴드</i></a>
+									<a href="javascript:ClipCopy('<?=$link_url ?>');"><i class="icon-link">링크</i></a>
+								</div>
+							</div>
+						</div><!-- //.board-share -->
+					</div><!-- //.goods-specification -->
+				</div><!-- //.goods-info-area -->
+			</form>
+
+			<div class="mds-choice">
+				<h3 class="roof-title"><span>MD's CHOICE</span></h3>
+				<ul class="goods-list four clear">
+					<?php
+					// 관련 상품 위민트 170201
+					foreach( $arrRelatedProdList as $related_prod ){
+					?>
+					<li>
+						<div class="goods-item">
+							<div class="thumb-img">
+								<a href="#"><img src="<?=$urlpath.$related_prod['maximage']?>" alt="상품 썸네일"></a>
+								<div class="layer">
+									<div class="btn">
+										<button type="button" class="btn-preview"><span><i class="icon-cart">장바구니</i></span></button>
+										<button type="button"	<span><i class="icon-like">좋아요</i></span><span><?=$related_prod['hott_cnt']?></span></button>
+									</div>
+									<div class="opt">
+										<span>55</span>
+										<span>66</span>
+										<span>77</span>
+									</div>
+								</div>
+							</div>
+							<div class="price-box">
+								<div class="brand-nm"><?=$related_prod['productname']?></div>
+								<div class="goods-nm"><?=$related_prod['pr_content']?></div>
+								<div class="price">\<?=number_format( $related_prod['sellprice'] )?></div>
+							</div>
+						</div>
+					</li>
+					<?php } // related foreach
+					?>
+				</ul>
+			</div><!-- //.mds-choice -->
+			<div class="category-best">
+				<h3 class="roof-title"><span>CATEGORY BEST</span></h3>
+				<ul class="goods-list four clear">
+					<li>
+						<div class="goods-item">
+							<div class="thumb-img">
+								<a href="#"><img src="/sinwon/web/static/img/test/@goods_thumb300_07.jpg" alt="상품 썸네일"></a>
+								<div class="layer">
+									<div class="btn">
+										<button type="button" class="btn-preview"><span><i class="icon-cart">장바구니</i></span></button>
+										<button type="button"><span><i class="icon-like">좋아요</i></span><span>11</span></button> <!-- [D] 좋아요 선택시 .on 처리 -->
+									</div>
+									<div class="opt">
+										<span>55</span>
+										<span>66</span>
+										<span>77</span>
+									</div>
+								</div>
+							</div><!-- //.thumb-img -->
+							<div class="price-box">
+								<div class="brand-nm">BESTI BELLI</div>
+								<div class="goods-nm">솔리드 심플 벨티드 자켓 롱롱한 길이의 자켓 멋지다</div>
+								<div class="price">\105,800</div>
+							</div>
+						</div>
+					</li>
+					<li>
+						<div class="goods-item">
+							<div class="thumb-img">
+								<a href="#"><img src="/sinwon/web/static/img/test/@goods_thumb300_06.jpg" alt="상품 썸네일"></a>
+								<div class="layer">
+									<div class="btn">
+										<button type="button" class="btn-preview"><span><i class="icon-cart">장바구니</i></span></button>
+										<button type="button"><span><i class="icon-like">좋아요</i></span><span>11</span></button> <!-- [D] 좋아요 선택시 .on 처리 -->
+									</div>
+									<div class="opt">
+										<span>55</span>
+										<span>66</span>
+										<span>77</span>
+									</div>
+								</div>
+							</div><!-- //.thumb-img -->
+							<div class="price-box">
+								<div class="brand-nm">BESTI BELLI</div>
+								<div class="goods-nm">솔리드 심플 벨티드 자켓</div>
+								<div class="price">\105,800</div>
+							</div>
+						</div>
+					</li>
+					<li>
+						<div class="goods-item">
+							<div class="thumb-img">
+								<a href="#"><img src="/sinwon/web/static/img/test/@goods_thumb300_02.jpg" alt="상품 썸네일"></a>
+								<div class="layer">
+									<div class="btn">
+										<button type="button" class="btn-preview"><span><i class="icon-cart">장바구니</i></span></button>
+										<button type="button"><span><i class="icon-like">좋아요</i></span><span>11</span></button> <!-- [D] 좋아요 선택시 .on 처리 -->
+									</div>
+									<div class="opt">
+										<span>55</span>
+										<span>66</span>
+										<span>77</span>
+									</div>
+								</div>
+							</div><!-- //.thumb-img -->
+							<div class="price-box">
+								<div class="brand-nm">BESTI BELLI</div>
+								<div class="goods-nm">솔리드 심플 벨티드 자켓</div>
+								<div class="price">\105,800</div>
+							</div>
+						</div>
+					</li>
+					<li>
+						<div class="goods-item">
+							<div class="thumb-img">
+								<a href="#"><img src="/sinwon/web/static/img/test/@goods_thumb300_05.jpg" alt="상품 썸네일"></a>
+								<div class="layer">
+									<div class="btn">
+										<button type="button" class="btn-preview"><span><i class="icon-cart">장바구니</i></span></button>
+										<button type="button"><span><i class="icon-like">좋아요</i></span><span>11</span></button> <!-- [D] 좋아요 선택시 .on 처리 -->
+									</div>
+									<div class="opt">
+										<span>55</span>
+										<span>66</span>
+										<span>77</span>
+									</div>
+								</div>
+							</div><!-- //.thumb-img -->
+							<div class="price-box">
+								<div class="brand-nm">BESTI BELLI</div>
+								<div class="goods-nm">솔리드 심플 벨티드 자켓 롱롱한 길이의 자켓 멋지다</div>
+								<div class="price">\105,800</div>
+							</div>
+						</div>
+					</li>
+				</ul>
+			</div><!-- //.category-best -->
+
+		</article><!-- //.goods-view-wrap -->
+
+		<div class="goodsThumb-zoom inner-align ta-c hide">
+			<button type="button" id="thumb-zoomClose"><span><i class="icon-close-small">닫기</i></span></button>
+			<ul>
+				<li><img src="/sinwon/web/static/img/test/@goods_thumb900_01.jpg" alt="큰 썸네일"></li>
+				<li><img src="/sinwon/web/static/img/test/@goods_thumb900_02.jpg" alt="큰 썸네일"></li>
+				<li><img src="/sinwon/web/static/img/test/@goods_thumb900_03.jpg" alt="큰 썸네일"></li>
+			</ul>
+		</div><!-- //.goodsThumb-zoom -->
+
+	</div>
+</div><!-- //#contents -->
+
+
+<!-- 상세 > 상품상세정보 -->
+<div class="layer-dimm-wrap goodsDetail-pop">
+	<div class="layer-inner">
+		<h2 class="layer-title">상품 상세정보</h2>
+		<button class="btn-close" type="button"><span>닫기</span></button>
+		<div class="layer-content">
+			
+			<div class="editor-output" style="text-align: left;">
+				<ul>
+					
+					<?php
+					/*****************************
+					 * 정보고시 조회 
+					 *****************************/
+					$i=0;
+					foreach ($arr_sabang_info as $sabang){
+						if($i>0 && $sabang['prop'] != ''){
+					?>
+					<li><?=$sabang['opt']." : ".$sabang['prop']?></li>
+					<?php
+						}
+						$i++;
+					}?>
+				</ul>
+			</div>
+
+		</div><!-- //.layer-content -->
+	</div>
+</div><!-- //상세 > 상품상세정보 -->
+
+<!-- 상세 > 배송반품 -->
+<div class="layer-dimm-wrap goodsDelivery-pop">
+	<div class="layer-inner">
+		<h2 class="layer-title">배송반품</h2>
+		<button class="btn-close" type="button"><span>닫기</span></button>
+		<div class="layer-content">
+			
+			<section class="delivery-info">
+				<h3 class="title">배송정보</h3>
+				<ul>
+					<li><?=$deli_info?></li>
+				</ul>
+			</section>
+
+		</div><!-- //.layer-content -->
+	</div>
+</div><!-- //상세 > 배송반품 -->
+
+<!-- 상세 > 매장픽업 -->
+<div class="layer-dimm-wrap find-shopPickup">
+	<div class="layer-inner">
+		<h2 class="layer-title">매장선택</h2>
+		<div class="popup-summary"><p>※ 원하는 날짜, 원하는 매장에서 상품을 픽업하는 맞춤형 배송 서비스입니다.</p></div>
+		<button class="btn-close" type="button"><span>닫기</span></button>
+		<div class="layer-content">
+
+			<div class="shop-search">
+				<label>픽업 가능 매장 검색</label>
+				<div class="select">
+					<select>
+						<option value="">시&middot;도</option>
+					</select>
+				</div>
+				<div class="select">
+					<select>
+						<option value="">구&middot;군</option>
+					</select>
+				</div>
+				<div class="select">
+					<select>
+						<option value="">수령일 선택</option>
+					</select>
+				</div>
+			</div>
+
+			<div class="mt-25 clear">
+				<div class="shopList-wrap">
+					<section class="shopList">
+						<h4 class="title">동일 브랜드 매장정보</h4>
+						<ul>
+							<li>
+								<div class="radio">
+									<input type="radio" name="pickShop" id="pickSame_shop01">
+									<label for="pickSame_shop01">[VIKI] 강남직영점</label>
+								</div>
+								<div class="point-color">재고있음</div>
+							</li>
+							<li>
+								<div class="radio">
+									<input type="radio" name="pickShop" id="pickSame_shop02">
+									<label for="pickSame_shop02">[VIKI] 강남직영점</label>
+								</div>
+							</li>
+						</ul>
+					</section>
+					<section class="shopList mt-15">
+						<h4 class="title">기타 매장정보</h4>
+						<ul>
+							<li>
+								<div class="radio">
+									<input type="radio" name="pickShop" id="pickOther_shop01">
+									<label for="pickOther_shop01">[VIKI] 강남직영점</label>
+								</div>
+								<div class="point-color">3~5일 소요</div>
+							</li>
+							<li>
+								<div class="radio">
+									<input type="radio" name="pickShop" id="pickOther_shop02">
+									<label for="pickOther_shop02">[VIKI] 역삼직영점</label>
+								</div>
+								<div class="point-color">3~5일 소요</div>
+							</li>
+						</ul>
+					</section>
+				</div><!-- //.shopList-wrap -->
+				<div class="shopDetail-wrap">
+					<dl>
+						<dt>[VIKI]강남직영점</dt>
+						<dd><span>주소</span>서울 강남구 언주역</dd>
+						<dd><span>TEL</span>(02)1234-1234</dd>
+					</dl>
+					<div class="map-local" id="map-canvas"></div>
+				</div><!-- //.shopDetail-wrap -->
+			</div>
+			<div class="btnPlace mt-40">
+				<button class="btn-line  h-large" type="button"><span>취소</span></button>
+				<button class="btn-point h-large" type="button"><span>선택</span></button>
+			</div>
+
+		</div><!-- //.layer-content -->
+	</div>
+</div><!-- //상세 > 매장픽업 -->
+
+<!-- 상세 > 당일수령 -->
+<div class="layer-dimm-wrap find-shopToday">
+	<div class="layer-inner">
+		<h2 class="layer-title">매장선택</h2>
+		<div class="popup-summary"><p>※ 원하는 날짜, 원하는 매장에서 상품을 픽업하는 맞춤형 배송 서비스입니다. <br>수령지를 입력하신 후 발송 가능 매장을 검색하세요(오후 4시전 주문시 당일수령 가능)</p></div>
+		<button class="btn-close" type="button"><span>닫기</span></button>
+		<div class="layer-content">
+
+			<div class="shop-search">
+				<label>수령지 정보 입력</label>
+				<fieldset>
+					<legend>수령지 검색</legend>
+					<input type="text" title="검색할 주소지 입력" placeholder="주소검색">
+					<input type="text" title="검색할 상세주소지 입력" placeholder="상세주소 입력">
+					<button class="btn-point" type="submit"><span>발송 가능 매장 찾기</span></button>
+				</fieldset>
+			</div>
+
+			<div class="mt-25 clear">
+				<div class="shopList-wrap with-deliveryPrice">
+					<div class="inner">
+						<section class="shopList">
+							<h4 class="title">동일 브랜드 매장정보</h4>
+							<ul>
+								<li>
+									<div class="radio">
+										<input type="radio" name="pickToday" id="pickToday_shop01">
+										<label for="pickToday_shop01">[VIKI] 강남직영점</label>
+									</div>
+									<div class="point-color">재고있음</div>
+								</li>
+								<li>
+									<div class="radio">
+										<input type="radio" name="pickToday" id="pickToday_shop02">
+										<label for="pickToday_shop02">[VIKI] 강남직영점</label>
+									</div>
+								</li>
+								<li>
+									<div class="radio">
+										<input type="radio" name="pickToday" id="pickToday_shop03">
+										<label for="pickToday_shop03">[VIKI] 강남직영점</label>
+									</div>
+									<div class="point-color">재고있음</div>
+								</li>
+							</ul>
+						</section>
+					</div>
+					<div class="delivery-price clear"><label>배송비</label><strong class="point-color">9,300<span>원</span></strong></div>
+				</div><!-- //.shopList-wrap -->
+				<div class="shopDetail-wrap">
+					<dl>
+						<dt>[VIKI]강남직영점</dt>
+						<dd><span>주소</span>서울 강남구 언주역</dd>
+						<dd><span>TEL</span>(02)1234-1234</dd>
+					</dl>
+					<div class="map-local" id="map-canvas"></div>
+				</div><!-- //.shopDetail-wrap -->
+			</div>
+			<div class="btnPlace mt-40">
+				<button class="btn-line  h-large" type="button"><span>취소</span></button>
+				<button class="btn-point h-large" type="button"><span>선택</span></button>
+			</div>
+
+		</div><!-- //.layer-content -->
+	</div>
+</div><!-- //상세 > 당일수령 -->
+
+<!-- 주문 > 배송지목록 -->
+<div class="layer-dimm-wrap popList delivery">
+	<div class="layer-inner">
+		<h2 class="layer-title">배송지 목록</h2>
+		<button class="btn-close" type="button"><span>닫기</span></button>
+		<div class="layer-content">
+
+			<ul class="list">
+				<li>
+					<div class="radio ml-20">
+						<input type="radio" name="my_deliveryList" id="deliver_list1">
+						<label for="deliver_list1"></label>
+					</div>
+					<div class="content w300">
+						<p class="bold">홍길동</p>
+						<p class="txt-toneB">서울 강남구 강남대로 123번지</p>
+					</div>
+				</li>
+				<li>
+					<div class="radio ml-20">
+						<input type="radio" name="my_deliveryList" id="deliver_list2">
+						<label for="deliver_list2"></label>
+					</div>
+					<div class="content w300">
+						<p class="bold">홍길동</p>
+						<p class="txt-toneB">서울 강남구 강남대로 123번지</p>
+					</div>
+				</li>
+				<li>
+					<div class="radio ml-20">
+						<input type="radio" name="my_deliveryList" id="deliver_list3">
+						<label for="deliver_list3"></label>
+					</div>
+					<div class="content w300">
+						<p class="bold">홍길동</p>
+						<p class="txt-toneB">서울 강남구 강남대로 123번지 서울 강남구 강남대로 123번지 서울 강남구 강남대로 123번지</p>
+					</div>
+				</li>
+			</ul>
+			<div class="btnPlace mt-10">
+				<button class="btn-line  h-large" type="button"><span>취소</span></button>
+				<button class="btn-point h-large" type="button"><span>적용</span></button>
+			</div>
+
+		</div><!-- //.layer-content -->
+	</div>
+</div><!-- //주문 > 배송지목록 -->
+
+<!-- 주문 > 매장안내 -->
+<div class="layer-dimm-wrap pop-infoStore">
+	<div class="layer-inner">
+		<h2 class="layer-title">매장 위치정보</h2>
+		<button class="btn-close" type="button"><span>닫기</span></button>
+		<div class="layer-content">
+
+			<h3 class="store-title">[VIKI]강남직영점</h3>
+			<table class="th-left mt-15">
+				<caption>매장 정보</caption>
+				<colgroup>
+					<col style="width:180px">
+					<col style="width:auto">
+				</colgroup>
+				<tbody>
+					<tr>
+						<th scope="row"><label>주소</label></th>
+						<td>서울 강남구 강남대로 238-11</td>
+					</tr>
+					<tr>
+						<th scope="row"><label>운영시간</label></th>
+						<td>평일 09:00 ~ 18:00 (토/일 09:00 ~ 18:00)</td>
+					</tr>
+					<tr>
+						<th scope="row"><label>휴무정보</label></th>
+						<td>매주 일요일 / 국경일</td>
+					</tr>
+					<tr>
+						<th scope="row"><label>매장 전화번호</label></th>
+						<td>02-5212-2512</td>
+					</tr>
+				</tbody>
+			</table>
+			<div class="map-local mt-10">구글지도 위치</div>
+
+		</div><!-- //.layer-content -->
+	</div>
+</div><!-- //주문 > 매장안내 -->
+
+<?php 
+// include_once($Dir."lib/product_layer.php");			// 상품 상세 관련 레이어(리뷰, 쿠폰 등..)추가 위민트 170131
+?>

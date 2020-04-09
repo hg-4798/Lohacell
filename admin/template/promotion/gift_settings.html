@@ -1,0 +1,100 @@
+<div class="content-wrap">
+									<div class="title_depth3">고객사은품 관리 등록
+										<span>사은품을 관리합니다.</span>
+									</div>
+									<table cellpadding="0" cellspacing="0" width="100%" class="m-t-20">
+										<tbody>
+											<tr>
+												<td width="100%">
+													<div class="table_style01" id="giftRegDiv">
+														{=include("gift_settings_form.php")}
+													</div>
+												</td>
+											</tr>
+										</tbody>
+									</table>
+									<!--{* 기간할인목록:S *}-->
+									<div id="inner" class="table_style02">
+										{=include("gift_settings_list.php")}
+									</div>
+									<!--{* 기간할인목록:E *}-->
+									<div class="sub_manual_wrap mt_100">
+										<div class="title">
+											<p>매뉴얼</p>
+										</div>
+										<dl>
+											<dt>
+												<span>고객사은품 관리</span>
+											</dt>
+											<dd>
+												- 삭제 : 판매수량이 0인 경우에만 삭제 가능합니다.
+											</dd>
+										</dl>
+									</div>
+									</div>
+
+<script type="text/javascript">
+	var GiftSettings = {
+		page: 1,
+
+		init: function () {
+			this.load();
+		},
+
+		load: function (page) {
+			UI.ing('데이터를 불러오는 중입니다...');
+			var p = page || GiftSettings.page;
+
+			$('#inner').load('gift_settings_list.php', {
+					page: p
+				},
+				function () {
+					GiftSettings.page = p;
+					//UI.toggleCheck();
+					$('[data-toggle="tooltip"]').tooltip();
+					UI.ing();
+				}
+			);
+		},
+		reset: function () {
+			document.giftRegForm.reset();
+			$("#giftRegDiv").load("gift_settings_form.php");
+		},
+		modify: function (idx) {
+			$("#giftRegDiv").load("gift_settings_form.php?mode=mod&idx=" + idx);
+		},
+		delete: function (idx) {
+			if (!confirm('삭제하시겠습니까?')) return false;
+			$.ajax({
+				type: "POST",
+				url: "{C.DIR_ADMIN}/proc/gift_settings.proc.php",
+				data: {
+					mode:'del',
+					idx:idx
+				},
+				dataType: "json",
+				success: function (data) {
+					if (data.success) {
+						GiftSettings.load(1);
+					} else {
+						alert(data.msg);
+					}
+				},
+				error: function (result) {
+				}
+			});
+		}
+	}
+
+	$(document).ready(function () {
+		GiftSettings.init();
+	});
+
+	/*
+	    function Go_ListForm(){
+	        window.location.href="gift_settings_list.php";
+	    }
+	*/
+</script>
+
+<script type="text/javascript" src="/admin/static/js/jquery.form.js"></script>

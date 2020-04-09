@@ -1,0 +1,97 @@
+{? !end_yn}
+<div class="reply_write">
+	<form id="FrmComment" onsubmit="return false;">
+		<input type="hidden" name="board" value="event">
+		<input type="hidden" name="parent" value="{pidx}">
+		<input type="hidden" name="mode" value="comment">
+		<input type="hidden" name="act" value="insert">
+	<textarea placeholder="{? login.id} ※ 댓글을 등록해 주세요. "{:} ※ 로그인 후 작성이 가능합니다. " disabled{/} id="comment_textarea" name="comment" onkeydown="EventDetail.lengchk(this,'textarea_length');"
+	onkeyup="EventDetail.lengchk(this,'textarea_length');" maxlength="300" class="validate[required,max[300]]" data-errormessage-value-missing="댓글을 입력하세요." ></textarea>
+	<div class="clear">
+		<span class="txt_count"><span class="point-color" id="textarea_length">0</span>/300</span>
+		{? login.id }
+		<button class="btn-point" type="submit">
+			<span>등록</span>
+		</button>
+		{:}
+		<button class="btn-point" type="button" onclick="location.href='{C.DIR_M}/login.php?chUrl={_SERVER.REQUEST_URI}'">
+			<span>로그인</span>
+		</button>
+		{/}
+	</div>
+	</form>
+</div><!-- //.reply_write -->
+{:}
+{/}
+<div class="reply_list" id="comment_list">
+	<p class="count">댓글 {total}</span></p>
+	<ul>
+		{@ list}
+		<li><!-- [D] 본인이 작성한 댓글 -->
+			<div class="info">
+				<span class="writer">{=format(.c_mem_id,'id')}</span><span class="date">{=format(.writetime,'Y-m-d H:i')}</span>
+			</div>
+			<p class="content">{=nl2br(.comment)}</p>
+			{? .owner && !end_yn}
+			<div class="btns">
+				<button class="btn-line" type="button" onclick="EventDetail.toggleComment('{.num}')"><span id="btn_modify_{.num}">수정</span></button>
+				<button class="btn-basic" type="button" onclick="EventDetail.removeComment('{.num}')">삭제</button>
+			</div>
+
+			<div id="modify_{.num}" class="reply-reg-box hide">
+				<form id="FrmModComment_{.num}" onsubmit="return false;">
+					<input type="hidden" name="comment_num" value="{.num}">
+					<input type="hidden" name="mode" value="comment">
+					<input type="hidden" name="act" value="modify">
+					<div class="reply_write">
+						<!--@TODO 수정시에 태그가 나타남-->
+							<textarea placeholder="※ 댓글을 입력해 주세요." id="comment_textarea" name="comment" onkeydown="EventDetail.lengchk(this,'textarea_length_{.num}');" onkeyup="EventDetail.lengchk(this,'textarea_length_{.num}');" maxlength="300" class="validate[required,max[300]]" data-errormessage-value-missing="댓글을 입력하세요.">{.comment}</textarea>
+						<div class="clear">
+							<span class="txt_count"><span class="point-color" id="textarea_length_{.num}">{? .comment}{=strlen(.comment)}{:}0{/}</span>/300</span>
+							<button class="btn-point" type="submit">
+								<span>수정</span>
+							</button>
+						</div>
+					</div>
+				</form>
+			</div>
+
+			{/}
+
+		</li>
+		{:}
+		<li>
+			<div class="reply">
+				<div class="comment editor-output">
+					<p style="word-wrap: break-word;">
+						댓글이 없습니다. 첫 댓글의 주인이 되어주세요.
+					</p>
+				</div>
+			</div>
+		</li>
+		{/}
+	</ul>
+</div><!-- //.reply_list -->
+
+<div class="list-paginate mt-20" id="photo_paging_area">
+	{= this->xfetch('_include/pagination.html')}
+</div>
+<!-- //.list-paginate -->
+
+<script>
+    var EventComment = {
+        init: function () {
+            this.option = $.extend({}, validation_option, {
+                validateNonVisibleFields: false,
+                onValidationComplete: function (form, status) {
+                    if (status) EventDetail.setComment(form);
+                }
+            });
+            $("#FrmComment").validationEngine('attach', this.option);
+        }
+    }
+
+    $(function(){
+        EventComment.init();
+    });
+</script>

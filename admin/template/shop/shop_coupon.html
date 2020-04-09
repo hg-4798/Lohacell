@@ -1,0 +1,129 @@
+<div class="content-wrap">
+<form id="FrmCoupon" onsubmit="return false">
+	<input type="hidden" name="mode" value="coupon">
+	<table cellpadding="0" cellspacing="0" width="100%">
+		<tr>
+			<td>
+				<!-- 페이지 타이틀 -->
+				<div class="title_depth3">쿠폰 정책설정</div>
+			</td>
+		</tr>
+		<tr>
+			<td>
+				<!-- 도움말:S -->
+				<div class="help_info01_wrap m-t-20" style='min-height:30px;width:auto;'>
+					<ul>
+						<li>
+							<b style='font-size:14px;'>기본설정</b>
+						</li>
+						<li style='margin-top:8px'>1)
+							<a href="{C.DIR_ADMIN}/">
+								<span class="font_blue">마케팅지원 > 쿠폰발행 서비스 설정</span>
+							</a> 에서 쿠폰 생성, 발급대상, 발급조회를 할 수 있습니다.</li>
+						<li>2) 쿠폰을 발행했더라도 쿠폰사용안함인 경우 회원들이 사용할 수 없습니다.</li>
+					</ul>
+				</div>
+				<!-- 도움말:E -->
+			</td>
+		</tr>
+		<tr>
+			<td>
+				<div class="table_style01 m-t-10">
+					<table cellpadding="0" cellspacing="0" border="0" width="100%">
+						<tr>
+							<th>
+								<span>쿠폰 사용 여부</span>
+							</th>
+							<td>
+								<label>
+									<input type="radio" name="coupon[is_use]" value="Y" class="hj" {=checked(coupon.is_use, 'Y')} />
+									<span class="lbl">사용함</span>
+								</label>
+								<label>
+									<input type="radio" name="coupon[is_use]" id="is_use_n" value="N" class="hj" {=checked(coupon.is_use, 'N')} />
+									<span class="lbl">사용안함</span>
+								</label>
+							</td>
+						</tr>
+
+						<tr>
+							<th>
+								<span>금액절사</span>
+							</th>
+							<td>
+								<select name="coupon[price_cut]" class="select validate[required]">
+									{@ __CONFIG.price_cut}
+									<option value="{.key_}" {=checked(coupon.price_cut,.key_, 'selected')}>{.value_}</option>
+									{/}
+								</select>
+							</td>
+						</tr>
+					</table>
+				</div>
+			</td>
+		</tr>
+		<tr>
+			<td align="center">
+				<button type="submit" class="m-t-10 btn-point">적용하기</button>
+			</td>
+		</tr>
+		<tr>
+			<td height=20></td>
+		</tr>
+		<tr>
+			<td>
+				<div class="sub_manual_wrap">
+					<div class="title">
+						<p>매뉴얼</p>
+					</div>
+					<ul class="help_list">
+						<li>쿠폰을 발행했더라도 쿠폰정책에서 [사용안함]인 경우 회원들이 사용할 수 없습니다.</li>
+						<li>취소/반품/환불 시 쿠폰복원은 전체취소/전체반품/전체환불의 경우 복원되며, 부분취소/부분반품/부분환불의 경우 쿠폰복원을 제공하지 않습니다.</li>
+					</ul>
+				</div>
+			</td>
+		</tr>
+		<tr>
+			<td height="50"></td>
+		</tr>
+	</table>
+</form>
+</div>
+
+
+<script type="text/javascript">
+	var ShopCoupon = {
+		init: function () {
+			$('#is_use_n').on('click', function () {
+				if (!confirm("새쿠폰 발행 및 기존 쿠폰 발급이 모두 중지 됩니다.\n선택하시겠습니까?")) return false;
+			});
+
+			var me = this;
+			var option = $.extend({}, validation_option, {
+				validateNonVisibleFields: false,
+				onValidationComplete: function (form, status) {
+					if (status) me.save();
+				}
+			});
+			$("#FrmCoupon").validationEngine('attach', option);
+
+		},
+		save: function () {
+			if (!confirm('적용하시겠습니까?')) return false;
+			var formdata = $("#FrmCoupon").serialize();
+			$.ajax({
+				url: '{C.DIR_ADMIN}/proc/shop.proc.php',
+				data: formdata,
+				dataType: 'json',
+				type: 'POST',
+				success: function (r) {
+					alert(r.msg);
+				}
+			})
+
+		}
+	}
+	$(function () {
+		ShopCoupon.init();
+	})
+</script>

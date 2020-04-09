@@ -1,0 +1,435 @@
+<?php 
+# 개별 디자인을 사용하지 않음
+# 주석처리 2016 01 04 유동혁
+/*
+$leftmenu="Y";
+if($_data->design_mypersonal=="U") {
+	$sql="SELECT body,leftmenu FROM tbldesignnewpage WHERE type='mypersonal'";
+	$result=pmysql_query($sql,get_db_conn());
+	if($row=pmysql_fetch_object($result)) {
+		$body=$row->body;
+		$body=str_replace("[DIR]",$Dir,$body);
+		$leftmenu=$row->leftmenu;
+		$newdesign="Y";
+	}
+	pmysql_free_result($result);
+}
+if($_data->design_mypersonal=="001" || $_data->design_mypersonal=="002" || $_data->design_mypersonal=="003"){
+	if ($leftmenu!="N") {
+		echo "<tr>\n";
+		if ($_data->title_type=="Y" && file_exists($Dir.DataDir."design/mypersonal_title.gif")) {
+			echo "<td><img src=\"".$Dir.DataDir."design/mypersonal_title.gif\" border=\"0\" alt=\"1:1고객문의\"></td>\n";
+		} else {
+			echo "<td>\n";
+			echo "<TABLE WIDTH=100% BORDER=0 CELLPADDING=0 CELLSPACING=0>\n";
+			echo "<TR>\n";
+			echo "	<TD><IMG SRC={$Dir}images/{$_data->icon_type}/mypersonal_title_head.gif ALT=></TD>\n";
+			echo "	<TD width=100% valign=top background={$Dir}images/{$_data->icon_type}/mypersonal_title_bg.gif></TD>\n";
+			echo "	<TD width=40><IMG SRC={$Dir}images/{$_data->icon_type}/mypersonal_title_tail.gif ALT=></TD>\n";
+			echo "</TR>\n";
+			echo "</TABLE>\n";
+			echo "</td>\n";
+		}
+		echo "</tr>\n";
+	}
+}
+*/
+
+$subTop_flag = 3;
+//include ($Dir.MainDir."sub_top.php");
+
+
+// 작성하지 않은 리뷰 리스트
+
+$sql  = "SELECT tblResult.* ";
+$sql .= "FROM ";
+$sql .= "   ( ";
+$sql .= "       SELECT a.*, b.regdt  ";
+$sql .= "       FROM tblorderproduct a LEFT JOIN tblorderinfo b ON a.ordercode = b.ordercode ";
+$sql .= "       WHERE b.id = '" . $_ShopInfo->getMemid()  . "' and ( (b.oi_step1 = 2 AND b.oi_step2 = 0) OR (b.oi_step1 = 3 AND b.oi_step2 = 0) ) ";
+$sql .= "       ORDER BY a.idx DESC ";
+$sql .= "   ) AS tblResult LEFT ";
+$sql .= "   OUTER JOIN tblproductreview tpr ON tblResult.productcode = tpr.productcode and tblResult.ordercode = tpr.ordercode and tblResult.idx = tpr.productorder_idx ";
+$sql .= "ORDER BY tblResult.idx desc ";
+
+$paging = new New_Templet_paging($sql,10,5,'GoPage',true);
+//echo $sql;
+$t_count = $paging->t_count;
+$gotopage = $paging->gotopage;
+
+$sql = $paging->getSql($sql);
+$result = pmysql_query($sql,get_db_conn());
+
+?>
+
+<div class="containerBody sub-page">
+
+	<div class="breadcrumb">
+		<ul>
+			<li><a href="/">HOME</a></li>
+			<li><a href="mypage.php">MY PAGE</a></li>
+			<li class="on"><a>상품리뷰</a></li>
+		</ul>
+	</div>
+	
+
+	<!-- LNB -->
+	<div class="left_lnb">
+		<? include ($Dir.FrontDir."mypage_TEM01_left.php");?> 
+		<!---->
+	</div><!-- //LNB -->
+
+	<!-- right_section -->
+	<div class="right_section mypage-content-wrap">
+				
+		<div class="my-review-list">
+
+			<div class="mypage-title">상품리뷰 작성<span>Total(2)</span></div>
+			<!-- 날짜 설정 -->
+			<form name="form1" action="<?=$_SERVER['PHP_SELF']?>">
+			<div class="date_find_wrap">
+				<ul class="date_setting">
+					<li class="title">기간별 조회</li>
+					<li class="date">
+						<?
+							if(!$day_division) $day_division = '1MONTH';
+
+						?>
+						<?foreach($arrSearchDate as $kk => $vv){?>
+							<?
+								$dayClassName = "";
+								if($day_division != $kk){
+									$dayClassName = 'btn_white_s';
+								}else{
+									$dayClassName = 'btn_black_s';
+								}
+							?>
+							<a href="Javascript:;" class="<?=$dayClassName?>" onClick = "GoSearch2('<?=$kk?>', this)"><?=$vv?></a>
+						<?}?>
+						
+					</li>
+					<li class="title">일자별 조회</li>
+					<li class="date">
+						<div class="input_bg"><input type="text" name="date1" id="" value="<?=$strDate1?>" readonly ></div><a href="javascript:;" class="btn_calen CLS_cal_btn"></a> ~ 
+						<div class="input_bg"><input type="text" name="date2" id="" value="<?=$strDate2?>" readonly ></div><a href="javascript:;" class="btn_calen CLS_cal_btn"></a> &nbsp;&nbsp;
+						<a href="javascript:CheckForm();" class="btn-dib-function"><span>SEARCH</span></a>
+					</li>
+					
+				</ul>
+			</div>
+			</form><!-- //날짜 설정 -->
+			
+			<table class="th-top util top-line-none">
+				<caption>나의 작성 리뷰리스트</caption>
+				<colgroup>
+					<col style="width:135px" >
+					<col style="width:100px" >
+					<col style="width:auto" >
+					<col style="width:130px" >
+				</colgroup>
+				<thead>
+					<tr>
+						<th scope="col">주문일</th>
+						<th scope="col" colspan="2">상품정보</th>
+						<th scope="col">리뷰작성</th>
+					</tr>
+				</thead>
+				<tbody>
+                    <?
+                        while ( $row = pmysql_fetch_object($result) ) { 
+                            // 상품 정보
+                            $sub_sql  = "SELECT *, b.brandname "; 
+                            $sub_sql .= "FROM tblproduct a LEFT JOIN tblproductbrand b ON a.brand = b.bridx ";
+                            $sub_sql .= "WHERE a.productcode = '" . $row->productcode . "' ";
+                            $sub_row = pmysql_fetch_object(pmysql_query($sub_sql));
+
+                            $arrOptions = array();
+
+                            // 옵션1
+                            if ( !empty($sub_row->option1) && !empty($row->opt1_name) ) {
+                                array_push($arrOptions, $sub_row->option1 . " : " . $row->opt1_name);
+                            }
+
+                            // 옵션2
+                            if ( !empty($sub_row->option2) && !empty($row->opt2_name) ) {
+                                array_push($arrOptions, $sub_row->option2 . " : " . $row->opt2_name);
+                            }
+                    ?>
+
+					<tr>
+						<td><?=$row->regdt?></td>
+						<td><img class="img-size-mypage" src="/data/shopimages/product/<?=$sub_row->tinyimage?>"></td>
+						<td class="ta-l">
+							<span class="brand-color"><?=$sub_row->brandname?></span><br>
+							<span><?=$sub_row->productname?></span><br>
+							<span><?=implode(" / ", $arrOptions)?> / 수량 : <?=number_format($row->quantity)?>개</span>
+						</td>
+						<td><a href="mypage_review_write.php" class="btn-dib-line"><span>리뷰쓰기</span></a></td>
+					</tr>
+    
+                    <?
+                        } // end of while
+                        pmysql_free_result($result);
+                    ?>
+
+                    <!--
+
+					<tr>
+						<td>2016-01-28</td>
+						<td><img class="img-size-mypage" src="../data/shopimages/product/001001002000000002/001001002000000002_thum_255X255.jpg"></td>
+						<td class="ta-l">
+							<span class="brand-color">NILBY P.</span><br>
+							<span>LONG HANDMADE COAT - MELANGE GREY</span><br>
+							<span>사이즈 :100 / 색상 : BEIGE / 수량 : 1개</span>
+						</td>
+						<td><a href="mypage_review_write.php" class="btn-dib-line"><span>리뷰쓰기</span></a></td>
+					</tr>
+					<tr>
+						<td>2016-01-28</td>
+						<td><img class="img-size-mypage" src="../data/shopimages/product/001001002000000002/001001002000000002_thum_255X255.jpg"></td>
+						<td class="ta-l">
+							<span class="brand-color">NILBY P.</span><br>
+							<span>LONG HANDMADE COAT - MELANGE GREY</span><br>
+							<span>사이즈 :100 / 색상 : BEIGE / 수량 : 1개</span>
+						</td>
+						<td><a href="mypage_review_write.php" class="btn-dib-line"><span>리뷰쓰기</span></a></td>
+					</tr>
+					<tr>
+						<td>2016-01-28</td>
+						<td><img class="img-size-mypage" src="../data/shopimages/product/001001002000000002/001001002000000002_thum_255X255.jpg"></td>
+						<td class="ta-l">
+							<span class="brand-color">NILBY P.</span><br>
+							<span>LONG HANDMADE COAT - MELANGE GREY</span><br>
+							<span>사이즈 :100 / 색상 : BEIGE / 수량 : 1개</span>
+						</td>
+						<td><a href="mypage_review_write.php" class="btn-dib-line"><span>리뷰쓰기</span></a></td>
+					</tr>
+
+                    -->
+
+				</tbody>
+			</table>
+
+			<div class="paging">
+			<?=$a_div_prev_page.$paging->a_prev_page.$paging->print_page.$paging->a_next_page.$a_div_next_page?>
+			</div>
+
+			<table class="list_table hide" cellpadding="0" cellspacing="0" >
+				<colgroup>
+					<col width="6%"></col>
+					<col></col>
+					<col width="8%"></col>
+					<col width="13%"></col>
+					<col width="17%"></col>
+				</colgroup>
+				<thead>
+					<tr>
+						<th>NO</th>
+						<th>상품후기</th>
+						<th>문의상품</th>
+						<th>평점</th>
+						<th>작성일</th>
+					</tr>
+				</thead>
+				<tbody>
+
+	<?php
+/*
+*/
+/*
+			$cnt=0;
+			while($row=pmysql_fetch_object($result)) {
+				$number = ($t_count-($setup[list_num] * ($gotopage-1))-$cnt);
+
+				$date = substr($row->date,0,4)."/".substr($row->date,4,2)."/".substr($row->date,6,2)."(".substr($row->date,8,2).":".substr($row->date,10,2).")";
+
+				$addButton = "";
+				if($row->productcode){
+					$addButton = "<a href='../front/productdetail.php?productcode=".$row->productcode."'><img src='../board/images/skin/L_TEM01/btn_prview.gif' border='0' align='absmiddle' class='img_ib'></a> ";
+				}
+
+				echo "<tr height=\"28\" align=\"center\">\n";
+				echo "	<td>".$number."</td>\n";
+				echo "	<td class=\"ta_l\"><a href=\"".$Dir.FrontDir."mypage_review_view.php?num=".$row->num."\">".$row->subject."</a></td>\n";
+				echo "	<td>".$addButton."</td>\n";
+				
+					$colorStar = "";
+					for($i=0;$i<$row->marks;$i++) {
+						$colorStar .= "★";
+					}
+					$noColorStar = "";
+					for($i=$row->marks;$i<5;$i++) {
+						$noColorStar .= "★";
+					}
+				
+				echo "<td><div class='star_color ml_5'>".$colorStar."<span>".$noColorStar."</span></div></td>\n";
+				echo "	<td>".$date."</td></tr>\n";
+				$cnt++;
+			}
+
+			pmysql_free_result($result);
+			if ($cnt==0) {
+				echo "<tr height=\"30\"><td colspan=\"5\" align=\"center\">상품평이 없습니다.</td></tr>";
+			}
+*/
+	?>
+			</tbody>
+			</table>
+
+<!--
+			<div class="paging">
+			<?=$a_div_prev_page.$paging->a_prev_page.$paging->print_page.$paging->a_next_page.$a_div_next_page?>
+			</div>
+-->
+	
+		</div><!-- //.my-review-list -->
+
+<?
+// ===============================================================================================================
+// 작성한 상품리뷰
+// ===============================================================================================================
+
+        // 작성한 리뷰 리스트
+        $sql  = "SELECT tpr.*, tblResult.regdt ";
+        $sql .= "FROM ";
+        $sql .= "   ( ";
+        $sql .= "   SELECT a.*, b.regdt ";
+        $sql .= "   FROM tblorderproduct a LEFT JOIN tblorderinfo b ON a.ordercode = b.ordercode ";
+        $sql .= "   WHERE b.id = '" . $_ShopInfo->getMemid()  . "' and ( (b.oi_step1 = 2 AND b.oi_step2 = 0) OR (b.oi_step1 = 3 AND b.oi_step2 = 0) ) ";
+        $sql .= "   ORDER BY a.idx DESC ";
+        $sql .= "   ) AS tblResult LEFT JOIN tblproductreview tpr ON tblResult.productcode = tpr.productcode and tblResult.ordercode = tpr.ordercode and tblResult.idx = tpr.productorder_idx ";
+        $sql .= "WHERE tpr.id = '" . $_ShopInfo->getMemid() . "' ";
+        $sql .= "ORDER BY tpr.num desc ";
+
+        $paging = new New_Templet_paging($sql,10,5,'GoPage',true);
+        //echo $sql;
+        $t_count = $paging->t_count;
+        $gotopage = $paging->gotopage;
+
+        $sql = $paging->getSql($sql);
+        $result = pmysql_query($sql,get_db_conn());
+
+?>
+
+		<div class="my-review-write-list">
+
+			<div class="mypage-title">작성한 상품리뷰 <span>Total(2)</span></div>
+			<!-- 날짜 설정 -->
+			<form name="form1" action="<?=$_SERVER['PHP_SELF']?>">
+			<div class="date_find_wrap">
+				<ul class="date_setting">
+					<li class="title">기간별 조회</li>
+					<li class="date">
+						<?
+							if(!$day_division) $day_division = '1MONTH';
+
+						?>
+						<?foreach($arrSearchDate as $kk => $vv){?>
+							<?
+								$dayClassName = "";
+								if($day_division != $kk){
+									$dayClassName = 'btn_white_s';
+								}else{
+									$dayClassName = 'btn_black_s';
+								}
+							?>
+							<a href="Javascript:;" class="<?=$dayClassName?>" onClick = "GoSearch2('<?=$kk?>', this)"><?=$vv?></a>
+						<?}?>
+						
+					</li>
+					<li class="title">일자별 조회</li>
+					<li class="date">
+						<div class="input_bg"><input type="text" name="date1" id="" value="<?=$strDate1?>" readonly ></div><a href="javascript:;" class="btn_calen CLS_cal_btn"></a> ~ 
+						<div class="input_bg"><input type="text" name="date2" id="" value="<?=$strDate2?>" readonly ></div><a href="javascript:;" class="btn_calen CLS_cal_btn"></a> &nbsp;&nbsp;
+						<a href="javascript:CheckForm();" class="btn-dib-function"><span>SEARCH</span></a>
+					</li>
+					
+				</ul>
+			</div>
+			</form><!-- //날짜 설정 -->
+			
+			<table class="th-top util top-line-none">
+				<caption>나의 작성 리뷰리스트</caption>
+				<colgroup>
+					<col style="width:135px" >
+					<col style="width:100px" >
+					<col style="width:auto" >
+					<col style="width:130px" >
+					<col style="width:130px" >
+				</colgroup>
+				<thead>
+					<tr>
+						<th scope="col">주문일</th>
+						<th scope="col" colspan="2">상품정보</th>
+						<th scope="col">작성일</th>
+						<th scope="col">평점</th>
+					</tr>
+				</thead>
+				<tbody>
+
+<?php while($row=pmysql_fetch_object($result)) { 
+        // 별점 
+        $marks = '';
+        for ($i = 0; $i < $row->marks; $i++) {
+            $marks .= '★';
+        }
+
+        // 작성일
+        $write_date = substr($row->write_date, 0, 4) . "-" . substr($row->write_date, 4, 2) . "-" . substr($row->write_date, 6, 2);
+?>
+					<tr class="my-write-review">
+						<td>2016-01-28</td>
+						<td><img class="img-size-mypage" src="/data/shopimages/product/<?=$row->tinyimage?>"></td>
+						<td class="ta-l">
+							<span class="brand-color"><?=$row->brandname?></span><br>
+							<span><?=$row->productname?></span><br>
+							<!--span>사이즈 :100 / 색상 : BEIGE / 수량 : 1개</span-->
+						</td>
+						<td><?=$write_date?></td>
+						<td><?=$marks?></td>
+					</tr>
+					<tr class="open-content">
+						<td colspan="5">
+							<div class="list-tr-open">
+								<div class="review_contents my-wirte">
+									아주편 하고 좋네요 <br>아주편 하고 좋네요 <br>아주편 하고 좋네요 <br>아주편 하고 좋네요 <br>아주편 하고 좋네요 <br>아주편 하고 좋네요
+									<div class="btn-place">
+										<button class="btn-dib-line " type="button"><span>수정</span></button>
+										<button class="btn-dib-line " type="button"><span>삭제</span></button>
+									</div>
+								</div>
+							</div>
+						</td>
+					</tr>
+<?php } ?>
+
+				</tbody>
+			</table>
+
+			<div class="paging"><a href="#">1</a></div>
+
+		</div><!-- //.my-review-write-list -->
+
+	</div><!-- //.right_section -->
+</div><!-- //.containerBody -->
+
+<!-- #상세페이지 -->
+<form name=idxform method="POST" action="<?=$_SERVER['PHP_SELF']?>">
+<input type=hidden name=block>
+<input type=hidden name=gotopage>
+<input type=hidden name=idx value=<?=$idx?>>
+</form>
+
+</table>
+
+<SCRIPT LANGUAGE="JavaScript">
+<!--
+function GoPage(block,gotopage) {
+	document.idxform.block.value=block;
+	document.idxform.gotopage.value=gotopage;
+	document.idxform.submit();
+}
+
+//-->
+</SCRIPT>
+

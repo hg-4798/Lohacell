@@ -1,0 +1,49 @@
+<div class="table_style02">
+	<table cellpadding="0" cellspacing="0" width="100%">
+		<colgroup>
+			<col width="60">
+			<col width="">
+			<col width="">
+			<col width="100">
+			<col width="80">
+			<col width="250">
+			<col width="80">
+			<col width="80">
+		</colgroup>
+		<tbody>
+			<tr>
+				<th>No</th>
+				<th>라인명</th>
+				<th>라인코드</th>
+				<th >등록상품</th>
+				<th>사용여부</th>
+				<th>등록일</th>
+				<th>수정</th>
+				<th>삭제</th>
+			</tr>
+			{@ list}
+			<tr data-idx="{.idx}">
+				<td>{.no}</td>
+				<td data-field="line_name">{.line_name}</td>
+				<td data-field="line_code">{.line_code}</td>
+				<td data-field="product_cnt">{.product_cnt}개 {? .product_cnt>0}<i class="fa fa-search pointer" onclick="ProductLine.product('{.line_code}')" data-toggle="tooltip" data-title="등록상품보기"></i>{/}</td>
+				<td data-field="display">{? .display=='Y'}<span class="badge badge-sm badge-primary">사용</span>{:}<span class="badge badge-sm badge-secondary">미사용</span>{/}</td>
+				<td>{=format(.date_insert,'Y-m-d H:i:s')}</td>
+				<td>
+					<button type="button" class="btn btn-sm btn-outline-info" onclick="ProductLine.modify('{.idx}')"><i class="fa fa-pencil"></i> 수정</button>
+				</td>
+				<td>
+					<button type="button" class="btn btn-sm btn-outline-danger" onclick="ProductLine.remove('{.idx}')" ><i class="fa fa-times"></i> 삭제
+				</td>
+			</tr>
+			{:}
+
+			<tr height="28">
+				<td colspan="7" align="center">조회된 내용이 없습니다.</td>
+			</tr>
+			{/}
+		</tbody>
+	</table>
+
+	{this->xprint('include/pagination.html')}
+</div>

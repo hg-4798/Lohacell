@@ -1,0 +1,379 @@
+<div class="content-wrap">
+	<div class="title_depth3">기간할인설정 {? act == 'insert'}등록{:}수정{/} <span>상품의 기간별 할인율을 관리합니다.</span></div>
+	<form id="FrmTimeSaleRegister" onsubmit="return false" autocomplete=off>
+	<input type="hidden" name="mode" value="timesale">
+	<input type="hidden" name="act" value="register">
+	<input type="hidden" name="idx" value="{row.idx}">
+	<div class="title_depth3_sub">기본설정</div>
+	<table cellspacing="0" cellpadding="0" width="100%" border="0" class="table-view mt_10">
+		<colgroup>
+			<col width="180">
+			<col width="">
+		</colgroup>
+		<tbody>
+			<tr>
+				<th><span>제목</span></th>
+				<td>
+					<input type="text" name="sale_subject" class="validate[required] w250"  value="{row.sale_subject}" data-errormessage-value-missing="제목을 입력하세요." placeholder="제목" >
+				</td>
+			</tr>
+			<tr>
+				<th><span>적용기간</span></th>
+				<td>
+					<input type="text" class="calendar validate[required, custom[date]]" data-errormessage-value-missing="적용기간(시작일)을 입력하세요." name="date_start" onclick="Calendar(event)" value="{=substr(row.date_start,0,10)}">
+					~
+					<input type="text" class="calendar validate[required, custom[date]]" data-errormessage-value-missing="적용기간(종료일)을 입력하세요." name="date_end" onclick="Calendar(event)" value="{=substr(row.date_end,0,10)}">
+				</td>
+			</tr>
+			<tr>
+				<th><span>노출요일</span> <label class="single m-l-20"><input type="checkbox" class="hj" data-all="sale_week[]"><span class="lbl">전체</span></label></th>
+				<td>
+					
+					<label class="single"><input type="checkbox" name="sale_week[]" data-errormessage-value-missing="노출요일을 선택해주세요." value="1" class="calendar validate[required, min[1] hj" {? row.sale_week[1]=='1'} checked {/} ><span class="lbl">월</span></label>
+					<label class="single"><input type="checkbox" name="sale_week[]" value="2" class="hj" {? row.sale_week[2]=='2'} checked {/} ><span class="lbl">화</span></label>
+					<label class="single"><input type="checkbox" name="sale_week[]" value="3" class="hj" {? row.sale_week[3]=='3'} checked {/} ><span class="lbl">수</span></label>
+					<label class="single"><input type="checkbox" name="sale_week[]" value="4" class="hj" {? row.sale_week[4]=='4'} checked {/} ><span class="lbl">목</span></label>
+					<label class="single"><input type="checkbox" name="sale_week[]" value="5" class="hj" {? row.sale_week[5]=='5'} checked {/} ><span class="lbl">금</span></label>
+					<label class="single"><input type="checkbox" name="sale_week[]" value="6" class="hj" {? row.sale_week[6]=='6'} checked {/} ><span class="lbl">토</span></label>
+					<label class="single"><input type="checkbox" name="sale_week[]" value="0" class="hj" {? row.sale_week[0]=='0'} checked {/} ><span class="lbl">일</span></label>
+				</td>
+			</tr>
+			<tr>
+				<th><span>할인방식</span></th>
+				<td>
+					<input type="text" name="sale_rate" id="sale_rate" class="validate[required] w100"   value="{row.sale_rate}" data-errormessage-value-missing="할인방식을 입력해주세요." data-errormessage-range-overflow="입력가능한 최대 할인율은 99%입니다." data-errormessage-range-underflow="입력가능한 최소 할인율은 1%입니다." data-filter="numeric">
+					<select name="sale_rate_type" id="sale_rate_type" onchange="ProductTSRegister.changeType()">
+						<option value="KRW" {? row.sale_rate_type=='KRW'} selected{/}>원</option>
+						<option value="PERCENT" {? row.sale_rate_type=='PERCENT'} selected{/}>%</option>
+					</select>
+					<span>할인</span>
+				</td>
+			</tr>
+			<tr>
+				<th><span>사용여부</span></th>
+				<td>
+					<label><input type="radio" name="display" value="Y" class="hj" {? row.display=='Y' || row.display==''} checked{/}><span class="lbl">사용</span></label>
+					<label><input type="radio" name="display" value="N" class="hj" {? row.display=='N'} checked{/}><span class="lbl">미사용</span></label>
+				</td>
+			</tr>
+
+		</tbody>
+	</table>
+
+	<div class="title_depth3_sub mt_30">
+		적용상품 <button type="button" class="btn-basic dark h-x-small ml_10" onclick="ProductTSRegister.open()" style="vertical-align:middle">적용상품 추가</button>
+	</div>
+	<div class="table_style02 form">
+		<table border="0" cellpadding="0" cellspacing="0" width="100%" class="table-hover mt_5">
+			<colgroup>
+				<col width="100">
+				<col width="150">
+				<col width="*">
+				<col width="150">
+				<col width="150">
+				<col width="100">
+				<col width="100">
+				<col width="100">
+				<col width="100">
+				<col width="100">
+			</colgroup>
+			<thead>
+				<tr>
+					<th>노출순서</th>
+					<th>상품이미지</th>
+					<th>상품명</th>
+					<th>상품코드</th>
+					<th>판매상태</th>
+					<th>정상가</th>
+					<th>판매가</th>
+					<th>할인율</th>
+					<th>재고</th>
+					<th>삭제</th>
+				</tr>
+			</thead>
+			<tbody id="timesale_tbody">
+				{@ row.product}
+				<tr data-productcode="{.productcode}">
+					<td>{.index_+1}</td>
+					<td><img src="{=preview(.minimage)}" alt="" class="thumbnail"></td>
+					<td class="ta_l">{.productname}</td>
+					<td>
+						{.prodcode}
+						<div class="fc-null">({.productcode})</div>
+					</td>
+					<td>
+						{class.product->trans('soldout',.soldout)}{? .soldout == 'N' && .quantity==0}<div class="fc-red fs-11">(일시품절)</div>{/}
+					</td>
+					<td>{=number_format(.consumerprice)}</td>
+					<td>{=number_format(.sellprice)}</td>
+					<td>{.sellprice_dc_rate}%</td>
+					<td>{=number_format(.quantity)}</td>
+					<td><button type="button" class="btn btn-sm btn-outline-danger" onclick="ProductTSRegister.remove(this)"><i class="fa fa-times"></i> 삭제</button></td>
+				</tr>
+				{/}
+
+				<tr height="28" class="empty {? row.product}hide{/}">
+					<td colspan="11" align="center">할인적용상품을 추가하세요.</td>
+				</tr>
+			</tbody>
+		</table>
+	</button>
+
+
+	<div class="row m-t-20">
+		<div class="pull-left">
+			<button type="button" class="btn-basic" onclick="ProductTSRegister.move('up')" style="min-width:38px" title="위로"><i class="fa fa-chevron-up"></i></button>
+			<button type="button" class="btn-basic" onclick="ProductTSRegister.move('down')" style="min-width:38px" title="아래로"><i class="fa fa-chevron-down"></i></button>
+		</div>
+		<div class="pull-center">
+			{? act == 'update'}
+			<button type="submit" class="btn-point">수정</button>
+			{:}
+			<button type="submit" class="btn-point">등록</button>
+			{/}
+			<button type="button" onclick="ProductTSRegister.goList()" class="btn-basic">취소</button>
+		</div>
+		
+	</div>
+
+	</form>
+
+
+
+	<div class="sub_manual_wrap mt_100">
+		<div class="title"><p>매뉴얼</p></div>
+		<dl>
+			<dt><span>기간할인</span></dt>
+			<dd>
+				- 동일상품이 다른 할인율로 등록된경우 <b>최근 설정된 기간할인</b>로 적용됩니다.
+			</dd>
+			<dt class="mt_10"><span>상품추가</span></dt>
+			<dd>
+				- 동일 상품을 중복등록 할 수 없습니다.<br />
+				- 순서 변경은 변경을 원하는 상품을 선택 후 키보드 ↑(상), ↓(하) 키를 이용하거나 마우스로 드래그하여 이동할 수 있습니다.<br>
+			</dd>
+		</dl>
+	</div>
+</div>
+
+<!--{* 상품목록 템플릿:s *}-->
+<textarea id="tpl_tr" style="display:none">
+	<tr data-productcode="${\productcode}">
+		<td>${\idx}</td>
+		<td>${\thumbnail}</td>
+		<td class="ta_l">${\name}</td>
+		<td>${\prodcode} <div class="fc-null">(${\productcode})</div></td>
+		
+		<td>${\soldout}</td>
+		<td>${\price_consumer}</td>
+		<td>${\price_sell}</td>
+		<td>${\sale_rate}</td>
+		<td>${\stock}</td>
+		<td><button type="button" class="btn_type1" onclick="ProductTSRegister.remove(this)">삭제</td>
+	</tr>
+</textarea>
+<!--{* 상품목록 템플릿:E *}-->
+
+<script type="text/javascript" src="/admin/static/js/template.js"></script>
+<script type="text/javascript" src="/admin/static/js/calendar.js"></script>
+<script type="text/javascript">
+
+var ProductTSRegister = {
+	proc_url:'/admin/proc/product.proc.php',
+	act:'{act}',
+	init: function() {
+		var me = this;
+		var option = $.extend({},validation_option, {
+			validateNonVisibleFields:true,
+			onValidationComplete: function(form, status){
+				if(status) me.save();
+			}
+		});
+		$("#FrmTimeSaleRegister").validationEngine('attach',option);
+
+
+		$('[data-filter="numeric"]').on('keydown input', function(evt) {
+			var v = $(this).val();
+			$(this).val(v.replace(/[^0-9]/g,''));
+		});
+        this.loadCallback();
+        UI.toggleCheck();
+
+	},
+	loadCallback: function() {
+		//이동항목선택바인딩
+		$('#timesale_tbody tr[data-productcode]').on('click.selected', function() {
+			$(this).siblings('tr').removeClass('selected');
+			$(this).addClass('selected');
+		})
+
+		//화살표키이벤트
+		$(document).keyup(function(evt) {
+			if(evt.keyCode == 38 || evt.keyCode==40) {
+				ProductTSRegister.move(evt.keyCode);
+				evt.preventDefault();
+			}
+		});
+
+		//상품소터블설정
+		$("#timesale_tbody").sortable({
+			axis:'y',
+			containment:'parent',
+			helper: function(e, tr) {
+				$('#timesale_tbody tr').removeClass('selected');
+				tr.addClass('selected');
+				var $originals = tr.children();
+				var $helper = tr.clone();
+				
+				$helper.children().each(function(index) {
+					$(this).width($originals.eq(index).width());
+				});
+				return $helper;
+			},
+			scroll : false,
+			placeholder: "sortable-placeholder",
+			items:'tr',
+			stop: function() {
+				ProductTSRegister.resetSort();
+			}
+		});
+	},
+	save: function() {
+		//등록상품
+		var tr = ProductTSRegister.getProduct();
+
+		if(tr.length < 1) {
+			UI.alert('할인 적용상품을 1개 이상 추가하세요.');
+			return false;
+		}
+
+		if(!confirm('적용하시겠습니까?')) return false;
+		
+		var formdata = $('#FrmTimeSaleRegister').serializeArray();
+		var productcode = tr.map(function () {return $(this).attr('data-productcode');}).get();
+		formdata.push({name:'productcode', value:productcode});
+		$.ajax({
+			url:this.proc_url,
+			type:'POST',
+			data:formdata,
+			dataType:'json',
+			success : function(r) {
+				UI.alert(r.msg, function() {
+					if(r.success) {
+						ProductTSRegister.goList();
+					}
+				});
+				
+			}
+		});
+		
+	},
+
+	removeRow: function() {
+		$(this).closest('li').remove();
+	},
+	getProduct: function() {//기등록상품목록리턴
+		return $('#timesale_tbody').find('tr:not(.empty)');
+	},
+	open: function() {
+		var search = $('#FrmTimeSaleRegister').serialize();
+		UI.modal('/admin/product_choice.php','상품등록', {search:search}, 1100);
+	},
+	move: function(mode) { //위치이동
+		var tr = $('tr.selected');
+		if(tr.length<1) {
+			alert('이동할 상품을 선택하세요.');
+			return false;
+		}
+		switch (mode) {
+			case 'top':
+				var li_top = ul.find('li').first();
+				li_top.before(li);
+				break;
+			case 'up' :
+			case 38:
+				var tr_prev  = $(tr).prev();
+				tr_prev.before(tr);
+				break;
+			case 'down' :
+			case 40:
+				var tr_next  = $(tr).next();
+				tr_next.after(tr);
+				break;
+			case 'bottom' :
+				var tr_bottom = ul.find('li').last();
+				li_bottom.after(li);
+				break;
+		}
+		ProductTSRegister.resetSort();
+	},
+	resetSort: function() { //정렬번호재설정
+		var tr = ProductTSRegister.getProduct();
+		var sort = 1;
+		$.each(tr, function(i,e) {
+			$(e).find('td:eq(0)').html(i+1);
+		});
+	},
+	remove: function(ele) { //삭제(단순감춤)
+		$(ele).closest('tr').remove();
+		var tr = ProductTSRegister.getProduct();
+		var cnt = tr.length;
+		if(cnt > 0) {
+			ProductTSRegister.resetSort();
+		}
+		else {
+			$('#timesale_tbody').find('tr.empty').removeClass('hide');
+		}
+	},
+	goList: function() {
+		document.location.href="/admin/product/product_timesale.php";
+	},
+	changeType : function() {
+		var sale_rate_type = $('#sale_rate_type').val();
+		if(sale_rate_type=='KRW'){
+			$('#sale_rate').attr('class','validate[required] w100');
+		}else{
+			$('#sale_rate').attr('class','validate[required, min[1], max[100]] w100');
+		}
+	}
+
+}
+
+//상품선택 콜백
+var ChoiceCallback = function(tr_new){
+	var tmpObj = TrimPath.parseDOMTemplate("tpl_tr");
+	var target = $('#timesale_tbody');
+	var tr = ProductTSRegister.getProduct();
+
+	//기등록상품수
+	var cnt = tr.length;
+
+	//기등록상품 리스트
+	var exist = tr.map(function () {return $(this).attr('data-productcode');}).get();
+
+	var idx = cnt;
+	$.each(tr_new, function(i,e) {
+		var prcode = $(e).attr('data-productcode');
+		if($.inArray(prcode, exist) != -1) return true;
+
+		idx++;
+		target.find('tr.empty').addClass('hide');
+		var data = {idx:idx};
+		$.each($(e).find('td'), function(ii,ee) {
+			var field = $(ee).data('field');
+			if(typeof field == 'undefined') return true;
+			data[field] = $(ee).html();
+		});
+		var html  = tmpObj.process(data);
+		target.append(html);
+	});
+
+	ProductTSRegister.loadCallback();
+}
+
+$(function() {
+	ProductTSRegister.init();
+})
+
+//function onmenu_sub('on_dd1',5);
+</script>

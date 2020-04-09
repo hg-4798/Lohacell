@@ -1,0 +1,520 @@
+<?php
+$sql = "SELECT a.*, b.group_level, b.group_name, b.group_code, b.group_orderprice_s, b.group_orderprice_e, b.group_ordercnt_s, b.group_ordercnt_e FROM tblmember a left join tblmembergroup b on a.group_code = b.group_code WHERE a.id='".$_ShopInfo->getMemid()."' ";
+$result=pmysql_query($sql,get_db_conn());
+if($row=pmysql_fetch_object($result)) {
+	$_mdata=$row;
+	if($row->member_out=="Y") {
+		$_ShopInfo->SetMemNULL();
+		$_ShopInfo->Save();
+		alert_go('회원 아이디가 존재하지 않습니다.',$Dir.FrontDir."login.php");
+	}
+
+	if($row->authidkey!=$_ShopInfo->getAuthidkey()) {
+		$_ShopInfo->SetMemNULL();
+		$_ShopInfo->Save();
+		alert_go('처음부터 다시 시작하시기 바랍니다.',$Dir.FrontDir."login.php");
+	}
+}
+$staff_type = $row->staff_type;
+pmysql_free_result($result);
+
+$mem_grade_code			= $_mdata->group_code;
+$mem_grade_name			= $_mdata->group_name;
+
+$mem_grade_img	= "../data/shopimages/grade/groupimg_".$mem_grade_code.".gif";
+$mem_grade_text	= $mem_grade_name;
+$reg_date	= substr($_mdata->date,0,4)."-".substr($_mdata->date,4,2)."-".substr($_mdata->date,6,2);
+
+// 다음등급 AP포인트
+list($next_level_point)=pmysql_fetch_array(pmysql_query("select group_ap_s from tblmembergroup WHERE group_level > '{$_mdata->group_level}' order by group_level asc limit 1"));
+
+// 다음등급까지 남은 AP 포인트
+$need_act_point=($_mdata->act_point >= $next_level_point)?'0':($next_level_point-$_mdata->act_point);
+?>
+
+
+<div id="contents">
+	<div class="mypage-page">
+
+		<h2 class="page-title">회원등급 및 혜택</h2>
+
+		<div class="inner-align page-frm clear">
+
+			<? include  "mypage_TEM01_left.php";  ?>
+			<article class="my-content member-grade">
+				
+				<div class="point-info clear">
+					<dl>
+						<dt><img src="/sinwon/web/static/img/icon/icon_my_grade.png" alt="회원등급">회원등급</dt>
+						<dd class="fz-16"><?=$_mdata->name?> 님의 회원등급<br><strong ><?=$mem_grade_text?></strong></dd>
+					</dl>
+					<dl>
+						<dt><img src="/sinwon/web/static/img/icon/icon_my_point_big.png" alt="통합 포인트">통합 포인트</dt>
+						<dd class="fz-16">현재 통합 포인트<br><strong class="fz-22 point-color"><?=number_format($_mdata->reserve) ?>P</strong></dd>
+					</dl>
+					<dl>
+						<dt><img src="/sinwon/web/static/img/icon/icon_my_epoint_big.png" alt="E통합 포인트">현재 E포인트</dt>
+						<dd class="fz-16">현재 E포인트<br><strong class="fz-22 point-color"><?=number_format($_mdata->act_point) ?>P</strong></dd>
+					</dl>
+				</div>
+				<p class="pt-10 fz-13">*통합포인트: 오프라인 매장, 신원몰에서 모두 사용이 가능한 포인트</p>
+				<p class="pt-5 fz-13">*E포인트: 신원몰에서만 사용이 가능한 온라인 전용 포인트</p>
+				
+				<div class="clear mt-45">
+					<h4 class="fl-l fz-20">등급별 혜택안내</h4>
+					<div class="fl-r pt-10 txt-toneB">※ 가입즉시 모든 회원에게 <strong>WELCOME</strong> 등급의 혜택이 적용됩니다.</div>
+				</div>
+				<table class="th-left mt-15">
+					<caption>등급별 혜택안내</caption>
+					<colgroup>
+						<col style="width:19%">
+						<col style="width:27%">
+						<col style="width:27%">
+						<col style="width:27%">
+					</colgroup>
+					<thead>
+						<tr>
+							<th scope="col">등급</th>
+							<th scope="col" colspan="2">등급기준</th>
+							<th scope="col">혜택</th>
+						</tr>
+					</thead>
+					<tbody>
+						<tr>
+							<th>DIAMOND</th>
+							<td class="ta-l">전년 500만원 또는<br>2년 연속 300만원 이상 구매</td>
+							<td class="ta-l">전년도 1월 ~ 올해 2월 기준<br>매월 2월 등급적용</td>
+							<td class="ta-c">브랜드별 10% 할인쿠폰 X 3</td>
+						</tr>
+						<tr>
+							<th>GOLD</th>
+							<td class="ta-l">전년 200만원 이상 구매<br>(DIAMOND 회원 제외)</td>
+							<td class="ta-l">전년도 1월 ~ 올해 2월 기준<br>매월 2월 등급적용</td>
+							<td class="ta-c">브랜드별 10% 할인쿠폰 X 3</td>
+						</tr>
+						<tr>
+							<th>SILVER</th>
+							<td class="ta-l">최근 1년간 100만원 이상<br>구매가 있는 회원(신규제외)</td>
+							<td class="ta-l">매월 말일에 최근 1년간 기준<br>매월 1일 등급적용</td>
+							<td class="ta-c">브랜드별 10% 할인쿠폰 X 2</td>
+						</tr>
+						<tr>
+							<th>BRONZE</th>
+							<td class="ta-l">최근 1년간 100만원 미만<br>구매가 있는 회원(신규제외)</td>
+							<td class="ta-l">매월 말일에 최근 1년간 기준<br>매월 1일 등급적용</td>
+							<td class="ta-c">브랜드별 10% 할인쿠폰 X 1</td>
+						</tr>
+						<tr>
+							<th>WELCOME</th>
+							<td class="ta-l">신규 회원가입 회원</td>
+							<td class="ta-l"></td>
+							<td class="ta-c">회원가입 축하 10,000P 적립</td>
+						</tr>
+					</tbody>
+				</table>
+				<h4 class="mt-35 fz-20">신원 브랜드</h4>
+				<ul class="mt-15 total-brand">
+					<li><span><img src="/sinwon/web/static/img/common/brand_logo_bb.png" alt="BESTI BELLI"></span></li>
+					<li><span><img src="/sinwon/web/static/img/common/brand_logo_viki2.png" alt="VIKI"></span></li>
+					<li><span><img src="/sinwon/web/static/img/common/brand_logo_si.png" alt="SI"></span></li>
+					<li><span><img src="/sinwon/web/static/img/common/brand_logo_isabey.png" alt="ISABEY"></span></li>
+					<li><span><img src="/sinwon/web/static/img/common/brand_logo_sieg.png" alt="SIEG"></span></li>
+					<li><span><img src="/sinwon/web/static/img/common/brand_logo_siegf.png" alt="SIEG FAHRENHEIT"></span></li>
+					<li><span><img src="/sinwon/web/static/img/common/brand_logo_vda.png" alt="VanHart di Albazar"></span></li>
+				</ul>
+
+			</article><!-- //.my-content -->
+		</div><!-- //.page-frm -->
+
+	</div>
+</div><!-- //#contents -->
+
+<div id="contents" class="hide">
+	<!-- 네비게이션 -->
+	<div class="top-page-local">
+		<ul>
+			<li><a href="/">HOME</a></li>
+			<li><a href="../front/mypage.php">마이 페이지</a></li>
+			<li class="on">등급별 혜택</li>
+		</ul>
+	</div>
+	<!-- //네비게이션-->
+	<div class="inner">
+		<main class="mypage_wrap benefit"><!-- 페이지 성격에 맞게 클래스 구분 -->
+			<!-- LNB -->
+			<? include  "mypage_TEM01_left.php";  ?>
+			<!-- //LNB -->
+			<article class="mypage_content">
+				<section class="mypage_main">
+					<div class="summary_wrap">
+						<div class="my_grade">
+							<p class="grade"><em><?=$_mdata->name?></em> 님의 회원등급</p>
+							<div class="grade_nm">
+								<p><i><img src="<?=$mem_grade_img?>" alt="<?=$mem_grade_text?>" width="24"></i><?=$mem_grade_text?></p>
+							</div>
+						</div>
+						<div class="my_info">
+							<ul>
+								<li>
+									<div><p>누적 Action 포인트</p><p><?=number_format($_mdata->act_point) ?></p></div>
+								</li>
+								<li>
+									<div><p>등급업 필요 Action 포인트</p><p class="type_txt2"><?=number_format($need_act_point) ?></p></div>
+								</li>
+								<li>
+									<div><p>누적 Action 포인트 기준<br>산정기간 : <?=$reg_date ?> ~ <?=date("Y-m-d");?></p></div>
+								</li>
+							</ul>
+						</div>
+					</div>
+
+					<h3 class="tit">회원 혜택 & 혜택안</h3>
+
+					<table class="tbl_grade">
+						<caption></caption>
+						<colgroup>
+							<col style="width:17.12%">
+							<col style="width:27.4%">
+							<col style="width:auto">
+						</colgroup>
+						<thead>
+							<tr>
+								<th scope="col">세부 등급</th>
+								<th scope="col">등급별 충족 포인트</th>
+								<th scope="col">혜 택</th>
+							</tr>
+						</thead>
+						<tbody>
+							<tr>
+								<th scope="row">
+									<span class="icon"><img src="../static/img/icon/icon_grade_god.png" alt="GOD"></span>
+									<span class="grade_name">GOD</span>
+								</th>
+								<td>500,000 AP</td>
+								<td class="benefit_con">
+									<dl class="ta-l">
+										<dt><img src="../static/img/icon/coupon_freex4.png" alt=""></dt>
+										<dd>연 4회 신발 교환권 지급</dd>
+									</dl>
+									<dl class="plus">
+										<dt><img src="../static/img/icon/icon_grade_mafia_m.png" alt=""></dt>
+										<dd>MAFIA 등급 혜택</dd>
+										<!-- <dt><img src="../static/img/icon/icon_grade_star_m.png" alt=""></dt>
+										<dd>STAR 등급 혜택</dd> -->
+									</dl>
+								</td>
+							</tr>
+							<tr>
+								<th scope="row">
+									<span class="icon"><img src="../static/img/icon/icon_grade_star.png" alt="STAR"></span>
+									<span class="grade_name">STAR</span>
+								</th>
+								<td>100,000 AP</td>
+								<td class="benefit_con">
+									<dl class="ta-l">
+										<dt><img src="../static/img/icon/coupon_freex2.png" alt=""></dt>
+										<dd>연 2회 신발 교환권 지급</dd>
+									</dl>
+									<dl class="plus">
+										<dt><img src="../static/img/icon/icon_grade_mafia_m.png" alt=""></dt>
+										<dd>MAFIA 등급 혜택</dd>
+									</dl>
+								</td>
+							</tr>
+							<tr>
+								<th scope="row">
+									<span class="icon"><img src="../static/img/icon/icon_grade_mafia.png" alt="MAFIA"></span>
+									<span class="grade_name">MAFIA</span>
+								</th>
+								<td class="lv">
+									<dl>
+										<dt>Lv.5</dt>
+										<dd>50,000 AP</dd>
+									</dl>
+									<dl>
+										<dt>Lv.4</dt>
+										<dd>40,000 AP</dd>
+									</dl>
+									<dl>
+										<dt>Lv.3</dt>
+										<dd>30,000 AP</dd>
+									</dl>
+									<dl>
+										<dt>Lv.2</dt>
+										<dd>20,000 AP</dd>
+									</dl>
+									<dl>
+										<dt>Lv.1</dt>
+										<dd>10,000 AP</dd>
+									</dl>
+								</td>
+								<td class="benefit_con">
+									<dl>
+										<dt><img src="../static/img/icon/coupon_dc30p.png" alt=""></dt>
+										<dd>등업 축하 쿠폰</dd>
+									</dl>
+									<dl>
+										<dt><img src="../static/img/icon/coupon_dc20p.png" alt=""></dt>
+										<dd>3개월마다 할인 쿠폰</dd>
+									</dl>
+									<dl class="plus">
+										<dt><img src="../static/img/icon/icon_alarm.png" alt=""></dt>
+										<dd>한정판 발매 선알림</dd>
+									</dl>
+								</td>
+							</tr>
+							<tr>
+								<th scope="row">
+									<span class="icon"><img src="../static/img/icon/icon_grade_rookie.png" alt="ROOKIE"></span>
+									<span class="grade_name">ROOKIE</span>
+								</th>
+								<td class="lv">
+									<dl>
+										<dt>Lv.5</dt>
+										<dd>6,000 AP</dd>
+									</dl>
+									<dl>
+										<dt>Lv.4</dt>
+										<dd>5,000 AP</dd>
+									</dl>
+									<dl>
+										<dt>Lv.3</dt>
+										<dd>4,000 AP</dd>
+									</dl>
+									<dl>
+										<dt>Lv.2</dt>
+										<dd>3,000 AP</dd>
+									</dl>
+									<dl>
+										<dt>Lv.1</dt>
+										<dd>2,000 AP</dd>
+									</dl>
+								</td>
+								<td class="benefit_con">
+									<dl>
+										<dt><img src="../static/img/icon/coupon_dc15p.png" alt=""></dt>
+										<dd>등업 축하 쿠폰</dd>
+									</dl>
+									<dl>
+										<dt><img src="../static/img/icon/coupon_dc10p.png" alt=""></dt>
+										<dd>3개월마다 할인 쿠폰</dd>
+									</dl>
+								</td>
+							</tr>
+							<tr>
+								<th scope="row">
+									<span class="icon"><img src="../static/img/icon/icon_grade_family.png" alt="FAMILY"></span>
+									<span class="grade_name">FAMILY</span>
+								</th>
+								<td class="lv">
+									<dl>
+										<dt>Lv.5</dt>
+										<dd>1,000 AP</dd>
+									</dl>
+									<dl>
+										<dt>Lv.4</dt>
+										<dd>800 AP</dd>
+									</dl>
+									<dl>
+										<dt>Lv.3</dt>
+										<dd>600 AP</dd>
+									</dl>
+									<dl>
+										<dt>Lv.2</dt>
+										<dd>400 AP</dd>
+									</dl>
+									<dl>
+										<dt>Lv.1</dt>
+										<dd>300 AP</dd>
+									</dl>
+								</td>
+								<td class="benefit_con">
+									<dl>
+										<dt><img src="../static/img/icon/coupon_dc10p.png" alt=""></dt>
+										<dd>회원 가입 축하 쿠폰</dd>
+									</dl>
+								</td>
+							</tr>
+							<tr>
+								<th scope="row">
+									<span class="icon"><img src="../static/img/icon/icon_grade_visitor.png" alt="VISITOR"></span>
+									<span class="grade_name">VISITOR</span>
+								</th>
+								<td>비회원</td>
+								<td></td>
+							</tr>
+						</tbody>
+					</table>
+
+					<div class="about_ap">
+						<h3>핫티의 회원 등급은 액션포인트로 결정됩니다!</h3>
+						<h4>액션포인트(<span class="point-color">A</span>ction <span class="point-color">P</span>oint)란? </h4>
+						<p class="txt">핫티 온라인몰에서 각종 미션을 수행할 때마다 지급되는 포인트입니다. 등급별 엄청난 혜택이 준비되어 있으니 무조건 적립하세요.<br> 액션포인트의 적립 방법은 아래를 참고해주세요.</p>
+						<table>
+							<colgroup>
+								<col style="width:11.64%">
+								<col style="width:34.2%">
+								<col style="width:11.64%">
+								<col style="width:auto">
+							</colgroup>
+							<thead>
+							<tr>
+								<th></th>
+								<th>포인트 적립 방법</th>
+								<th>지급포인트</th>
+								<th>비고</th>
+							</tr>
+							</thead>
+							<tbody>
+							<tr>
+								<th rowspan="3">가입</th>
+								<td class="dot_btm">회원가입시</td>
+								<td class="ta-r dot_btm">300 <span class="point-color">AP</span></td>
+								<td rowspan="3" class="ta-c">1일 1회에 한함</td>
+							</tr>
+							<tr>
+								<td class="dot_btm">로그인</td>
+								<td class="ta-r dot_btm">50 <span class="point-color">AP</span></td>
+							</tr>
+							<tr>
+								<td>추천 아이디 등록 (추천을 받았을 때)</td>
+								<td class="ta-r">500 <span class="point-color">AP</span></td>
+							</tr>
+							<tr>
+								<th>게시</th>
+								<td>포럼/스토어스토리 글 작성</td>
+								<td class="ta-r">20 <span class="point-color">AP</span></td>
+								<td class="ta-c"></td>
+							</tr>
+							<tr>
+								<th rowspan="2">활동</th>
+								<td class="dot_btm">게시글에 좋아요를 눌렀을 때</td>
+								<td class="ta-r dot_btm">3 <span class="point-color">AP</span></td>
+								<td class="ta-c dot_btm"></td>
+							</tr>
+							<tr>
+								<td>댓글 등록</td>
+								<td class="ta-r">5 <span class="point-color">AP</span></td>
+								<td class="ta-c"></td>
+							</tr>
+							<tr>
+								<th>구매</th>
+								<td>핫티 온라인몰 제품 구매시</td>
+								<td class="ta-r">100 <span class="point-color">AP</span></td>
+								<td class="ta-c">1만원당 100점 적립</td>
+							</tr>
+							<tr>
+								<th rowspan="2">후기</th>
+								<td class="dot_btm">구매 후기 작성</td>
+								<td class="ta-r dot_btm">500 <span class="point-color">AP</span></td>
+								<td class="ta-c dot_btm"></td>
+							</tr>
+							<tr>
+								<td>구매 포토후기 작성</td>
+								<td class="ta-r">1,000 <span class="point-color">AP</span></td>
+								<td class="ta-c"></td>
+							</tr>
+							</tbody>
+						</table>
+						<p class="notice point-color">* 부적절한 방법을 통하여 적립한 액션포인트는 적발시 회수 조치 및 사이트 탈퇴 등의 불이익을 당할 수 있습니다.</p>
+					</div>
+
+					<!-- <table class="th_left border_none">
+					<caption></caption>
+					<colgroup>
+						<col style="width:200px">
+						<col style="width:254px">
+						<col style="width:254px">
+						<col style="width:auto">
+					</colgroup>
+					<thead class="bg">
+						<tr class="black">
+							<th scope="col">회원등급</th>
+							<th scope="col">1단계 Family</th>
+							<th scope="col">2단계 Mania</th>
+							<th scope="col">3단계 Star</th>
+						</tr>
+						<tr class="gray">
+							<th scope="col">등급 포인트 기준</th>
+							<th scope="col">회원가입</th>
+							<th scope="col"><em>800</em> P</th>
+							<th scope="col"><em>5,000</em> P</th>
+						</tr>
+					</thead>
+					<tbody>
+						<tr>
+							<th scope="row">쿠폰북</th>
+							<td>신규회원 쿠폰 1매</td>
+							<td>등급 축하쿠폰 1매<br>정기할인쿠폰 1매</td>
+							<td>등급 축하쿠폰 1매<br>정기할인쿠폰 3매</td>
+						</tr>
+
+						<tr>
+							<th scope="row">기프트</th>
+							<td>-</td>
+							<td>\10,000 쿠폰</td>
+							<td>\20,000 쿠폰</td>
+						</tr>
+
+						<tr>
+							<th scope="row">증정품(별도발송)</th>
+							<td>-</td>
+							<td>-</td>
+							<td>O</td>
+						</tr>
+
+						<tr>
+							<th scope="row">기념일(지정)</th>
+							<td>\5,000원 쿠폰</td>
+							<td>\10,000원 쿠폰</td>
+							<td>\20,000원 쿠폰</td>
+						</tr>
+					</tbody>
+					</table>
+					<p class="mt-10">* 유효기간은 발행 후 1개월 한정</p> -->
+
+					<!-- <h3 class="tit ap-tit mt-50">AP(액션포인트) : 글 작성하고 포인트 받으세요!</h3>
+					<table class="th_left">
+					<caption></caption>
+					<colgroup>
+						<col style="width:200px">
+						<col style="width:254px">
+						<col style="width:254px">
+						<col style="width:auto">
+					</colgroup>
+					<tbody>
+						<tr>
+							<th scope="row">포럼/스토어 스토리 작성</th>
+							<td>10 P</td>
+							<td rowspan="2">
+								조회 1 P <br>
+								좋아요 10 P<br>
+								댓글 5 P
+							</td>
+						</tr>
+
+						<tr>
+							<th scope="row">후기작성</th>
+							<td>\20,000 쿠폰</td>
+						</tr>
+
+						<tr>
+							<th scope="row">댓글 작성</th>
+							<td>5 P</td>
+							<td>좋아요 10 P<br>댓글 5 P</td>
+						</tr>
+
+						<tr>
+							<th scope="row">좋아요</th>
+							<td>10 P</td>
+							<td></td>
+						</tr>
+					</tbody>
+					</table> -->
+
+				</section>
+			</article>
+		</main>
+	</div>
+</div>
+<!-- // [D] 스토어_리스트 퍼블 추가 -->

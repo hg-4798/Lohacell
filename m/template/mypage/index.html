@@ -1,0 +1,66 @@
+<div id="page">
+	<section class="page_local">
+		<h2 class="page_title">
+			<a href="javascript:history.back();" class="prev">이전페이지</a>
+			<span>마이페이지</span>
+		</h2>
+	</section>
+	<div class="mypage_main">
+
+		<div class="box_level clear">
+			<div class="level_name">
+				<a href="{C.DIR_M}/mypage_usermodify.php">
+					<p></p><strong class="name">{member.name}</strong> 님의 회원등급</p>
+					<p><span class="txt_level">{member.group_name}</span></p>
+				</a>
+				<div class="mt-10">
+					<span class="point-color">포인트 : {=number_format(member.act_point)}P</span> |
+					<span class="point-color">마일리지 : {=number_format(member.reserve)}M</span>
+				</div>
+			</div>
+		</div><!-- //.box_level -->
+
+		<div class="lately-buy">
+			<a href="mypage_orderlist.php">
+				<ul class="progress clear">
+					<li><span>입금대기</span><strong class="point-color">{=number_format(0)}</strong></li>
+					<li><span>결제완료</span><strong class="point-color">{=number_format(0)}</strong></li>
+					<li><span>상품포장</span><strong class="point-color">{=number_format(0)}</strong></li>
+					<li><span>배송중</span><strong class="point-color">{=number_format(0)}</strong></li>
+					<li><span>배송완료</span><strong class="point-color">{=number_format(0)}</strong></li>
+				</ul>
+			</a>
+
+			<a href="mypage_cancellist.php">
+				<ul class="info clear">
+					<li>취소 : <strong>
+							<?=number_format($osc_data->step5)?></strong></li>
+					<li>반품 : <strong>
+							<?=number_format($osc_data->step6)?></strong></li>
+					<li>교환 : <strong>
+							<?=number_format($osc_data->step7)?></strong></li>
+				</ul>
+			</a>
+		</div><!-- //.lately-buy -->
+
+
+		<ul class="mypage_menu">
+			<li><a href="basket.php">장바구니</a></li>
+			<li><a href="mypage_orderlist.php">주문/배송조회</a></li>
+			<li><a href="mypage_cs.php">취소/교환/반품 현황</a></li>
+			<li><a href="mypage_good.php">좋아요</a></li>
+			<li><a href="mypage_review.php?type=list">상품리뷰</a></li>
+			<li><a href="mypage_personal.php">1:1문의</a></li>
+			<li><a href="mypage_memberout.php">회원탈퇴</a></li>
+		</ul><!-- //.mypage_menu -->
+		<ul class="mypage_menu_tab clear">
+			<li><a href="benefit.php">멤버십 등급/혜택안내</a></li>
+			<li><a href="mypage_act_point.php">포인트/ 마일리지</a></li>
+			<li><a href="mypage_coupon.php">쿠폰</a></li>
+			<li><a href="mypage_usermodify.php">회원정보수정</a></li>
+			<li><a href="address_change.php">배송지관리</a></li>
+			<li><a href="mypage_sns.php">SNS 연동관리</a></li>
+		</ul><!-- //.mypage_menu_tab -->
+		
+	</div><!-- //.mypage-main -->
+</div>

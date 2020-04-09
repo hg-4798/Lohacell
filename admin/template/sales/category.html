@@ -1,0 +1,186 @@
+<div class="content-wrap">
+		<div class="title_depth3">{__NAV.page_tit}</div>
+	
+		<div class="tbl-search m-t-20">
+			<form id="FrmSearch" name="FrmSearch" onsubmit="return false">
+				<input type="hidden" name="sort" value="sales_price">
+				<table cellspacing="0" cellpadding="0" width="100%" border="0">
+					<colgroup>
+						<col width="140">
+						<col width="">
+					</colgroup>
+					<tbody>
+						<tr>
+							<th>
+								<span>기간검색</span>
+							</th>
+							<td>
+								<input type="text" name="date_s" id="date_s" class="input calendar datepicker" readonly="" value="{search.date_s}"> ~
+								<input type="text" name="date_e" id="date_e" class="input calendar datepicker" readonly="" value="{search.date_e}">
+								<a href="javascript:;" onclick="SalesCategory.setPeriod('today')">
+									<img src="/admin/images/btn_today01.gif" class="middle" />
+								</a>
+								<a href="javascript:;" onclick="SalesCategory.setPeriod('7_days')">
+									<img src="/admin/images/btn_day07.gif" class="middle" />
+								</a>
+								<a href="javascript:;" onclick="SalesCategory.setPeriod('14_days')">
+									<img src="/admin/images/btn_day14.gif" class="middle" />
+								</a>
+								<a href="javascript:;" onclick="SalesCategory.setPeriod('1_months')">
+									<img src="/admin/images/btn_day30.gif" class="middle" />
+								</a>
+							</td>
+						</tr>
+						<tr>
+							<th>카테고리검색</th>
+							<td>
+								<select name="category[]" style="width:200px;" onchange="SalesCategory.loadCategory(this)">
+									<option value="">〓〓 1차 카테고리 〓〓</option>
+									{@ category.c2}
+									<option value="{.code_all}">{.code_name}</option>
+									{/}
+								</select>
+								<select name="category[]" style="width:200px;" onchange="SalesCategory.loadCategory(this)">
+									<option value="">〓〓 2차 카테고리 〓〓</option>
+								</select>
+							</td>
+						</tr>
+					</tbody>
+				</table>
+				<div class="area-button">
+					<button type="button" id="btn_register" onclick="SalesCategory.search()" class="btn-point">조회</button>
+					<button type="button" id="btn_cancel" onclick="SalesCategory.searchReset()" class="btn-basic">초기화</button>
+				</div>
+			</form>
+		</div>
+
+		<div class="tools mb_10">
+			<div class="pull-left">
+				<button type="button" class="btn-basic dark h-x-small" onclick="SalesCategory.excel()" style="vertical-align:middle">엑셀 다운로드</button>
+			</div>
+			<div class="pull-right">
+				<select name="sort" onchange="SalesCategory.search('sort',this.value)">
+					<option value="buy_count">구매수량순</option>
+					<option value="buy_price">구매금액순</option>
+					<option value="refund_count" >환불수량순</option>
+					<option value="refund_price">환불금액순</option>
+					<option value="sales_count" >판매수량</option>
+					<option value="sales_price" selected>판매금액순</option>
+				</select>
+			</div>
+	</div>
+
+
+		<div id="inner"></div>
+
+		<div class="sub_manual_wrap">
+			<div class="title">
+				<p>매뉴얼</p>
+			</div>
+			<ul class="help">
+				
+				<li class="tit">· 카테고리 매출분석</li>
+				<li class="sub">- 쇼핑몰에 등록된 카테고리별 매출금액을 확인할 수 있습니다. </li>
+				<li class="sub">- 카테고리가 연결되지 않은 상품의 데이터는 집계되지 않습니다. </li>
+				<li class="sub">- 조회기간은 최대 3개월(90일)까지 설정할 수 있으며 1개월 기준은 30일의 데이터가 검색됩니다.</li>
+				<li class="sub">- 순위는 순매출 판매금액이 가장 높은 순으로 적용되며, 동일한 값이 있는 경우 카테고리 코드, 카테고리명의 오름차순으로 적용됩니다.</li>
+				<li class="tit">· 구매</li>
+				<li class="sub">- 결제완료 처리된 카테고리 상품의 수량과 총 판매금액입니다.
+				<li class="tit">· 환불</li>
+				<li class="sub">- 환불완료 처리된 카테고리 상품의 수량과 총 환불금액입니다.</li>
+				<li class="tit">· 순매출</li>
+				<li class="sub">- 판매수량 = 결제수량-환불수량</li>
+				<li class="sub">- 판매금액 = 결제금액-환불금액</li>
+
+			</ul>
+		</div>
+	</div>
+	
+
+	<form name="FrmCommentExcel" method="POST" action="/admin/common/excel.download.php">
+		<input type="hidden" name="type" value="sales_category">
+		<input type="hidden" name="column" value="*">
+		<input type="hidden" name="search" value="">
+	</form>
+	
+	
+	<script type="text/javascript" src="/admin/static/js/moment.js"></script>
+
+	<script type="text/javascript">
+	var SalesCategory = {
+		init: function () {
+			var me = this;
+			$('.datepicker').datepicker();
+			me.load();
+		},
+		load: function () {
+			//검색기간체크(최대 90일)
+			var s = moment($('#date_s').val(),'YYYY-MM-DD');
+			var e = moment($('#date_e').val(),'YYYY-MM-DD');
+			if(e.diff(s, "days") > 90) {
+				UI.error('검색가능한 기간은 최대 90일입니다.');
+				return false;
+			}
+
+			UI.ing('데이터를 불러오는 중입니다...');
+			var search = $('#FrmSearch').serialize();
+			$('#inner').load('/admin/sales/category.inner.php', {
+				search: search
+			}, function () {
+				$("td").filter(function () {
+					return $(this).text() === "0";
+				}).css("color", "#ddd");
+				UI.ing();
+			});
+		},
+		search: function (field, value) {
+			if (field && value) $('#FrmSearch').find('[name="' + field + '"]').val(value);
+			this.load(1);
+		},
+		loadCategory: function (ele) {
+			var el = $(ele);
+			var parent_code = el.val();
+			var target = el.next('select');
+			el.nextAll('select').find('option[value!=""]').remove();
+
+			//target.empty();
+
+			$.ajax({
+				url: '/admin/proc/product.proc.php',
+				data: {
+					mode: 'category',
+					act: 'get_children',
+					parent_code: parent_code
+				},
+				dataType: 'json',
+				type: 'POST',
+				success: function (r) {
+					if (r.success) {
+						$.each(r.data, function (i, e) {
+							var opt = $('<option value="' + e.code_all + '">' + e.code_name + '</option>');
+							target.append(opt);
+						})
+					}
+
+				}
+			})
+		},
+		searchReset: function() {
+			document.FrmSearch.reset();
+			this.load();
+		},
+		setPeriod: function (sub) {
+			var period = UTIL.period('<?=TIMESTAMP?>', sub);
+			document.FrmSearch.date_s.value = period.start;
+			document.FrmSearch.date_e.value = period.end;
+		},
+		excel: function() {
+			document.FrmCommentExcel.search.value = $('#FrmSearch').serialize();
+			document.FrmCommentExcel.submit();
+		}
+	}
+
+	$(function () {
+		SalesCategory.init();
+	})
+	</script>

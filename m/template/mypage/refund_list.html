@@ -1,0 +1,321 @@
+<div id="page">
+	<!-- 내용 -->
+	<main id="content" class="subpage">
+		<section class="page_local">
+			<h2 class="page_title">
+				<a href="javascript:history.back();" class="prev">이전페이지</a>
+				<span>주문반품신청</span>
+			</h2>
+		</section><!-- //.page_local -->
+
+		<section class="orderlist_view list_myorder sub_bdtop">
+			<form name="FrmReturn" id="FrmReturn" onsubmit="return false;">
+				<input type="hidden" name="mode" value="order_return">
+				<input type="hidden" name="order_num" value="{basic.order_num}">
+				<input type="hidden" name="order_status" value="{basic.order_status}">
+				<!-- //주문상세 테이블 -->
+				<div class="my_orderlist ">
+					<h3 class="order_title clear">
+						<span class="fl-l mr-5"><input type="checkbox" title="전체 선택" class="check_def" id="checked_all" data-all="product[checked][]" {? batch}checked disabled{/}></span>
+						<span class="fl-l">주문번호: {basic.order_num}</span>
+						<span class="fl-r">{=format(basic.date_insert,'Y-m-d')}</span>
+					</h3>
+					<ul class="cart_goods">
+						{@ product}
+						<li data-id="product_{.index_}">
+							<div class="cart_wrap">
+								<div class="clear">
+									<div class="goods_area with-check">
+										<div class="check"><input type="checkbox" class="check_def" name="product[checked][]" id="{.index_}" value="{.idxs}" data-idx="{.index_}" {? batch }checked data-disabled="true"{/} ></div>
+										<div class="img"><a href="{C.DIR_M}/mypage_orderlist_view.php?oid={}"><img src="{=preview(.product_info.tinyimage,'default')}" alt="상품 이미지"></a></div>
+										<div class="info">
+											<p class="brand">{? .option_type == 'product'}<span class="point-color fw-normal">[추가] </span>{/}{.product_info.productname}</p>
+											<p class="name">{.option_info.option_name}</p>
+											<p class="point-color fw-bold">{=number_format(.price_sell*.cnt)}원</p>
+											<p>{.status_info.msg}</p>
+
+										</div>
+									</div>
+									<div class="mt-10 refund-reason ">
+										<select class="select_line" title="반품 수량 선택" name="product[count][]" disabled>
+											{@ range(.cnt,1)}
+											<option value="{..value_}">{..value_}</option>
+											{/}
+										</select>
+										<select class="select_line validate[required]" title="반품 사유를 선택" id="return_reason_{.index_}" name="product[reason][]" data-idx="{.index_}" data-errormessage-value-missing="반품사유를 선택해주세요." {? !batch}disabled{/}>
+											<option value="">반품 사유를 선택해주세요</option>
+											{@__CONFIG.return_reason}
+											<option value="{..text}|{..charger}">{..text}</option>
+											{/}
+										</select>
+										<input class="w100-per mt-5 " type="text" title="반품사유 상세 작성" name="product[reason_etc][]" {? !batch}disabled{/} placeholder="반품 사유를 적어주세요">
+									</div>
+
+								</div>
+							</div><!-- //.cart_wrap -->
+						</li>
+						{/}
+					</ul><!-- //.cart_goods -->
+
+				</div>
+				<!-- 주문상세 테이블 -->
+				<ul class="list_notice">
+					<li>* 주문 반품할 상품의 사유를 선택해 주세요.</li>
+					{? count(gift) > 0 //사은품이 있는경우에만 노출}
+					<li class="pt-5">* 사은품 포함 주문의 경우, 부분 반품은 불가능합니다. 전체 취소/반품 후 재주문 바랍니다.</li>
+					{/}
+					{? basic.coupon_basket_discount > 0 //장바구니쿠폰이 적용된 경우에만 노출}
+					<li class="pt-5">* 장바구니쿠폰이 사용된 주문의 경우, 부분 반품은 불가능합니다. 전체 취소/반품 후 재주문 바랍니다.</li>
+					{/}
+				</ul>
+
+
+				<!-- 사은품 정보 -->
+				{? gift}
+				<div class="order_table mt-25">
+					<h3 class="cart_tit">사은품</h3>
+					<table class="th-left">
+						<colgroup>
+							<col style="width: 100%;">
+						</colgroup>
+						<tbody>
+							<tr>
+								<td class="pl-15 pr-15 pb-15">
+									{@ gift}
+									<div class="mt-10">
+										<strong class="fz-12">{.gift_info.gift_comment}</strong>
+										<p class="mt-5">{.gift_info.giftname}</p>
+									</div>
+									{/}
+								</td>
+							</tr>
+						</tbody>
+					</table>
+				</div><!-- //.order_table -->
+				{/}
+				<!-- //사은품정보 -->
+
+				<!-- 배송지 정보 -->
+				<div class="order_table">
+					<h3 class="cart_tit">
+						배송지 정보
+						<!-- [D] 주문 상태: 주문접수, 결제완료인 경우에만 노출 -->
+						<!--<a href="javascript:;" class="btn_change_addr btn-line">배송지변경</a>-->
+						<!-- //[D] 주문 상태: 주문접수, 결제완료인 경우에만 노출 -->
+					</h3>
+					<table class="th-left">
+						<colgroup>
+							<col style="width:32.8%;">
+							<col style="width:auto;">
+						</colgroup>
+						<tbody>
+							<tr>
+								<th>받는사람</th>
+								<td>{basic.receiver_name}</td>
+							</tr>
+							<tr>
+								<th>휴대전화</th>
+								<td>{basic.receiver_mobile}</td>
+							</tr>
+							<tr>
+								<th>전화번호(선택)</th>
+								<td>{basic.receiver_tel}</td>
+							</tr>
+							<tr>
+								<th>주소</th>
+								<td>
+									<div class="mt-5">(우편번호:{basic.receiver_zipcode})</div><br>
+									주소 : {basic.receiver_addr} {basic.receiver_addr_detail}
+								</td>
+							</tr>
+							<tr>
+								<th>배송 요청사항</th>
+								<td>
+									{? basic.receiver_memo}{basic.receiver_memo}{:}-{/}
+								</td>
+							</tr>
+						</tbody>
+					</table>
+				</div><!-- //.order_table -->
+				<!-- //배송지 정보 -->
+
+				<div class="delivery-check">
+					<div class="title-section is-function with-border">
+						<h4 class="tit">반품상품 수거정보</h4>
+						<div class="function-area">
+							<button type="button" onclick="OrderAddress.open()" class="btn-basic">배송지목록</button>
+						</div>
+
+					</div>
+					<div class="inner">
+						<table class="th-left" style="border-top:none">
+							<caption>배송지 정보 변경</caption>
+							<colgroup>
+								<col style="width:80px">
+								<col style="width:auto">
+							</colgroup>
+							<tbody>
+								<tr>
+									<th scope="row"><label class="required" for="receiver_name">받는분</label></th>
+									<td>
+										<input type="text" class="w100-per validate[required]" title="주문자명 입력자리" value="{member.name}" name="receiver_name" id="receiver_name" placeholder="이름을 입력하세요." data-errormessage-value-missing="받는분 이름을 입력해주세요.">
+									</td>
+								</tr>
+								<tr>
+									<th scope="row" class="va-top"><label class="required" for="pop_delivery_adress">주소</label></th>
+									<td>
+										<div class="form-multi">
+											<input type="text" id="pop_delivery_adress" title="우편번호 출력자리" class="validate[required]" value="{member.home_post}" style="width:145px" data-errormessage-value-missing="주소를 입력해주세요." name="receiver_zipcode" data-post="zonecode" readonly="" onclick="OrderAddress.post()">
+											<button type="button" onclick="OrderAddress.post()" class="btn-basic h-input" style="padding:0 6px">우편번호찾기</button>
+										</div>
+										<div class="form-multi"><input type="text" name="receiver_addr" class="validate[required] w100-per" data-errormessage-value-missing="주소를 입력해주세요." title="주소 입력자리" value="{member.home_addr}" data-post="address" onclick="OrderAddress.post()" readonly=""></div>
+										<div class="form-multi"><input type="text" name="receiver_addr_detail" class="w100-per validate[required]" title="상세 주소 입력" placeholder="상세 주소를 입력하세요." data-post="buildingName" value="{member.home_addr_detail}"></div>
+									</td>
+								</tr>
+								<tr>
+									<th scope="row" class="va-top"><label class="required" for="receiver_mobile_1">휴대전화</label></th>
+									<td>
+										<div class="tel-cover">
+											<div>
+												<select name="receiver_mobile[0]" title="휴대전화 첫번째 번호" id="receiver_mobile_1" class="select_line">
+													<option value="">선택</option>
+													{@ _arrMobile}
+													<option value="{.value_}" {=checked(member.mobile_arr[0],.value_,'selected')}>{.value_}</option>
+													{/}
+												</select>
+											</div>
+											<div><input type="tel" name="receiver_mobile[1]" value="{member.mobile_arr[1]}" title="휴대전화 번호 가운데 입력자리" id="receiver_mobile_2" data-filter="numeric" class="validate[required, minSize[4], maxSize[4]]" data-errormessage-value-missing="휴대전화번호를 입력해주세요." maxlength="4"></div>
+											<div><input type="tel" name="receiver_mobile[2]" value="{member.mobile_arr[2]}" title="휴대전화 번호 마지막 입력자리" id="receiver_mobile_3" data-filter="numeric" class="validate[required, minSize[4], maxSize[4]]" data-errormessage-value-missing="휴대전화번호를 입력해주세요." maxlength="4"></div>
+										</div>
+									</td>
+								</tr>
+								<tr>
+									<th scope="row"><label for="receiver_tel_1">전화번호</label></th>
+									<td>
+										<div class="tel-cover">
+											<div>
+												<select name="receiver_tel[0]" title="전화번호 첫번째 번호" id="receiver_tel_1" class="select_line">
+													<option value="">선택</option>
+													{@ _arrTel}
+													<option value="{.value_}" {=checked(member.home_tel_arr[0],.value_,'selected')}>{.value_}</option>
+													{/}
+												</select>
+
+											</div>
+											<div><input type="text" name="receiver_tel[1]" value="{member.home_tel_arr[1]}" title="전화번호 중간 번호" id="receiver_tel_2" data-filter="numeric" maxlength="4"></div>
+											<div><input type="text" name="receiver_tel[2]" value="{member.home_tel_arr[2]}" title="전화번호 마지막 번호" id="receiver_tel_3" data-filter="numeric" maxlength="4"></div>
+										</div>
+									</td>
+								</tr>
+							</tbody>
+						</table>
+					</div>
+
+				</div>
+
+				<div class="btn_area mt-20 mr-10 ml-10">
+					<ul class="ea2 dib_type">
+						<li><a href="javascript:history.back();" class="btn-line h-input">취소</a></li>
+						<li><button type="submit" class="btn-point h-input">반품정보확인</button></li>
+					</ul>
+				</div>
+			</form>
+		</section><!-- //.orderlist_view -->
+
+	</main>
+	<!-- //내용 -->
+</div>
+<script type="text/javascript" src="/m/template/order/order_address.js"></script>
+<script type="text/javascript" src="{C.POST_JS}"></script>
+<script type="text/javascript">
+	var RefundList = {
+		changed:false,
+		proc_url: '/proc/order.proc.php',
+        batch: '{batch}',
+		init: function () {
+			var me = this;
+
+
+			UI.toggleCheck();
+
+			$('[name="product[checked][]"]').on('click', function () { //교환신청체크
+
+				if($(this).data('disabled') == true) {
+					$(this).prop('checked',true); 
+					return false;
+				}
+
+				var tr = $('[data-id="product_' + this.id + '"]');
+				if (this.checked) tr.find('select, input').removeAttr('disabled')
+				else tr.find('select, input[type=text]').attr('disabled', true);
+
+				if($('[name="product[checked][]"]:checked').length == $('[name="product[checked][]"]').length) $('[data-all]').prop('checked', true);
+				else $('[data-all]').prop('checked', false);
+
+			});
+
+			$('[data-all]').on('click', function () { //전체선택시 trigger checked
+				$('[name="product[checked][]"]').prop('checked', !this.checked);
+				$('[name="product[checked][]"]').trigger('click');
+			});
+
+			$('#return_reason_0').on('change', function() { //최상단 사유변경시 일괄적용(최초1회만 허용)
+				if(me.changed) return false;
+				$('[name="product[reason][]"]').val(this.value);
+				me.changed = true;
+			});
+
+			var option = $.extend({}, validation_option, {
+				validateNonVisibleFields: false,
+				onValidationComplete: function (form, status) {
+					if (status) me.open();
+				}
+			});
+			$("#FrmReturn").validationEngine('attach', option);
+
+			UI.toggleCheck();
+
+		},
+		open: function () {
+
+			var checked = UI.getChecked('product[checked][]');
+			if(checked.length < 1) {
+				UI.error('반품신청할 주문상품을 선택하세요.');
+				return false;
+			}
+            if(RefundList.batch){
+                $("select[name='product[count][]']").removeAttr('disabled');
+            }
+			var formdata = $('#FrmReturn').serializeArray();
+
+			UI.popup('/m/mypage/refund.php', '반품신청', formdata);
+            if(RefundList.batch){
+                $("select[name='product[count][]']").attr('disabled', true);
+            }
+
+		},
+		act: function() {
+			UI.confirm('반품신청하시겠습니까?', function() {
+			    
+				var formdata = $('#FrmReturn').serialize();
+				$.ajax({
+					url:RefundList.proc_url,
+					type:'POST',
+					data:formdata,
+					dataType:'json',
+					success : function(r) {
+						if(r.success) {
+							document.location.href="/m/mypage_complete.php?oid="+r.data.oid+"&order_status=return";
+						}
+						else{
+							UI.alert(r.msg);
+						}
+					}
+				});
+			})
+		}
+	}
+	$(function () {
+		RefundList.init();
+	})
+</script>

@@ -1,0 +1,34 @@
+<div id="contents">
+	<div class="mypage-page">
+		<h2 class="page-title">주문 {? order_status=='cancel'}취소{: order_status=='refund'}반품{:}교환{/} 완료<h2>
+				<div class="inner-align page-frm clear">
+					{=include("mypage_TEM01_left.php")}
+
+					<article class="my-content order-detail">
+						<div class="orderEnd-result no-margin">
+							{? order_status == 'exchange'}
+							<p>교환신청이 정상적으로 접수되었습니다.</p>
+							{: order_status == 'return'}
+							<p>반품신청이 정상적으로 접수되었습니다.</p>
+							{:}
+							<p>주문 취소가 정상적으로 완료되었습니다.</p>
+							{/}
+							<p>항상 i KNOW iONE 을 이용해 주셔서 감사합니다.</p>
+							<p class="point-color mt-25">주문번호 : {order_num}</p>
+						</div>
+						<div class="mt-50 ta-c">
+							<a class="btn-point h-large w200" href="/front/mypage_cs.php">목록으로</a>
+						</div>
+
+						<dl class="attention-box no-bg mt-75">
+							<dt>유의사항</dt>
+							<dd>주문취소는 결제완료 단계 전까지 가능합니다.</dd>
+							<dd>카드결제 취소 시 결제하신 카드사로 즉시 취소요청을 합니다.(카드사에 따라 2~3일 소요)</dd>
+							<dd>실시간계좌이체로 결제하신 경우 결제하신 계좌로 환불됩니다.</dd>
+							<dd>가상계좌로 결제하신 경우 등록하신 환불계좌로 2~3일 이내에 환불됩니다.</dd>
+						</dl>
+					</article><!-- //.my-content -->
+				</div><!-- //.page-frm -->
+
+	</div>
+</div><!-- //#contents -->

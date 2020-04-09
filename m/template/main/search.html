@@ -1,0 +1,114 @@
+<!-- Page -->
+<div id="page">
+	<!-- Content -->
+	<main id="content">
+		<div class="list_head">
+			<a href="javascript:history.back();" class="prev">이전페이지</a>
+		</div>
+		<!--{* 검색결과 있는 경우 노출 *}-->
+		{? list.count.search >0 }
+		<div class="goods_list_wrp">
+			<div class="select_area">
+				<select class="select_line" title="sort by" id="sort">
+					<option value="recent">신상품순</option>
+					<option value="hit">인기순</option>
+					<option value="review">상품평순</option>
+					<option value="like">좋아요순</option>
+					<option value="price_asc">낮은가격순</option>
+					<option value="price_desc">높은가격순</option>
+				</select>
+			</div>
+			<div class="goods_list">
+				<ul>
+					{=this->xprint('product/list.inner.html')}
+				</ul>
+				{? list.count.search > cfg.limit}
+				<a href="javascript:;" class="btn_more">더보기</a>
+				{/}
+			</div>
+		</div>
+		{:}
+		<!-- 검색결과 없는 경우 노출 -->
+		<div class="search_result_none">
+			<p class="ment">입력하신 검색어 <span class="point-color">‘{search}’</span>와 일치하는 상품을 찾지 못했습니다.</p>
+			<ul class="dot_list">
+				<li>단어의 철자 및 띄어쓰기가 정확한지 확인해 주세요.</li>
+				<li>검색어의 단어 수를 줄이거나, 다른 검색어로 검색해 보세요.</li>
+				<li>특수문자를 제외하고 검색해 보세요.</li>
+			</ul>
+		</div>
+		{/}
+		<!-- //Content -->
+	</main>
+</div>
+<!--@TODO 좋아요, 모양 수정-->
+<script type="text/javascript" src="/static/js/blazy.min.js"></script>
+<script type="text/javascript">
+    var Search = {
+        page:1,
+        page_last:'{list.page.last}',
+        page_limit:'{cfg.limit}',
+        lock:false,
+        init: function() {
+            var me = this;
+            //정렬
+            $('#sort').on('change', function() {
+                me.sort = this.value;
+                me.load(1);
+            });
+
+            $('.btn-more').on('click', function() {
+                me.more();
+            });
+
+            new Blazy();
+            PRODUCT.like(); //좋아요 바인딩
+        },
+        more:function() {
+            var me = Search;
+            if(!me.lock) {
+                me.lock = true;
+                if(me.page_last <= me.page) return false;
+
+                var p = me.page+1;
+                me.load(p);
+            }
+        },
+        load:function(page) {
+            var me = Search;
+            var p = page || me.page;
+            $.ajax({
+                url:'/m/productlist.inner.php',
+                data:{page:p, sort:me.sort, search:"search={search}", limit:me.page_limit},
+                dataType:'json',
+                type:'GET',
+                success: function(r) {
+                    me.page = p;
+                    me.page_last = r.data.page.last;
+                    if(p == 1) {
+                        $(".goods_list ul").html(r.data.html);
+                        new Blazy();
+                    }
+                    else {
+                        $(r.data.html).hide().appendTo(".goods_list ul").delay(100).fadeIn(500, function() {
+                            new Blazy();
+                        });
+                    }
+                    me.lock = false;
+                    if(me.page >= me.page_last) {
+                        $('.btn_more').addClass('hide');
+                    }
+                    else {
+                        $('.btn_more').removeClass('hide');
+                    }
+
+                    PRODUCT.like();
+                }
+            });
+        }
+    }
+
+    $(function(){
+        Search.init();
+    })
+</script>

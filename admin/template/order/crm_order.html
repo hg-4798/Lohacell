@@ -1,0 +1,157 @@
+<div class="content-wrap">
+	<div class="contentsBody">
+	<div class="table_style01 pt_20">
+	<form name="FrmSearch" id="FrmSearch">
+		<input type="hidden" name="id" value="{member_id}">
+		<input type="hidden" name="menu" value="order">
+		<h3 class="table-title">전체주문 조회</h3>
+		<table class="tbl-search">
+
+			<colgroup>
+				<col style="width:18%"><col style="width:82%">
+			</colgroup>
+			<tbody>
+
+			<TR>
+				<th scope="row">기간</th>
+				<td>
+					<div class="date-choice">
+						<select name="date_field" class="select">
+							<option value="date_order_1">주문일</option>
+							<option value="date_order_2">결제완료일</option>
+							<option value="date_order_4">배송중처리일</option>
+							<option value="date_order_5">배송완료일</option>
+						</select>
+						<input type="text" name="date_s" OnClick="Calendar(event)" value="" class="input calendar" autocomplete="off" /> ~
+						<input type="text" name="date_e" OnClick="Calendar(event)" value="" class="calendar input" autocomplete="off"/>
+					</div>
+				</td>
+			</TR>
+
+			<tr>
+				<th scope="row"><label>상품</label></th>
+				<td>
+					<select name="product_field" class="select">
+						<option value="productname">상품명</option>
+						<option value="productcode">상품코드</option>
+					</select>
+					<input type="text" name="product_value" value=""  class=" w200">
+				</TD>
+			</tr>
+
+
+			<TR>
+				<th scope="row">주문상태</th>
+				<TD>
+					<div class="mt-10">
+						<label><input type="checkbox" class='hj' name="step[]" value="100"><span class="lbl">입금대기중</span></label>
+						<label><input type="checkbox" class='hj' name="step[]" value="200','2E0" ><span class="lbl">결제완료</span></label>
+						<label><input type="checkbox" class='hj' name="step[]" value="300','3E0" ><span class="lbl">배송준비중</span></label>
+						<label><input type="checkbox" class='hj' name="step[]" value="400','4E0" ><span class="lbl">배송중</span></label>
+						<label><input type="checkbox" class='hj' name="step[]" value="500','5E0" ><span class="lbl">배송완료</span></label>
+						<label><input type="checkbox" class='hj' name="step[]" value="600','6E0" ><span class="lbl">구매확정</span></label>
+					</div>
+					<div class="mt-10">
+						<label><input type="checkbox" class='hj' name="step[]" value="1C1','2C1"><span class="lbl">취소신청</span></label>
+						<label><input type="checkbox" class='hj' name="step[]" value="1C2','2C2"><span class="lbl">취소접수</span></label>
+						<label><input type="checkbox" class='hj' name="step[]" value="1C3','2C3"><span class="lbl">취소처리중</span></label>
+						<label><input type="checkbox" class='hj' name="step[]" value="1C4','2C4"><span class="lbl">취소완료</span></label>
+					</div>
+
+					<div class="mt-10" >
+						<label><input type="checkbox" class='hj' name="step[]" value="4R1','5R1" ><span class="lbl">반품신청</span></label>
+						<label><input type="checkbox" class='hj' name="step[]" value="4R2','5R2"><span class="lbl">반품접수</span></label>
+						<!-- <label><input type="checkbox" class='hj' name="step[]" value="4R1','5R1"><span class="lbl">반품철회</span></label> -->
+						<!-- <label><input type="checkbox" class='hj' name="step[]" value="4R1','5R1"><span class="lbl">반품제품도착</span></label> -->
+						<!-- <label><input type="checkbox" class='hj' name="step[]" value="4R1','5R1"><span class="lbl">반품보류</span></label> -->
+						<label><input type="checkbox" class='hj' name="step[]" value="4R3','5R3"><span class="lbl">반품진행중</span></label>
+						<label><input type="checkbox" class='hj' name="step[]" value="4R4','5R4"><span class="lbl">반품완료</span></label>
+					</div>
+					<div class="mt-10" >
+						<label><input type="checkbox" class='hj' name="step[]" value="4E1','5E1"><span class="lbl">교환신청</span></label>
+						<label><input type="checkbox" class='hj' name="step[]" value="4E2','5E2"><span class="lbl">교환접수</span></label>
+						<label><input type="checkbox" class='hj' name="step[]" value="4E3','5E3"><span class="lbl">교환진행중</span></label>
+						<!-- <label><input type="checkbox" class='hj' name="order_status[]" value="1"><span class="lbl">교환철회</span></label> -->
+						<!-- <label><input type="checkbox" class='hj' name="order_status[]" value="1"><span class="lbl">교환제품도착</span></label> -->
+						<!-- <label><input type="checkbox" class='hj' name="order_status[]" value="1"><span class="lbl">교환보류</span></label> -->
+						<!-- <label><input type="checkbox" class='hj' name="step[]" value="4E','5E1"><span class="lbl">교환승인</span></label> -->
+						<label><input type="checkbox" class='hj' name="step[]" value="4E4','5E4"><span class="lbl">교환완료</span></label>
+					</div>
+				</TD>
+			</TR>
+			<TR>
+				<th scope="row">결제타입</th>
+				<TD class="td_con1">
+					<label><input type="checkbox" class='hj' name="pg_paymethod[]" value="all" checked data-reverse="pg_paymethod[]"><span class="lbl">전체</span></label>
+					<label><input type="checkbox" class='hj' name="pg_paymethod[]" value="card"><span class="lbl">카드결제</span></label>
+					<label><input type="checkbox" class='hj' name="pg_paymethod[]" value="acnt"><span class="lbl">실시간계좌이체</span></label>
+					<label><input type="checkbox" class='hj' name="pg_paymethod[]" value="vcnt"><span class="lbl">가상계좌</span></label>
+				</TD>
+			</TR>
+			</tbody>
+		</table>
+		<!-- <div class="detail-find"><input type="image" src="static/img/btn/detail_search.gif" alt="상세검색"></div> -->
+		<div class="btn-place">
+			<a href="javascript:;" class="btn-dib on" onclick="CrmOrderList.search()">검색</a>
+			<!-- <a href="#" class="btn-dib">초기화</a> -->
+		</div>
+	</form>
+	</div>
+	<div id="inner"></div>
+	<dl class="help-attention mt-50">
+		<dt>도움말</dt>
+		<!-- <dd>1. 비회원인 경우는 어쩌고 저쩌고</dd>
+		<dd>2. 회원인 경우는 어쩌고 저쩌고</dd> -->
+	</dl>
+
+	</div>
+</div><!-- //.contentsBody -->
+
+<script type="text/javascript" src="/admin/static/js/moment.js"></script>
+<script type="text/javascript" src="/admin/static/js/calendar.js"></script>
+<script type="text/javascript">
+    var CrmOrderList = {
+        page: 1,
+        proc_url: '/admin/proc/order.proc.php',
+        init: function() {
+            var me = this;
+            //$('.datepicker').datepicker();
+            me.load(1);
+            UI.reverseCheck();
+        },
+        setPeriod: function (sub) {
+            var period = UTIL.period('<?=TIMESTAMP?>', sub);
+            document.FrmSearch.date_start.value = period.start;
+            document.FrmSearch.date_end.value = period.end;
+        },
+        search: function (field, value) {
+            if (field && value) $('#FrmSearch').find('[name="' + field + '"]').val(value);
+            this.load(1);
+        },
+        searchReset: function () {
+            $('#FrmSearch')[0].reset();
+            $('[data-reverse]').prop('checked',true);
+            this.load(1);
+        },
+        load: function (page) {
+            UI.ing('데이터를 불러오는 중입니다...');
+            var p = page || CrmOrderList.page;
+            var search = $('#FrmSearch').serialize();
+
+            $('#inner').load('/admin/crm_order.inner.php', {
+                    page: p,
+                    search: search
+                },
+                function () {
+                    CrmOrderList.page = p;
+                    UI.toggleCheck();
+                    UI.ing();
+                    $('[data-toggle="tooltip"]').tooltip();
+                }
+            );
+        }
+    }
+    $(function() {
+        CrmOrderList.init();
+    });
+</script>

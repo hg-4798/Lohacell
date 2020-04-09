@@ -1,0 +1,110 @@
+<div id="page">
+	<!-- 내용 -->
+	<main id="content" class="subpage">
+		<section class="page_local">
+			<h2 class="page_title">
+				<a href="javascript:history.back();" class="prev">이전페이지</a>
+				<span>포인트 / 마일리지</span>
+			</h2>
+		</section><!-- //.page_local -->
+
+		<section class="mypage_point sub_bdtop">
+			<div class="mypoint">
+				<div class="lv_point">
+					<p class="mylv"><strong>{=member.name}</strong>님의 회원등급 <strong class="level">{=member.group_info.group_name}</strong></p>
+					<!--<p class="msg">등급업 필요 포인트 <strong>1,000P</strong></p>-->
+				</div>
+				<div class="point_now mt-15">
+					<ul class="clear">
+						<li>
+							<span class="icon">P</span>
+							<p class="mt-5">현재 포인트</p>
+							<p class="point-color"><strong>{=number_format(member.act_point)}P</strong></p>
+						</li>
+						<li>
+							<span class="icon">E</span>
+							<p class="mt-5">현재 마일리지</p>
+							<p class="point-color"><strong>{=number_format(member.reserve)}M</strong></p>
+						</li>
+					</ul>
+				</div>
+			</div><!-- //.mypoint -->
+
+			<div class="point_tab tab_type1" data-ui="TabMenu">
+				<div class="tab-menu clear">
+					<a data-content="menu" data-point_type='point' class="active point_change" title="선택됨">포인트</a>
+					<a data-content="menu" data-point_type='mileage' class="point_change">마일리지</a>
+				</div>
+
+				<!-- 통합포인트 -->
+				<div class="tab-content active">
+					<form id="FrmSearchPoint">
+					<div class="check_period">
+						<ul id="date">
+							<li class="on"><a href="javascript:;" onclick="UI.month('1')">1개월</a></li><!-- [D] 해당 조회기간일때 .on 클래스 추가 -->
+							<li class=""><a href="javascript:;" onclick="UI.month('3')">3개월</a></li>
+							<li class=""><a href="javascript:;" onclick="UI.month('6')">6개월</a></li>
+							<li class=""><a href="javascript:;" onclick="UI.month('12')">12개월</a></li>
+						</ul>
+					</div><!-- //.check_period -->
+						<input type="hidden" name="date_s" value="{search.date_s}" id="date_s" >
+						<input type="hidden" name="date_e" value="{search.date_e}" id="date_e" >
+					</form>
+					<div id="tabs_contents"></div>
+					
+				</div>
+				<!-- //통합포인트 -->
+
+			</div><!-- //.point_tab -->
+
+		</section><!-- //.mypage_point -->
+
+	</main>
+	<!-- //내용 -->
+</div>
+
+<script type="text/javascript">
+	var Point = {
+		url:'{_SERVER.PHP_SELF}',
+		tab_id:'point',
+		page:1,
+		init: function() {
+			var me = this;
+
+
+			$('.point_change').on('click', function() {
+				me.tab_id = $(this).data('point_type');
+				$('#date > li').removeClass('on');
+				$('#date > li').first().addClass('on');
+				UI.month('1')
+				me.load(1);
+			});
+			$('#date > li > a').on('click', function() {
+				$('#date > li').removeClass('on');
+				$(this).parent().addClass('on');
+				me.load(1);
+			});
+			me.load(1);
+		},
+		load: function(page) {
+			var p = page || Point.page;
+			var href = this.tab_id+'.inner.php';
+			var search = $('#FrmSearchPoint').serialize();
+			$('#tabs_contents').load('{C.DIR_M}/mypage/'+href, { page: p,search:search}, function() {
+
+			})
+		},
+		loadPage: function (page) {
+			this.load(page);
+		},
+		search: function (field, value) {
+			if (field && value) $('#FrmSearchPoint').find('[name="' + field + '"]').val(value);
+			this.load(1);
+		},
+
+	}
+
+	$(function() {
+		Point.init();
+	})
+</script>

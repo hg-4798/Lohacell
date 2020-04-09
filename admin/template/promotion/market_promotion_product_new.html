@@ -1,0 +1,263 @@
+<style>
+	/* sortable용 bshan 추가 */
+	.highlight {
+		border: 1px solid grey;
+		font-weight: bold;
+		font-size: 45px;
+		background-color: #e9c05e;
+	}
+	html>body .product_inner tr {
+		height: 14px;
+	}
+</style>
+<div class="content-wrap">
+	<form id="FrmPromotionDetail" onsubmit="return false">
+		<div class="title_depth3">상세 기획전 관리<span>메인 기획전 제목 [ {title} ]</span></div>
+		<div align="right">
+			등록개수 :
+			<select name="num" id="promotion_no" style="width: 50px;">
+				{@ range(1,12)}
+				<option value="{.value_}" {? count==.value_ } selected {/}>{.value_}</option>
+				{/}
+			</select>
+		</div>
+		<div id="promotionDiv">
+			<input type="hidden" name="pidx" id="pidx" value="{pidx}" />
+			<input type="hidden" name="mode" value="promotion_detail">
+			<input type="hidden" name="act" value="register">
+			<input type="hidden" name="executives_yn" id="executives_yn" value="{executives_yn}">
+			{@ promotion_list}
+			<div class="promotion-detail">
+				<div class="title_depth4" > <i class="fa fa-chevron-circle-right"></i>  {.index_+1}.  <input type="text" class="input validate[required]" data-errormessage-value-missing="서브기획전명을 입력하세요." name="promotion[{.seq}][title]" value="{.title}"></div>
+				<table class="table-view">
+					<colgroup>
+						<col style="width:180px">
+						<col>
+					</colgroup>
+					<tbody>
+					<tr>
+						<th>
+							<span>노출여부</span>
+						</th>
+						<td >
+							<label>
+								<input type="radio" name="promotion[{.seq}][use_yn]" value="Y" class="hj" {? .use_yn=="Y"} checked {/}>
+								<span class="lbl">사용함</span>
+							</label>
+							<label>
+								<input type="radio" name="promotion[{.seq}][use_yn]" value="N"  class="hj" {? .use_yn!="Y"} checked {/}>
+								<span class="lbl">사용안함</span>
+							</label>
+						</td>
+					</tr>
+					<!--			<tr>
+                                    <th>
+                                        <span>설명</span>
+                                    </th>
+                                    <td>
+                                        <input type="text" class="input validate[required]" data-errormessage-value-missing="기획설명을 입력하세요."  name="promotion[{.seq}][info]" value="{.info}"/>
+                                    </td>
+                                </tr>-->
+					<tr>
+						<th><span>영역 우선순위</span></th>
+						<td>
+							<input type="text" class="display_seq input validate[required,min[0], max[12],custom[numeric]] text-center" data-errormessage-value-missing="영역우선순위를 입력하세요." name="promotion[{.seq}][display_seq]" maxlength="2" value="{.display_seq}">
+						</td>
+					</tr>
+					<tr>
+						<th><span>상품 리스팅 템플릿</span></th>
+						<td><select name="promotion[{.seq}][display_tem]">
+							<option value="1" {? .display_tem == 1} selected {/} >기본형(웹4단/모바일2단)</option>
+							<option value="2" {? .display_tem == 2} selected {/} >복합형(웹7단/모바일3단)</option>
+							<option value="3" {? .display_tem == 3} selected {/} >강조형(웹2단/모바일1단)</option>
+							<option value="4" {? .display_tem == 4} selected {/} >세로형</option>
+							<option value="5" {? .display_tem == 5} selected {/} >슬라이드형</option>
+						</select>
+						</td>
+					</tr>
+					<tr>
+						<th rowspan="2">
+							<span>노출상품</span>
+						</th>
+						<td><button type="button" class="btn btn-sm" onclick="PromotionProduct.open('{.seq}')">상품선택</button></td>
+					</tr>
+					<tr>
+						<td style="padding:0px">
+							<input type="hidden" name="promotion[{.seq}][product_list]" id="product_list_{.seq}" >
+							<ul class="product_inner" id="product_inner_{.seq}" data-seq="{.seq}">
+								{@ .product}
+								<li data-productcode="{..productcode}" data-ul="{.seq}">
+									<span>{..productname}</span>
+									<span>{..consumerprice}</span>
+									<span><i class="fa fa-times" onclick="PromotionProduct.remove(this)"></i></span>
+								</li>
+								{/}
+								<li class="empty {? .product}hide{/}">선택된 상품이 없습니다.</li>
+							</ul>
+						</td>
+					</tr>
+					</tbody>
+				</table>
+			</div>
+			{/}
+		</div>
+		<!--{* 상품목록:S *}-->
+		<div class="title_depth3 design-tag">
+			<div class="pull-right">
+				<button type="submit" class="btn-point">적용하기</button>
+				<button type="button" class="btn-point"  onclick="document.location.href='/admin/market_promotion_list.php'">목록으로</button>
+			</div>
+		</div>
+
+	</form>
+</div>
+
+<!--{* 상품목록 템플릿:s *}-->
+<textarea id="tpl_li" style="display:none">
+	<li data-productcode="${\productcode}">
+		<span class="ta_l">${\name}</span>
+		<span>${\price_consumer}</span>
+		<span><i class="fa fa-times" onclick="PromotionProduct.remove(this)"></i></span>
+	</li>
+</textarea>
+<!--{* 상품목록 템플릿:E *}-->
+<script type="text/javascript" src="/admin/static/js/template.js"></script>
+<script src="/static/js/blazy.min.js"></script>
+<script>
+    var PromotionProduct = {
+        seq:'',
+        proc_url: '/admin/proc/promotion.proc.php',
+        max: 20, //최대등록가능개수
+        min: 0,
+        executives_yn : 'N',  //임직원 기획전 여부(상품조회시 필요)
+        init: function () {
+            var me = this;
+            var option = $.extend({}, validation_option, {
+                validateNonVisibleFields: false,
+                onValidationComplete: function (form, status) {
+                    if (status) me.save();
+                }
+            });
+            $("#FrmPromotionDetail").validationEngine('attach',option);
+            UI.loading('inner');
+            //정렬
+            $(".product_inner").sortable({
+                placeholder: "highlight",
+                cursor: "move"
+            });
+            $(".product_inner").disableSelection();
+            //등록개수 변경이벤트
+            $("#promotion_no").on('change', function(){
+                var num = $(this).val();
+                PromotionProduct.changeList(num);
+            });
+            //등록된 기획전 개수
+            var num = $("#promotion_no").val();
+            PromotionProduct.changeList(num);
+            //임직원기획전
+            this.executives_yn = $("#executives_yn").val();
+            UI.loading('inner');
+        },
+        save: function () { //설정저장
+            if (!confirm('적용하시겠습니까?')) return false;
+            //상품리스트 생성
+            $('.product_inner').each(function() {
+                var num = $("#promotion_no").val(); //등록 개수만큼 작동하도록 처리
+                if($(this).val() > num){
+                    return false;
+                }
+                PromotionProduct.seq = $(this).data('seq');
+                var li = PromotionProduct.getProduct(PromotionProduct.seq);
+                var productcodes = "#product_list_"+PromotionProduct.seq;
+                var productcode = li.map(function () {
+                    return $(this).attr('data-productcode');
+                }).get();
+                $(productcodes).val(productcode);
+            });
+            var formdata = $('#FrmPromotionDetail').serializeArray();
+            $.ajax({
+                url: this.proc_url,
+                type: 'POST',
+                data: formdata,
+                dataType: 'json',
+                success: function (r) {
+                    alert(r.msg);
+                    if (r.success) {
+                        window.location.reload();
+                    }
+                }
+            });
+        },
+        getProduct: function (seq) { //기등록상품목록리턴
+            var target_id = "#product_inner_"+ seq;
+            return $(target_id).find('li:not(.empty)');
+        },
+        open: function (seq) { //상품추가모달열기
+            PromotionProduct.seq = seq; //적용할 상세프로모션 pk값
+            var pr_type = '1';
+            if(PromotionProduct.executives_yn == 'Y'){
+                pr_type = '3';
+            }
+            UI.modal('/admin/product_choice.php', '상품추가', {
+                search: 'pr_type='+pr_type
+            }, 1100);
+        },
+        remove: function (ele) { //삭제(단순감춤)
+            $(ele).closest('li').remove();
+            PromotionProduct.seq = $(ele).closest('li').data('ul');
+            var li = PromotionProduct.getProduct(PromotionProduct.seq);
+            var cnt = li.length;
+            if(cnt > 0) {
+                //NewArrivals.resetSort();
+            }
+            else {
+                $('#product_inner_'+PromotionProduct.seq).find('li.empty').removeClass('hide');
+            }
+        },
+        goList : function(idx){
+            document.location.href = "/admin/market_promotion_reg.php?mode=mod&pidx=" + idx;
+        },
+        changeList: function(num){
+            $("#promotionDiv").find(".promotion-detail").show();
+            var e = $("#promotionDiv").find(".promotion-detail:gt("+(num-1)+")");
+            e.hide();
+        }
+    }
+    //상품선택 콜백
+    var ChoiceCallback = function (li_new) {
+        var target_id = "#product_inner_"+ PromotionProduct.seq;
+        var tmpObj = TrimPath.parseDOMTemplate("tpl_li");
+        var target = $(target_id);
+        var li = PromotionProduct.getProduct(PromotionProduct.seq);
+        //기등록상품수
+        var cnt = li.length;
+        //기등록상품 리스트
+        var exist = li.map(function () {
+            return $(this).attr('data-productcode');
+        }).get();
+        var idx = cnt;
+        $.each(li_new, function (i, e) {
+            var prcode = $(e).attr('data-productcode');
+            if ($.inArray(prcode, exist) != -1) return true;
+            /*if (idx >= PromotionProduct.max) {
+                alert('기획전상품은 최대 ' + PromotionProduct.max + '개까지 등록가능합니다.');
+                return false;
+            }*/
+            idx++;
+            target.find('li.empty').addClass('hide');
+            var data = {
+                idx: idx
+            };
+            $.each($(e).find('td'), function (ii, ee) {
+                var field = $(ee).data('field');
+                if (typeof field == 'undefined') return true;
+                data[field] = $(ee).html();
+            });
+            var html = tmpObj.process(data);
+            target.append(html);
+        });
+    }
+    $(function () {
+        PromotionProduct.init();
+    })
+</script>

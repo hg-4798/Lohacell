@@ -1,0 +1,48 @@
+<div class="">
+	<table class="tbl-list">
+		<colgroup>
+			<col style="width:50px"> <!-- 번호 -->
+			<col style="width:150px"> <!-- 아이디 -->
+			<col> <!-- 내용 -->
+			
+			<col style="width:100px"> <!-- 날짜 -->
+			<col style="width:100px"> <!-- 삭제 -->
+		</colgroup>
+		<thead>
+			<th>번호</th>
+			<th>회원아이디</th>
+			<th>댓글</th>
+			<th>날짜</th>
+			<th>삭제</th>
+		</thead>
+		<tbody>
+			{@ list}
+			<tr>
+				<td>{.idx}</td>
+				<td>{.c_mem_id}<br>({.name})</td>
+				<td class="text-left">
+					{=nl2br(.comment)}
+
+					{? .photo_img}
+					<ul class="comment-photo">
+						{@ .photo_img}
+						<li><img src="{..path}" ></li>
+						{/}
+					</ul>
+					{/}
+				</td>
+				<td>{=format('Y-m-d',.writetime)}</td>
+				<td>
+					<button type="button" onclick="EventComment.remove('{.num}')" class="btn btn-xs btn-outline-danger"><i class="fa fa-times"></i></button>
+				</td>
+			</tr>
+			{:}
+			<tr>
+				<td colspan="5">등록된 댓글이 없습니다.</td>
+			</tr>
+			{/}
+		</tbody>
+	</table>
+
+	{this->xprint('include/pagination.html')}
+</div>

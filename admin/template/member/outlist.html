@@ -1,0 +1,135 @@
+<!-- 회원목록 -->
+<div class="content-wrap">
+	<div class="title_depth3">탈퇴회원목록
+		<div class="pull-right">
+		</div>
+	</div>
+
+	<!--{* 검색:S *}-->
+	<form id="FrmMemberOutSearch" name="FrmMemberOutSearch">
+		<!-- 정렬기준 -->
+		<div class="pt_20">
+
+			<table cellpadding=0 cellspacing=0 class="tbl-search">
+				<colgroup>
+					<col style="width:120px">
+					<col>
+				</colgroup>
+				<tr>
+					<th>가입일</th>
+					<td>
+						<input type="text" name="date_start" OnClick="Calendar(event)" value="" class="input calendar" autocomplete="off" /> ~
+						<input type="text" name="date_end" OnClick="Calendar(event)" value="" class="calendar input" autocomplete="off"/>
+					</td>
+					<th>탈퇴일</th>
+					<td>
+						<input type="text" name="outdate_start" OnClick="Calendar(event)" value="" class="input calendar" autocomplete="off" /> ~
+						<input type="text" name="outdate_end" OnClick="Calendar(event)" value="" class="calendar input" autocomplete="off"/>
+					</td>
+				</tr>
+			</table>
+		</div>
+
+		<div class="ta_c mt_20">
+			<button type="button" class="btn-point" onclick="MemberOutList.search()">조회</button>
+			<button type="button" class="btn-basic" onclick="MemberOutList.searchReset()">초기화</button>
+		</div>
+
+	<!--{* 상단툴:S *}-->
+	<div class="tools m-b-10">
+		<div class="pull-right">
+			<select name="sort" onchange="MemberOutList.search()">
+				<option value="date_desc">가입일 내림차순</option>
+				<option value="date_asc">가입일 오름차순</option>
+				<option value="outdate_desc">탈퇴일 내림차순</option>
+				<option value="outdate_asc">탈퇴일 오름차순</option>
+			</select>
+			<select name="limit" onchange="MemberOutList.search()">
+				{@ __CONFIG.limit}
+				<option value="{.value_}">{.value_}개씩 보기</option>
+				{/}
+			</select>
+		</div>
+	</div>
+	<!--{* 상단툴:E *}-->
+
+	</form>
+
+	<div id="inner"></div>
+
+</div>
+
+<textarea id="searched" style="display:none">{searched}</textarea>
+<script type="text/javascript" src="/admin/static/js/calendar.js"></script>
+<script type="text/javascript">
+var MemberOutList = {
+	page: 1,
+	proc_url: '/admin/proc/member.proc.php',
+	init: function () {
+		var me = this;
+		this.load();
+
+		//숫자만입력
+		$('[data-filter="numeric"]').on('keydown input', function (evt) {
+			var v = $(this).val();
+			$(this).val(v.replace(/[^0-9]/g, ''));
+		});
+	},
+	load: function (page) {
+		UI.ing('데이터를 불러오는 중입니다...');
+		var p = page || MemberOutList.page;
+		var search = $('#FrmMemberOutSearch').serialize();
+
+		$('#inner').load('/admin/member/outlist.inner.php', {
+				page: p,
+				search: search
+			},
+			function () {
+                MemberOutList.page = p;
+				UI.toggleCheck();
+				UI.ing();
+				$('[data-toggle="tooltip"]').tooltip();
+			}
+		);
+	},
+	crm:function(e) {
+		var data = $(e).closest('tr').data();
+		ADMIN.crm(data.id);
+	},
+	search: function () {
+        UI.ing('데이터를 불러오는 중입니다...');
+        var p = 1;
+        var search = $('#FrmMemberOutSearch').serialize();
+
+        $('#inner').load('/admin/member/outlist.inner.php', {
+                page: p,
+                search: search
+            },
+            function () {
+                MemberOutList.page = p;
+                UI.toggleCheck();
+                UI.ing();
+                $('[data-toggle="tooltip"]').tooltip();
+            }
+        );
+    },
+    searchReset: function () {
+        $('#FrmMemberOutSearch')[0].reset();
+        this.load(1);
+    },
+    excel: function () {
+        var search = $('#searched').val();
+        UI.modal('/admin/common/excel.php', '엑셀다운로드', {
+            type:'memberout',
+            search: search
+        }, 800);
+    }
+
+}
+
+$(function() {
+    MemberOutList.init();
+})
+</script>
+
+

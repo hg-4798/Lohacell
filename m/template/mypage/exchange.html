@@ -1,0 +1,93 @@
+<!-- 교환배송비 정보 -->
+<div class="order_table is-right mt-25">
+
+		<!-- 배송지 정보 -->
+		<div class="order_table">
+			<form id="FrmExchangeDelivery" onsubmit="return false">
+			<input type="hidden" name="delivery_pay" value="{pay_delivery}">
+			<h3 class="cart_tit">
+				교환 배송비 정보
+			</h3>
+			<table class="th-left">
+				<colgroup>
+					<col style="width:32.8%;">
+					<col style="width:auto;">
+				</colgroup>
+				<tbody>
+					<tr>
+						<th>배송비</th>
+						<td>
+							{? pay_delivery>0}
+							{=number_format(pay_delivery)}원 | 구매자 부담
+							{:}
+							판매자부담
+							{/}
+							
+						</td>
+					</tr>
+					{? pay_delivery > 0}
+					<tr>
+						<td colspan="2" class="ta-l pd-15" bgcolor="#f8f8f8">
+							<p><input type="radio" class="radio_def" name="delivery_pay_method" value="bank" checked> 계좌 입금 : 신한은행 140-011-167492 | 예금주 : 제이준코스메틱(주)</p>
+							<p class="mt-5"><input type="radio" class="radio_def" name="delivery_pay_method" value="append"> 동봉</p>
+						</td>
+					</tr>
+					{/}
+				</tbody>
+			</table>
+			</form>
+		</div><!-- //.order_table -->
+		<!-- //배송지 정보 -->
+
+
+	</div><!-- //.order_table -->
+	<!-- //교환배송비정보 -->
+
+
+	<div class="layer_add_option">
+		<div class="btn_area">
+			<ul class="ea2">
+				<li><button onclick="Exchange.close()" class="btn-line h-input">취소</button></li>
+				<li><a href="javascript:;" class="btn-point h-input" onclick="Exchange.act()">교환신청</a></li>
+			</ul>
+		</div>
+	</div>
+
+	<script type="text/javascript">
+		var Exchange = {
+			init: function() {
+				
+			},
+			close: function() {
+				$('#jayjun_popup  .btn_close').trigger('click');
+			},
+			act: function() {
+				var me = this;
+				var fd1 = $('#FrmExchange').serializeArray();
+				var fd2 = $('#FrmExchangeDelivery').serializeArray();
+				var formdata = $.merge(fd1, fd2);
+		
+				UI.confirm('교환신청하시겠습니까?', function() {
+					$.ajax({
+						url:'/proc/order.proc.php',
+						data:formdata,
+						dataType:'json',
+						type:'POST',
+						success: function(r) {
+							if(r.success){
+								//이동
+								document.location.href="/m/mypage_complete.php?oid="+r.data.oid+"&order_status=exchange";
+							}
+							else {
+								UI.error(r.msg);
+							}
+						}
+					})
+				})
+			}
+		}
+		
+		$(function() {
+			Exchange.init();
+		})
+		</script>

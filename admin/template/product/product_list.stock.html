@@ -1,0 +1,115 @@
+<div class="p_20">
+	<form id="FrmProductListStock">
+	<input type="hidden" name="mode" value="product" />
+	<input type="hidden" name="act" value="stock" />
+	<input type="hidden" name="productcode" value="{productcode}" />
+	<table class="table-list">
+		<thead>
+			<tr>
+				<th>컬러</th>
+				<th>사이즈</th>
+				<th>ERP재고</th>
+				<th>당일배송재고</th>
+				<th><input type="checkbox" class="hj" data-all="reserve_yn"><span class="lbl" style="font-weight:bold">예약판매</span></th>
+				<th>예약판매 가능수량</th>
+				<th>예약판매수량</th>
+				<th>예약판매 잔여수량</th>
+				<th>품절(soldout)</th>
+			</tr>
+		</thead>
+		<tbody>
+			{@ stock}
+			<tr data-num="{.option_num}">
+				<td>{.option_color}</td>
+				<td>{.option_code}</td>
+				<td>{=number_format(.option_quantity)}</td>
+				<td>{=number_format(.option_quantity_day)}</td>
+				<td><input type="checkbox" name="option[{.option_num}][reserve_yn]" data-group="reserve_yn" value="Y" class="hj" id="reserve_yn_{.option_num}" {=checked(.reserve_yn,'Y')}><span class="lbl"></span></td>
+				<td><input type="text" name="option[{.option_num}][reserve_quantity]" value=
+					"{.reserve_quantity}" class="full validate[condRequired[reserve_yn_{.option_num}], min[0]]" data-errormessage-value-missing="예약판매 가능수량을 입력하세요." data-filter="numeric" data-errormessage-range-underflow="재고수량은 0 이상 입력해주세요." data-sold="{.reserve_sold}"></td>
+				<td>{=number_format(.reserve_sold)}</td>
+				<td class="reserve-remain">{=number_format(.reserve_quantity-.reserve_sold)}</td>
+				<td><input type="checkbox" class="hj"  name="option[{.option_num}][option_soldout]" value="Y" {=checked(.option_soldout,'Y')} id="soldout_yn_{.option_num}"><span class="lbl"></span></td>
+			</tr>
+			{/}
+		</tbody>
+	</table>
+	<div class="field-comment mt_5">
+		* 품절 (SOLD OUT) : 재고와 상관없이 관리자가 수정가능하며, 상품 전체 품절은 쇼핑몰 관리 정보에서 처리 가능합니다.
+	</div>
+
+	<div class="ta_r mt_10">
+		<button type="submit" class="btn-point h-small">저장</button>
+		<button type="button" class="btn-basic h-small" onclick="UI.modalClose();">취소</button>
+	</div>
+	</form>
+
+</div>
+
+<script type="text/javascript">
+var ProductListStock = {
+	proc_url: '/admin/proc/product.proc.php',
+	init: function() {
+		var me = this;
+		UI.toggleCheck();
+		var option = $.extend({}, validation_option, {
+			validateNonVisibleFields: false,
+			onValidationComplete: function (form, status) {
+				if (status) me.save();
+			}
+		});
+		$("#FrmProductListStock").validationEngine('attach', option);
+
+		//예약판매중 품절체크시 확인
+		$('[id^="soldout_yn_"]').on('click', function() {
+			if(this.checked) {
+				var linked = $('#reserve_yn_'+$(this).closest('tr').data('num'));
+				if(linked.is(':checked')) {
+					if(!confirm('예약판매 중입니다. 품절처리하시겠습니까?')) return false;
+				}
+			}
+		});
+
+		//예약가능수량
+		$('[data-sold]').on('blur',function() {
+			var sold = $(this).data('sold');
+			var quantity = $(this).val();
+			if(!quantity) {
+				quantity=0;
+				$(this).val(0);
+			}
+			var remain = parseInt(quantity)-sold;
+			$(this).closest('tr').find('.reserve-remain').text(UI.numberFormat(remain));
+		});
+
+		//숫자체크
+		$('[data-filter="numeric"]').on('keydown input', function (evt) {
+			var v = $(this).val();
+			v = v.replace(/[^0-9]/g, '');
+			v = v.replace(/(^0+)/, '');
+			$(this).val(v);
+		});
+
+	}, 
+	save: function() {
+		if(!confirm('저장하시겠습니까?')) return false;
+		var formdata = $('#FrmProductListStock').serialize();
+		$.ajax({
+			url:this.proc_url,
+			data: formdata,
+			dataType:'json',
+			type:'POST',
+			success: function(r) {
+				alert(r.msg);
+				if(r.success) {
+					UI.modalClose();
+				}
+			}
+		})
+	}
+}
+
+$(function() {
+	ProductListStock.init();
+})
+</script>

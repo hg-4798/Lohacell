@@ -1,0 +1,131 @@
+<!DOCTYPE html PUBtdC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:fb="http://ogp.me/ns/fb#">
+<head>
+	<meta http-equiv="X-UA-Compatible" content="IE=8;IE=EDGE">
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+	<title>회원등급 안내</title>
+</head>
+<body bgcolor="f8f8f8" style="background-color:#f8f8f8;">
+<style type="text/css">
+	body {padding:0px; margin:0px;}
+	a , a:link , a:visited , a:active , a:hover , img {text-decoration:none; outline:0;border:none;}
+</style>
+<div align="center" style="width:100%;min-height:100%;background-color:#f8f8f8;">
+	<table width="800" cellpadding="0" cellspacing="0" border="0" align="center" style="width:800px;margin:0 auto;color:#555;font-family:'돋움',dotum,sans-serif;font-size:12px;">
+		<tr>
+			<td align="center">
+
+				<!-- 로고 -->
+				<table width="800" cellpadding="0" cellspacing="0" border="0" align="center">
+					<tr>
+						<td height="80" align="center"><a href="" target="_blank"><img src="{C.SHOPURL}/jayjun/web/static/img/mail/h1_logo.png" border="0" title="i KNOW iONE" alt="i KNOW iONE"></a></td>
+					</tr>
+				</table>
+				<!-- //로고 -->
+
+				<!-- 내용 -->
+				<table width="800" cellpadding="0" cellspacing="0" border="0" align="center" bgcolor="ffffff" style="border:1px solid #ebebeb;border-collapse:collapse;">
+					<tr>
+						<td height="20"></td>
+					</tr>
+					<tr>
+						<td align="center">
+							<table width="760" cellpadding="0" cellspacing="0" border="0" align="center">
+								<!-- 제목 -->
+								<tr>
+									<td height="90" align="center" bgcolor="000000" style="color:#fff;font-family:'돋움',dotum,sans-serif;font-size:20px;">i KNOW iONE 회원등급 안내</td>
+								</tr>
+								<!-- //제목 -->
+
+								<tr><td height="40"></td></tr>
+								<tr>
+									<td align="center">
+										<table width="760" cellpadding="0" cellspacing="0" border="0" align="center" style="border:1px solid #d3d3d3;border-collapse:collapse;">
+											<tr>
+												<td width="180" height="170" align="center">
+													<img src="{=preview(group_img)}" alt="{group_name}" border="0" style="width:100px;">
+													<div style="margin-top:6px;color:#111;font-family:'돋움',dotum,sans-serif;font-size:15px;font-weight:700;">{group_name}</div>
+												</td>
+												<td width="1" height="170" align="center"><img src="http://clab-publish.ajashop.co.kr/guess/web/static/img/mail/bar.gif" alt="구분선" border="0"></td>
+												<td width="35" height="170"></td>
+												<td height="170" align="left" style="font-family:'돋움',dotum,sans-serif;font-size:12px;">
+													<div style="color:#555;font-size:14px;">{name}님의 {=date("Y")}년 {=date("m")}월 멤버십 등급은 <span style="color:#111;font-weight:700;text-decoration:underline;">{group_name}</span>입니다.</div>
+													<div style="margin-top:10px;color:#555;font-size:12px;line-height:24px;">· 이번달 누적 구매금액 <span style="text-decoration:underline;">{=number_format(sum_price_year)}</span>원 입니다.<br>
+														· 다음 등급에 필요한 누적 구매금액은 <span style="text-decoration:underline;">{? next_need_price >= 0 }{=number_format(next_need_price)}{:}0{/}</span>원 입니다.</div>
+												</td>
+											</tr>
+										</table>
+									</td>
+								</tr>
+
+								<tr><td height="40"></td></tr>
+								<tr>
+									<td align="left" style="color:#555;font-family:'돋움',dotum,sans-serif;font-size:12px;line-height:20px;">최근 1년 동안 구매 확정된 주문에 대해서 구매금액을 기준으로 매월 1일 회원 등급에 반영됩니다.<br>
+										등급혜택 쿠폰은 매월 1일 자동 발급되며, 쿠폰내역에서 확인 가능합니다.
+									</td>
+								</tr>
+
+								<tr><td height="35"></td></tr>
+								<tr>
+									<td align="center" style="border-top:2px solid #000;border-bottom:1px solid #e5e5e5;border-collapse:collapse;">
+										<table width="760" cellpadding="0" cellspacing="0" border="0" align="center">
+											<thead>
+											<tr>
+												<th scope="col" width="200" height="50" align="center" style="border-bottom:1px solid #e5e5e5;color:#111;font-family:'돋움',dotum,sans-serif;font-size:12px;font-weight:400;">등급</th>
+												<th scope="col" height="50" align="center" style="border-bottom:1px solid #e5e5e5;color:#111;font-family:'돋움',dotum,sans-serif;font-size:12px;font-weight:400;">기준</th>
+											</tr>
+											</thead>
+											<tbody>
+											{@grade_info}
+											<tr>
+												<th scope="row" height="50" align="center" style="border-bottom:1px solid #eee;color:#111;font-family:'돋움',dotum,sans-serif;font-size:12px;">{.group_name}</th>
+												<td height="50" align="left" style="padding-left:30px;border-bottom:1px solid #eee;color:#888;font-family:'돋움',dotum,sans-serif;font-size:12px;">누적금액 {=number_format(.group_ap_s)}~{=number_format(.group_ap_e)} 원 미만</td>
+											</tr>
+											{/}
+											</tbody>
+										</table>
+									</td>
+								<tr><td height="50"></td></tr>
+								<tr>
+									<td align="center">
+										<table width="200" cellpadding="0" cellspacing="0" border="0" align="center">
+											<tr>
+												<td height="46" align="center" bgcolor="000000"><a href="{url}" target="_blank" style="display:block;width:100%;height:46px;color:#fff;font-family:'돋움',dotum,sans-serif;font-size:16px;line-height:46px;font-weight:700;text-decoration:none;">상세정보 확인하기</a></td>
+											</tr>
+										</table>
+									</td>
+								</tr>
+								<tr><td height="50"></td></tr>
+							</table>
+						</td>
+					</tr>
+					<tr>
+						<td height="86" align="center" style="border-top:1px solid #ededed;color:#999;font-family:'돋움',dotum,sans-serif;font-size:12px;line-height:18px;">본 메일은 메일 수신에 동의한 회원에게만 발송되며, 발신전용 메일이므로 회신되지 않습니다.<br>본 메일의 수신을 원하지 않는 경우는 <a href="{C.SHOPURL}/front/email_reject_start.php?key={key}" target="_blank" style="color:#000;text-decoration:underline;">[수신거부]</a>를 클릭해주세요.</td>
+					</tr>
+				</table>
+				<!-- //내용 -->
+
+				<!-- 푸터 -->
+				<table width="800" cellpadding="0" cellspacing="0" border="0" align="center">
+					<tr><td height="18"></td></tr>
+					<tr>
+						<td align="center">
+							<table width="800" cellpadding="0" cellspacing="0" border="0" align="center">
+								<tr>
+									<td width="280" align="center" style="color:#b1b1b1;font-family:'돋움',dotum,sans-serif;font-size:11px;line-height:18px;"><img src="{C.SHOPURL}/jayjun/web/static/img/mail/ft_logo.png" alt="i KNOW iONE"></td>
+									<td align="left" style="color:#b1b1b1;font-family:'돋움',dotum,sans-serif;font-size:11px;line-height:18px;"><strong>CS CENTER</strong> 080 881 2001 &nbsp;<strong>TEL</strong> 02 2193 9513 &nbsp;<strong>FAX</strong> 02 2193 9595<br>서울특별시 강남구 논현로 526 &nbsp;<strong>대표자</strong> 이진형 &nbsp;<strong>사업자번호</strong> 222-85-12156</td>
+								</tr>
+							</table>
+						</td>
+					</tr>
+					<tr><td height="34"></td></tr>
+				</table>
+				<!-- //푸터 -->
+			</td>
+		</tr>
+	</table>
+</div>
+
+
+</body>
+</html>

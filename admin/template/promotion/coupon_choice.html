@@ -1,0 +1,48 @@
+<div class="p_20">
+	<div class="row">
+		<div class="pull-left"><img src="images/icon_8a.gif" border="0"> 전체 <span id="count_total"></span>건 조회</div>
+		<div style="clear:both;height:10px"></div>
+	</div>
+	<!--{* 쿠폰목록:S *}-->
+	<div id="choice_inner"></div>
+</div>
+
+<script>
+var CouponChoice = {
+	page:1,
+	init: function() {
+		this.load();
+	},
+	load:function(page) {
+		UI.loading('choice_inner');
+		var p = page || CouponChoice.page;
+		var search = $('#FrmChoiceSearch').serialize();
+
+		$('#choice_inner').load('/admin/coupon_choice.inner.php',{page:p, search:search},
+			function() {
+				UI.modalCenter();
+				UI.toggleCheck();
+				UI.loading('choice_inner');
+				CouponChoice.page = p;
+			}
+		);
+	},
+	choice: function(e, mode) {
+		var tr = $(e).closest('tr');
+		if($('#timesale_tbody tr:not(.empty)').length > 0) {
+			alert('이미 등록 되 있는 쿠폰이 있습니다. 삭제 후 등록 해주세요.');
+			UI.modalClose();
+			return false;
+		}
+		ChoiceCallback(tr);
+
+		if(mode == 'close') {
+			UI.modalClose();
+		}
+	},
+}
+
+$(function() {
+	CouponChoice.init();
+})
+</script>

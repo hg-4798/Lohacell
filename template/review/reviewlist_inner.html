@@ -1,0 +1,70 @@
+
+
+<table class="th-top">
+	<caption>테이블 제목</caption>
+	<colgroup>
+		<col style="width:80px">
+		<col style="width:100px">
+		<col style="width:auto">
+		<col style="width:100px">
+		<col style="width:140px">
+	</colgroup>
+	<thead>
+	<tr>
+		<th scope="col">NO.</th>
+		<th scope="col">상품</th>
+		<th scope="col">제목</th>
+		<th scope="col">작성일</th>
+		<th scope="col">작성자</th>
+	</tr>
+	</thead>
+	<tbody>
+	{@ review_list}
+	<tr>
+		<td>{? .best_type =='1'}BEST{:}{.no}{/}</td>
+		<td>
+			{? .type=='1'}
+			<div class="thumb" style="background:url('{.upfile}') no-repeat;"></div>
+			{:}
+			<div class="thumb" style="background:url('{.tinyimage}') no-repeat;"></div>
+			{/}
+		</td>
+		<td>
+			<a href="javascript:;" class="subject" onclick="ReviewList.detailOpen('{.num}');">
+				<strong>{.productname} </strong>
+				<span>{.subject} <img src="/jayjun/web/static/img/icon/rating_score{.marks}.png" alt="5점 만점중 {.marks}점"></span>
+			</a>
+		</td>
+		<td>{=format(.date,'Y-m-d')}</td>
+		<td><span class="text-toneB">{=format(.id,'id')}</span></td>
+	</tr>
+	{:}
+	<tr>
+		<td colspan="5"><span>목록이 없습니다</span></td>
+	</tr>
+	{/}
+	</tbody>
+</table>
+
+<p class="att">※ 리뷰 게시판은 제이준코스메틱 쇼핑몰 회원이 구매한 제품에 대한 이용후기를 공유하는 게시판입니다.</p>
+
+{this->xprint('_include/pagination.html')}
+<div style="margin-bottom: 50px;"></div>
+
+
+<script type="text/javascript">
+
+    var ReviewInner = {
+		total:'{total}',
+        init: function(){
+            var me = this;
+			$('#total').html(me.total);
+        },
+    }
+
+    $(function() {
+        ReviewInner.init();
+    })
+</script>
+
+

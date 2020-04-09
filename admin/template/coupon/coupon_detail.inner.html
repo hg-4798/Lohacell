@@ -1,0 +1,73 @@
+<div class="table_style02">
+	<table width=100% cellpadding=0 cellspacing=0 border=0 style="table-layout:fixed">
+		<colgroup>
+			<col  /><!-- 쿠폰명 -->
+			<col style="width:150px"><!-- 아이디 -->
+			<col style="width:150px" /><!-- 발급방식 -->
+			<col style="width:200px" /><!-- 혜택 -->
+			<col style="width:200px" /><!-- 등록일 -->
+			<col style="width:200px" /><!-- 사용기간 -->
+			<col style="width:100px" /><!-- 사용유무 -->
+		</colgroup>
+		<thead>
+			<tr>
+				<th>쿠폰명</th>
+				<th>아이디</th>
+				<th>발급방식</th>
+				<th>혜택</th>
+				<th>등록일</th>
+				<th>사용기간</th>
+				<th>사용유무</th>
+			</tr>
+		</thead>
+		<tbody>
+			{@ list}
+			<tr>
+				<td>{.coupon_name}</td>
+				<td>{.id}</td>
+				<td>{type_publish[.type_publish]}</td>
+				<td>{? .type_use!='D'}
+						{.sale_price}
+						{? .sale_type=='R'}
+							%
+							{? .sale_max_price > 0 }
+								{=format(.sale_max_price,'price')}원까지
+							{/}
+						{:}원{/}
+					{:}
+						무료배송
+					{/}
+				</td>
+				<td>{? .publish_date_type=='D'}{=format(.publish_date_start,'Y-m-d')}~{=format(.publish_date_end,'Y-m-d')}{:}무제한{/}</td>
+				<td>{? .use_period_type=='D'}{=format(.use_period_start,'Y-m-d')}~{=format(.use_period_end,'Y-m-d')}{:}무제한{/}</td>
+                <td>
+                    {.used}
+                </td>
+			</tr>
+            {:}
+            <tr height="28">
+                <td colspan="7" align="center">조회된 내용이 없습니다.</td>
+            </tr>
+			{/}
+		</tbody>
+	</table>
+
+	{this->xprint('include/pagination.html')}
+
+</div>
+
+
+<script type="text/javascript">
+    var CouponInner = {
+        total:'{total}',
+        init: function () {
+            var me = this;
+            $('#count_total').html(me.total);
+        },
+
+    }
+
+    $(function () {
+        CouponInner.init();
+    })
+</script>

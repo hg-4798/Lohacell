@@ -1,0 +1,142 @@
+<div class="content-wrap">
+	<form id="FrmShopOrder" onsubmit="return false">
+		<input type="hidden" name="mode" value="order">
+		<table cellpadding="0" cellspacing="0" width="100%">
+			<tr>
+				<td>
+					<!-- 페이지 타이틀 -->
+					<div class="title_depth3">주문 정책설정</div>
+				</td>
+			</tr>
+			<tr>
+				<td>
+					<div class="mt-20">
+						<table class="tbl-form">
+							<colgroup>
+								<col style="width:180px" />
+								<col>
+							</colgroup>
+							<tr>
+								<th>
+									<span>자동배송완료</span>
+								</th>
+								<td>
+									<label>
+										<input type="radio" name="order[auto_5]" value="Y" class="hj" {=checked(order.auto_5, 'Y' )} />
+										<span class="lbl">사용함</span>
+									</label>
+									<label>
+										<input type="radio" name="order[auto_5]" value="N" class="hj" {=checked(order.auto_5, 'N' )} />
+										<span class="lbl">사용안함</span>
+									</label>
+								</td>
+							</tr>
+							<tr data-cond="order[auto_5]" data-cond-value="Y" class="{=checked(order.auto_5, 'N','hide')}">
+								<th>
+									<span>자동배송완료일</span>
+								</th>
+								<td>
+									배송중으로 주문상태 변경되면 <input type="text" name="order[auto_5_day]" value="{order.auto_5_day}" class="input w80 validate[required]" data-errormessage-value-missing="자동 배송완료일수를 입력하세요." data-filter="numeric"> 일 후 배송완료 상태로 자동 변경
+								</td>
+							</tr>
+							<tr>
+								<th>
+									<span>주문서데이터보관 설정</span>
+								</th>
+								<td>
+									<label>
+										<input type="radio" name="order[auto_delete]" value="Y" class="hj" {=checked(order.auto_delete, 'Y' )} />
+										<span class="lbl">보관기간 5년 초과시 삭제(권장)</span>
+									</label>
+									<label>
+										<input type="radio" name="order[auto_delete]" value="N" class="hj" {=checked(order.auto_delete, 'N' )} />
+										<span class="lbl">데이터 삭제안함</span>
+									</label>
+								</td>
+							</tr>
+						</table>
+					</div>
+				</td>
+			</tr>
+		</table>
+
+		<div class="text-center">
+			<button type="submit" class="m-t-10 btn-point">적용하기</button>
+		</div>
+
+
+		<div class="sub_manual_wrap mt-20">
+			<div class="title">
+				<p>매뉴얼</p>
+			</div>
+			<ul class="help_list">
+				<li>
+					<b>[정보통신망법 제 29조]에 의거 보관기간 5년 초과한 주문데이터는 개인정보보호차원에서 파기하여야 합니다.</b>
+				</li>
+				<li>
+					<b>주문 데이터 삭제를 선택한 경우</b> 주문과 관련된 모든 정보가 삭제되며, 삭제된 주문서는 검색/조회가 불가능하며 회원 CRM 주문내역에서도 삭제됩니다.</li>
+				<li>
+					<b>[데이터 삭제 안함]을 선택한 경우</b> 수기로 주문데이터를 삭제하지 않는 한 데이터 활용이 가능하며,
+					<b>이 경우 발생할 수 있는 모든 법적 책임소지 및 처벌은 이용하시는 회사에 있습니다.</b>
+				</li>
+				<!--<li>전체 구매금액에 따라 회원 등급을 설정 할 경우 <b>최근 5년간 주문 데이터가 합산되어 적용</b>되므로 회원의 주문금액이 기존보다 낮아질 수 있습니다.</li>
+								<li>상품 품절 시 [리스트/상세 노출] 선택 시 리스트에서 상세로 이동가능하며, 상세페이지에서 결제는 불가합니다.</li>
+								<li>상품 품절 시 [리스트에만 노출] 선택 시 리스트에는 노출되지만 상세페이지로 이동할 수 없습니다.</li>-->
+				<li>등록/수정하시면 하단에 [적용하기]버튼을 누르셔야 쇼핑몰에 적용됩니다.</li>
+			</ul>
+		</div>
+
+	</form>
+</div>
+
+
+<script type="text/javascript">
+	var ShopOrder = {
+		init: function () {
+
+			var me = this;
+			var option = $.extend({}, validation_option, {
+				validateNonVisibleFields: false,
+				onValidationComplete: function (form, status) {
+					if (status) me.save();
+				}
+			});
+			$("#FrmShopOrder").validationEngine('attach', option);
+
+			//숫자체크
+			$('[data-filter="numeric"]').on('keydown input', function (evt) {
+				var v = $(this).val();
+				$(this).val(v.replace(/[^0-9]/g, ''));
+			});
+
+			me.setUI();
+		},
+		setUI: function () {
+			$('[data-cond]').each(function (i, e) {
+				var cond = $(e).data('cond');
+
+				$('[name="' + cond + '"]').on('click, change', function () {
+					$(e).addClass('hide');
+					$(e).filter('[data-cond-value~="' + this.value + '"]').removeClass('hide');
+				});
+			})
+		},
+		save: function () {
+			UI.confirm('적용하시겠습니까?', function () {
+				var formdata = $("#FrmShopOrder").serialize();
+				$.ajax({
+					url: '{C.DIR_ADMIN}/proc/shop.proc.php',
+					data: formdata,
+					dataType: 'json',
+					type: 'POST',
+					success: function (r) {
+						UI.alert(r.msg);
+					}
+				})
+			})
+		}
+	}
+	$(function () {
+		ShopOrder.init();
+	})
+</script>

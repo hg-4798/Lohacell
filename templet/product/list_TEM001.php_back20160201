@@ -1,0 +1,566 @@
+<?php
+/********************************************************************* 
+// 파 일 명		: list_TEM001.php 
+// 설     명		: 카테고리 상품 리스트 템플릿
+// 상세설명	: 카테고리별 상품을 리스트로 진열 템플릿
+// 작 성 자		: hspark
+// 수 정 자		: 2015.11.02 - 김재수
+// 
+// 
+*********************************************************************/ 
+?>
+
+<!-- 2016-01-22 리스트 -->
+	<div id="contents">
+		<div class="containerBody sub-page">
+			
+			<div class="breadcrumb">
+				<ul>
+					<li><a href="#">HOME</a></li>
+					<li><a href="#">WOMEN</a></li>
+					<li class="on"><a href="#">OUTER</a></li>
+				</ul>
+			</div><!-- //.breadcrumb -->
+			
+			<div class="goods-list-wrap">
+
+				<div class="goods-sort-wrap">
+					<h3 class="cate-name">OUTER</h3>
+					<span class="total-ea">총 1,204개의 상품이 있습니다.</span>
+					<ul class="sort-type">
+						<li><a href="#" class="on">NEW</a></li>
+						<li><a href="#">BEST</a></li>
+						<li><a href="#">REVIEW</a></li>
+						<li><a href="#">PRICE↓</a></li>
+						<li><a href="#">PRICE↑</a></li>
+					</ul>
+					<div class="view-ea">
+						<button class="on" type="button">25</button>
+						<button type="button">50</button>
+						<button type="button">75</button>
+					</div>
+				</div><!-- //.goods-sort-wrap -->
+
+<?php
+//상품리스트
+foreach( $list_array as $listKey=>$listVal ){	
+	echo $listVal;
+}
+?>
+			</div>
+
+			<div class="list-paginate-wrap">
+				<div class="list-paginate">
+					<a href="#" class="prev-all">처음으로</a>
+					<a href="#" class="prev">이전</a>
+					<a href="#" class="on">1</a>
+					<a href="#">2</a>
+					<a href="#">3</a>
+					<a href="#">4</a>
+					<a href="#">5</a>
+					<a href="#">6</a>
+					<a href="#">7</a>
+					<a href="#">8</a>
+					<a href="#">9</a>
+					<a href="#">10</a>
+					<a href="#" class="next">다음</a>
+					<a href="#" class="next-all">끝으로</a>
+				</div>
+			</div><!-- //.list-paginate-wrap -->
+			
+
+		</div><!-- //.containerBody -->
+	</div>
+<!-- //2016-01-22 리스트 -->
+
+
+
+<!-- 메인 컨텐츠 -->
+<script>
+$(document).ready(function(){
+});
+function goProductDetail(locationUrl){
+	location.href = locationUrl;
+}
+
+</script>
+        <div id="contents">
+
+            <!-- page_nav -->
+            <div class="page_categroy">
+                <ul class="page_category_nav">
+                    <li>홈</li>
+<?php
+	if( count( $thisCate ) == 1 ) {
+?>
+					<li>
+						<select class="cate_select">
+<?php
+		foreach( $cateLoc as $locKey=>$locVal ){
+?>
+							<option value='<?=$Dir.$locVal['menu_url']?>' <? if( '/'.$locVal['menu_url'] == $_SERVER['REQUEST_URI'] ){ echo 'SELECTED'; } ?> ><?=$locVal['menu_title']?></option>
+<?php
+		}
+?>
+						</select>
+                    </li>
+<?php
+	} else {
+?>
+					<li><?=$thisCate[0]?></li>
+					<li><?=$thisCate[1]?></li>
+					<li>
+						<select class="cate_select">
+<?php
+		foreach( $cateLoc as $locKey=>$locVal ){
+?>
+							<option value='<?=$Dir.$locVal['prcode']?>' <? if( $locVal['0'] == $code ){ echo 'SELECTED'; } ?> ><?=$locVal['code_name']?></option>	
+<?php
+		}
+?>
+						</select>
+                    </li>
+<?php
+	}
+?>
+                </ul>
+            </div>
+            <!-- //page_nav -->
+
+            <!-- [lnb_nav]-->
+            <div class="lnb_nav" id="lnb_nav">
+			<?
+			/* lnb 호출 */
+			$lnb_flag = 2;
+			include ($Dir.MainDir."lnb.php");
+			?>                
+            </div>
+            <!-- //[lnb_nav]-->
+
+            <!-- [contents -->
+            <!-- <div class="contents" id="contents"> -->
+            <div id="contents">
+				<div class="contents-list">
+                <div class="tags">
+                    <ul>
+                        <li><img src="../images/content/ico_tags.gif" alt="tags"></li>
+					<?foreach($tags_list as $trow) {?>
+                        <li><a href="<?=$Dir.FrontDir.'productsearch.php?tag='.$trow?>"><?=$trow?></a></li>
+					<?}?>
+                    </ul>
+                </div>
+<?php
+	if ($code_c == '000' && count( $prCateBanner ) > 0 ) { // banner가 존재할경우 추가
+?>
+                <!-- sub_main_visual -->
+                <div class="sub_main">
+                    <div class="sub_visual">
+                        <div id="slides">
+<?php
+		foreach( $prCateBanner as $cbKey=>$cbVal ){
+?>
+                            <a href="<?=$cbVal['banner_link']?>" target="<?=$cbVal['banner_target']?>" >
+<?php
+			if( is_file( $bannerImgPath.$cbVal['banner_img'] ) ){
+?>
+								<img src="<?=$bannerImgPath.$cbVal['banner_img']?>" alt=" " >
+<?php
+			} else {
+?>
+								<img src="<?=$Dir."images/common/noimage.gif"?>" alt=" " >
+<?php
+			}
+?>
+							</a>
+<?php
+		}
+?>
+                        </div>
+                    </div>
+                </div>
+                <script>
+                $(function() {
+                $('#slides').slidesjs({
+                width: 720,
+                height: 330,
+                play: {
+                active: true,
+                auto: true,
+                interval: 4000,
+                swap: true
+                },
+                navigation: {
+                active: true,
+                effect: "slide"
+                }
+
+                });
+                });
+                </script>
+<?php
+	if( count( $prBanner ) > 0 ) {
+?>
+                <div class="sub_side_banner">
+                    <a href="<?=$prBanner[0]['banner_link']?>" target="<?=$prBanner[0]['banner_target']?>" >
+<?php
+		if( is_file( $bannerImgPath.$prBanner[0]['banner_img'] ) ){
+?>
+						<img src="<?=$bannerImgPath.$prBanner[0]['banner_img']?>" alt=" " >
+<?php
+		} else {
+?>
+						<img src="<?=$Dir."images/common/noimage.gif"?>" alt=" " >
+<?php
+		}
+?>	
+					</a>
+                </div>
+<?php
+	}
+?>
+                <!-- //sub_main_visual -->
+<?php
+	} //banner_end
+?>
+
+<?php
+	if( count( $hotitem ) > 0 ) {
+		$pl_add_class	= "";
+?>
+                <!-- hit_product -->
+                <div class="hit_product">
+                    <h2 class="tit_product">추천상품</h2>
+                    <ul class="goods_list">
+<?php
+		$p_cnt	= 0;
+		foreach( $hotitem as $hotKey=>$hotVal ) {?>
+                        <li>
+							<a href="<?=$Dir.FrontDir."productdetail.php?productcode=".$hotVal->productcode?>"><img src="<?=$hotVal->minimage?>" alt="" class='img-size-list-s'>
+							<h4 class="tit_goods"><?=$hotVal->productname?></h4>
+							<p class="stit_goods">
+<?php
+			if( $hotVal->overseas_type == '1' ){
+?>
+								<img src="../images/main/ico_outdely.png" alt="해외배송" > 
+<?php
+			}
+			if( strlen( trim( $hotVal->mdcomment ) ) > 0 ) { 
+				echo $hotVal->mdcomment; 
+			}
+?>
+							</p>
+							<table >
+							<caption>가격정보</caption>
+							<tr>
+								<th scope="row">정상가</th>
+								<td class="p1"><?=number_format( $hotVal->buyprice )?>원</td>
+							</tr>
+							<tr>
+								<th scope="row">최저가</th>
+								<td class="p2"><?=number_format( $hotVal->consumerprice )?>원</td>
+							</tr>
+							<tr>
+								<th scope="row" class="mem_price">교육할인가</th>
+<?php
+			if( strlen( $_ShopInfo->getMemid() ) > 0 ) {
+?>
+								<td class="mem_price"><?=number_format( $hotVal->sellprice )?>원</td>
+<?php
+			} else {
+?>
+								<td class="mem_price">	<img src="../images/common/ico_memberonly_sub.gif" alt="members only" ></td>
+<?php
+			}
+?>
+							</tr>
+							</table>
+	                        </a>
+                        </li>
+<?php
+			if ($p_cnt > 0 && ($p_cnt+1) < count($hotitem)) {
+				if (($p_cnt+1)%4 == 0) {
+					echo "</ul><ul class='goods_list'>";
+				}
+			}
+			$p_cnt++;
+		}
+?>
+                    </ul>
+                </div>
+                <!-- //hit_product -->
+<?php
+	}else {	
+		$pl_add_class	= " mt_30";
+	}
+?>
+                <!-- product_list -->
+                <div class="product_list<?=$pl_add_class?>">
+                    <h2 class="tit_product"><?=$cate_title?></h2>
+                    <!-- align style -->
+                    <div class="align_style">
+                        <ul class="align_cate">
+							<li <?=$sort_current["sort_current"][best]?$sort_current["sort_current"][best]:$sort_not?>><a href="javascript:;" onClick="javascript:ChangeSort('best')">베스트순</a></li>
+							<li <?=$sort_current["sort_current"][opendate]?$sort_current["sort_current"][opendate]:$sort_not?>><a href="javascript:;" onClick="javascript:ChangeSort('opendate')">신상품순</a></li>
+							<li <?=$sort_current["sort_current"][rcnt_desc]?$sort_current["sort_current"][rcnt_desc]:$sort_not?>><a href="javascript:;" onClick="javascript:ChangeSort('rcnt_desc')">리뷰순</a></li>
+							<li <?=$sort_current["sort_current"][saleprice_desc]?$sort_current["sort_current"][saleprice_desc]:$sort_not?>><a href="javascript:;" onClick="javascript:ChangeSort('saleprice_desc')">할인률순</a></li>
+							<li <?=$sort_current["sort_current"][price_desc]?$sort_current["sort_current"][price_desc]:$sort_not?>><a href="javascript:;" onClick="javascript:ChangeSort('price_desc')">높은가격순</a></li>
+							<li <?=$sort_current["sort_current"][price]?$sort_current["sort_current"][price]:$sort_not?>><a href="javascript:;" onClick="javascript:ChangeSort('price')">낮은가격순</a></li>
+                        </ul>
+                    </div>
+                    <!-- //align style -->
+                    <ul class="goods_list">
+
+<?
+
+	//	<!-- 상품목록 시작 -->
+	if($_cdata->islist=="Y"){
+		$p_cnt	= 0;
+		foreach($product_list as $var => $prow) {
+?>	
+<?
+			
+			if ($p_cnt > 0 && ($p_cnt+1) <= count((array)$product_list)) {
+				if ($p_cnt%4 == 0) {
+					echo "</ul><ul class='goods_list'>";
+				}
+			}
+			$p_cnt++;
+?>				
+                        <li>
+                        <!-- ico -->
+                        <div class="goods_ico">
+						<?=$prow->pro_icon?>
+                            <!--img src="../images/common/ico_goods1.gif" alt="인기급등" >
+                            <img src="../images/common/ico_goods2.gif" alt="품절임박" >
+                            <img src="../images/common/ico_goods3.gif" alt="이벤트상품" -->
+                        </div>
+                        <!-- //ico -->
+                        <a href="<?=$prow->pro_url?>"><img src="<?=$prow->pro_img?>" class='img-size-list-s' alt="" >
+                        <h4 class="tit_goods"><?=$prow->pro_name?></h4>
+                        <p class="stit_goods"><?if ($prow->pro_otype == '1') echo "<img src='../images/main/ico_outdely.png' alt='해외배송' > ";?><?=$prow->pro_comment?></p>
+                        <table >
+                        <caption>가격정보</caption>
+                        <tr>
+                            <th scope="row">정상가</th>
+                            <td class="p1"><?=$prow->pro_bprice?>원</td>
+                        </tr>
+                        <tr>
+                            <th scope="row">최저가</th>
+                            <td class="p2"><?=$prow->pro_cprice?>원</td>
+                        </tr>
+                        <tr>
+                            <th scope="row" class="mem_price">교육할인가</th>
+                            <td class="mem_price"><?if(strlen($_ShopInfo->getMemid())>0) {?><?=$prow->pro_sprice?>원<?} else {?><img src="../images/common/ico_memberonly_sub.gif" alt="members only" ><?}?></td>
+                        </tr>
+                        </table>
+                        </a>
+                        </li>
+<?		} ?>
+<?}?> 
+                   </ul>
+
+                    <!-- product_page -->
+                    <!--div class="page">
+                        <span class="left"><a href="#"><img src="../images/common/btn_page_first.gif" alt="첫페이지" /></a><a href="#"><img src="../images/common/btn_page_prev.gif" alt="이전페이지" /></a></span><span class="num"><a href="#">1</a><strong>2</strong><a href="#">3</a><a href="#">4</a><a href="#">5</a><a href="#">6</a><a href="#">7</a><a href="#">8</a><a href="#">9</a><a href="#">10</a></span><span class="right"><a href="#"><img src="../images/common/btn_page_next.gif" alt="다음페이지" /></a><a href="#"><img src="../images/common/btn_page_last.gif" alt="마지막페이지" /></a></span>
+                    </div-->
+                    <!-- //product_page -->
+
+					<form name=form3 method=get action="<?=$_SERVER['PHP_SELF']?>">
+						<div class="paging goods_list">
+								<?=$a_div_prev_page.$paging->a_prev_page.$paging->print_page.$paging->a_next_page.$a_div_next_page?>
+						</div>
+					</form>
+					<?if($bReview){?>
+					<div class="bottom_review">
+					<? foreach($bReview as $reviewVal){ ?>
+						<div class="review01">
+							<img src="<?=$Dir.DataDir."shopimages/product/".$reviewVal['tinyimage']?>" alt="" style="width: 129px;height: 135px;" />
+							<span class="starPoint">
+							<? for($j=0;$j<$reviewVal['marks'];$j++) {
+								echo "★";
+							} ?>
+							</span>
+							<h5><?=$reviewVal['subject']?></h5>
+							<p>(<?=substr($reviewVal['id'],-3)?>***)</p>
+							<ul class="review">
+								<li>
+									<a href="<?=$Dir.FrontDir."review_view.php?num=".$reviewVal['num']?>">
+										<?=mb_substr($reviewVal['content'],0,80,"euc-kr")?>...
+									</a>
+								</li>
+							</ul>
+						</div>
+					<? } ?>
+					</div><!-- //div.bottom_cs_section -->
+					<?}?>
+
+                </div>
+                <!-- //product_list -->
+
+
+            </div>
+
+            </div> <!-- //.contents-list -->
+			<!-- //[contents -->
+        </div>
+
+    </div>
+<!--///////////////////////////////////////////  미리보기 popup을 위한 div   &&  장바구니 -->
+<div id="overDiv" style="position:absolute;top:0px;left:0px;z-index:100;display:none;" class="alpha_b60" ></div>
+<div class="popup_preview_warp" style="margin-left: 50%;left: -459px;display:none;" ></div>
+
+<form name=form1 id = 'ID_goodsviewfrm' method=post action="<?=$Dir.FrontDir?>basket.php">
+	<input type="hidden" name="productcode"></input>
+</form>
+<!--///////////////////////////////////////////-->
+<script type="text/javascript">
+
+
+function CheckForm(gbn,temp2) {
+
+
+	if(gbn=="ordernow") {
+		document.form1.ordertype.value="ordernow";
+	}
+
+	if (gbn != "ordernow"){
+		document.form1.action="../front/confirm_basket.php";
+		document.form1.target="confirmbasketlist";
+		document.form1.productcode.value= temp2;
+		window.open("about:blank","confirmbasketlist","width=401,height=309,scrollbars=no,resizable=no, status=no,");
+		document.form1.submit();
+		document.back.submit();
+	}
+
+}
+
+function change_quantity(gbn) {
+	tmp=document.form1.quantity.value;
+	if(gbn=="up") {
+		tmp++;
+	} else if(gbn=="dn") {
+		if(tmp>1) tmp--;
+	}
+	var cons_qu = $("#constant_quantity").val();
+	if (cons_qu != "" && cons_qu != "0"){
+		if (cons_qu<tmp){
+			alert('재고량이 부족 합니다.');
+			return;
+		}
+	} else if(cons_qu == "0") {
+		alert('품절 입니다.');
+		return;
+	}
+
+	<?php  if($_pdata->assembleuse=="Y") { ?>
+		if(getQuantityCheck(tmp)) {
+			if(document.form1.assemblequantity) {
+				document.form1.assemblequantity.value=tmp;
+			}
+			document.form1.quantity.value=tmp;
+			setTotalPrice(tmp);
+		} else {
+			alert('구성상품 중 '+tmp+'보다 재고량이 부족한 상품있어서 변경을 불가합니다.');
+			return;
+		}
+	<?php  } else { ?>
+		var tmp_price = $("#ID_goodsprice").val();
+		tmp_price = Number(tmp_price)*Number(tmp);
+		setDeliPrice(tmp_price,tmp);
+		$("#result_total_price").html(jsSetComa(tmp_price));
+		document.form1.quantity.value=tmp;
+	<?php  } ?>
+
+}
+
+
+$(document).ready(function() {
+	//Default Action
+	var defaultType = 0;
+	$(".tab_content").hide(); //Hide all content
+	$("ul.tabs li").each(function(){
+		if($(this).attr("class")=="active"){
+			defaultType = 1;
+			var tabId = $(this).find("a").attr("href");
+			$(tabId).show();
+		}
+	});
+	if(defaultType == 0){
+		$("ul.tabs li:first").addClass("active").show(); //Activate first tab
+		$(".tab_content:first").show(); //Show first tab content
+	}
+
+	//On Click Event
+	$("ul.tabs li").click(function() {
+		$("ul.tabs li").removeClass("active"); //Remove any "active" class
+		$(this).addClass("active"); //Add "active" class to selected tab
+		$(".tab_content").hide(); //Hide all tab content
+		var activeTab = $(this).find("a").attr("href"); //Find the rel attribute value to identify the active tab + content
+		$(activeTab).fadeIn(); //Fade in the active content
+		return false;
+	});
+
+	$('.new_goods4ea ul.list li').mouseenter(function(){
+	$(this).find('.layer_goods_icon').show();
+	});
+	$('.new_goods16ea ul.list li').mouseenter(function(){
+	$(this).find('.layer_goods_icon').show();
+	});
+	$('.in_icon').mouseleave(function(){
+	$('.layer_goods_icon').hide();
+	});
+
+<?php if($max>0){ ?>
+	$("#middle_slide").sudoSlider({
+		effect: "slide",
+		speed:1000,
+		continuous:true,
+		slideCount:4,
+		prevNext:false,
+		moveCount:1,
+		customLink:'.prevnext',
+		auto:false,
+		animationZIndex:0,
+	});
+<? } ?>
+});
+
+</script>
+<script>
+$(document).ready(function(){
+
+  $(".layer_goods_icon").on("click",function(e){
+    	var target = e.target
+    	if($(target).attr("class") == "cart" || $(target).attr("class") == "view" ) return; 
+    	location.href = $(this).attr("link_url");
+    });
+    
+    $(".cart").on("click",function(e){
+    	var chkOption = $(this).attr("option_chk");
+    	var chkLink = $(this).attr("cart_chk");
+    	if(chkOption == 1){
+			CheckForm('',chkLink);
+		}else if(chkOption == 3){
+	    	$("#productlist_basket").attr("action","../front/productlist_basket.php");
+	    	$("#productlist_basket").attr("target","basketOpen");
+	    	$("#productcode2").val(chkLink);
+			window.open("","basketOpen","width=440,height=420,scrollbars=no,resizable=no, status=no,");
+			$("#productlist_basket").submit();
+		} 
+    });
+    
+    $(".view").on("click",function(){
+    	location.href = $(this).attr("link_url");
+    });
+});
+</script>
+
+<form name="productlist_basket" id="productlist_basket">
+<input type="hidden" name="productcode2" id="productcode2">
+</form>
+
+
+<form name="back" action="../front/productdetail.php">
+<input type="hidden" name="back2" value="1">
+</form>
+

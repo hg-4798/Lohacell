@@ -1,0 +1,87 @@
+<script type="text/javascript" src="/admin/static/js/jquery.validationEngine.js?{C.VER}"></script>
+<script type="text/javascript" src="/admin/static/js/jquery.validationEngine-kr.js?{C.VER}"></script>
+<script type="text/javascript" src="/admin/static/js/jquery.form.js?{C.VER}"></script>
+<style>
+#icon_pc, #icon_mobile {vertical-align: middle;display:inline-block;}
+#icon_pc > img, #icon_mobile > img{margin-right:10px;}
+</style>
+<div class="admin_linemap"><div class="line"><p>현재위치 : 상품관리 &gt; 상품 일괄 관리 &gt; <span>임직원 할인율 관리</span></p></div></div>
+<table cellpadding="0" cellspacing="0" width="100%" style="table-layout:fixed">
+	<colgroup>
+		<col width=240 id="menu_width">
+		<col width=10>
+		<col width="*">
+		<col width=20>
+	</colgroup>
+	<tr>
+		<td valign="top">
+			{=include("menu_product.php")}
+		</td>
+		<td></td>
+		<td valign="top">
+			<div class="title_depth3">직원 할인율 관리 <span>임직원의 상품 할인율을 관리합니다.</span></div>
+			<form id="FrmStaffSale" onsubmit="return false">
+			<input type="hidden" name="mode" value="staff">
+			<input type="hidden" name="act" value="sale">
+			<table cellspacing="0" cellpadding="0" width="100%" border="0" class="table-view mt_30">
+				<colgroup>
+					<col width="140">
+					<col width="">
+				</colgroup>
+				<tbody>
+					<tr>
+						<th><span>임직원 할인율(%)</span></th>
+						<td>
+							<input type="text" name="staff_dc_rate" class="validate[required, min[0], max[100]] w100"  value="{staff_dc_rate}" maxlength="3" data-errormessage-value-missing="할인율을 입력하세요." data-errormessage-range-overflow="할인율은 최대 100까지 입력가능합니다." data-errormessage-range-underflow="할인율은 최소 0이상 입력가능합니다."  placeholder="할인율(숫자)" data-filter="numeric"> %
+						</td>
+					</tr>
+				</tbody>
+			</table>
+
+			<div class="ta_r mt_20">
+				<button type="submit" class="btn-point" >등록</button>
+			</div>
+
+		</form>
+	</td>
+</tr>
+</table>
+
+<script type="text/javascript">
+var StaffSale = {
+	proc_url:'/admin/proc/product.proc.php',
+	init: function() {
+		var me = this;
+
+		//숫자체크
+		$('[data-filter="numeric"]').on('keydown input', function(evt) {
+			var v = $(this).val();
+			$(this).val(v.replace(/[^0-9]/g,''));
+		});
+
+		var option = $.extend({},validation_option, {
+			validateNonVisibleFields:true,
+			onValidationComplete: function(form, status){
+				if(status) me.save();
+			}
+		});
+		$("#FrmStaffSale").validationEngine('attach',option);
+	},
+	save: function() {
+		var formdata = $('#FrmStaffSale').serialize();
+		$.ajax({
+			url:this.proc_url,
+			data:formdata,
+			dataType:'json',
+			type:'POST',
+			success: function(r) {
+				alert(r.msg);
+			}
+		})
+	}
+}
+
+$(function() {
+	StaffSale.init();
+})
+</script>

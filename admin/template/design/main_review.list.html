@@ -1,0 +1,61 @@
+
+<div class="table_style02">
+    <table border="0" cellpadding="0" cellspacing="0" width="100%">
+        <colgroup>
+            <col width="150">
+            <col width="200">
+            <col width="100">
+            <col width="">
+            <col width="150">
+            <col width="80">
+        </colgroup>
+
+        <tbody id="review_list_tbody">
+            <tr>
+                <th>등록일</th>
+                <th>작성자 정보</th>
+                <th>이미지</th>
+                <th>상품평/리뷰</th>
+                <th>리뷰타입</th>
+                <th>선택</th>
+            </tr>
+            {@ best_review_list}
+            <tr>
+                <td>{=format(.date, 'Y-m-d H:i:s')}</td>
+                <td><span>{.name}</span>&nbsp;&nbsp;<span>{.id}</span></td>
+                <td>
+                    <a href="/front/productdetail.php?productcode=001001007000001460" target="_blank">
+                        <img class="b-lazy b-loaded" src="{.tinyimage}" alt="" style="width:70px">
+                    </a>
+                </td>
+                <td class="ta_l">
+                    <span>{.productname}</span>
+                    <ul class="c-list" style="margin-top: 15px;">
+                        <li><span class="label label-xs prtype-1">제목</span>
+                            <a href="JavaScript:ReviewReply('{.date}','{.productcode}')" title="{.subject}"><b>{.subject}</b></a>
+                        </li>
+                    </ul>
+                </td>
+                <td><span>{? .type==0}텍스트리뷰{:}포토리뷰{/}</span></td>
+                <td><button type="button" class="btn btn-sm btn-outline-info btn-cnt" onclick="MainReview.choose('{.num}')"><i class="fa fa-pencil"></i> 선택</button></td>
+            <tr>
+            {:}
+            <tr height="5" bgcolor="#FFFFFF"><td colspan="6" align="center">조회된 내용이 없습니다.</td></tr>
+            {/}
+        </tbody>
+    </table>
+</div>
+{this->xprint('include/pagination.html')}
+<form name=replyform action="product_reviewreply.php" method=post>
+    <input type=hidden name=date>
+    <input type=hidden name=productcode>
+</form>
+<script>
+    function ReviewReply(date,prcode) {
+        window.open("about:blank","reply","width=400,height=500,scrollbars=yes");
+        document.replyform.target="reply";
+        document.replyform.date.value=date;
+        document.replyform.productcode.value=prcode;
+        document.replyform.submit();
+    }
+</script>

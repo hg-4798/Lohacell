@@ -1,0 +1,33 @@
+<style>
+	.swiper-pagination-bullet-active {
+		background:#E9C05E;
+	}
+</style>
+<div class="pop-body ">
+	<div class="ptreview_view">
+		<div class="ta-r fz-14 pr-15 pt-15">{=format(blog_detail.date_insert,'Y-m-d')}</div>
+		<div class="txt mt-10 pd-10">{=htmlspecialchars_decode(blog_detail.blog_content_m)}</div>
+	</div>
+
+</div>
+<div class="layer_add_option">
+<div class="btn_area">
+	<ul class="">
+		<li><button type="button" class="btn-point h-large" data-toggle="close">목록</button></li>
+	</ul>
+</div>
+</div>
+<script type="text/javascript">
+    var BlogDetail = {
+		init: function() {
+            var  me = this;
+            $('[data-toggle="close"]').on('click', function() {
+                $('.btn_close').trigger('click');
+            });
+		}
+	}
+
+    $(function() {
+        BlogDetail.init();
+    })
+</script>

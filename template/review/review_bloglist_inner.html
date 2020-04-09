@@ -1,0 +1,9 @@
+<div class="tip-list">
+	{@ list}
+	<a href="javascript:;" onclick="ReviewList.bolgOpen('{.idx}','{.blog_title}')">
+		<div class="thumb" style="background-image:url('{.blog_img}')"></div>
+		<div class="ct"><span>{.blog_title}</span></div>
+	</a>
+	{/}
+</div>
+{this->xprint('_include/pagination.html')}

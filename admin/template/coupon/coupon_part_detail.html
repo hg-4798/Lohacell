@@ -1,0 +1,39 @@
+<style>
+.timesale-product {}
+.timesale-product li {padding:10px;border-bottom:solid 1px #ddd;}
+.timesale-product li img {height:30px;vertical-align: middle;padding-right:10px;}
+</style>
+<div class="p_0">
+	<ul class="timesale-product">
+		{? type=='P'}
+            {@ list}
+            <li>
+                <span><img src="{=preview(.minimage)}" alt="" class="thumbnail"></span>
+                <span>{.productname}</span>
+            </li>
+            {/}
+        {: type=='L'}
+            {@ list}
+            <li>
+                <span class="label label-xs prtype-1">라인코드 :</span>
+                <span style="display:inline-block; width:100px;">{.line_code}</span>
+                <span class="label label-xs prtype-1">라인명 :</span>
+                <span >{.line_name}</span>
+            </li>
+            {/}
+        {: type=='C'}
+            {@ list}
+            <li>
+                <span class="label label-xs prtype-1">코드번호 :</span>
+                <span style="display:inline-block; width:100px;">{.code_all}</span>
+                <span class="label label-xs prtype-1">카테고리명 :</span>
+                <span >{.code_name}</span>
+            </li>
+            {/}
+        {/}
+	</ul>
+
+	<div class="ta_c p_20">
+	<button type="button" class="btn-basic dark h-small" onclick="UI.modalClose()">확인</button>
+	</div>
+</div>

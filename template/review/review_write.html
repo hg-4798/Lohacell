@@ -1,0 +1,236 @@
+
+<div class="layer-content ">
+    <form id="FrmReviewWrite" name="FrmReviewWrite" onsubmit="return false">
+        <input type="hidden" id="productorder_idx" name="productorder_idx" value="{review_info.productorder_idx}" /><!--{* order_product_idx *}-->
+        <input type="hidden" id="productcode" name="productcode" value="{review_info.productcode}" /><!--{* 상품코드 *}-->
+		<input type="hidden" id="option_code" name="option_code" value="{review_info.option_code}" /><!--{* 상품옵션코드 *}-->
+		<input type="hidden" id="ordercode" name="ordercode" value="{review_info.order_num}" /><!--{* 주문번호 *}-->
+        <input type="hidden" id="mode" name="mode" value="{mode}" />
+    <table class="th-left">
+        <caption>포토등록 작성하기</caption>
+        <colgroup>
+            <col style="width:144px">
+            <col style="width:auto">
+        </colgroup>
+        <tbody>
+        <tr>
+            <th scope="row"><label>상품명</label></th>
+            <td>{product_info.productname}</td>
+        </tr>
+
+        <tr>
+            <th scope="row"><label for="option_select" {? type=='M'}class="essential"{/}>구매옵션</label></th>
+            <td>
+                {? type=='M'}
+                <div class="select is-custom">
+                    <select id="option_select" title="옵션 선택" class="validate[required]" data-errormessage-value-missing="옵션을 선택하세요.">
+                        <option value="">선택해주세요</option>
+                        {@ review_info}
+                        <option value="{.option_num}" data-order_num="{.order_num}" data-idx="{.idx}" data-productcode="{.productcode}" data-option_code="{.option_num}">{.option_name}</option>
+                        {/}
+                    </select>
+                </div>
+                {:}
+                {review_info.option_name}
+                {/}
+            </td>
+        </tr>
+        <tr>
+            <th scope="row"><label for="subject" class="essential">제목</label></th>
+            <td><input type="text" name="subject" id="subject" class="w100-per validate[required]" data-errormessage-value-missing="제목을 입력하세요." value="{review_info.subject}"></td>
+        </tr>
+        <tr>
+            <th scope="row"><label class="essential">별점</label></th>
+            <td>
+				<div class="rating clear">
+					<input type="radio" class="rating-input" id="rating-size5" name="marks" value="5"  {=checked(review_info.marks , '5')} {? mode =='write'} checked {/}><label for="rating-size5" class="rating-star score5"><span><em>5점 만점 중</em>5<em>점</em></span></label>
+					<input type="radio" class="rating-input" id="rating-size4" name="marks" value="4" {=checked(review_info.marks , '4')}><label for="rating-size4" class="rating-star score4"><span><em>5점 만점 중</em>4<em>점</em></span></label>
+					<input type="radio" class="rating-input" id="rating-size3" name="marks" value="3" {=checked(review_info.marks , '3')}><label for="rating-size3" class="rating-star score3"><span><em>5점 만점 중</em>3<em>점</em></span></label>
+					<input type="radio" class="rating-input" id="rating-size2" name="marks" value="2" {=checked(review_info.marks , '2')}><label for="rating-size2" class="rating-star score2"><span><em>5점 만점 중</em>2<em>점</em></span></label>
+					<input type="radio" class="rating-input" id="rating-size1" name="marks" value="1" {=checked(review_info.marks , '1')}><label for="rating-size1" class="rating-star score1"><span><em>5점 만점 중</em>1<em>점</em></span></label>
+				</div>
+				<!-- <input type="text" name="marks" id="marks" class="w100-per" value="4"> -->
+			</td>
+        </tr>
+        <tr>
+            <th scope="row"><label for="reviewCon" class="essential">내용</label></th>
+            <td><textarea id="reviewCon" name="content" class="w100-per  validate[required]" style="height:192px" data-errormessage-value-missing="내용을 입력하세요.">{review_info.content}</textarea></td>
+        </tr>
+        <tr>
+            <th scope="row"><label class="essential">사진</label></th>
+            <td>
+                <div class="box-photoUpload">
+                    <div class="filebox preview-image">
+                        <div class="upload-display" id="user_img_view1" {? review_info.upfile==''}style="display: none;" {/}>
+                            <div class="upload-thumb-wrap" id="user_img_img1"><img src="{? review_info.upfile}{review_info.upfile}{/}" class="upload-thumb"></div>
+                        </div>
+                        <input class="upload-nm hide" value="파일선택" disabled="disabled">
+
+                        <label id="user_img_label1" class="photoBox {? review_info.upfile}after{/}" for="input_file1"><span><i class="icon-photo-grey"></i></span></label>
+                        <a class="del" data-del="1"></a>
+
+                        <input type="file" name="upfile1" id="input_file1" class="upload-hidden" data-idx="1">
+                        <input type="hidden" name="old_upfile1" id="old_upfile1" value="{review_info.upfile}">
+                        <input type="hidden" name="delchk1" id="delchk1" value="N">
+                        <input type="hidden" name="file_count1" id="file_count1" value="{? review_info.upfile}N{:}Y{/}">
+                    </div>
+                    <div class="filebox preview-image">
+                        <div class="upload-display" id="user_img_view2" {? review_info.upfile2==''}style="display: none;" {/}>
+                            <div class="upload-thumb-wrap" id="user_img_img2"><img src="{? review_info.upfile2}{review_info.upfile2}{/}" class="upload-thumb"></div>
+                        </div>
+                        <input class="upload-nm hide" value="파일선택" disabled="disabled">
+                        <label id="user_img_label2" class="photoBox {? review_info.upfile2}after{/}" for="input_file2"><span><i class="icon-photo-grey"></i></span></label>
+                        <a class="del" data-del="2"></a>
+                        <input type="file" name="upfile2" id="input_file2" class="upload-hidden" data-idx="2" value="{review_info.upfile2}">
+                        <input type="hidden" name="old_upfile2" id="old_upfile2" value="{review_info.upfile2}">
+                        <input type="hidden" name="delchk2" id="delchk2" value="N">
+                        <input type="hidden" name="file_count2" id="file_count2" value="{? review_info.upfile2}N{:}Y{/}">
+                    </div>
+                 </div>
+                <p class="pt-5">파일명: 한글, 영문, 숫자 / 파일 크기: 3mb 이하 / <br>파일 형식: GIF, JPG, JPEG</p>
+            </td>
+        </tr>
+        </tbody>
+    </table>
+    <div class="btnPlace mt-20">
+        <button class="btn-line h-large btn-cancel" type="button" data-toggle="close"><span>취소</span></button>
+        <button id="submitbutton" class="btn-point h-large" type="submit" ><span>{? mode=='write'}등록{:}수정{/}</span></button>
+    </div>
+    </form>
+</div><!-- //.layer-content -->
+
+<script type="text/javascript" src="/admin/static/js/jquery.form.js"></script>
+<script type="text/javascript">
+    var ReviewWrite = {
+        mode:'{mode}',
+        init: function() {
+            var me = this;
+            $('[data-toggle="close"]').on('click', function() {
+                $('.btn-close').trigger('click');
+            });
+            $('#option_select').on('change', function() {
+                var select = $('#option_select').find('option:selected');
+                $('#productorder_idx').val(select.data('idx'));
+                $('#productcode').val(select.data('productcode'));
+                $('#option_code').val(select.data('option_code'));
+                $('#ordercode').val(select.data('order_num'));
+            });
+
+            var option = $.extend({}, validation_option, {
+                validateNonVisibleFields: false,
+                onValidationComplete: function (form, status) {
+                    if (status) me.save();
+                }
+            });
+            $("#FrmReviewWrite").validationEngine('attach', option);
+
+            //작성글수제한
+            $('#myreview-txt').on('input', function() {
+                var length = this.value.length;
+                if(length>500) {
+                    this.value = this.value.substr(0,500);
+                    return false;
+                }
+
+                $('.full_textarea .count > span').text(length);
+            });
+
+
+
+            $('#input_file1').on('change', me.createAttach);
+            $('#input_file2').on('change', me.createAttach);
+
+            $('.filebox .del').on('click', function() {
+                var del_idx = $(this).data('del');
+                $('#file_count'+del_idx).val('Y');
+                var file_count1 = $('#file_count1').val();
+                var file_count2 = $('#file_count2').val();
+                var status = true;
+                if(ReviewWrite.mode=='modify') {
+                    if (file_count1 == 'Y' && file_count2 == 'Y') {
+                        UI.alert('1개이상 이미지가 있어야 수정이 가능합니다');
+                        $('#file_count' + del_idx).val('N');
+                        status = false;
+                    }
+                }
+                if(status) {
+                    $('#delchk'+del_idx).val('Y');
+                    $(this).siblings('.upload-display').remove();
+                    $(this).siblings('.photoBox').removeClass('after');
+                    $('#input_file' + del_idx).val('');
+                }
+            })
+        },
+        save: function() {
+        	$("#submitbutton").attr("disabled","disabled");
+            var options = {
+                url:'/proc/review.proc.php',
+                type:'POST',
+                dataType:'json',
+                success : function(r) {
+                    UI.alert(r.msg, function() {
+                        if(r.success) {
+                            window.location.reload();
+                        };
+                    });
+                }
+            }
+            $('#FrmReviewWrite').ajaxSubmit(options);
+        },
+        createAttach: function() {
+            var path = this.value;
+            var idx = $(this).data('idx');
+            $('#delchk'+idx).val('N');
+            $('#file_count'+idx).val('N');
+            var accept = (/\.(gif|png|jpg|jpeg)$/i).test(path);
+            if (!accept) {
+                UI.alert('GIF, JPG, JPEG, PNG 파일만 등록 가능합니다.');
+                $('#input_file'+idx).val('');
+               return false;
+            }
+
+            //용량체크
+            var file = document.getElementById('input_file'+idx).files[0];
+            //console.log(file);
+            if(file && file.size > 1024*1024*10) { //10MB제한
+                UI.alert('파일 용량을 확인해주세요.');
+                return false;
+            }
+
+            var parent = $(this).parent();
+            parent.children('.upload-display').remove();
+
+            if(window.FileReader){
+                //image 파일만
+                if (!$(this)[0].files[0].type.match(/image\//)) {
+                    UI.alert('GIF, JPG, JPEG, PNG 파일만 등록 가능합니다.');
+                    return false;
+                }
+
+                var reader = new FileReader();
+                reader.onload = function(e){
+                    var src = e.target.result;
+                    //alert(src);
+                    parent.prepend('<div class="upload-display"><div class="upload-thumb-wrap"><img src="'+src+'" class="upload-thumb"></div></div>');
+                    parent.children('.photoBox').addClass('after');
+                }
+                reader.readAsDataURL($(this)[0].files[0]);
+            }
+
+            else {
+                $(this)[0].select();
+                $(this)[0].blur();
+                var imgSrc = document.selection.createRange().text;
+                parent.prepend('<div class="upload-display"><div class="upload-thumb-wrap"><img class="upload-thumb"></div></div>');
+                parent.children('.photoBox').addClass('after');
+
+                var img = $(this).siblings('.upload-display').find('img');
+                img[0].style.filter = "progid:DXImageTransform.Microsoft.AlphaImageLoader(enable='true',sizingMethod='scale',src=\""+imgSrc+"\")";
+            }
+        }
+    }
+
+    $(function(){
+        ReviewWrite.init();
+    })
+</script>

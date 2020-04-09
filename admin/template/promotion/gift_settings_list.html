@@ -1,0 +1,82 @@
+<style>
+	button:disabled {
+    pointer-events: auto;
+}
+</style>
+<div class="row mb_10">
+	<div class="pull-left">
+		<img src="images/icon_8a.gif" border="0"> 전체
+		<span id="count_total">{total}</span>건
+	</div>
+</div>
+<table cellspacing="0" cellpadding="0" width="100%" border="0">
+	<colgroup>
+		<col width="50">
+		<col width="150">
+		<col width="auto">
+		<col width="200">
+		<col width="200">
+		<col width="200">
+		<col width="210">
+		<col width="100">
+		<col width="70">
+		<col width="80">
+		<col width="80">
+	</colgroup>
+	<tbody>
+		<tr align="center">
+			<th>No</th>
+			<th>사은품 코드</th>
+			<th>사은품 명</th>
+			<th>사은품 이미지</th>
+			<th>현재고</th>
+			<th>누적판매량</th>
+			<th>금액조건</th>
+			<th>사용여부</th>
+			<th>등록일</th>
+			<th>수정</th>
+			<th>삭제</th>
+		</tr>
+
+		{@ list}
+		<tr>
+			<td>{.no}</td>
+			<td style="text-align:center;">{.giftcode}</td>
+			<td style="text-align:left;">{.giftname}</td>
+			<td style="padding:5px;">
+				<img src="{=preview(.gift_image_path,'list')}" style="max-height:80px">
+			</td>
+			
+			<td>{.quantity - .quantity_sale}</td>
+			<td>{.quantity_sale}</td>
+			<td>
+				{=number_format(.price_s)}원 이상 ~ {=number_format(.price_e)}원 미만
+			</td>
+			<td>
+				{? .display=='Y'}
+				<span class="badge badge-primary">사용</span>
+				{:}
+				<span class="badge badge-secondary">미사용</span>
+				{/}
+			</td>
+			<td>{=format(.date_insert,'Y-m-d')}</td>
+			<td>
+				<button type="button" class="btn btn-sm btn-outline-info" onclick="GiftSettings.modify('{.idx}');"><i class="fa fa-pencil"></i> 수정</button>
+			</td>
+			<td>
+				<div {? .quantity_sale>0}class="tooltip-wrapper disabled"  data-toggle="tooltip" title="판매수량이 있는경우 삭제할 수 없습니다."{/}>
+					<button type="button" class="btn btn-sm btn-outline-danger" onclick="GiftSettings.delete('{.idx}');"  {? .quantity_sale>0} disabled{/} ><i class="fa fa-times"></i> 삭제</button>
+				</div>
+			</td>
+		</tr>
+		{:}
+		<tr>
+			<td colspan="11">
+				등록된 사은품이 없습니다.
+			</td>
+		</tr>
+		{/}
+	</tbody>
+</table>
+
+{this->xprint('include/pagination.html')}

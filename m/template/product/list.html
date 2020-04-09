@@ -1,0 +1,171 @@
+<!-- Page -->
+<div id="page">
+	<!-- Content -->
+	<main id="content">
+		<div class="list_head">
+			<a href="javascript:history.back();" class="prev">이전페이지</a>
+			<ul class="goods_cate_sort">
+				<li>
+					<select title="1차 카테고리" data-toggle="nav">
+						{@ nav.d2}
+						<option value="{.code_all}" {=checked(.code_all, nav.me.d2, 'selected' )}>{.code_name}</option>
+						{/}
+					</select>
+				</li>
+				<li>
+					<select title="2차 카테고리" data-toggle="nav">
+						<option value="{nav.me.d2}">ALL</option>
+						{@ nav.d3}
+						<option value="{.code_all}" {=checked(.code_all, nav.me.d3, 'selected' )}>{.code_name}</option>
+						{/}
+					</select>
+				</li>
+			</ul>
+		</div>
+		{? category_banner_list}
+		<div class="list_visual">
+			<ul class="slider">
+				{@ category_banner_list}
+				<li>
+					<a href="{url.view}?productcode={.product.productcode}" class="goods-item">
+						<figure>
+							<div class="img"><img src="{.mobile_img}" alt=""></div>
+							<div class="info_area">
+								<div class="like-local"><button type="button" data-hottcode="{.product.productcode}" data-section="product"><i
+										    class="icon_like"></i> <span class="like_count">{.product.pr_like_cnt}</span></button></div>
+								<p class="ment">{.product.phrase_ad}</p>
+								<figcaption>
+									<p class="goods-nm">{.product.productname}</p>
+									<p class="opt">{.product.phrase_etc}</p>
+									<p class="price">{=format(.product.consumerprice,'price')}<span>원</span></p>
+									<div class="color-chip">
+										{@.product.option_valid}
+										{? ..colorchip.color_img}
+										<span>
+											<img src="{..colorchip.color_img}" alt="컬러이름 출력">
+										</span>
+										{/}
+										{/}
+									</div>
+								</figcaption>
+							</div>
+						</figure>
+					</a>
+				</li>
+				{/}
+			</ul>
+		</div>
+		{/}
+		<div class="goods_list_wrp">
+			<div class="select_area">
+				<select class="select_line" title="sort by" id="sort">
+					<option value="recent">신상품순</option>
+					<option value="hit">인기순</option>
+					<option value="review">상품평순</option>
+					<option value="like">좋아요순</option>
+					<option value="price_asc">낮은가격순</option>
+					<option value="price_desc">높은가격순</option>
+				</select>
+			</div>
+			<div class="goods_list">
+				<ul>
+					{=this->xprint('product/list.inner.html')}
+				</ul>
+				{? list.count.search > cfg.limit}
+				<a href="javascript:;" class="btn_more">더보기</a>
+				{/}
+			</div>
+		</div>
+	</main>
+	<!-- //Content -->
+
+
+</div>
+<!-- //Page -->
+
+
+<script type="text/javascript" src="/static/js/blazy.min.js"></script>
+<script type="text/javascript">
+var ProductList = {
+	page:1,
+	page_last:'{list.page.last}',
+	page_limit:'{cfg.limit}',
+	lock:false,
+	init: function () {
+		var me = this;
+		$('.list_visual .slider').bxSlider({
+			mode: 'fade',
+			controls: false,
+			pagerType: 'short'
+		});
+
+		$('[data-toggle="nav"]').on('change', function () {
+			document.location.href = '{url.list}?code=' + this.value
+		});
+
+		//더보기
+		$('.btn_more').on('click', function () {
+			me.more();
+		});
+		
+		//정렬
+		$('#sort').on('change', function() {
+			me.sort = this.value;
+			me.load(1);
+		})
+
+
+		new Blazy();
+		PRODUCT.like();
+	},
+	more:function() {
+		var me = ProductList;
+		if(!me.lock) {
+			me.lock = true;
+			if(me.page_last <= me.page) return false;
+
+			var p = me.page+1;
+			me.load(p);
+		}
+	},
+	load:function(page) {
+		var me = ProductList;
+		var p = page || me.page;
+
+		$.ajax({
+			url:'/m/productlist.inner.php',
+			data:{page:p, sort:me.sort,limit:me.page_limit,code:'{code}'},
+			
+			dataType:'json',
+			type:'GET',
+			success: function(r) {
+				me.page = p;
+				me.page_last = r.data.page.last;
+				if(p == 1) {
+					$(".goods_list ul").html(r.data.html);
+					new Blazy();
+				}
+				else {
+					$(r.data.html).hide().appendTo(".goods_list ul").delay(100).fadeIn(500, function() {
+						new Blazy();
+					});
+				}
+				me.lock = false;
+				if(me.page >= me.page_last) {
+					$('.btn_more').addClass('hide');
+				}
+				else {
+					$('.btn_more').removeClass('hide');
+				}
+
+				PRODUCT.like();
+			}
+
+		});
+	},
+};
+
+$(function () {
+	ProductList.init();
+});
+</script>

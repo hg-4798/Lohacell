@@ -1,0 +1,136 @@
+<div class="content-wrap">
+		<div class="title_depth3">{__NAV.page_tit}
+				<div class="pull-right">
+					<span>총 가용마일리지 : {=number_format(cfg.mileage)} P</span>
+				</div>
+		</div>
+	
+		<div class=" m-t-20">
+			<!--{* 검색폼:S *}-->
+			<form id="FrmMileageSearch">
+				<input type="hidden" name="sort" value="date_desc">
+				<input type="hidden" name="limit" value="20">
+				<table class="tbl-search">
+					<colgroup>
+						<col style="width:150px">
+						<col>
+						<col style="width:150px">
+						<col>
+					</colgroup>
+					<tr>
+						<th>
+							<span>회원등급</span>
+						</th>
+						<td>
+							<select name="group_code" class="select">
+								<option value="">전체</option>
+								{@ cfg.group}
+								<option value="{.key_}">{.value_}</option>
+								{/}
+							</select>
+						</td>
+						<th>
+							<span>기간검색</span>
+						</th>
+						<td>
+							<input class="input datepicker calendar" type="text" name="date_s" value="" readonly /> ~
+							<input class="input datepicker calendar" type="text" name="date_v" value="" readonly />
+						</td>
+					</tr>
+					<tr>
+						<th>
+							<span>검색어</span>
+						</th>
+						<td colspan="3">
+							<select name="sf" class="select" >
+								<option value="m.id">회원아이디</option>
+								<option value="m.name">회원명</option>
+							</select>
+							<input class="w500" name="sv" id="search" class="input">
+						</td>
+					</tr>
+				</table>
+				<div class="ta_c mt_20">
+					<button type="button" class="btn-point" onclick="MileageLog.search()">조회</button>
+					<button type="button" class="btn-basic" onclick="MileageLog.searchReset()">초기화</button>
+				</div>
+			</form>
+			<!--{* 검색폼:E *}-->
+		</div>
+	
+		<!--{* 상단툴:S *}-->
+		<div class="tools mb_10">
+			<div class="pull-left">
+				검색된 내역 <span id="count_search"></span>건
+				<span class="bar"></span>총 <span id="count_total"></span>건
+				<button type="button" class="btn-basic dark h-x-small" onclick="MileageLog.excel()" style="vertical-align:middle">엑셀 다운로드</button>
+			</div>
+			<div class="pull-right">
+				<select name="sort" onchange="MileageLog.search('sort',this.value)">
+					<option value="date_desc">날짜 ↓</option>
+					<option value="date_asc">날짜 ↑</option>
+				</select>
+				<select name="listnum_select" onchange="MileageLog.search('limit',this.value)">
+					{@ __CONFIG.limit}
+					<option value="{.value_}">{.value_}개씩 보기</option>
+					{/}
+				</select>
+			</div>
+		</div>
+		<!--{* 상단툴:E *}-->
+	
+		<div id="inner"></div>
+	
+	</div>
+
+<textarea id="searched" style="display:none">{searched}</textarea>
+	<script type="text/javascript">
+	var MileageLog = {
+		page:1,
+		init: function() {
+			var me = this;
+			$('.datepicker').datepicker();
+			me.load(1);
+		},
+		load: function (page) {
+			UI.ing('데이터를 불러오는 중입니다...');
+			var p = page || ProductList.page;
+			var search = $('#FrmMileageSearch').serialize();
+	
+			$('#inner').load('/admin/member/mileage_log.inner.php', {
+					page: p,
+					search: search
+				},
+				function () {
+					MileageLog.page = p;
+					UI.toggleCheck();
+					UI.ing();
+					$('[data-toggle="tooltip"]').tooltip();
+				}
+			);
+		},
+		crm:function(e) {
+			var data = $(e).closest('tr').data();
+			ADMIN.crm(data.id);
+		},
+		search: function (field, value) {
+			if (field && value) $('#FrmMileageSearch').find('[name="' + field + '"]').val(value);
+			this.load(1);
+		},
+		searchReset: function () {
+			$('#FrmMileageSearch')[0].reset();
+			this.load(1);
+		},
+        excel: function () {
+            var search = $('#searched').val();
+            UI.modal('/admin/common/excel.php', '엑셀다운로드', {
+                type:'mileage',
+                search: search
+            }, 800);
+        }
+	}
+	
+	$(function() {
+		MileageLog.init();
+	})
+	</script>

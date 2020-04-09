@@ -1,0 +1,19 @@
+<div class="title_depth3">상품관리 리스트
+	<div class="pull-right">
+		<button class="btn btn-primary btn-sm" data-button-insert="1">일반상품등록</button>
+		<button class="btn btn-sm" data-button-insert="2">바로구매상품등록</button>
+		<button class="btn btn-sm" data-button-insert="3">임직원상품등록</button>
+		<button class="btn btn-sm" data-button-insert="4">추가구매상품등록</button>
+	</div>
+</div>
+
+<script>
+	$(function () {
+		//상품등록버튼설정
+		$('[data-button-insert]').on('click', function () {
+			var type = ($(this).data('button-insert'));
+			var href = "/admin/product/product_input.php?mode=copy&prtype=" + type + "&productcode={productcode}";
+			document.location.href = href;
+		});
+	});
+</script>

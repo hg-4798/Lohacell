@@ -1,0 +1,202 @@
+<style>
+	.gift-preview img{
+		height: 58px;
+		width: 58px;
+		float: left;
+		margin-right: 10px;
+		border: solid 1px #ddd;
+	}
+</style>
+<form name="giftRegForm" autocomplete="off" onsubmit="return false">
+	<table cellspacing="0" cellpadding="0" width="100%" border="0" >
+		<tbody>
+			<input type="hidden" name="mode" value="reg">
+			<input type="hidden" name="idx" value="{idx}">
+			<tr>
+				<th>
+					<span>사은품 코드</span>
+				</th>
+				<td>
+					{? mode =='reg'}
+					<input type="text" class="input validate[required, custom[onlyLetterNumber]]" data-errormessage-value-missing="사은품 코드를 입력하세요." name="giftcode" value="{giftinfo.giftcode}">
+					 <span class="helper m-l-5">사은품코드는 영문자와 숫자로만 입력가능합니다.</span>
+					{:}
+					<input type="text" class="input validate[required] transparent" data-errormessage-value-missing="사은품 코드를 입력하세요." name="giftcode" value="{giftinfo.giftcode}">
+					{/}
+				</td>
+			</tr>
+
+			<tr>
+				<th>
+					<span>사은품 명</span>
+				</th>
+				<td>
+					<input type="text" name="giftname" class="input validate[required] wx-200" data-errormessage-value-missing="사은품 명을 입력하세요." value="{giftinfo.giftname}">
+				</td>
+			</tr>
+			<tr>
+				<th>
+					<span>사은품 설명</span>
+				</th>
+				<td>
+					<input type="text" name="gift_comment" class="input validate[required] w-100" data-errormessage-value-missing="사은품 설명을 입력하세요." value="{giftinfo.gift_comment}">
+				</td>
+			</tr>
+
+			<tr>
+				<th>
+					<span>사은품 이미지 </span>
+				</th>
+				<td>
+					<div class="gift-preview">
+						<img src="{=preview(giftinfo.gift_image_path,'default')}" id="gift_image_preview">
+						
+					</div>
+					<button type="button" class="btn btn-sm btn-info attach" data-file="gift_image_path">이미지찾기</button>
+					<span class="m-l-10">이미지를 선택하세요.</span>
+					<span class="helper">(권장사이즈 : 58*58)</span>
+					<input type="file" data-ext="img" name="gift_image_path" class="hide" data-preview="gift_image_preview">
+					<input type="hidden" name="gift_image_path_old" value="{giftinfo.gift_image_path}">
+				</td>
+			</tr>
+			<tr>
+				<th>
+					<span>현재고</span>
+				</th>
+				<td>
+					<input class="input validate[required,min[0], max[99999]]" type="text" name="quantity" value="{giftinfo.quantity_remain}" data-errormessage-value-missing="현재고 입력하세요." data-errormessage-range-underflow="0이상 입력하세요." data-filter="numeric" placeholder="숫자로만 입력" data-errormessage-range-overflow="재고는 최대 99,999까지 입력가능합니다."/>
+					<input type="hidden" name="quantity_sale" value="{giftinfo.quantity_sale}" />
+					<span class="helper m-l-5">재고는 최대 99,999까지 입력가능합니다.</span>
+				</td>
+			</tr>
+
+			<tr id="gift_type_M">
+				<th>
+					<span>금액조건</span>
+				</th>
+				<td>
+					<input class="input validate[required]" type="text" name="price_s" id="price_s" value="{=giftinfo.price_s}" data-errormessage-value-missing="금액조건을 입력하세요." maxlength="7" data-filter="numeric" placeholder="숫자로만 입력" /> 원 이상 ~
+					<input class="input validate[required, funcCall[GiftSettingsForm.checkMax]]" type="text" name="price_e" id="price_e" value="{=giftinfo.price_e}" data-errormessage-value-missing="금액조건을 입력하세요." maxlength="7" data-filter="numeric" placeholder="숫자로만 입력" /> 원 미만
+				</td>
+			</tr>
+
+			<tr>
+				<th>
+					<span>사용여부</span>
+				</th>
+				<td>
+					<label>
+						<input type="radio" name="display" value="Y" {=checked(giftinfo.display, 'Y')} class="hj" checked>
+						<span class="lbl">사용</span>
+					</label>
+					<label>
+						<input type="radio" name="display" value="N" {=checked(giftinfo.display, 'N')} class="hj">
+						<span class="lbl">사용안함</span>
+					</label>
+				</td>
+			</tr>
+
+		</tbody>
+	</table>
+	<div class="mt_20 mb-10" style="text-align:center;">
+		<button type="button" onclick="GiftSettings.reset();" class="btn-basic">취소</button>
+		<button type="submit" class="btn-point">{? mode=='mod'}수정{:}등록{/} </button>
+	</div>
+
+</form>
+
+<script type="text/javascript">
+	var GiftSettingsForm = {
+		init: function () {
+			var me = this;
+			var option = $.extend({}, validation_option, {
+				validateNonVisibleFields: true,
+				onValidationComplete: function (form, status) {
+					if (status) me.updGift();
+				}
+			});
+			$("form[name='giftRegForm']").validationEngine('attach', option);
+
+			//숫자체크
+			$('[data-filter="numeric"]').on('keydown input', function (evt) {
+				var v = $(this).val();
+				$(this).val(v.replace(/[^0-9]/g, ''));
+			});
+
+			 //이미지찾기
+			 $('button[data-file]').on('click', function () {
+				var target = $(this).data('file');
+				$('input[name="' + target + '"]').trigger('click');
+			})
+
+			//이미지파일 체크
+			$('input[data-ext="img"]').on('change', me.createAttach);
+
+			$('input[name=gift_type]').click(function(){
+				var type = $(this).val();
+				$('[data-group]').addClass('hide');
+				$('#gift_type_'+type).removeClass('hide');
+			});
+
+		},
+		updGift: function () {
+			$("form[name='giftRegForm']").ajaxSubmit({
+				type: "POST",
+				url: "proc/gift_settings.proc.php",
+				dataType: "json",
+				success: function (data) {
+					if (data.success) {
+						alert(data.msg);
+						GiftSettings.reset();
+						GiftSettings.load();
+					} else {
+						alert(data.msg);
+					}
+				},
+				error: function (result) {
+				}
+			});
+		},
+		checkMax: function() {
+			var price_s = $('#price_s').val();
+			var price_e = $('#price_e').val();
+			if(!price_e) return true;
+
+			if(parseInt(price_s) > parseInt(price_e)) {
+				return '사은품 지급 금액조건이 올바르지 않습니다.';
+			}
+			else return true;
+		},
+		createAttach: function () {
+			var input = this;
+			var path = input.value;
+			var accept = (/\.(gif|png|jpg|jpeg)$/i).test(path);
+			if (!accept) {
+				alert('이미지 파일만 업로드 가능합니다.');
+				return false;
+			}
+
+			$(input).prev('span').text(this.value);
+
+			var preview_id = $(input).data('preview');
+
+			//preview
+			var isIE = (navigator.appName == "Microsoft Internet Explorer");
+			if (isIE) {
+					$('#' + preview_id).attr('src', path);
+			} else {
+				if (input.files[0]) {
+					var reader = new FileReader();
+					reader.onload = function (e) {
+						$('#' + preview_id).attr('src', e.target.result);
+					}
+					reader.readAsDataURL(input.files[0]);
+				}
+			}
+		}
+	}
+
+	$(function () {
+		GiftSettingsForm.init();
+	});
+</script>

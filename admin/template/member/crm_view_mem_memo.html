@@ -1,0 +1,90 @@
+<div class="contentsBody">
+	<h3 class="table-title">회원메모 조회&nbsp;&nbsp;&nbsp;</h3>
+	<table class="th-top">
+		<caption>회원메모</caption>
+		<colgroup>
+			<col style="width:60px"><col style="width:120px"><col style="width:120px"><col style="width:auto">
+		</colgroup>
+		<thead>
+		<tr>
+			<th scope="row">내용</th>
+		</tr>
+		</thead>
+		<tbody>
+		<tr>
+			<td class="ta-l" style="height: 150px; vertical-align: top;" id="inner">{=nl2br(memo)}</td>
+		</tr>
+		</tbody>
+	</table>
+
+	<dl class="mt-30">
+		<h2>메모작성</h2>
+	</dl>
+
+	<dl class="mt-20">
+		<!--                    <textarea rows="3" cols="20" class="fTextarea" style="width:98%; height:150px;ime-mode:active;" id="addMemoMsg" name="msg"></textarea>-->
+		<textarea rows="10" cols="20" id="up_memo" name="up_memo" name=search class="input_selected" style="width: 99%;">{?memo_len>0}{memo}{/}</textarea>
+	</dl>
+
+	<dl class="mt-20" style="text-align: center;">
+		<a href="javascript:;" onclick="MemMemo.updateMemo();"><img src="images/btn_add2.gif" border="0" hspace="1"></a>
+	</dl>
+
+	<dl class="help-attention mt-50">
+		<dt>도움말</dt>
+		<dd></dd>
+	</dl>
+
+
+</div><!-- //.contentsBody -->
+<script src="/static/js/sweetalert2.min.js"></script>
+<link rel="stylesheet" href="/static/css/sweetalert2.min.css">
+<script type="text/javascript" src="/admin/static/js/ui.js"></script>
+<script>
+    var MemMemo = {
+        mem_id: '{mem_id}',
+        init: function () {
+        },
+		load: function (mem_id) {
+            $("#inner").load("/admin/crm_view_mem_memo.php", {
+                    mem_id: mem_id,
+					type: 'inner'
+                }
+            );
+        },
+		updateMemo : function () {swal({
+            type: 'question',
+            title: '회원 메모 수정',
+            width:300,
+            showCancelButton:true,
+            confirmButtonColor:'#52a3e7',
+            confirmButtonText:'회원 메모 수정',
+            html: "회원메모를 수정하시겠습니까?"
+        }).then(function(result) {
+            if(result.value) {
+                var up_memo = $("#up_memo").val();
+                $.ajax({
+                    url: '/admin/proc/member.proc.php',
+                    data: {
+                        mode : 'memo',
+                        memo : up_memo,
+                        mem_id: MemMemo.mem_id
+                    },
+                    dataType: 'json',
+                    type: 'POST',
+                    success: function (r) {
+                        if (r.success) {
+                            UI.alert(r.msg);
+                            MemMemo.load(MemMemo.mem_id);
+                        }
+                    }
+                });
+            }
+        });
+        }
+    };
+
+    $(function() {
+        MemMemo.init();
+    })
+</script>

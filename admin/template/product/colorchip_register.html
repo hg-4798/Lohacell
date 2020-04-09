@@ -1,0 +1,191 @@
+<div class="content-wrap">
+	<div class="title_depth3">{__NAV.page_tit} - {? dml == 'update'}수정{:}등록{/}</div>
+
+	<form id="FrmColorRegister" onsubmit="return false">
+		<input type="hidden" name="mode" value="register" />
+		<input type="hidden" name="color_idx" value="{row.idx}" />
+		
+
+		<table class="table-view m-t-20">
+			<colgroup>
+				<col style="width:150px">
+				<col>
+				<col style="width:150px">
+				<col>
+			</colgroup>
+			<tbody>
+				<tr>
+					<th>
+						<span>컬러계열</span>
+					</th>
+					<td colspan="3">
+						<select name="color_group" id="color_group" class="input validate[required]" data-errormessage-value-missing="컬러계열을 선택하세요.">
+							<option value="">컬러계열 선택</option>
+							<option value="etc" id="group_etc" style="color:#17A2B8">직접입력</option>
+							{@ cfg.color_group}
+							<option value="{.color_group}" {=checked(.color_group, row.color_group,'selected')}>{.color_group}</option>
+							{/}
+						</select>
+
+						<input type="text" name="color_group_etc" value="" id="color_group_etc" class="input hide validate[required]" data-errormessage-value-missing="컬러계열을 입력하세요." />
+
+						<label class="m-l-10">
+							<input type="checkbox" name="color_cls" value="bright" class="hj" {=checked(row.color_cls,'bright')}><span class="lbl">Bright</span>
+						</label>
+					</td>
+				</tr>
+				<tr>
+					<th>
+						<span>컬러코드</span>
+					</th>
+					<td colspan="3">
+						{? dml == 'update'}
+						<div style="line-height:25px">{row.color_code}</div>
+						<input type="hidden" name="color_code" value="{row.color_code}">
+						{:}
+						<input type="text" name="color_code" value="{row.color_code}" class="input validate[required, custom[onlyLetterNumber]]" data-errormessage-value-missing="컬러코드를 입력하세요."/>
+						{/}
+					</td>
+				</tr>
+				<tr>
+					<th>
+						<span>컬러명칭</span>
+					</th>
+					<td colspan="3">
+						<input type="text" name="color_name" value="{row.color_name}" class="input validate[required]" data-errormessage-value-missing="컬러코드를 입력하세요." /> <span class="helper">쇼핑몰에서 컬러칩 안내시 활용됩니다.</span>
+					</td>
+				</tr>
+				<tr>
+					<th>
+						<span>컬러칩 이미지</span>
+					</th>
+					<td colspan="3">
+						<span class="color-chip square" style="background-image:url('{row.color_img}')"></span>
+						<button type="button" class="btn btn-form btn-info" data-file="color_img" style="vertical-align: top">이미지선택</button>
+						<input type="file" name="color_img" id="color_img" data-ext="img" value="{row.color_img}" class="hide {? !row.color_img}validate[required]{/} requiredMe" data-errormessage-value-missing="컬러칩 이미지를 선택하세요."/>
+
+						<div class="helper m-t-10">34*34 사이즈로 입력하세요 </div>
+					</td>
+				</tr>
+				<tr>
+					<th>
+						<span>사용여부</span>
+					</th>
+					<td colspan="3">
+						<label>
+							<input type="radio" name="use_yn" value="Y" class="hj" {=checked(row.use_yn, 'Y')}>
+							<span class="lbl">사용함</span>
+						</label>
+						<label>
+							<input type="radio" name="use_yn" value="N"  class="hj" {=checked(row.use_yn, 'N')}>
+							<span class="lbl">사용안함</span>
+						</label>
+					</td>
+				</tr>
+				{? dml == 'update'}
+				<tr>
+					<th style="padding:12px 8px"><span>최신업데이트</span></th>
+					<td>{row.date_update}</td>
+					<th><span>관리자</span></th>
+					<td>{row.admin_id}</td>
+				</tr>
+				{/}
+
+			</tbody>
+		</table>
+
+		<div class="area-button">
+			
+			<button type="button" class="btn-basic m-r-10" onclick="ProductColorchipRegister.list()">목록</button>
+			<button type="submit" class="btn-point" >저장</button>
+		</div>
+	</form>
+
+</div>
+
+<script type="text/javascript" src="/admin/static/js/jquery.form.js"></script>
+<script type="text/javascript">
+	var ProductColorchipRegister = {
+		init: function () {
+			var me = this;
+			var option = $.extend({}, validation_option, {
+				validateNonVisibleFields: false,
+				onValidationComplete: function (form, status) {
+					if (status) me.save();
+				}
+			});
+			$("#FrmColorRegister").validationEngine('attach', option);
+
+			$('#color_group').on('change', function() {
+				if(this.value == 'etc') {
+					$('#color_group_etc').removeClass('hide');
+				}
+				else  $('#color_group_etc').addClass('hide');
+			});
+
+			$('[data-file]').on('click', function() {
+				var target = $(this).data('file');
+				$('#'+target).trigger('click');
+			});
+
+			$('input[data-ext="img"]').on('change', me.createAttach);
+
+		},
+		createAttach: function () {
+			var input = this;
+			var path = input.value;
+			var accept = (/\.(gif|png|jpg|jpeg)$/i).test(path);
+			if (!accept) {
+				UI.error('이미지 파일만 업로드 가능합니다.');
+				return false;
+			}
+
+			$(input).prev('span').text(this.value);
+
+			var preview_id = $(input).data('preview');
+
+			//preview
+			var isIE = (navigator.appName == "Microsoft Internet Explorer");
+			if (isIE) {
+				$('.color-chip').css('background-image','url('+path+')');
+
+				$('#' + preview_id).attr('src', path);
+			} else {
+				if (input.files[0]) {
+					var reader = new FileReader();
+					reader.onload = function (e) {
+						$('.color-chip').css('background-image','url('+e.target.result+')');
+					}
+					reader.readAsDataURL(input.files[0]);
+				}
+			}
+		},
+		save: function () {
+			var option = {
+				type: "POST",
+				url: "{C.DIR_ADMIN}/proc/product_color.proc.php",
+				dataType: "json",
+				success: function (data) {
+					if (data.success) {
+						ProductColorchipRegister.list();
+					} else {
+						UI.error(data.msg);
+					}
+				},
+				error: function (result) {
+				}
+			}
+
+			$("#FrmColorRegister").ajaxSubmit(option);
+
+
+		},
+		list: function () {
+			document.location.href="{C.DIR_ADMIN}/product/colorchip.php";
+		}
+	}
+
+	$(function () {
+		ProductColorchipRegister.init();
+	})
+</script>

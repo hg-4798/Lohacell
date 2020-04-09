@@ -1,0 +1,240 @@
+<?php
+    $listnum = $_GET['listnum'] ?: 25;
+
+    $arrProdList = explode(",", trim($_COOKIE['ViewProduct'],','));
+    
+    $arrProdCode = array();
+    $arrProdViewDate = array();
+
+    for ($i = 0; $i < count($arrProdList); $i++) {
+        $arrTmp = explode("||", $arrProdList[$i]);
+
+        array_push($arrProdCode, $arrTmp[0]);
+        $arrProdViewDate[$arrTmp[0]] = $arrTmp[1];
+    }
+
+    // 본 상품 중 중복제거
+    $arrProdCode = array_unique($arrProdCode);
+
+    if ( count($arrProdCode) >= 1 ) {
+        $productcodes = implode("','", $arrProdCode);
+    }
+
+    $whereQry  = "WHERE ";
+    $whereQry .= "b.productcode in ( '{$productcodes}' ) ";
+    $whereQry .= "AND b.display='Y' ";
+    $whereQry .= "AND (b.group_check='N' OR c.group_code='".$_ShopInfo->getMemgroup()."') ";
+
+    $sql  = "SELECT b.*, (SELECT brandname FROM tblproductbrand WHERE bridx = b.brand) as brandname ";
+    $sql .= "FROM tblproduct b ";
+    $sql .= "LEFT OUTER JOIN tblproductgroupcode c ON b.productcode = c.productcode ";
+    $sql .= $whereQry . " ";
+    $sql .= "ORDER BY FIELD (b.productcode, '{$productcodes}' ) ";
+ 
+    if ( $isMobile ) {
+        $listnum = 5;
+        $paging = new New_Templet_mobile_paging($sql, 5, $listnum, 'GoPage', true);
+    } else {
+        $paging = new New_Templet_paging($sql,10,$listnum);
+    }
+
+    $t_count = $paging->t_count;
+    $gotopage = $paging->gotopage;
+
+    $sql = $paging->getSql($sql);
+
+    $result=pmysql_query($sql,get_db_conn());
+    $cnt=0;
+
+    $prod_list_html = '';
+    while($row=pmysql_fetch_object($result)) {
+        $view_date = $arrProdViewDate[$row->productcode];
+        $view_date = substr($view_date, 0, 4) . "-" . substr($view_date, 4, 2) . "-" . substr($view_date, 6, 2);
+
+        if ( $isMobile ) {
+            $imgUrl = getProductImage($Dir.DataDir."shopimages/product/", $row->tinyimage);
+
+            $consumer_class = "";
+            if ( $row->consumerprice <= 0 || $row->consumerprice == $row->sellprice ){
+                $consumer_class = "hide";
+            }
+
+            $prod_list_html .= '
+                <li>
+                    <div class="item-info-wrap vm"><!-- 상하 중앙정렬시 vm 클래스 추가 -->
+                        <div class="inner">
+                            <p class="thumb"><a href="' . $Dir.MDir. 'productdetail.php?productcode=' . $row->productcode . '"><img src="' . $imgUrl . '" alt=""></a></p>
+                            <div class="price-info">
+                                <input type="checkbox" class="checkbox-def" name="idx[]" value="' . $row->productcode . '">
+                                <span class="brand-nm">' . $row->brandname . '</span>
+                                <span class="goods-nm">' . $row->productname . '</span>
+                                <span class="price"><del class="' . $consumer_class . '">' . number_format($row->consumerprice) . '</del><strong>' . number_format($row->sellprice) . '</strong></span>
+                                <span class="date">' . $view_date . '</span>
+                            </div>
+                        </div>
+                    </div>
+                </li>
+            ';
+        } else {
+            $prod_list_html .= '
+					<tr class="wish-item-tr">
+						<td><input type="checkbox" id="" class="checkbox-def" name="idx[]" value="' . $row->productcode . '"></td>
+						<td><A HREF="' . $Dir.FrontDir . 'productdetail.php?productcode=' . $row->productcode . '" >';
+            
+            if(strpos($row->tinyimage, "http://") !== false) { 
+                $prod_list_html .= '<img class="img-size-mypage" src="' . $row->tinyimage . '" border=0>';
+            } else {
+                if(strlen($row->tinyimage)!=0 && file_exists($Dir.DataDir."shopimages/product/".$row->tinyimage)){
+                    $file_size=getImageSize($Dir.DataDir."shopimages/product/".$row->tinyimage);
+            
+                    $prod_list_html .= '<img class="img-size-mypage" src="' . $Dir.DataDir . 'shopimages/product/' . $row->tinyimage . '"';
+                    if($file_size[0]>=$file_size[1]) $prod_list_html .= ' width=""';
+                    else $prod_list_html .= ' height=40';
+                    $prod_list_html .= ' border=0>';
+                }else if(strlen($row->tinyimage)!=0 && file_exists($Dir.$row->tinyimage)){
+                    $file_size2=getImageSize($Dir.$row->tinyimage);
+
+                    $prod_list_html .= '<img class="thumb-mypage" src="' . $Dir.$row->tinyimage . '"';
+                    if($file_size2[0]>=$file_size2[1]) $prod_list_html .= ' width=""';
+                    else $prod_list_html .= ' height=40';
+                    $prod_list_html .= ' border=0>';
+                }else {
+                    $prod_list_html .= '<img class="thumb-mypage" src="' . $Dir . 'images/no_img.gif" width="" border="0">';
+                }
+            }
+
+            $prod_list_html .= '
+                        </a>
+                        </td>
+						<td class="ta-l"><A HREF="' . $Dir.FrontDir . 'productdetail.php?productcode=' . $row->productcode . '" >
+							<span class="brand-color">' . $row->brandname . '</span><br>
+							<span>' . $row->productname . '</span><br>
+							</a>
+						</td>
+						<td>' . number_format($row->sellprice) . '</td>
+						<td>' . $view_date . '</td>
+						<td>
+							<button class="btn-dib-line" onClick="javascript:delete_view(\'' . $row->productcode . '\');"><span>삭제</span></button>
+						</td>
+					</tr>';
+            }
+    	$cnt++;
+    }
+
+	if ($cnt == 0) {
+        if ( $isMobile ) {
+
+        } else {
+            $prod_list_html .= '<tr class="wish-item-tr">
+                <td colspan=6>등록된 최근 본 상품이 없습니다.</td>
+            </tr>';
+        }
+	}
+
+    if ( $isMobile ) {
+?>
+
+<div class="sub-title">
+    <h2>최근 본 상품</h2>
+    <a class="btn-prev" href="javascript:history.go(-1);"><img src="./static/img/btn/btn_page_prev.png" alt="이전 페이지"></a>
+</div>
+
+<div class="mypage-wrap">
+    
+    <p class="att-title">최근 본 상품이 <?=number_format($t_count)?>개 있습니다.</p>
+
+    <ul class="my-thumb-list">
+        <?=$prod_list_html?>
+    </ul>
+    <div class="paginate">
+        <div class="box">
+            <?php
+                if( $paging->pagecount > 1 ){
+                    echo $paging->a_prev_page.$paging->print_page.$paging->a_next_page;
+                } 
+            ?>
+        </div>
+    </div>
+    <div class="btn-place">
+        <a href="javascript:;" onClick="javascript:GoDelete();" class="btn-function">선택삭제</a>
+        <a href="javascript:;" onClick="javascript:AllDelete();" class="btn-def">전체삭제</a>
+    </div>
+    <dl class="attention margin">
+        <dt>유의사항</dt>
+        <dd>최근 본 상품은 7일간 보관됩니다.</dd>
+    </dl>
+</div><!-- //.mypage-wrap -->
+
+<?php
+    } else {
+?>
+
+<div id="contents" >
+	<div class="containerBody sub-page" >
+		
+		<div class="breadcrumb">
+			<ul>
+				<li><a href="/">HOME</a></li>
+				<li><a href="mypage.php">MY PAGE</a></li>
+				<li class="on"><a>최근 본 상품</a></li>
+			</ul>
+		</div>
+		
+		<!-- LNB -->
+		<div class="left_lnb">
+			<? include ($Dir.FrontDir."mypage_TEM01_left.php");?> 
+		</div><!-- //LNB -->
+
+		<div class="right_section mypage-content-wrap">
+
+			<h4 class="mypage-title align-top">
+				최근 본 상품
+				<div class="function">
+					<div class="goods-sort-wrap">
+						<div class="view-ea">
+                            <button <?if ( $listnum == 25 ) { echo 'class="on"'; }?> type="button" onClick="javascript:ChangeListnum('25')";>25</button>
+                            <button <?if ( $listnum == 50 ) { echo 'class="on"'; }?> type="button" onClick="javascript:ChangeListnum('50');">50</button>
+                            <button <?if ( $listnum == 75 ) { echo 'class="on"'; }?> type="button" onClick="javascript:ChangeListnum('75');">75</button>
+						</div>
+					</div>
+				</div>
+			</h4>
+				
+			<table class="th-top util">
+				<colgroup>
+					<col style="width:55px" ><col style="width:100px" ><col style="width:auto" ><col style="width:150px" ><col style="width:120px" ><col style="width:150px" >
+				</colgroup>
+				<thead>
+					<tr>
+						<th scope="col"><input type="checkbox" class="checkbox-def" name="" id="all_check" onclick="javascript:CheckBoxAll()"></th>
+						<th scope="col" colspan=2>상품정보</th>
+						<th scope="col">상품금액</th>
+						<th scope="col">본 날짜</th>
+						<th scope="col">삭제</th>
+					</tr>
+				</thead>
+				<tbody>
+                    <?=$prod_list_html?>
+				</tbody>
+			</table>
+			<div class="btn-function-place">
+				<a href="javascript:;" onClick="javascript:GoDelete();" class="btn-dib-line"><span>선택삭제 하기</span></a>
+				<a href="javascript:;" onClick="javascript:AllDelete();" class="btn-dib-line"><span>전체상품 삭제</span></a>
+			</div>
+
+            <div class="list-paginate-wrap">
+                <div class="list-paginate">
+                <?php
+                    if( $paging->pagecount > 1 ){
+                        echo $paging->a_prev_page.$paging->print_page.$paging->a_next_page;
+                    }
+                ?>
+                </div>
+            </div><!-- //.list-paginate-wrap -->
+
+		</div><!-- //.right_section -->
+
+	</div>
+</div>
+
+<? } ?>

@@ -1,0 +1,589 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+	<title>신원 Mobile</title>
+	<meta charset="UTF-8">
+	<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0, user-scalable=no">
+	<meta name="Generator" content="">
+	<meta name="Author" content="">
+	<meta name="Keywords" content="">
+	<meta name="Description" content="">
+</head>
+
+<style type="text/css">
+body {font-family:dotum; font-size:12px;}
+h1 {text-align:center; background:#333; color:#fff; padding:20px 0;}
+h2 {text-align:right;}
+i {position:relative; display:inline-block; font-style:normal;  background:#303541; padding:5px 10px; color:#fff; border-radius:3px;}   
+i:after {position:absolute; top:50%; right:-8px; display:block; margin-top:-4px; width:0px; height:0px; border:4px solid transparent; border-left:4px solid #303541; content:"";}
+table {border-collapse:collapse; width:100%; }
+table th {border:1px solid #e1e1e1; text-align:left; background:#f3f3f3;  font-weight:normal; padding-left:10px; line-height:30px;}
+table th .icon {line-height:12px; }
+table th .icon i {margin-left:10px;background:#ff4000;}
+table th .icon i:after {left:-8px;border:4px solid transparent; border-right:4px solid #ff4000; content:"";}
+table td {padding:5px; border:1px solid #e1e1e1; font-size:12px; }
+.icon {display:inline-block;}
+.icon span {display:inline-block; width:26px; text-align:center; font-size:14px;vertical-align:middle; }
+strong {display:block; color:#ff4000;}
+@media screen and (max-width:767px) {
+table {}
+table tr,
+table th,
+table td {display:block; border-bottom:none;}
+table td:last-child {border-bottom:1px solid #e1e1e1;}
+table tr {margin-bottom:10px;}
+}
+</style>
+
+<body>
+<h1>신원 MOBILE</h1>
+<table>
+	<colgroup>
+		<col style="width:370px"><col style="width:200px"><col style="width:auto">
+	</colgroup>
+	<tbody>
+		<tr>
+			<th>공통</th>
+			<td></td>
+			<td>메모 : 
+				<strong>2017-02-28 푸터 > 메뉴 수정</strong>
+				<strong>2017-03-07 푸터 > 멤버쉽 안내 추가</strong>
+				<strong>2017-03-13 헤더 > 로고 변경</strong>
+				<strong>2017-04-12 헤더 > 카테고리 추가</strong>
+				<strong>2017-04-13 헤더 > lnb > 아울렛 버튼 추가</strong>
+			</td>
+		</tr>
+		<tr>
+			<th>메인 <div class="icon"><i>PSD</i></div></th>
+			<td><a href="../index.php" target="_blank">index.php</a></td>
+			<td>메모 : 
+				<br>2017-01-13 퍼블리싱 완료 
+				<strong>2017-01-16 검색 추가(기획 컨펌지연)</strong>
+				<strong>2017-02-09 베스트셀러 태그 클래스명 변경</strong>
+			</td>
+		</tr>
+		<tr>
+			<th>상품 리스트 <div class="icon"><i>PSD</i></div></th>
+			<td><a href="../goodslist.php" target="_blank">goodslist.php</a></td>
+			<td>메모 : <br>2017-01-13 퍼블리싱 완료
+				<strong>2017-02-27 상품리스트 컬러칩 수정, 필터 > 사이즈 수정</strong>
+				<strong>2017-02-28 2뎁스 클릭시 '전체' 기본 노출로 수정, 상품리스트 정렬 셀렉트 옵션 수정</strong>
+				<strong>2017-03-07 필터 > 디폴트 열린 상태로 수정</strong>
+				<strong>2017-04-12 페이징 추가, 카테고리 수정</strong>
+			</td>
+		</tr>
+		<tr>
+			<th>검색결과(상품 리스트) <div class="icon"><i>PSD</i></div></th>
+			<td><a href="../search_result.php" target="_blank">search_result.php</a></td>
+			<td>메모 : <br>2017-02-17 퍼블리싱 완료
+				<strong>2017-02-27 상품리스트 컬러칩 수정, 필터 > 사이즈 수정</strong>
+				<strong>2017-02-28 상품리스트 정렬 셀렉트 옵션 수정</strong>
+				<strong>2017-03-07 필터 > 디폴트 열린 상태로 수정</strong>
+				<strong>2017-04-12 페이징 추가</strong>
+			</td>
+		</tr>
+		<tr>
+			<th>상품 상세 <div class="icon"><i>PSD</i></div></th>
+			<td><a href="../goodsdetail.php" target="_blank">goodsdetail.php</a></td>
+			<td>메모 : <br>2017-01-19 퍼블리싱 완료
+				<strong>2017-02-20 리뷰팝업,Q&A팝업 > 수정,삭제버튼 추가</strong>
+				<strong>2017-02-27 사이즈 표기법 변경, 간략설명 삭제</strong>
+				<strong>2017-02-28 색상선택, 사이즈선택 구조 변경</strong>
+				<strong>2017-03-22 임직원가 추가</strong>
+				<strong>2017-04-12 시즌정보 추가</strong>
+				<strong>2017-04-24 임직원가 수정</strong>
+			</td>
+		</tr>
+		<tr>
+			<th>상품 상세 - 세트상품<div class="icon"><i>PSD</i></div></th>
+			<td><a href="../goodsdetail_set.php" target="_blank">goodsdetail_set.php</a></td>
+			<td>메모 : <br>2017-02-28 추가 (일반상품 상세에서 수정,추가된 부분은 '세트상품'으로 검색 가능)
+				<strong>2017-03-22 임직원가 추가</strong>
+				<strong>2017-04-12 시즌정보 추가</strong>
+			</td>
+		</tr>
+		<tr>
+			<th>멤버 &gt; 로그인 <div class="icon"><i>PSD</i></div></th>
+			<td><a href="../login.php" target="_blank">login.php</a></td>
+			<td>메모 : <br>2017-01-31 퍼블리싱 완료 
+				<strong>2017-02-09 .sub_bdtop 클래스 추가</strong>
+				<strong>2017-02-20 하단 멘트 추가</strong>
+				<strong>2017-03-06 비밀번호 가이드 텍스트 일부 삭제</strong>
+				<strong>2017-03-07 통합몰 회원전환 내용추가, 간편 회원가입 내용 삭제</strong>
+				<strong>2017-03-08 입력폼 내용 추가</strong>
+			</td>
+		</tr>
+		<tr>
+			<th>멤버 &gt; 비회원 주문</th>
+			<td><a href="../nonmem_order.php" target="_blank">nonmem_order.php</a></td>
+			<td>메모 : 2017-03-31 페이지 추가</td>
+		</tr>
+		<tr>
+			<th>멤버 &gt; 비회원 주문조회 <div class="icon"><i>PSD</i></div></th>
+			<td><a href="../nonmember.php" target="_blank">nonmember.php</a></td>
+			<td>메모 : <br>2017-01-31 퍼블리싱 완료 
+				<strong>2017-02-09 .sub_bdtop 클래스 추가</strong>
+				<strong>2017-02-20 로그인 메뉴구조 변경, 텍스트 변경</strong>
+				<strong>2017-02-22 통합몰 회원전환 내용 추가</strong>
+				<strong>2017-03-07 통합몰 문구 수정 및 위치 변경</strong>
+			</td>
+		</tr>
+		<tr>
+			<th>멤버 &gt; 아이디/비밀번호 찾기 <div class="icon"><i>PSD</i></div></th>
+			<td><a href="../idpw.php" target="_blank">idpw.php</a></td>
+			<td>메모 : <br>2017-01-31 퍼블리싱 완료 <strong>2017-02-09 .sub_bdtop 클래스 추가</strong></td>
+		</tr>
+		<tr>
+			<th>멤버 &gt; 아이디/비밀번호 찾기 결과 <div class="icon"><i>PSD</i></div></th>
+			<td><a href="../idpw_result.php" target="_blank">idpw_result.php</a></td>
+			<td>메모 : <br>아이디/비밀번호 찾기 페이지에 포함(주석 처리)
+				<strong>2017-02-16 결과 페이지 분리</strong>
+				<strong>2017-02-20 아이디 입력 인풋 추가</strong>
+				<strong>2017-03-06 비밀번호 placeholder 수정</strong>
+			</td>
+		</tr>
+		<tr>
+			<th>멤버 &gt; 회원가입 &gt; 통합회원 전환 <div class="icon"><i>PSD</i></div></th>
+			<td><a href="../member_switch.php" target="_blank">member_switch.php</a></td>
+			<td>메모 : 2017-02-23 퍼블리싱 완료
+				<strong>2017-03-07 혜택 텍스트, 이미지 수정</strong>
+				<strong>2017-03-31 텍스트 수정</strong>
+			</td>
+		</tr>
+		<tr>
+			<th>멤버 &gt; 회원가입 &gt; 본인인증 <div class="icon"><i>PSD</i></div></th>
+			<td><a href="../join_certi.php" target="_blank">join_certi.php</a></td>
+			<td>메모 : 2017-01-31 퍼블리싱 완료</td>
+		</tr>
+		<tr>
+			<th>멤버 &gt; 회원가입 &gt; 약관동의 <div class="icon"><i>PSD</i></div></th>
+			<td><a href="../join_agree.php" target="_blank">join_agree.php</a></td>
+			<td>메모 : 2017-01-31 퍼블리싱 완료</td>
+		</tr>
+		<tr>
+			<th>멤버 &gt; 회원가입 &gt; 정보입력 <div class="icon"><i>PSD</i></div></th>
+			<td><a href="../join.php" target="_blank">join.php</a></td>
+			<td>메모 : <br>2017-01-31 퍼블리싱 완료
+				<strong>2017-02-20 텍스트 수정</strong>
+				<strong>2017-03-06 추가정보 항목 추가, 비밀번호 placeholder 수정</strong>
+			</td>
+		</tr>
+		<tr>
+			<th>멤버 &gt; 회원가입 &gt; 가입완료 <div class="icon"><i>PSD</i></div></th>
+			<td><a href="../joinend.php" target="_blank">joinend.php</a></td>
+			<td>메모 : 2017-01-31 퍼블리싱 완료</td>
+		</tr>
+		<tr>
+			<th>멤버 &gt; 회원가입 &gt; 휴면계정_동의 <div class="icon"><i>PSD</i></div></th>
+			<td><a href="../inactive_agree.php" target="_blank">inactive_agree.php</a></td>
+			<td>메모 : 2017-03-24 페이지 추가</td>
+		</tr>
+		<tr>
+			<th>멤버 &gt; 회원가입 &gt; 휴면계정_인증 <div class="icon"><i>PSD</i></div></th>
+			<td><a href="../inactive_certi.php" target="_blank">inactive_certi.php</a></td>
+			<td>메모 : 2017-03-24 페이지 추가</td>
+		</tr>
+		<tr>
+			<th>브랜드 &gt; 소개 <div class="icon"><i>PSD</i></div></th>
+			<td><a href="../brand_intro.php" target="_blank">brand_intro.php</a></td>
+			<td>메모 : <br>2017-02-02 퍼블리싱 완료
+				<strong>2017-02-13 샘플이미지 변경</strong>
+				<strong>2017-02-20 SHOP메뉴 추가</strong>
+			</td>
+		</tr>
+		<tr>
+			<th>브랜드 &gt; 룩북 &gt; 리스트 <div class="icon"><i>PSD</i></div></th>
+			<td><a href="../brand_lookbook.php" target="_blank">brand_lookbook.php</a></td>
+			<td>메모 : <br>2017-02-02 퍼블리싱 완료<strong>2017-02-20 SHOP메뉴 추가</strong></td>
+		</tr>
+		<tr>
+			<th>브랜드 &gt; 룩북 &gt; 상세 <div class="icon"><i>PSD</i></div></th>
+			<td><a href="../brand_lookbook_view.php" target="_blank">brand_lookbook_view.php</a></td>
+			<td>메모 : <br>2017-02-02 퍼블리싱 완료<strong>2017-02-20 SHOP메뉴 추가</strong></td>
+		</tr>
+		<tr>
+			<th>브랜드 &gt; 매장 <div class="icon"><i>PSD</i></div></th>
+			<td><a href="../brand_store.php" target="_blank">brand_store.php</a></td>
+			<td>메모 : <br>2017-02-02 퍼블리싱 완료
+				<strong>2017-02-20 SHOP메뉴 추가</strong>
+				<strong>2017-03-07 버튼 텍스트 수정</strong>
+			</td>
+		</tr>
+		<tr>
+			<th>브랜드 &gt; E-CATALOG &gt; 리스트 <div class="icon"><i>PSD</i></div></th>
+			<td><a href="../brand_catalog.php" target="_blank">brand_catalog.php</a></td>
+			<td>메모 : <br>2017-02-02 퍼블리싱 완료<strong>2017-02-20 SHOP메뉴 추가</strong></td>
+		</tr>
+		<tr>
+			<th>브랜드 &gt; E-CATALOG &gt; 상세 <div class="icon"><i>PSD</i></div></th>
+			<td><a href="../brand_catalog_view.php" target="_blank">brand_catalog_view.php</a></td>
+			<td>메모 : <br>2017-02-02 퍼블리싱 완료<strong>2017-02-20 SHOP메뉴 추가</strong></td>
+		</tr>
+		<tr>
+			<th>브랜드 &gt; SHOP <div class="icon"><i>PSD</i></div></th>
+			<td><a href="../brand_shop.php" target="_blank">brand_shop.php</a></td>
+			<td>메모 : <br>2017-02-20 추가
+				<strong>2017-02-27 상품리스트 컬러칩 수정, 필터 > 사이즈 수정</strong>
+				<strong>2017-02-28 상품리스트 정렬 셀렉트 옵션 수정</strong>
+				<strong>2017-03-07 필터 > 디폴트 열린 상태로 수정</strong>
+				<strong>2017-04-12 카테고리 수정</strong>
+			</td>
+		</tr>
+		<tr>
+			<th>아울렛 &gt; 메인 <div class="icon"><i>PSD</i></div></th>
+			<td><a href="../outlet.php" target="_blank">outlet.php</a></td>
+			<td>메모 : 2017-02-16 퍼블리싱 완료</td>
+		</tr>
+		<tr>
+			<th>스타일 &gt; E-CATALOG &gt; 리스트 <div class="icon"><i>PSD</i></div></th>
+			<td><a href="../style_catalog.php" target="_blank">style_catalog.php</a></td>
+			<td>메모 : 2017-02-17 퍼블리싱 완료</td>
+		</tr>
+		<tr>
+			<th>스타일 &gt; E-CATALOG &gt; 상세 <div class="icon"><i>PSD</i></div></th>
+			<td><a href="../style_catalog_view.php" target="_blank">style_catalog_view.php</a></td>
+			<td>메모 : 2017-02-17 퍼블리싱 완료</td>
+		</tr>
+		<tr>
+			<th>스타일 &gt; LOOKBOOK &gt; 리스트 <div class="icon"><i>PSD</i></div></th>
+			<td><a href="../style_lookbook.php" target="_blank">style_lookbook.php</a></td>
+			<td>메모 : 2017-02-17 퍼블리싱 완료</td>
+		</tr>
+		<tr>
+			<th>스타일 &gt; LOOKBOOK &gt; 상세 <div class="icon"><i>PSD</i></div></th>
+			<td><a href="../style_lookbook_view.php" target="_blank">style_lookbook_view.php</a></td>
+			<td>메모 : 2017-02-21 퍼블리싱 완료</td>
+		</tr>
+		<tr>
+			<th>스타일 &gt; MAGAZINE &gt; 리스트 <div class="icon"><i>PSD</i></div></th>
+			<td><a href="../style_magazine.php" target="_blank">style_magazine.php</a></td>
+			<td>메모 : 2017-02-21 퍼블리싱 완료</td>
+		</tr>
+		<tr>
+			<th>스타일 &gt; MAGAZINE &gt; 상세 <div class="icon"><i>PSD</i></div></th>
+			<td><a href="../style_magazine_view.php" target="_blank">style_magazine_view.php</a></td>
+			<td>메모 : <br>2017-02-21 퍼블리싱 완료<strong>2017-02-21 버튼 구조 변경</strong></td>
+		</tr>
+		<tr>
+			<th>스타일 &gt; INSTAGRAM <div class="icon"><i>PSD</i></div></th>
+			<td><a href="../style_instagram.php" target="_blank">style_instagram.php</a></td>
+			<td>메모 : 2017-02-21 퍼블리싱 완료</td>
+		</tr>
+		<tr>
+			<th>스타일 &gt; MOVIE &gt; 리스트 <div class="icon"><i>PSD</i></div></th>
+			<td><a href="../style_movie.php" target="_blank">style_movie.php</a></td>
+			<td>메모 : 2017-02-21 퍼블리싱 완료</td>
+		</tr>
+		<tr>
+			<th>스타일 &gt; MOVIE &gt; 상세 <div class="icon"><i>PSD</i></div></th>
+			<td><a href="../style_movie_view.php" target="_blank">style_movie_view.php</a></td>
+			<td>메모 : <br>2017-02-21 퍼블리싱 완료<strong>2017-02-21 버튼 구조 변경</strong></td>
+		</tr>
+		<tr>
+			<th>프로모션 &gt; 출석체크 <div class="icon"><i>PSD</i></div></th>
+			<td><a href="../attendance.php" target="_blank">attendance.php</a></td>
+			<td>메모 : 2017-02-22 퍼블리싱 완료</td>
+		</tr>
+		<tr>
+			<th>프로모션 &gt; 이벤트 &gt; 리스트 <div class="icon"><i>PSD</i></div></th>
+			<td><a href="../event.php" target="_blank">event.php</a></td>
+			<td>메모 : 2017-02-22 퍼블리싱 완료</td>
+		</tr>
+		<tr>
+			<th>프로모션 &gt; 이벤트 &gt; 상세 (댓글)<div class="icon"><i>PSD</i></div></th>
+			<td><a href="../event_view.php" target="_blank">event_view.php</a></td>
+			<td>메모 : 2017-02-22 퍼블리싱 완료</td>
+		</tr>
+		<tr>
+			<th>프로모션 &gt; 이벤트 &gt; 상세 (포토)<div class="icon"><i>PSD</i></div></th>
+			<td><a href="../event_view_photo.php" target="_blank">event_view_photo.php</a></td>
+			<td>메모 : 2017-02-22 퍼블리싱 완료</td>
+		</tr>
+		<tr>
+			<th>프로모션 &gt; 이벤트 &gt; 상세 (당첨자발표)<div class="icon"><i>PSD</i></div></th>
+			<td><a href="../event_view_win.php" target="_blank">event_view_win.php</a></td>
+			<td>메모 : 2017-02-22 퍼블리싱 완료</td>
+		</tr>
+		<tr>
+			<th>프로모션 &gt; 이벤트 &gt; 룰렛 <div class="icon"><i>PSD</i></div></th>
+			<td><a href="../event_roulette.php" target="_blank">event_roulette.php</a></td>
+			<td>메모 : 2017-02-22 퍼블리싱 완료</td>
+		</tr>
+		<tr>
+			<th>프로모션 &gt; 기획전 &gt; 리스트 <div class="icon"><i>PSD</i></div></th>
+			<td><a href="../promotion.php" target="_blank">promotion.php</a></td>
+			<td>메모 : 2017-02-23 퍼블리싱 완료</td>
+		</tr>
+		<tr>
+			<th>프로모션 &gt; 기획전 &gt; 상세 template 01<div class="icon"><i>PSD</i></div></th>
+			<td><a href="../promo_view_type01.php" target="_blank">promo_view_type01.php</a></td>
+			<td>메모 : 2017-02-23 퍼블리싱 완료</td>
+		</tr>
+		<tr>
+			<th>프로모션 &gt; 기획전 &gt; 상세 template 02<div class="icon"><i>PSD</i></div></th>
+			<td><a href="../promo_view_type02.php" target="_blank">promo_view_type02.php</a></td>
+			<td>메모 : 2017-02-23 퍼블리싱 완료</td>
+		</tr>
+		<tr>
+			<th>프로모션 &gt; 기획전 &gt; 상세 template 03<div class="icon"><i>PSD</i></div></th>
+			<td><a href="../promo_view_type03.php" target="_blank">promo_view_type03.php</a></td>
+			<td>메모 : 2017-02-23 퍼블리싱 완료</td>
+		</tr>
+		<tr>
+			<th>프로모션 &gt; 기획전 &gt; 상세 template 04<div class="icon"><i>PSD</i></div></th>
+			<td><a href="../promo_view_type04.php" target="_blank">promo_view_type04.php</a></td>
+			<td>메모 : 2017-02-23 퍼블리싱 완료</td>
+		</tr>
+		<tr>
+			<th>프로모션 &gt; 기획전 &gt; 상세 template 05<div class="icon"><i>PSD</i></div></th>
+			<td><a href="../promo_view_type05.php" target="_blank">promo_view_type05.php</a></td>
+			<td>메모 : 2017-02-23 퍼블리싱 완료</td>
+		</tr>
+		<tr>
+			<th>프로모션 &gt; 타임세일 <div class="icon"><i>PSD</i></div></th>
+			<td><a href="../timesale.php" target="_blank">timesale.php</a></td>
+			<td>메모 : 2017-02-23 퍼블리싱 완료</td>
+		</tr>
+		<tr>
+			<th>프로모션 &gt; 타임세일 오픈후<div class="icon"><i>PSD</i></div></th>
+			<td><a href="../timesale_opened.php" target="_blank">timesale_opened.php</a></td>
+			<td>메모 : 2017-02-23 퍼블리싱 완료</td>
+		</tr>
+		<tr>
+			<th>쇼윈도 <div class="icon"><i>PSD</i></div></th>
+			<td><a href="../show_window.php" target="_blank">show_window.php</a></td>
+			<td>메모 : <br>2017-02-27 퍼블리싱 완료
+				<strong>2017-02-28 필터 > 사이즈 수정, 리스트 > 정렬 셀렉트 수정</strong>
+				<strong>2017-03-07 필터 > 디폴트 열린 상태로 수정</strong>
+			</td>
+		</tr>
+		<tr>
+			<th>주문결제 &gt; 장바구니 <div class="icon"><i>PSD</i></div></th>
+			<td><a href="../cart.php" target="_blank">cart.php</a></td>
+			<td>메모 : <br>2017-01-24 퍼블리싱 완료
+				<strong>2017-02-21 텍스트 수정, 버튼 타입 수정</strong>
+				<strong>2017-02-28 옵션 사이즈 표기법 변경</strong>
+				<strong>2017-04-12 품번 추가</strong>
+				<strong>2017-04-24 임직원가 수정</strong>
+			</td>
+		</tr>
+		<tr>
+			<th>주문결제 &gt; 결제하기 <div class="icon"><i>PSD</i></div></th>
+			<td><a href="../order.php" target="_blank">order.php</a></td>
+			<td>메모 : 2017-01-24 퍼블리싱 완료<strong>2017-04-12 품번 추가</strong></td>
+		</tr>
+		<tr>
+			<th>주문결제 &gt; 결제완료 <div class="icon"><i>PSD</i></div></th>
+			<td><a href="../orderend.php" target="_blank">orderend.php</a></td>
+			<td>메모 : <br>2017-01-24 퍼블리싱 완료
+				<strong>2017-02-21 텍스트 수정</strong>
+				<strong>2017-04-12 품번 추가</strong>
+			</td>
+		</tr>
+		<tr>
+			<th>주문결제 &gt; 결제실패 <div class="icon"><i>PSD</i></div></th>
+			<td><a href="../orderfail.php" target="_blank">orderfail.php</a></td>
+			<td>메모 : <br>2017-01-24 퍼블리싱 완료
+				<strong>2017-02-21 텍스트 수정</strong>
+				<strong>2017-04-12 품번 추가</strong>
+			</td>
+		</tr>
+		<tr>
+			<th>마이페이지 &gt; 쇼핑내역 &gt; 주문/배송조회 &gt; 리스트 <div class="icon"><i>PSD</i></div></th>
+			<td><a href="../my_orderlist.php" target="_blank">my_orderlist.php</a></td>
+			<td>메모 : 2017-02-06 퍼블리싱 완료<strong>2017-03-14 리스트 주문별로 구성 변경</strong></td>
+		</tr>
+		<tr>
+			<th>마이페이지 &gt; 쇼핑내역 &gt; 주문/배송조회 &gt; 상세 <div class="icon"><i>PSD</i></div></th>
+			<td><a href="../my_orderlist_view.php" target="_blank">my_orderlist_view.php</a></td>
+			<td>메모 : <br>2017-02-06 퍼블리싱 완료 
+				<strong>2017-02-09 .sub_bdtop 클래스 추가</strong>
+				<strong>2017-02-21 리뷰작성 팝업 추가, 배송준비 상태인 경우 노출되는 버튼 변경</strong>
+				<strong>2017-03-07 상품 링크 추가</strong>
+				<strong>2017-04-12 품번 추가</strong>
+			</td>
+		</tr>
+		<tr>
+			<th>마이페이지 &gt; 쇼핑내역 &gt; 취소/교환/반품 신청 <div class="icon"><i>PSD</i></div></th>
+			<td><a href="../my_cancel_request.php" target="_blank">my_cancel_request.php</a></td>
+			<td>메모 : 2017-02-06 퍼블리싱 완료<strong>2017-04-12 품번 추가</strong></td>
+		</tr>
+		<tr>
+			<th>마이페이지 &gt; 쇼핑내역 &gt; 취소/교환/반품 신청 &gt; 상세 <div class="icon"><i>PSD</i></div></th>
+			<td><a href="../my_cancel_request_view.php" target="_blank">my_cancel_request_view.php</a></td>
+			<td>메모 : <br>2017-02-06 퍼블리싱 완료 
+				<strong>2017-02-09 .sub_bdtop 클래스 추가</strong>
+				<strong>2017-03-07 상품 링크 추가</strong>
+				<strong>2017-04-12 품번 추가</strong>
+			</td>
+		</tr>
+		<tr>
+			<th>마이페이지 &gt; 쇼핑내역 &gt; 취소/교환/반품 현황 <div class="icon"><i>PSD</i></div></th>
+			<td><a href="../my_cancel_complete.php" target="_blank">my_cancel_complete.php</a></td>
+			<td>메모 : <br>2017-02-06 퍼블리싱 완료
+				<strong>2017-02-21 타이틀 수정</strong>
+				<strong>2017-04-12 품번 추가</strong>
+			</td>
+		</tr>
+		<tr>
+			<th>마이페이지 &gt; 쇼핑내역 &gt; 취소/교환/반품 현황 &gt; 상세 <div class="icon"><i>PSD</i></div></th>
+			<td><a href="../my_cancel_complete_view.php" target="_blank">my_cancel_complete_view.php</a></td>
+			<td>메모 : <br>2017-02-06 퍼블리싱 완료 
+				<strong>2017-02-09 .sub_bdtop 클래스 추가</strong>
+				<strong>2017-02-21 타이틀 수정</strong>
+				<strong>2017-03-07 상품 링크 추가</strong>
+				<strong>2017-04-12 품번 추가</strong>
+			</td>
+		</tr>
+		<tr>
+			<th>마이페이지 &gt; 혜택정보 &gt; 멤버쉽안내 <div class="icon"><i>PSD</i></div></th>
+			<td><a href="../my_membership.php" target="_blank">my_membership.php</a></td>
+			<td>메모 : 2017-02-27 퍼블리싱 완료<strong>2017-03-30 내용 수정 및 추가</strong></td>
+		</tr>
+		<tr>
+			<th>마이페이지 &gt; 혜택정보 &gt; 포인트 <div class="icon"><i>PSD</i></div></th>
+			<td><a href="../my_point.php" target="_blank">my_point.php</a></td>
+			<td>메모 : <br>2017-02-08 퍼블리싱 완료 
+				<strong>2017-02-09 .sub_bdtop 클래스 추가</strong>
+				<strong>2017-03-09 잔여포인트 삭제</strong>
+			</td>
+		</tr>
+		<tr>
+			<th>마이페이지 &gt; 혜택정보 &gt; 쿠폰 <div class="icon"><i>PSD</i></div></th>
+			<td><a href="../my_coupon.php" target="_blank">my_coupon.php</a></td>
+			<td>메모 : 2017-02-08 퍼블리싱 완료</td>
+		</tr>
+		<tr>
+			<th>마이페이지 &gt; 활동정보 &gt; 좋아요 <div class="icon"><i>PSD</i></div></th>
+			<td><a href="../my_like.php" target="_blank">my_like.php</a></td>
+			<td>메모 : 2017-02-14 퍼블리싱 완료</td>
+		</tr>
+		<tr>
+			<th>마이페이지 &gt; 활동정보 &gt; 이벤트 참여현황 <div class="icon"><i>PSD</i></div></th>
+			<td><a href="../my_event.php" target="_blank">my_event.php</a></td>
+			<td>메모 : 2017-02-14 퍼블리싱 완료</td>
+		</tr>
+		<tr>
+			<th>마이페이지 &gt; 활동정보 &gt; 상품리뷰 <div class="icon"><i>PSD</i></div></th>
+			<td><a href="../my_review.php" target="_blank">my_review.php</a></td>
+			<td>메모 : <br>2017-02-14 퍼블리싱 완료<strong>2017-02-21 버튼 구조 변경</strong></td>
+		</tr>
+		<tr>
+			<th>마이페이지 &gt; 활동정보 &gt; 상품문의 <div class="icon"><i>PSD</i></div></th>
+			<td><a href="../my_qna.php" target="_blank">my_qna.php</a></td>
+			<td>메모 : <br>2017-02-14 퍼블리싱 완료<strong>2017-02-21 버튼 구조 변경</strong></td>
+		</tr>
+		<tr>
+			<th>마이페이지 &gt; 활동정보 &gt; 1:1문의 <div class="icon"><i>PSD</i></div></th>
+			<td><a href="../my_inquiry.php" target="_blank">my_inquiry.php</a></td>
+			<td>메모 : <br>2017-02-14 퍼블리싱 완료<strong>2017-02-21 .sub_bdtop 클래스 추가, 버튼 구조 변경</strong></td>
+		</tr>
+		<tr>
+			<th>마이페이지 &gt; 활동정보 &gt; AS 접수 <div class="icon"><i>PSD</i></div></th>
+			<td><a href="../my_as.php" target="_blank">my_as.php</a></td>
+			<td>메모 : 2017-03-31 페이지 추가</td>
+		</tr>
+		<tr>
+			<th>마이페이지 &gt; 회원정보 &gt; 회원정보수정 비번입력 <div class="icon"><i>PSD</i></div></th>
+			<td><a href="../my_modify_pw.php" target="_blank">my_modify_pw.php</a></td>
+			<td>메모 : 2017-02-14 퍼블리싱 완료</td>
+		</tr>
+		<tr>
+			<th>마이페이지 &gt; 회원정보 &gt; 회원정보수정 &gt; 정보수정 <div class="icon"><i>PSD</i></div></th>
+			<td><a href="../my_modify.php" target="_blank">my_modify.php</a></td>
+			<td>메모 : <br>2017-02-14 퍼블리싱 완료
+				<strong>2017-02-20 텍스트 수정</strong>
+				<strong>2017-03-08 입력폼 내용 추가</strong>
+			</td>
+		</tr>
+		<tr>
+			<th>마이페이지 &gt; 회원정보 &gt; 배송지관리 <div class="icon"><i>PSD</i></div></th>
+			<td><a href="../my_delivery_site.php" target="_blank">my_delivery_site.php</a></td>
+			<td>메모 : <br>2017-02-15 퍼블리싱 완료<strong>2017-02-21 버튼 구조 변경</strong></td>
+		</tr>
+		<tr>
+			<th>마이페이지 &gt; 회원정보 &gt; 환불계좌 관리 <div class="icon"><i>PSD</i></div></th>
+			<td><a href="../my_refund_account.php" target="_blank">my_refund_account.php</a></td>
+			<td>메모 : 2017-02-15 퍼블리싱 완료</td>
+		</tr>
+		<tr>
+			<th>마이페이지 &gt; 회원정보 &gt; 회원탈퇴 비번입력 <div class="icon"><i>PSD</i></div></th>
+			<td><a href="../my_withdrawal.php" target="_blank">my_withdrawal.php</a></td>
+			<td>메모 : 2017-02-15 퍼블리싱 완료<strong>2017-03-31 텍스트 수정</strong></td>
+		</tr>
+		<tr>
+			<th>마이페이지 &gt; 회원정보 &gt; 회원탈퇴 완료 <div class="icon"><i>PSD</i></div></th>
+			<td><a href="../my_withdrawal_end.php" target="_blank">my_withdrawal_end.php</a></td>
+			<td>메모 : 2017-02-15 퍼블리싱 완료</td>
+		</tr>
+		<tr>
+			<th>고객센터 &gt; 공지사항 리스트 <div class="icon"><i>PSD</i></div></th>
+			<td><a href="../cs_notice.php" target="_blank">cs_notice.php</a></td>
+			<td>메모 : 2017-02-27 퍼블리싱 완료</td>
+		</tr>
+		<tr>
+			<th>고객센터 &gt; 공지사항 상세 <div class="icon"><i>PSD</i></div></th>
+			<td><a href="../cs_notice_view.php" target="_blank">cs_notice_view.php</a></td>
+			<td>메모 : 2017-02-27 퍼블리싱 완료</td>
+		</tr>
+		<tr>
+			<th>고객센터 &gt; FAQ <div class="icon"><i>PSD</i></div></th>
+			<td><a href="../cs_faq.php" target="_blank">cs_faq.php</a></td>
+			<td>메모 : 2017-02-27 퍼블리싱 완료</td>
+		</tr>
+		<tr>
+			<th>고객센터 &gt; 1:1문의</th>
+			<td>-</td>
+			<td>메모 : 마이페이지 > 활동정보 > 1:1문의로 링크</td>
+		</tr>
+		<tr>
+			<th>고객센터 &gt; 매장안내</th>
+			<td><a href="../cs_store.php" target="_blank">cs_store.php</a></td>
+			<td>메모 : 2017-02-27 퍼블리싱 완료</td>
+		</tr>
+		<tr>
+			<th>고객센터 &gt; 입점문의 <div class="icon"><i>PSD</i></div></th>
+			<td><a href="../cs_shop_entry.php" target="_blank">cs_shop_entry.php</a></td>
+			<td>메모 : 2017-02-27 퍼블리싱 완료</td>
+		</tr>
+		<tr>
+			<th>고객센터 &gt; 멤버쉽안내 <div class="icon"><i>PSD</i></div></th>
+			<td><a href="../cs_membership.php" target="_blank">cs_membership.php</a></td>
+			<td>메모 : 2017-02-27 퍼블리싱 완료<strong>2017-03-30 내용 수정 및 추가</strong></td>
+		</tr>
+		<tr>
+			<th>고객센터 &gt; AS 안내 <div class="icon"><i>PSD</i></div></th>
+			<td><a href="../cs_as.php" target="_blank">cs_as.php</a></td>
+			<td>메모 : 2017-03-31 페이지 추가</td>
+		</tr>
+		<tr>
+			<th>이용약관 <div class="icon"><i>PSD</i></div></th>
+			<td><a href="../agreement.php" target="_blank">agreement.php</a></td>
+			<td>메모 : 2017-02-27 퍼블리싱 완료</td>
+		</tr>
+		<tr>
+			<th>개인정보처리방침 <div class="icon"><i>PSD</i></div></th>
+			<td><a href="../privacy.php" target="_blank">privacy.php</a></td>
+			<td>메모 : 2017-02-27 퍼블리싱 완료</td>
+		</tr>
+		<tr>
+			<th>이메일무단수집거부 <div class="icon"><i>PSD</i></div></th>
+			<td><a href="../emailpolicy.php" target="_blank">emailpolicy.php</a></td>
+			<td>메모 : 2017-02-27 퍼블리싱 완료</td>
+		</tr>
+		<tr>
+			<th>멤버쉽 약관 </th>
+			<td><a href="../membership_terms.php" target="_blank">membership_terms.php</a></td>
+			<td>메모 : 2017-03-31 페이지 추가</td>
+		</tr>
+		<tr>
+			<th>오류 <div class="icon"><i>PSD</i></div></th>
+			<td><a href="../error.php" target="_blank">error.php</a></td>
+			<td>메모 : 2017-02-27 퍼블리싱 완료</td>
+		</tr>
+	</tbody>
+</table>
+</body>
+
+</html>

@@ -1,0 +1,425 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+	<title>제이준 Mobile Component</title>
+	<meta charset="UTF-8">
+	<meta http-equiv="X-UA-Compatible" content="IE=edge">
+	<meta name="Generator" content="">
+	<meta name="Author" content="">
+	<meta name="Keywords" content="">
+	<meta name="Description" content="">
+
+	<link href="https://fonts.googleapis.com/css?family=Montserrat:400,500,600" rel="stylesheet">
+	<link rel="stylesheet" type="text/css" href="../static/css/common.css">
+	<link rel="stylesheet" type="text/css" href="../static/css/component.css">
+	<link rel="stylesheet" type="text/css" href="../static/css/content.css">
+	
+
+	<script src="../static/js/jquery-1.12.0.min.js"></script>
+	<script src="../static/js/jquery.bxslider.min.js"></script>
+	<script src="../static/js/ui.js"></script>
+
+	<style>
+	body {margin:0; padding:0 0 0 200px; box-sizing:border-box; font-size:12px;}
+	.wrap {position:relative; min-width:1300px; padding:0 40px 40px 0; box-sizing:border-box;}
+	h1 {padding-top:40px; font-size:24px; font-weight:400; color:#e60b1f ;}
+	h2 {margin-top:50px; background:#666; padding:10px; font-size:20px; color:#fff; border-radius:5px 5px 0 0; text-align:center; font-weight:400;}
+	#lnb {position:fixed; overflow-y:auto; top:0; bottom:0; left:0; width:160px; border-right:1px solid #aaa;}
+	#lnb span {padding:10px 0; display:block; text-align:center; border-bottom:1px solid #eee;}
+	#lnb span img {max-width:120px;}
+	#lnb a {font-size:16px; padding:10px; display:block; border-bottom:1px solid #eee;}
+	#lnb a:hover {color:#e60b1f ;}
+	#lnb a.active {background:#e60b1f ; color:#fff;}
+	.box-area {padding:25px; padding-top:0; border:1px solid #666; border-radius:0 0 5px 5px; box-sizing:border-box;}
+	.box-area h3 {padding-bottom:5px; margin:30px 0 20px; border-bottom:1px solid #e4e4e4; font-size:16px; color:#e60b1f ; }
+	.colors div {display:inline-block; margin-right:10px; width:100px; line-height:50px; text-align:center;}
+	.other-icon-sort i + i {margin-left:10px;}
+	</style>
+</head>
+
+<body>
+
+<div class="wrap">
+	<h1>Web Component Guide</h1>
+	<nav id="lnb">
+		<span class="logo"><img src="../static/img/common/h1_logo.png" alt="브랜드"></span>
+		<a href="#category1">color</a>
+		<a href="#category2">button</a>
+		<a href="#category3">paginate</a>
+		<a href="#category4">form</a>
+		<a href="#category5">tabs</a>
+		<a href="#category6">accordions</a>
+		<a href="#category7">layer</a>
+		<a href="#category8">table</a>
+		<a href="#category9">divide</a>
+		<a href="#category10">scroll</a>
+		<a href="#category11">thumbnail</a>
+		<a href="#category12">icon</a>
+		<a href="#category13">etc</a>
+	</nav>
+
+
+	<h2 id="category1" class="categorys">color</h2>
+	<div class="box-area">
+		<h3>Main</h3>
+		<div class="colors">
+			<div style="background-color:#222; color:#fff">222222</div>
+			<!-- <div style="background-color:#f1f1f1">#F1F1F1</div> -->
+		</div>
+
+		<h3>TEXT</h3>
+		<div class="colors">
+			<div style="background-color:#222; color:#fff">#222222</div>
+			<div style="background-color:#888; color:#fff">#666666</div>
+		</div>
+
+		<h3>POINT</h3>
+		<div class="colors">
+			<div style="background-color:#e9c05e; color:#fff; line-height:25px">#e9c05e<br>.point-color</div>
+			<!-- <div style="background-color:#ff5151; color:#fff; line-height:25px">#FF5151<br>.discount-color</div>
+			<div style="background-color:#1182e2; color:#fff; line-height:25px">#1182e2<br>.sub-color</div>
+			<div style="background-color:#111; color:#fff; line-height:25px">#111<br>.emphasis-color</div> -->
+		</div>
+
+	</div>
+
+	<h2 id="category2" class="categorys">button</h2>
+	<div class="box-area">
+		<h3>btn - 4종</h3>
+		<button class="btn-point"><span>기본 버튼</span></button>
+		<button class="btn-basic"><span>기본 버튼</span></button>
+		<button class="btn-line"><span>기본 버튼</span></button>
+		<button class="btn-point point2"><span>기본 버튼</span></button>
+
+		<h3>btn - 4종 + 높이 조합</h3>
+		<button class="btn-basic h-small"><span>.h-small</span></button>
+		<button class="btn-basic"><span>기본 버튼</span></button>
+		<button class="btn-basic h-input"><span>.h-input</span></button>
+		<button class="btn-basic h-large"><span>.h-large</span></button>
+
+		<h3>btn - set</h3>
+		<div class="btn_area">
+			<ul class="ea2">
+				<li><button class="btn-point h-large"><span>.h-large</span></button></li>
+				<li><button class="btn-basic h-large"><span>.h-large</span></button></li>
+			</ul>
+		</div>
+		<div class="btn_area mt-10">
+			<ul class="ea3">
+				<li><button class="btn-line"><span>기본 버튼</span></button></li>
+				<li><button class="btn-line"><span>기본 버튼</span></button></li>
+				<li><button class="btn-line"><span>기본 버튼</span></button></li>
+			</ul>
+		</div>
+
+	</div>
+
+	<h2 id="category3" class="categorys">paginate</h2>
+	<div class="box-area">
+		<h3>일반형</h3>
+		<div class="list-paginate">
+			<a href="#" class="prev-all disabled">처음</a><!-- [D] 버튼 비활성인 경우 .disabled 클래스 추가 -->
+			<a href="#" class="prev disabled">이전</a>
+			<a href="#" class="on">1</a>
+			<a href="#">2</a>
+			<a href="#">3</a>
+			<a href="#">4</a>
+			<a href="#">5</a>
+			<a href="#">6</a>
+			<a href="#" class="next">다음</a>
+			<a href="#" class="next-all">끝</a>
+		</div>
+
+	</div>
+
+	<h2 id="category4" class="categorys">form</h2>
+	<div class="box-area">
+		<h3>Checkbox</h3>
+		<input type="radio" class="radio_def" name="radio">
+		<input type="radio" class="radio_def" name="radio" checked>
+
+		<h3>Radio</h3>
+		<input type="checkbox" class="check_def">
+		<input type="checkbox" class="check_def" checked>
+
+		<h3>Select</h3>
+		<select class="select_line" title="타이틀 작성">
+			<option selected>기본셀렉트 박스</option>
+			<option>선택1</option>
+			<option>선택2</option>
+			<option>선택3</option>
+		</select>
+
+		<h3>Select - divide</h3>
+		<div class="wrap_select">
+			<ul class="ea3"> <!-- [D] ea2 ~ 4 까지 있으며, li 로 늘림 -->
+				<li>
+					<select class="select_line" title="타이틀 작성">
+						<option selected>기본셀렉트 박스</option>
+						<option>선택1</option>
+						<option>선택2</option>
+						<option>선택3</option>
+					</select>
+				</li>
+				<li>
+					<select class="select_line" title="타이틀 작성">
+						<option selected>기본셀렉트 박스</option>
+						<option>선택1</option>
+						<option>선택2</option>
+						<option>선택3</option>
+					</select>
+				</li>
+				<li>
+					<select class="select_line" title="타이틀 작성">
+						<option selected>기본셀렉트 박스</option>
+						<option>선택1</option>
+						<option>선택2</option>
+						<option>선택3</option>
+					</select>
+				</li>
+			</ul>
+		</div>
+
+	</div>
+
+	<h2 id="category5" class="categorys">tabs</h2>
+	<div class="box-area">
+		<h3>none style</h3>
+		<div data-ui="TabMenu">
+			<div class="clear">
+				<button data-content="menu" class="active">MENU1</button>
+				<button data-content="menu">MENU2</button>
+			</div>
+			<div data-content="content" class="active">1번 컨텐츠 오픈</div>
+			<div data-content="content">2번 컨텐츠 오픈</div>
+		</div>
+	</div>
+
+	<h2 id="category6" class="categorys">accordions</h2>
+	<div class="box-area">
+		<h3>일반형</h3>
+		
+	</div>
+
+	<h2 id="category7" class="categorys">layer</h2>
+	<div class="box-area">
+		<h3>팝업 기본형</h3>
+		
+	</div>
+
+	<h2 id="category8" class="categorys">table</h2>
+	<div class="box-area">
+		<h3>제목 상단형</h3>
+		<table class="th-top">
+			<caption>테이블 제목</caption>
+			<colgroup>
+				<col style="width:15%">
+				<col style="width:65%">
+				<col style="width:20%">
+			</colgroup>
+			<thead>
+				<tr>
+					<th scope="col">사용일자</th>
+					<th scope="col">내용</th>
+					<th scope="col">사용포인트</th>
+				</tr>
+			</thead>
+			<tbody>
+				<tr>
+					<td>2018.01.23</td>
+					<td class="dir-flow"><a href="">[온라인몰 구입] 상품 구매 및 리뷰 작성</a></td>
+					<td><strong class="point-color">200,000 P</strong></td>
+				</tr>
+			</tbody>
+		</table>
+		
+		<h3>제목 좌측형</h3>
+		<table class="th-left">
+			<caption>테이블 제목</caption>
+			<colgroup>
+				<col style="width:150px">
+				<col style="width:auto">
+			</colgroup>
+			<tbody>
+				<tr>
+					<th scope="row"><label>이름</label></th>
+					<td><strong>홍길동</strong></td>
+				</tr>
+				<tr>
+					<th scope="row"><label for="input-connect1" class="required">제목</label></th>
+					<td><input id="input-connect1" class="w100-per" type="text" name="텍스트박스" title="타이틀 작성"></td>
+				</tr>
+				
+			</tbody>
+		</table>
+		
+	</div>
+
+	<h2 id="category9" class="categorys">divide</h2>
+	<div class="box-area">
+		<h3>분할 50%</h3>
+		<div class="divide-box-wrap two">
+			<ul class="divide-box ">
+				<li><a href="#">category1</a></li>
+				<li><a href="#">category2</a></li>
+				<li><a href="#">category3</a></li>
+			</ul>
+		</div>
+
+		<h3>분할 33%</h3>
+		<div class="divide-box-wrap three">
+			<ul class="divide-box ">
+				<li><a href="#">category1</a></li>
+				<li><a href="#">category2</a></li>
+				<li><a href="#">category3</a></li>
+				<li><a href="#">category4</a></li>
+				<li><a href="#">category5</a></li>
+				<li><a href="#">category6</a></li>
+				<li><a href="#">category7</a></li>
+				<li><a href="#">category8</a></li>
+			</ul>
+		</div>
+
+		<h3>분할 - 25%</h3>
+		<div class="divide-box-wrap four">
+			<ul class="divide-box ">
+				<li><a href="#">category1</a></li>
+				<li><a href="#">category2</a></li>
+				<li><a href="#">category3</a></li>
+				<li><a href="#">category4</a></li>
+				<li><a href="#">category5</a></li>
+			</ul>
+		</div>
+	</div>
+
+	<h2 id="category10" class="categorys">scroll</h2>
+	<div class="box-area">
+		<h3>기본형</h3>
+		
+	</div>
+
+	<h2 id="category11" class="categorys">thumbnail</h2>
+	<div class="box-area">
+		<h3>기본형</h3>
+		<a href="#" class="goods-item" style="width:160px"> <!-- [D] style width 삭제하고 사용할 것 -->
+			<figure>
+				<div class="like-local"><button type="button"><i class="icon_like"></i> <span class="like_count">12</span></button></div>
+				<div class="img"><img src="../../../jayjun/web/static/img/test/@goods_thumb320_01.jpg" alt=""></div>
+				<figcaption>
+					<p class="goods-nm">I NEED PORE VELVET</p>
+					<p class="opt">5ml</p>
+					<p class="price">19,000<span>원</span></p>
+					<div class="color-chip">
+						<span><img src="../../../jayjun/web/static/img/test/chip_color01.png" alt="컬러이름 출력"></span>
+						<span><img src="../../../jayjun/web/static/img/test/chip_color02.png" alt="컬러이름 출력"></span>
+						<span><img src="../../../jayjun/web/static/img/test/chip_color03.png" alt="컬러이름 출력"></span>
+						<span><img src="../../../jayjun/web/static/img/test/chip_color04.png" alt="컬러이름 출력"></span>
+						<span><img src="../../../jayjun/web/static/img/test/chip_color05.png" alt="컬러이름 출력"></span>
+						<span><img src="../../../jayjun/web/static/img/test/chip_color06.png" alt="컬러이름 출력"></span>
+						<span><img src="../../../jayjun/web/static/img/test/chip_color07.png" alt="컬러이름 출력"></span>
+					</div>
+				</figcaption>
+			</figure>
+		</a>
+		<a href="#" class="goods-item" style="width:160px"> <!-- [D] style width 삭제하고 사용할 것 -->
+			<figure>
+				<div class="like-local"><button type="button"><i class="icon_like"></i> <span class="like_count">12</span></button></div>
+				<div class="img"><img src="../../../jayjun/web/static/img/test/@goods_thumb320_02.jpg" alt=""></div>
+				<figcaption>
+					<p class="goods-nm">I NEED PORE VELVET BASE</p>
+					<p class="opt">5ml</p>
+					<p class="price">19,000<span>원</span></p>
+					<div class="color-chip">
+						<span><img src="../../../jayjun/web/static/img/test/chip_color08.png" alt="컬러이름 출력"></span>
+						<span><img src="../../../jayjun/web/static/img/test/chip_color09.png" alt="컬러이름 출력"></span>
+						<span><img src="../../../jayjun/web/static/img/test/chip_color10.png" alt="컬러이름 출력"></span>
+						<span><img src="../../../jayjun/web/static/img/test/chip_color11.png" alt="컬러이름 출력"></span>
+						<span><img src="../../../jayjun/web/static/img/test/chip_color12.png" alt="컬러이름 출력"></span>
+						<span><img src="../../../jayjun/web/static/img/test/chip_color13.png" alt="컬러이름 출력"></span>
+					</div>
+				</figcaption>
+			</figure>
+		</a>
+
+		
+	</div>
+
+	<h2 id="category12" class="categorys">icon</h2>
+	<div class="box-area">
+		<h3>Like Count</h3>
+		<button type="button"><i class="icon_like"></i> <span class="like_count">12</span></button>
+		<i class="icon_like on"></i>
+
+		<h3>other</h3>
+		<div class="other-icon-sort">
+		</div>
+	</div>
+	
+	<h2 id="category13" class="categorys">etc</h2>
+	<div class="box-area">
+		<h3>quantity</h3>
+		<div class="ea-select">
+			<input type="text" value="1" readonly="">
+			<button class="plus">증가</button>
+			<button class="minus">감소</button>
+		</div>
+
+		<h3>rating - write</h3>
+		<div class="rating clear">
+			<input type="radio" class="rating-input" id="rating-size5" name="ratingSize" ><label for="rating-size5" class="rating-star score5"><p>5점 만점 중<span>5</span>점</p></label>
+			<input type="radio" class="rating-input" id="rating-size4" name="ratingSize"><label for="rating-size4" class="rating-star score4"><p>5점 만점 중<span>4</span>점</p></label>
+			<input type="radio" class="rating-input" id="rating-size3" name="ratingSize"><label for="rating-size3" class="rating-star score3"><p>5점 만점 중<span>3</span>점</p></label>
+			<input type="radio" class="rating-input" id="rating-size2" name="ratingSize"><label for="rating-size2" class="rating-star score2"><p>5점 만점 중<span>2</span>점</p></label>
+			<input type="radio" class="rating-input" id="rating-size1" name="ratingSize" checked><label for="rating-size1" class="rating-star score1"><p>5점 만점 중<span>1</span>점</p></label>
+		</div>
+
+		<h3>rating - view</h3>
+		<div class="icon">
+			<img src="../static/img/icon/rating1.png" alt="5점 만점 중 1점"><br>
+			<img src="../static/img/icon/rating2.png" alt="5점 만점 중 2점"><br>
+			<img src="../static/img/icon/rating3.png" alt="5점 만점 중 3점"><br>
+			<img src="../static/img/icon/rating4.png" alt="5점 만점 중 4점"><br>
+			<img src="../static/img/icon/rating5.png" alt="5점 만점 중 5점">
+		</div>
+	</div>
+
+</div>
+
+<script>
+$(document).ready(function() {
+	//lnb
+	$('#lnb a').click(function(event) {
+		event.preventDefault();
+		$('html,body').animate({scrollTop:$(this.hash).offset().top}, 400);
+	});
+	
+});
+$(window).scroll(function () {
+	//lnb
+	$('.categorys').each(function() {
+		var doc_scroll_top = $(window).scrollTop() + 30,
+				categorys       = $(this),
+				category_id     = categorys.attr('id'),
+				category_top   = categorys.offset().top,
+				components_top = $('h1').offset().top;
+
+		if (components_top > $(window).scrollTop()) {
+			$('#lnb a').removeClass('active');
+		} else if(category_top <= doc_scroll_top) {
+			$("#lnb a[href='#" + category_id + "']").addClass('active').siblings('a').removeClass('active');
+		} else if ($(document).height()- $(window).height() === $(window).scrollTop()) {
+			$('#lnb a:last-child').addClass('active').siblings('a').removeClass('active');
+		}
+	});
+
+	if ($('#lnb').length) snb_xscroll();
+});
+function snb_xscroll () {
+	var window_scroll = $(window);
+	$('#lnb').css('left', - window_scroll.scrollLeft());
+};
+</script>
+
+</body>
+
+</html>

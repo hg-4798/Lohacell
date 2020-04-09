@@ -1,0 +1,238 @@
+<div class="content-wrap">
+	<div class="title_depth3">쿠폰 발급 내역 관리</div>
+	<div class="title_depth4 m-t-30">
+		<i class="fa fa-chevron-circle-right"></i> 쿠폰기본정보</div>
+		<div class="table_style01 pt_10">
+
+			<table cellpadding="0" cellspacing="0" border="0" width="100%">
+				<tbody>
+					<tr>
+						<th>
+							<span>쿠폰명</span>
+						</th>
+						<td>
+							<span>{list.coupon_name}</span>
+						</td>
+					</tr>
+					<tr>
+						<th>
+							<span>생성일자</span>
+						</th>
+						<td>
+							<span>{list.insert_date}</span>
+						</td>
+					</tr>
+					<tr>
+						<th>
+							<span>쿠폰설명</span>
+						</th>
+						<td>
+							<span>{list.coupon_description}</span>
+						</td>
+					</tr>
+					<tr>
+						<th>
+							<span>혜택구분</span>
+						</th>
+						<td>
+							<span>
+								{?list .type_use!='D'}
+									{list.sale_price}
+									{? list .sale_type=='R'}
+										%
+										{? list .sale_max_price > 0 }
+											{=format(list .sale_max_price,'price')}원까지
+										{/}
+									{:}원{/}
+								{:}
+									무료배송
+								{/}
+							</span>
+						</td>
+					</tr>
+					<tr>
+						<th>
+							<span>발급구분</span>
+						</th>
+						<td>
+							<span>{type_publish[list.type_publish]}</span>
+						</td>
+					</tr>
+					<tr>
+						<th>
+							<span>쿠폰사용기간</span>
+						</th>
+						<td>
+							<span>{? list.publish_date_type=='D'}{=format(list.use_period_start,'Y-m-d H:i:s')}~{=format(list.use_period_end,'Y-m-d H:i:s')}{:}무제한{/}</span>
+						</td>
+					</tr>
+					<tr>
+						<th>
+							<span>사용처</span>
+						</th>
+						<td>
+							<span>{? list.use_device=='A'}전체{: list.use_device=='P'}PC{:}모바일{/}</span>
+						</td>
+					</tr>
+					<tr>
+						<th>
+							<span>사용대상</span>
+						</th>
+						<td>
+							<span>{? list.part_detail=='ALL'}전체{: list.part_detail=='C'}특정카테고리{: list.part_detail=='L'}특정라인{: list.part_detail=='P'}특정상품{/}</span>
+						</td>
+					</tr>
+					<tr>
+						<th>
+							<span>발급수</span>
+						</th>
+						<td>
+							<span>{list.download_count}</span>
+						</td>
+					</tr>
+				</tbody>
+			</table>
+		</div>
+
+
+	<div class="title_depth4 m-t-30">
+		<i class="fa fa-chevron-circle-right"></i> 쿠폰 관리</div>
+	<form id="FrmCouponSearch" name="FrmCouponSearch">
+		<input type="hidden" name="sort" value="reg_desc">
+		<!-- 정렬기준 -->
+		<input type="hidden" name="coupon_idx" value="{list.idx}">
+		<!-- 페이지당노출개수 -->
+	<div class="table_style01 pt_10">
+		<table cellpadding="0" cellspacing="0" border="0" width="100%">
+
+			<tbody>
+			<tr>
+				<th>
+					<span>사용여부</span>
+				</th>
+				<td width="700px">
+					<select name="used" style="width:10%">
+						<option value="">선택</option>
+						<option value="Y">사용</option>
+						<option value="N">미사용</option>
+					</select>
+				</td>
+				<th>
+					<span>회원선택</span>
+				</th>
+				<td>
+					<select name="sf" style="">
+						<option value="id">아이디</option>
+					</select>
+					<input type="text" name="sv" id="sv" class="input " value="">
+				</td>
+			</tr>
+			<tr>
+				<th>
+					<span>기간별 검색</span>
+				</th>
+				<td>
+					<select name="date_sf">
+						<option value="insert_date">등록일</option>
+						<option value="publish_date_start">발급시작일</option>
+						<option value="use_period_start">사용시작일</option>
+					</select>
+					<input type="text" name="date_start" onclick="Calendar(event)" value="" class="input calendar" autocomplete="off"> ~
+					<input type="text" name="date_end" onclick="Calendar(event)" value="" class="calendar input" autocomplete="off">
+					<a href="javascript:;" onclick="CouponDetailList.setPeriod('today')">
+						<img src="/admin/images/btn_today01.gif" class="middle">
+					</a>
+					<a href="javascript:;" onclick="CouponDetailList.setPeriod('7_days')">
+						<img src="/admin/images/btn_day07.gif" class="middle">
+					</a>
+					<a href="javascript:;" onclick="CouponDetailList.setPeriod('14_days')">
+						<img src="/admin/images/btn_day14.gif" class="middle">
+					</a>
+					<a href="javascript:;" onclick="CouponDetailList.setPeriod('1_months')">
+						<img src="/admin/images/btn_day30.gif" class="middle">
+					</a>
+					<a href="javascript:;" onclick="CouponDetailList.setPeriod('all')">
+						<img src="/admin/images/btn_day_total.gif" class="middle">
+					</a>
+				</td>
+
+			</tr>
+
+			</tbody>
+		</table>
+
+		<div class="ta_c mt_20">
+			<button type="button" class="btn-point" onclick="CouponDetailList.search()">조회</button>
+			<button type="button" class="btn-basic" onclick="CouponDetailList.searchReset()">초기화</button>
+		</div>
+	</form>
+	</div>
+	<div class="title_depth4 m-t-30">
+		<i class="fa fa-chevron-circle-right"></i> 쿠폰발급/사용 목록</div>
+	<!--{* 상단툴:S *}-->
+	<div class="row mb_10">
+		<div class="pull-left">
+			<img src="/admin/images/icon_8a.gif" border="0"> 전체
+			<span id="count_total">0</span>건 조회
+			<!-- <button type="button" class="btn-basic dark h-x-small" onclick="ProductList.excel()" style="vertical-align:middle">엑셀 다운로드</button> -->
+		</div>
+		<div class="pull-right">
+			
+		</div>
+	</div>
+	<!--{* 상단툴:E *}-->
+	
+	<div id="inner"></div>
+
+
+</div>
+<script type="text/javascript" src="/admin/static/js/moment.js"></script>
+<script type="text/javascript" src="/admin/static/js/calendar.js"></script>
+<script type="text/javascript">
+	var CouponDetailList = {
+		page: 1,
+		proc_url: '/admin/proc/coupon.proc.php',
+		init: function () {
+			var me = this;
+			me.load(1);
+		},
+		load: function (page) {
+			UI.ing('데이터를 불러오는 중입니다...');
+			var p = page || CouponList.page;
+			var search = $('#FrmCouponSearch').serialize();
+
+			$('#inner').load('/admin/coupon/coupon_detail.inner.php', {
+					page: p,
+					search: search
+				},
+				function () {
+                    CouponDetailList.page = p;
+					// UI.toggleCheck();
+					UI.ing();
+					$('[data-toggle="tooltip"]').tooltip();
+				}
+			);
+		},
+        loadPage: function (page) {
+            CouponDetailList.load(page);
+        },
+
+        search: function (field, value) {
+            if (field && value) $('#FrmCouponSearch').find('[name="' + field + '"]').val(value);
+            this.load(1);
+        },
+        searchReset: function () {
+            $('#FrmCouponSearch')[0].reset();
+            this.load(1);
+        },
+        setPeriod: function (sub) {
+            var period = UTIL.period('<?=TIMESTAMP?>', sub);
+            document.FrmCouponSearch.date_start.value = period.start;
+            document.FrmCouponSearch.date_end.value = period.end;
+        },
+	}
+
+	$(function () {
+        CouponDetailList.init();
+	})
+</script>

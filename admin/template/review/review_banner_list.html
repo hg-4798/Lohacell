@@ -1,0 +1,145 @@
+<div class="content-wrap">
+	<div class="title_depth3">{__NAV.page_tit}<span></span>
+	</div>
+
+	<!--{* 상단툴:S *}-->
+	<div class="tools mb_10 mt-20">
+		<div class="pull-left">
+			<img src="/admin/images/icon_8a.gif" border="0"> 전체
+			<span id="count_total"></span>건 조회
+			<!--{*
+			<button type="button" class="btn-basic dark h-x-small" onclick="OrderList.excel()" style="vertical-align:middle">엑셀 다운로드</button>
+			*}-->
+		</div>
+		<form name="FrmSearch" id="FrmSearch">
+		<div class="pull-right">
+			<select name="limit" onchange="BannerList.search('limit',this.value)">
+				{@ __CONFIG.limit}
+				<option value="{.value_}">{.value_}개씩 보기</option>
+				{/}
+			</select>
+		</div>
+		</form>
+	</div>
+	<!--{* 상단툴:E *}-->
+
+
+	<div id="inner"></div>
+
+	<div style="text-align:center;padding-bottom:40px;">
+		<!--<img src="../admin/images/btn_gnb_reg.png" onclick="javascript:changeStatus(1);"/>
+		<img src="../admin/images/btn_gnb_cancel.png" onclick="javascript:changeStatus(2);"/>-->
+		<button type="button" class="btn-point" onclick="BannerList.toggleUse('Y')">노출설정</button>
+		<button type="button" class="btn-basic" onclick="BannerList.toggleUse('N')">비노출 설정</button>
+		<button type="button" class="btn-point" onclick="BannerList.write()">등록</button>
+	</div>
+
+</div>
+
+<script type="text/javascript">
+    var BannerList = {
+        page: 1,
+        proc_url: '/admin/proc/review.proc.php',
+        init: function() {
+            var me = this;
+           UI.toggleCheck();
+           me.load(1);
+        },
+        search: function (field, value) {
+            if (field && value) $('#FrmSearch').find('[name="' + field + '"]').val(value);
+            this.load(1);
+        },
+
+		write : function () {
+            document.location.href="{C.DIR_ADMIN}/review/review_banner_write.php";
+        },
+        modify: function (idx) {
+            document.location.href="{C.DIR_ADMIN}/review/review_banner_write.php?idx="+idx;
+        },
+        sort: function(type,ee) {
+            var idx = $(ee).data('idx');
+            var sort = $(ee).data('sort');
+
+            $.ajax({
+                url:BannerList.proc_url,
+                data:{
+                    mode:'list',
+                    act:'sort',
+                    type:type,
+                    idx:idx,
+                    sort:sort,
+                    banner_type:'S'
+                },
+				dataType:'json',
+                type:'POST',
+                success: function() {
+                    BannerList.load(1);
+                }
+            })
+        },
+        toggleUse: function(use_yn) {
+            var checked = UI.getChecked('checked[]');
+            if (checked.length < 1) {
+                UI.warning('적용할 배너를 선택하세요.');
+                return false;
+            }
+
+            UI.confirm(checked.length + "개의 배너 사용정보를 일괄변경하시겠습니까?", function() {
+                var idx = checked.map(function() {return this.value}).get();
+                $.ajax({
+                    url:BannerList.proc_url,
+                    data:{
+                        mode:'list',
+                        act:'batch_use',
+                        use_yn:use_yn,
+                        idx:idx.join()
+                    },
+                    dataType:'json',
+                    type:'POST',
+                    success: function(r) {
+                        UI.alert(r.msg, function() {
+                            BannerList.load(1);
+                        })
+                    }
+                })
+            });
+        },
+        remove: function(idx) {
+            UI.confirm('삭제하시겠습니까?', function() {
+                $.ajax({
+                    url:BannerList.proc_url,
+                    data:{
+                        mode:"list",
+                        act:'remove',
+                        idx:idx
+                    },
+                    dataType:'json',
+                    type:'POST',
+                    success: function(r) {
+                        UI.alert(r.msg, function() {
+                            BannerList.load(1);
+                        })
+                    }
+                })
+            })
+        },
+        load: function(page) {
+            var p = page || BannerList.page;
+            var search = $('#FrmSearch').serialize();
+            $('#inner').load('{C.DIR_ADMIN}/review/review_banner_list.inner.php', {
+                    page: p,
+                    search: search
+                },
+                function () {
+                    BannerList.page;
+                }
+            );
+        },
+
+    }
+
+    $(function() {
+        BannerList.init();
+    })
+</script>
+

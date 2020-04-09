@@ -1,0 +1,174 @@
+<?php
+$instaimgpath = $Dir.DataDir."shopimages/instagram/";
+$productimgpath = $Dir.DataDir."shopimages/product/";
+$search_word = $_POST['search_word'];
+$sort = $_POST["sort"] ? $_POST["sort"] : 'latest';
+$sql = "SELECT  i.*, li.section, LAG(idx,1,'1') OVER(ORDER BY regdt DESC) AS pre_idx, LEAD(idx,1,'1') OVER(ORDER BY regdt DESC) AS next_idx,
+							 	COALESCE((select COUNT( tl.hott_code )AS hott_cnt from tblhott_like tl WHERE tl.section = 'instagram' AND i.idx::varchar = tl.hott_code),0) AS hott_cnt
+							FROM tblinstagram i
+							LEFT JOIN ( SELECT hott_code, section FROM tblhott_like WHERE section = 'instagram' AND like_id = '".$_ShopInfo->getMemid()."' GROUP BY hott_code, section ) li on i.idx::varchar  = li.hott_code
+							WHERE i.display = 'Y' ";
+if(!empty($search_word)){
+	$sql .= "AND ( i.title iLIKE '%{$search_word}%' OR i.content iLIKE '%{$search_word}%' OR i.hash_tags = '%{$search_word}%')  ";
+}
+
+//검색 조건
+$order = "";
+if(!empty($sort)){
+	if($sort == "latest"){
+		$order .= " ORDER BY i.regdt desc, i.idx desc";
+	}else if($sort == "best"){
+		$order .= " ORDER BY i.access desc, i.idx desc";
+	}else if($sort == "like"){
+		$order .= " ORDER BY hott_cnt desc, i.idx desc";
+	}
+}
+$sql .=	$order;
+$sql .= " LIMIT 16";
+// exdebug($sql);
+$result = pmysql_query($sql);
+while ( $row = pmysql_fetch_array($result) ) {
+	$arrInstaList[] = $row;
+	$idx = $row['idx'];
+}
+
+//데이터가 있는지 체크
+$check_sql = "SELECT * FROM tblinstagram WHERE display = 'Y' AND idx < '{$idx}' ";
+$chk_result = pmysql_query($check_sql);
+$count = pmysql_num_rows( $chk_result );
+while ( $chk_row = pmysql_fetch_array($chk_result) ) {
+	$chkidx = $chk_row['idx'];
+}
+
+?>
+<!-- [D] 인스타그램_리스트 퍼블 추가 -->
+
+<div id="contents" class="bg">
+	<!-- 네비게이션 -->
+	<div class="top-page-local">
+		<ul>
+			<li><a href="/">HOME</a></li>
+			<li class="on">INSTAGRAM</li>
+		</ul>
+	</div>
+	<!-- //네비게이션-->
+	<div class="inner">
+		<main class="instagram_wrap">
+			<h3>INSTAGRAM</h3>
+			<div class="search-form-wrap">
+				<form name="searchForm" id="searchForm" method="post" action="<?=$_SERVER['PHP_SELF']?>">
+				<div class="form-wrap">
+					<fieldset class="instagram_search_form">
+					<legend>매장검색</legend>
+						<input type="text" title="매장검색 검색" name="search_word" id="search_word" value="<?=$search_word ?>">
+						<input type=hidden name=block value="<?=$block?>">
+    					<input type=hidden name=gotopage value="<?=$gotopage?>">
+    					<input type=hidden name=listnum value="<?=$listnum?>">
+						<button type="submit" >검색</button>
+					</fieldset>
+					<div class="my-comp-select" style="width:150px;">
+						<select title="" class="selectbox" id="sort" onchange="sortSelect(this.value)">
+							<option value="latest" <?=$sort=="latest"?"selected":""?>>최신순</option>
+							<option value="best" <?=$sort=="best"?"selected":""?>>인기순</option>
+							<option value="like" <?=$sort=="like"?"selected":""?>>좋아요</option>
+						</select>
+					</div>
+				</div>
+			</div>
+			<input type="hidden" name="sort" value="<?=$sort ?>">
+			</form>
+			<section class="asymmetry_main">
+				<div class="asymmetry_list">
+					<?if(count($arrInstaList) > 0){ ?>
+					<ul class="comp-posting">
+					<?foreach( $arrInstaList as $key=>$val ){
+						$arrTag = explode(",",$val['hash_tags']);
+					?>
+						<li class="grid-item">
+							<figure>
+								<a href="javascript:detailView('<?=$val['idx'] ?>');" idx="<?=$val['idx'] ?>" class="btn-view-detail"><img src="<?=$instaimgpath.$val['img_file']?>" alt=""></a>
+								<figcaption>
+									<a href="javascript:detailView('<?=$val['idx'] ?>');" idx="<?=$val['idx'] ?>">
+										<p class="id"></p>
+										<p class="cont"><?=strcutMbDot(strip_tags($val['content']),35) ?> </p>
+										<p class="tag">
+										<?foreach($arrTag as $tag){?>
+											<?="#".trim($tag)?>
+										<?} ?>
+										</p>
+									</a>
+									<?if($val['section']){ ?>
+									<button class="comp-like btn-like like_i<?=$val['idx']?> on" onclick="detailSaveLike('<?=$val['idx']?>','on','instagram','<?=$_ShopInfo->getMemid()?>','<?=$brand ?>')" id="likedetail<?=$val['idx']?>" title="선택됨"><span  class="like_icount_<?=$val['idx']?>"><strong>좋아요</strong><?=$val['hott_cnt'] ?></span></button>
+									<?}else{ ?>
+									<button class="comp-like btn-like like_i<?=$val['idx']?>" onclick="detailSaveLike('<?=$val['idx']?>','off','instagram','<?=$_ShopInfo->getMemid()?>','<?=$brand ?>')" id="likedetail<?=$val['idx']?>" title="선택 안됨"><span class="like_icount_<?=$val['idx']?>"><strong>좋아요</strong><?=$val['hott_cnt'] ?></span></button>
+									<?} ?>
+								</figcaption>
+							</figure>
+						</li>
+						<?} ?>
+					</ul>
+					<?} ?>
+				</div>
+				<?if($chkidx != ""){ ?>
+				<div class="btn_list_more mt-50 more_btn" id="more<?=$idx ?>">
+					<a href="javascript:;" class="more_view" id="<?=$idx ?>">더보기</a>
+				</div>
+				<?} ?>
+			</section>
+		</main>
+	</div>
+</div>
+<!-- // [D] 인스타그램_리스트 퍼블 추가 -->
+
+
+<!-- [D] 인스타그램_상세보기 팝업 -->
+<div class="layer-dimm-wrap pop-view-detail CLS_instagram"> <!-- .layer-class 이부분에 클래스 추가하여 사용합니다. -->
+	<div class="dimm-bg"></div>
+	<div class="layer-inner">
+		<button type="button" class="btn-close">창 닫기 버튼</button>
+		<div class="layer-content">
+			<div class="img-area">
+				<img src="../static/img/test/@test_instagram_view01.jpg" alt="" id="instagram_img" onload="popupImgResize();">
+			</div>
+			<div class="cont-area">
+				<div class="title">
+					<h3><span class="pl-10"><!-- <img src="" alt="instagram"> --></span></h3>
+					<!--  <button class="comp-like btn-like" title="선택 안됨"><span id="like_count"></button> <!-- // [D] 좋아요를 선택하면 버튼에 class="on" title="선택됨"을 추가 -->
+				</div>
+				<div class="cont-view">
+					<div class="inner">
+						<p id="content"></p>
+						<p class="tag" id="instagram_tag">
+<!-- 							#hott #hottest #nike #airjordan #Jordan #shoes #fashion #item #ootd #dailylook #핫티 #나이키 #에어조던 #조던 #신발 #패션 #아이템 #데일리 #데일리룩 #데일리슈즈 #신스타그램 #슈스타그램 #daily #dailyshoes #shoestagram -->
+						</p>
+					</div>
+				</div>
+				<div class="goods-detail-related">
+					<h3>관련 상품</h3>
+					<ul class="related-list">
+<!--
+						<li>
+							<a href="javascript:;">
+								<figure>
+									<img src="../static/img/test/@test_instagram_wish01.jpg" alt="관심상품">
+									<figcaption>
+										# CONVERSE<br>
+										CTAS 70 HI
+									</figcaption>
+								</figure>
+							</a>
+						</li> -->
+
+						</li>
+					</ul>
+				</div> <!-- // .goods-detail-related -->
+			</div> <!-- // .cont-area -->
+			<div class="btn-wrap">
+				<a href="javascript:pagePrev();" class="view-prev">이전</a>
+				<a href="javascript:pageNext();" class="view-next">다음</a>
+			</div>
+		</div>
+	</div>
+</div>
+<!-- // [D] 인스타그램_상세보기 팝업 -->
+

@@ -1,0 +1,280 @@
+<div id="contents">
+	<div class="promotion-page">
+		<article class="promotion-wrap">
+			<header>
+				<h2 class="promotion-title" id="page_title">기획전</h2>
+			</header>
+			<div class="editor-view">
+				<div class="bulletin-info mb-10">
+
+					<ul class="title">
+						<li id="event_title">{promoinfo.title}</li>
+						<li class="txt-toneC">{=format(promoinfo.start_date,'Y-m-d')}~{=format(promoinfo.end_date,'Y-m-d')}</li>
+					</ul>
+					<ul class="share-like clear">
+						<li>
+							<a id="url_index" href="/front/promotion/event.php">
+								<i class="icon-list">리스트 이동</i>
+							</a>
+						</li>
+						<li>
+							<!--<button type="button">
+								<span>
+									<i id="like_main" class="" onclick="like.clickLike('event','main','{_REQUEST.idx}')"></i>
+								</span>
+								<span id="like_cnt_main">좋아요하트어디갔니</span>
+							</button>-->
+							<button type="button" data-hottcode="{promoinfo.idx}" data-section="promo" data-cnt="{promoinfo.promo_like_cnt}">
+												<span>
+													<i class="icon-like mr-10 {? promoinfo.is_liked}on{/}"></i>좋아요
+												</span>
+								<span class="point-color">{=number_format(promoinfo.promo_like_cnt)}</span>
+							</button><!-- [D] 좋아요 선택시 .on 클래스 추가 -->
+						</li>
+						<!-- [D] 좋아요 i 태그에 .on 추가 -->
+						<!--{* @TODO 기획전 공유하기 *}-->
+						<li>
+							<div class="share_wrp">
+								<button type="button"><span><i class="icon-share-btn">SNS 공유하기</i></span></button>
+								<div class="links ta-r">
+									<!-- <a href="javascript:;" title="카카오 스토리"><i class="icon-share-kas">카카오 스토리</i></a> -->
+									<a href="javascript:;" onclick="Share.facebook()" title="페이스북"><i class="icon-share-facebook">페이스북</i></a>
+									<!-- <a href="javascript:;" title="트위터"><i class="icon-share-twit">트위터</i></a> -->
+									<a href="javascript:;" onclick="Share.naverblog('{}')" title="블로그"><i class="icon-share-blog">블로그</i></a>
+									<a href="javascript:;" onclick="Share.urlCopy()" title="링크"><i class="icon-share-url">링크</i></a>
+								</div>
+							</div>
+						</li>
+					</ul>
+				</div>
+				<!-- //.bulletin-info -->
+
+
+				<!-- 컨텐츠상세공통 -->
+				<div class="editor-output">
+					{promoinfo.content}
+					<!--<p id="event_main_img">
+						<img src="/data/shopimages/promotion/20180821_122438.png" title="기획전배너">
+					</p>-->
+					<!--{*내용이 필요한가?
+					<p id="event_main_winner_content">
+						내용???
+					</p>
+					*}-->
+				</div>
+
+				{? executives == 'N'}
+				<div class="prev-next clear">
+					{? prev.idx}<a href="/front/promotion/{? prev.event_type==1}promo{:}event{/}_detail.php?idx={prev.idx}&status={type}">{/}
+					<div class="prev clear" id="prev">
+						<span class="mr-20">PREV</span>
+						<a>{? prev.idx}{ prev.title}{:}이전글이 없습니다.{/}</a>
+					</div>
+					{? prev.idx}</a>{/}
+					{? next.idx}<a href="/front/promotion/{? next.event_type==1}promo{:}event{/}_detail.php?idx={next.idx}&status={type}">{/}
+					<div class="next clear" id="next">
+						<span class="ml-20">NEXT</span>
+						<a>{? next.idx}{ next.title}{:}다음글이 없습니다.{/}</a>
+					</div>
+					{? next.idx}</a>{/}
+				</div>
+				<!-- //.prev-next -->
+				{/}
+			</div>
+
+			<!-- {=pre(promotioninfo)} -->
+			<!-- 하단 탭상품 -->
+			<div id="tab_zone">
+				<div class="divide-box-wrap four mt-80 tab_group">
+					<ul class="divide-box ta-c" id="tab_group">
+						{@ promotioninfo}
+						<li>
+							<a href="#{.title}">{.title}</a>
+						</li>
+						{/}
+					</ul>
+				</div>
+
+				<!--기획전 탭type -->
+				<div id="tab_group_type" >
+					{@ promotioninfo}
+						{? .display_tem == 4}
+						<!--세로형-->
+						<section class="mt-40" id="{.title}">
+							<h3 class="v-hidden">상품 리스트</h3>
+							{@ .product}
+							<div class="promotionTemp-wide-wrap">
+								<div class="promotionTemp-wide clear">
+									<a href="/front/productdetail.php?productcode={..productcode}"><div class="thumb-box"><img src="{..tinyimage}" alt="상품 대표 썸네일"></div></a>
+									<div class="specification">
+										<div class="box-intro">
+											<h2>브랜드,상품명,금액,간략소개</h2>
+											<p class="brand-nm">{.title}</p>
+											<a href="/front/productdetail.php?productcode={..productcode}">
+												<p class="goods-nm">{..productname}</p>
+												<p class="goods-code">({..prodcode})</p>
+											</a>
+											<div class="price">
+												<strong>{=number_format(..sellprice)} 원</strong><del>{=number_format(..consumerprice)} 원</del>
+												<div class="discount"><span>{..sellprice_dc_rate}</span>% <i class="icon-dc-arrow">할인</i></div>
+											</div>
+											{? ..option_type=='C'}
+											<div class="color-chip">
+												{@..option_valid}
+												{? ...colorchip.color_img}
+												<span>
+														<img src="{...colorchip.color_img}" alt="{...colorchip.color_name}">
+													</span>
+												{/}
+												{/}
+											</div>
+											{/}
+											<div class="summarize-ment">
+												<p>{..phrase_ad}</p>
+											</div>
+										</div>
+										<div class="buy-btn clear">
+											<ul class="mt-10">
+												<li>
+													<button class="btn-line" type="button" data-hottcode="{..productcode}" data-section="product" data-cnt="{..pr_like_cnt}">
+													<span>
+														<i class="icon-like mr-10 {? ..is_liked}on{/}"></i>좋아요
+													</span>
+														<span class="point-color">{=number_format(..pr_like_cnt)}</span>
+													</button><!-- [D] 좋아요 선택시 .on 클래스 추가 -->
+												</li>
+											</ul>
+										</div>
+									</div>
+								</div><!-- //.promotionTemp-wide -->
+							</div><!-- //.promotionTemp-wide-wrap -->
+							{/}
+						</section>
+						{: .display_tem == 5}
+						<!--슬라이드형-->
+						<section class="mt-70" id="{.title}">
+							<h3 class="roof-title"><span>{.title}</span></h3>
+							<div class="promotionTemp-wide-wrap with-btn-rolling slideArrow01">
+								<ul class="promotionTemp3-slider clear">
+									{@ .product}
+									<li>
+										<div class="promotionTemp-wide clear">
+											<a href="/front/productdetail.php?productcode={..productcode}">
+												<div class="thumb-box"><img src="{..tinyimage}" alt="상품 대표 썸네일"></div>
+											</a>
+											<div class="specification">
+												<div class="box-intro">
+													<h2>브랜드,상품명,금액,간략소개</h2>
+													<p class="brand-nm">{.title}</p>
+													<a href="/front/productdetail.php?productcode={..productcode}">
+														<p class="goods-nm">{..productname}</p>
+														<p class="goods-code">({..prodcode})</p>
+													</a>
+													<div class="price">
+														<strong>{=number_format(..sellprice)} 원</strong><del>{=number_format(..consumerprice)} 원</del>
+														<div class="discount"><span>{..sellprice_dc_rate}</span>% <i class="icon-dc-arrow">할인</i></div>
+													</div>
+													{? ..option_type=='C'}
+													<div class="color-chip">
+														{@..option_valid}
+														{? ...colorchip.color_img}
+														<span>
+														<img src="{...colorchip.color_img}" alt="{...colorchip.color_name}">
+													</span>
+														{/}
+														{/}
+													</div>
+													{/}
+													<div class="summarize-ment">
+														<p>{..phrase_ad}</p>
+													</div>
+
+													<!--<div class="summarize-ment">
+														<p>깔끔한 디자인의 원피스입니다.</p>
+														<p>두툼한 소재로 만들어 초가을까지 입으실 수 있습니다.</p>
+														<p>178CM 마네킹이 66사이즈를 착용하였습니다.</p>
+													</div>-->
+												</div>
+												<div class="buy-btn clear">
+													<ul class="mt-10">
+														<li>
+															<button class="btn-line" type="button" data-hottcode="{..productcode}" data-section="product" data-cnt="{..pr_like_cnt}">
+																	<span>
+																		<i class="icon-like mr-10 {? ..is_liked}on{/}"></i>좋아요
+																	</span>
+																<span class="point-color">{=number_format(..pr_like_cnt)}</span>
+															</button><!-- [D] 좋아요 선택시 .on 클래스 추가 -->
+														</li>
+													</ul>
+												</div>
+											</div>
+										</div><!-- //.promotionTemp-wide -->
+									</li>
+									{/}
+								</ul>
+							</div>
+						</section>
+						{:}
+						<section class="{? .display_tem == 2}promotionTemp-mix{/} mt-70" id="{.title}">
+							<h3 class="roof-title"><span>{.title}</span></h3>
+							<ul class="goods-list {? .display_tem == 1 || .display_tem == 2}four{: .display_tem == 3}two{/} clear">
+								{@ .product}
+								<li>
+									<div class="goods-item">
+										<div class="thumb-img">
+											<a href="/front/productdetail.php?productcode={..productcode}"><img src="{..tinyimage}" alt="상품 썸네일"></a>
+											<div class="layer">
+												<div class="btn">
+													<button type="button" data-hottcode="{..productcode}" data-section="product" data-cnt="{..pr_like_cnt}">
+													<span>
+														<i class="icon-like {? ..is_liked}on{/}">좋아요</i>
+													</span>
+														<span>{=number_format(..pr_like_cnt)}</span>
+													</button> <!-- [D] 좋아요 선택시 .on 처리 -->
+												</div>
+											</div>
+										</div><!-- //.thumb-img -->
+										<div class="price-box">
+											<div class="brand-nm">{..productname}</div>
+											<div class="goods-nm">{..phrase_etc}</div>
+											<div class="price">{=number_format(..sellprice)} 원</div>
+											{? ..option_type=='C'}
+											<div class="color-chip">
+												{@..option_valid}
+												{? ...colorchip.color_img}
+												<span>
+														<img src="{...colorchip.color_img}" alt="{...colorchip.color_name}">
+													</span>
+												{/}
+												{/}
+											</div>
+											{/}
+										</div>
+									</div>
+								</li>
+								{/}
+							</ul>
+						</section>
+						{/}
+					{/}
+				</div>
+			</div>
+
+		</article>
+
+	</div>
+</div>
+
+<!-- //#contents -->
+<script src="/static/js/clipboard.min.js"></script>
+<script type="text/javascript">
+    var PromoDetail = {
+        init: function() {
+
+        }
+    }
+
+    $(function () {
+        PromoDetail.init();
+    });
+</script>

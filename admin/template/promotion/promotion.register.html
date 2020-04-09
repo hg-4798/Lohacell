@@ -1,0 +1,365 @@
+<script type="text/javascript" src="/admin/static/js/jquery.validationEngine.js?{C.VER}"></script>
+<script type="text/javascript" src="/admin/static/js/jquery.validationEngine-kr.js?{C.VER}"></script>
+<script type="text/javascript" src="/admin/static/js/jquery.form.js?{C.VER}"></script>
+
+<div class="admin_linemap"><div class="line"><p>현재위치 : 마케팅지원 &gt; 이벤트/사은품 기능 설정 &gt;<span>기획전 진열관리</span></p></div></div>
+<table cellpadding="0" cellspacing="0" width="100%" style="table-layout:fixed">
+	<colgroup>
+		<col width=240 id="menu_width">
+		<col width=10>
+		<col width="*">
+		<col width=20>
+	</colgroup>
+	<tr>
+		<td valign="top">
+			{=include("menu_market.php")}
+		</td>
+		<td></td>
+		<td valign="top">
+			<div class="title_depth3">기획전(MAIN_TITLE) : {row.main.title}</div>
+			<form id="FrmPromotionRegister" onsubmit="return false">
+			<input type="hidden" name="mode" value="promotion">
+			<input type="hidden" name="act" value="register">
+			<input type="hidden" name="seq" value="{=seq}">
+			<input type="hidden" name="special" value="{=special}">
+			<div class="title_depth3_sub">기본설정</div>
+			<table cellspacing="0" cellpadding="0" width="100%" border="0" class="table-view mt_10">
+				<colgroup>
+					<col width="140">
+					<col width="">
+				</colgroup>
+				<tbody>
+					<tr>
+						<th><span>기획전 선택</span></th>
+						<td>
+							<select id="selectPromotion" onchange="ProductPMRegister.pmChange(this, '{=pidx}')">
+								<option value=''>==선택==</option>
+								{@ row.promotion}
+								<option value='{.seq}' {? .seq == seq} selected {/}>{.title}</option>
+								{/}
+							</select>		
+						</td>
+					</tr>
+				</tbody>
+			</table>
+			
+			<div class="title_depth3_sub mt_30">
+				적용상품 <button type="button" class="btn-basic dark h-x-small ml_10" onclick="ProductPMRegister.open()" style="vertical-align:middle">적용상품 추가</button>
+			</div>
+			<div class="table_style02 form">
+				<table border="0" cellpadding="0" cellspacing="0" width="100%" class="table-hover mt_5">
+					<colgroup>
+						<col width="100">
+						<col width="150">
+						<col width="*">
+						<col width="150">
+						<col width="150">
+						<col width="150">
+						<col width="100">
+						<col width="100">
+						<col width="100">
+						<col width="100">
+						<col width="100">
+					</colgroup>
+					<thead>
+						<tr>
+							<th>노출순서</th>
+							<th>상품이미지</th>
+							<th>상품명</th>
+							<th>ERP코드</th>
+							<th>상품코드</th>
+							<th>판매상태</th>
+							<th>정상가</th>
+							<th>판매가</th>
+							<th>할인율</th>
+							<th>재고</th>
+							<th>삭제</th>
+						</tr>
+					</thead>
+					<tbody id="timesale_tbody">
+						{@ row.product}
+						<tr data-productcode="{.productcode}">
+							<td>{.index_+1}</td>
+							<td><img src="{=preview(.minimage)}" alt="" class="thumbnail"></td>
+							<td class="ta_l">{.productname}</td>
+							<td>{.prodcode}</td>
+							<td>{.productcode}</td>
+							<td>#판매상태</td>
+							<td>{=number_format(.consumerprice)}</td>
+							<td>{=number_format(.sellprice)}</td>
+							<td>{.sellprice_dc_rate}%</td>
+							<td>{=number_format(.quantity)}</td>
+							<td><button type="button" class="btn_type1" onclick="ProductPMRegister.remove(this)">삭제</td>
+						</tr>
+						{/}
+
+						<tr height="28" class="empty {? row.product}hide{/}">
+							<td colspan="11" align="center">기획전 진열상품을 등록해주세요.</td>
+						</tr>
+					</tbody>
+				</table>
+			</button>
+
+			
+			<div class="row">
+				<div class="pull-left mt_10">
+					<button type="button" class="btn-basic" onclick="ProductPMRegister.move('up')" style="min-width:38px" title="위로"><i class="fa fa-chevron-up"></i></button>
+					<button type="button" class="btn-basic" onclick="ProductPMRegister.move('down')" style="min-width:38px" title="아래로"><i class="fa fa-chevron-down"></i></button>
+				</div>
+				<div class="pull-center  mt_20">
+					{? act == 'insert' && !empty(special)}
+					<button type="submit" class="btn-point">수정</button>
+					{:}
+					<button type="submit" class="btn-point">등록</button>
+					{/}
+					<button type="button" onclick="ProductPMRegister.goList()" class="btn-basic">취소</button>
+				</div>
+				
+			</div>
+
+			</form>
+
+
+			<div class="sub_manual_wrap mt_100">
+				<div class="title"><p>매뉴얼</p></div>
+				<dl>
+					<dt class="mt_10"><span>상품추가</span></dt>
+					<dd>
+						- 동일 상품을 중복등록 할 수 없습니다.<br />
+						- 순서 변경은 변경을 원하는 상품을 선택 후 키보드 ↑(상), ↓(하) 키를 이용하거나 마우스로 드래그하여 이동할 수 있습니다.<br>
+					</dd>
+				</dl>
+			</div>
+		</td>
+	</tr>
+</table>
+
+
+<!--{* 상품목록 템플릿:s *}-->
+<textarea id="tpl_tr" style="display:none">
+	<tr data-productcode="${\productcode}">
+		<td>${\idx}</td>
+		<td>${\thumbnail}</td>
+		<td class="ta_l">${\name}</td>
+		<td>${\prodcode}</td>
+		<td>${\productcode}</td>
+		<td>판매중</td>
+		<td>${\price_consumer}</td>
+		<td>${\price_sell}</td>
+		<td>${\sale_rate}</td>
+		<td>${\stock}</td>
+		<td><button type="button" class="btn_type1" onclick="ProductPMRegister.remove(this)">삭제</td>
+	</tr>
+</textarea>
+<!--{* 상품목록 템플릿:E *}-->
+
+<script type="text/javascript" src="/admin/static/js/template.js"></script>
+<script type="text/javascript" src="calendar.js"></script>
+<script type="text/javascript">
+on_menu_sub(0,0);
+
+var ProductPMRegister = {
+	proc_url:'/admin/proc/promotion.proc.php',
+	act:'{act}',
+	init: function() {
+		var me = this;
+		var option = $.extend({},validation_option, {
+			validateNonVisibleFields:true,
+			onValidationComplete: function(form, status){
+				if(status) me.save();
+			}
+		});
+		$("#FrmPromotionRegister").validationEngine('attach',option);
+
+
+		$('[data-filter="numeric"]').on('keydown input', function(evt) {
+			var v = $(this).val();
+			$(this).val(v.replace(/[^0-9]/g,''));
+		});
+
+		this.loadCallback();
+
+	},
+	loadCallback: function() {
+		//이동항목선택바인딩
+		$('#timesale_tbody tr[data-productcode]').on('click.selected', function() {
+			$(this).siblings('tr').removeClass('selected');
+			$(this).addClass('selected');
+		})
+
+		//화살표키이벤트
+		$(document).keyup(function(evt) {
+			if(evt.keyCode == 38 || evt.keyCode==40) {
+				ProductPMRegister.move(evt.keyCode);
+				evt.preventDefault();
+			}
+		});
+
+		//상품소터블설정
+		$("#timesale_tbody").sortable({
+			axis:'y',
+			containment:'parent',
+			helper: function(e, tr) {
+				$('#timesale_tbody tr').removeClass('selected');
+				tr.addClass('selected');
+				var $originals = tr.children();
+				var $helper = tr.clone();
+				
+				$helper.children().each(function(index) {
+					$(this).width($originals.eq(index).width());
+				});
+				return $helper;
+			},
+			scroll : false,
+			placeholder: "sortable-placeholder",
+			items:'tr',
+			stop: function() {
+				ProductRecommend.resetSort();
+			}
+		});
+	},
+	save: function() {
+		//등록상품
+		var tr = ProductPMRegister.getProduct();
+
+		if(tr.length < 1) {
+			alert('기획품에 진열할 상품을 1개 이상 추가하세요.');
+			return false;
+		}
+
+		if(!confirm('적용하시겠습니까?')) return false;
+		
+		var formdata = $('#FrmPromotionRegister').serializeArray();
+		var productcode = tr.map(function () {return $(this).attr('data-productcode');}).get();
+		formdata.push({name:'productcode', value:productcode});
+		$.ajax({
+			url:this.proc_url,
+			type:'POST',
+			data:formdata,
+			dataType:'json',
+			success : function(r) {
+				alert(r.msg);
+				if(r.success) {
+					ProductPMRegister.goList();
+				}
+			}, error : function(e) {
+				console.log(e); return false;
+			}
+		});
+		
+	},
+
+	removeRow: function() {
+		$(this).closest('li').remove();
+	},
+	getProduct: function() {//기등록상품목록리턴
+		return $('#timesale_tbody').find('tr:not(.empty)');
+	},
+	open: function() {
+		if($('#selectPromotion').val() == '') {
+			alert('기획전을 선택해주세요.');
+			$('#selectPromotion').focus();
+			return false;
+		}
+		var search = $('#FrmPromotionRegister').serialize();
+		UI.modal('/admin/product_choice.php','상품등록', {search:search}, 1100);
+	},
+	move: function(mode) { //위치이동
+		var tr = $('tr.selected');
+		if(tr.length<1) {
+			alert('이동할 상품을 선택하세요.');
+			return false;
+		}
+		switch (mode) {
+			case 'top':
+				var li_top = ul.find('li').first();
+				li_top.before(li);
+				break;
+			case 'up' :
+			case 38:
+				var tr_prev  = $(tr).prev();
+				tr_prev.before(tr);
+				break;
+			case 'down' :
+			case 40:
+				var tr_next  = $(tr).next();
+				tr_next.after(tr);
+				break;
+			case 'bottom' :
+				var tr_bottom = ul.find('li').last();
+				li_bottom.after(li);
+				break;
+		}
+		ProductPMRegister.resetSort();
+	},
+	resetSort: function() { //정렬번호재설정
+		var tr = ProductPMRegister.getProduct();
+		var sort = 1;
+		$.each(tr, function(i,e) {
+			$(e).find('td:eq(0)').html(i+1);
+		});
+	},
+	remove: function(ele) { //삭제(단순감춤)
+		$(ele).closest('tr').remove();
+		var tr = ProductPMRegister.getProduct();
+		var cnt = tr.length;
+		if(cnt > 0) {
+			ProductPMRegister.resetSort();
+		}
+		else {
+			$('#timesale_tbody').find('tr.empty').removeClass('hide');
+		}
+	},
+	goList: function() {
+		document.location.href="market_promotion_reg_new.php?mode=mod&pidx={pidx}";
+	},
+	pmChange : function(data, pidx) {
+		var seq = $(data).val();
+		var href = '/admin/promotion.register.php';
+		if(seq > 0) {
+			href+='?seq='+seq+'&pidx='+pidx;
+		} else {
+			href+='?seq=&pidx='+pidx;
+		}
+		document.location.href=href;
+	}
+}
+
+//상품선택 콜백
+var ChoiceCallback = function(tr_new){
+	var tmpObj = TrimPath.parseDOMTemplate("tpl_tr");
+	var target = $('#timesale_tbody');
+	var tr = ProductPMRegister.getProduct();
+
+	//기등록상품수
+	var cnt = tr.length;
+
+	//기등록상품 리스트
+	var exist = tr.map(function () {return $(this).attr('data-productcode');}).get();
+
+	var idx = cnt;
+	$.each(tr_new, function(i,e) {
+		var prcode = $(e).attr('data-productcode');
+		if($.inArray(prcode, exist) != -1) return true;
+
+		idx++;
+		target.find('tr.empty').addClass('hide');
+		var data = {idx:idx};
+		$.each($(e).find('td'), function(ii,ee) {
+			var field = $(ee).data('field');
+			if(typeof field == 'undefined') return true;
+			data[field] = $(ee).html();
+		});
+		var html  = tmpObj.process(data);
+		target.append(html);
+	});
+
+	ProductPMRegister.loadCallback();
+}
+
+$(function() {
+	ProductPMRegister.init();
+})
+
+//function onmenu_sub('on_dd1',5);
+</script>

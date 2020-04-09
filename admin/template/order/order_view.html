@@ -1,0 +1,853 @@
+<div class="container m-b-50 m-t-10 order-view">
+	<div class="inc-tit">주문상세
+		<div class="right">주문번호 : {basic.order_num} <span class="bar"></span> 주문일시 : {basic.date_insert}</div>
+	</div>
+	<div class="inc-body">
+		<table class="tbl-summery tbl-center">
+			<thead>
+				<th>입금대기</th>
+				<th>결제완료</th>
+				<th>배송준비중</th>
+				<th>배송중</th>
+				<th>배송완료</th>
+				<th>구매확정</th>
+				<th>취소</th>
+				<th>교환</th>
+				<th>반품</th>
+			<!--{*	<th>환불</th> *}-->
+			</thead>
+			<tbody>
+				<tr>
+					<td class="ta-c">{=number_format(cnt.status.status_10)}</td><!--{* 입금대기 *}-->
+					<td class="ta-c">{=number_format(cnt.status.status_20)}</td><!--{* 결제완료 *}-->
+					<td class="ta-c">{=number_format(cnt.status.status_30)}</td><!--{* 배송준비중 *}-->
+					<td class="ta-c">{=number_format(cnt.status.status_40)}</td><!--{* 배송중 *}-->
+					<td class="ta-c">{=number_format(cnt.status.status_50)}</td><!--{* 배송완료 *}-->
+					<td class="ta-c">{=number_format(cnt.status.status_60)}</td><!--{* 구매확정 *}-->
+					<td class="ta-c">{=number_format(cnt.status.status_C)}</td><!--{* 취소 *}-->
+					<td class="ta-c">{=number_format(cnt.status.status_E)}</td><!--{* 교환 *}-->
+					<td class="ta-c">{=number_format(cnt.status.status_R)}</td><!--{* 반품 *}-->
+					<!--{*<td class="ta-c">{=number_format(cnt.status.status_)}</td> 환불 *}-->
+				</tr>
+			</tbody>
+		</table>
+		
+		{? product}
+		<!--{* 주문상품목록:S *}-->
+		<div class="inc-tit-sub">주문상품정보 
+			{? cfg.escrow_msg}<span class="helper">{cfg.escrow_msg}</span>{/}
+			
+			<div class="right">
+				<label class="s"><input type="checkbox" id="list_type" class="hj" value="each"><span class="lbl"> 개별보기</span></span></label>
+			</div>
+		</div>
+		<div id="inner_product"></div>
+		{/}
+		<!--{* 주문상품목록:E *}-->
+
+		
+		
+		<!--{* 취소:S *}-->
+		{? cancel //취소내역이 있는경우에만 노출}
+		<div class="inc-tit-sub">취소상품정보</div>
+		<div>
+			<table class="tbl-list">
+				<colgroup>
+					<col style="width:50px"> <!-- 번호 -->
+					<col style="width:50px"> <!-- 상품이미지 -->
+					<col> <!-- 주문상품명 -->
+					<col style="width:100px"> <!-- 취소수량 -->
+					<col> <!-- 취소사유 -->
+					<col style="width:100px"> <!-- 취소신청일 -->
+					<col style="width:100px"> <!-- 취소완료일 -->
+					
+					<col style="width:100px"> <!-- 취소상태 -->
+				</colgroup>
+				<thead>
+					<th>번호</th>
+					
+					<th colspan="2">취소상품</th>
+					<th>취소수량</th>
+					<th>취소사유</th>
+					<th>취소신청일</th>
+					<th>취소완료일</th>
+					<th>취소상태</th>
+				</thead>
+				<tbody>
+					{@ cancel}
+					<tr>
+						<td>{.index_+1}</td>
+						
+						<td><img src="{=preview(.product_info.tinyimage,'default')}" alt="" class="thumb-50"></td>
+						<td class="ta-l">{.product_info.productname}</td>
+						<td>{.cnt}</td>
+						<td>
+							{.cancel_info.reason}
+							{? .cancel_info.memo}<div class="text-muted">{.cancel_info.memo}</div>{/}
+						</td>
+						<td>{.cancel_info.date_insert}</td>
+						<td>{.cancel_info.date_status_4}</td>
+						
+						<td>
+							<a href="javascript:;" onclick="OrderView.log('{.idxs}')" class="link">{.status_info.msg}</a>
+							
+							<!--{* {.status_info.msg}*}-->
+						</td>
+					</tr>
+					{/}
+				</tbody>
+				<!--{*
+				<tfoot>
+					<tr>
+						<td colspan="8">
+							선택한 상품을 
+							<select name="" id="" class="input">
+								<option value=""">== 취소상태 ==</option>
+							</select>
+						</td>
+					</tr>
+				</tfoot>*}-->
+			</table>
+		</div>
+		{/}
+		<!--{* 취소:E *}-->
+
+		<!--{* 반품:S *}-->
+		{? return //반품내역이 있는경우에만 노출}
+		<div class="inc-tit-sub">반품 정보</div>
+		<div>
+			<table class="tbl-list">
+				<colgroup>
+					<col style="width:50px"> <!-- 번호 -->
+					<col style="width:50px"> <!-- 상품이미지 -->
+					<col> <!-- 주문상품명 -->
+					<col> <!-- 반품사유 -->
+					<col style="width:100px"> <!-- 반품신청일 -->
+					<col style="width:100px"> <!-- 반품완료일 -->
+					
+					<col style="width:100px"> <!-- 반품상태 -->
+				</colgroup>
+				<thead>
+					<th>번호</th>
+					
+					<th colspan="2">반품상품</th>
+					<th>반품사유</th>
+					<th>반품신청일</th>
+					<th>반품완료일</th>
+					<th>반품상태</th>
+				</thead>
+				<tbody>
+					{@ return}
+					<tr>
+						<td>{.index_+1}</td>
+						
+						<td><img src="{.product_info.product_thumbnail}" alt="" class="thumb-50"></td>
+						<td class="ta-l">
+							{? .option_type=='product'}
+							<div class="m-b-5"><span class="label label-xs prtype-4 m-b-5">추가구매상품</span></div>
+							{/}
+							<b><a href="javascript:;" class="link" onclick="ADMIN.product('{.product_info.pr_type}','{.product_info.productcode}')">{.product_info.product_name}</a></b>
+							{? .option_type=='option'}<div>{.product_info.option_name}</div>{/}
+						</td>
+						<td>
+							{.return_info.reason}
+							{? .return_info.reason_etc}<div class="text-muted">{.return_info.reason_etc}</div>{/}
+						</td>
+						<td>{.return_info.date_status_1}</td>
+						<td>{? .cs_status==4}{.return_info.date_status_4}{:}-{/}</td>
+						<td>
+							<a href="javascript:;" onclick="OrderView.log('{.idx}')" class="link">{.step.msg}</a>
+						</td>
+					</tr>
+					{/}
+				</tbody>
+				<!--{*
+				<tfoot>
+					<tr>
+						<td colspan="8">
+							선택한 상품을 
+							<select name="" id="" class="input">
+								<option value=""">== 취소상태 ==</option>
+							</select>
+						</td>
+					</tr>
+				</tfoot>*}-->
+			</table>
+		</div>
+		{/}
+		<!--{* 반품:E *}-->
+
+		<!--{* 교환:S *}-->
+		{? exchange //교환내역이 있는경우에만 노출}
+		
+		<div class="inc-tit-sub">교환 상품정보</div>
+		<div>
+			<form id="FrmExchange">
+			<input type="hidden" name="mode" value="exchange" />
+			<input type="hidden" name="act" value="batch" />
+			<table class="tbl-list">
+				<colgroup>
+					<col style="width:50px"> <!-- 번호 -->
+					<col style="width:50px"> <!-- 상품이미지 -->
+					<col> <!-- 주문상품명 -->
+					<col> <!-- 교환사유 -->
+					<col style="width:100px"> <!-- 교환신청일 -->
+					<col style="width:100px"> <!-- 교환완료일 -->
+					<col style="width:120px"> <!-- 교환상태 -->
+					<col style="width:150px"> <!-- 송장번호 -->
+				</colgroup>
+				<thead>
+					<th>번호</th>
+					<th><label class="s"><input type="checkbox" class="hj" data-all="checked_exchange[]"><span class="lbl"></span></label></th>
+					<th>교환상품</th>
+					<th>교환사유</th>
+					<th>교환신청일</th>
+					<th>교환승인일</th>
+					<th>교환상태</th>
+					<th>송장번호</th>
+				</thead>
+				<tbody>
+					{@ exchange}
+					<tr>
+						<td class="p-3" rowspan="{.rowspan}">{.index_+1}</td>
+						<td><img src="{.product_info.product_thumbnail}" alt="" class="thumb-50"></td>
+						<td class="ta-l">
+							{? .option_type=='product'}
+							<div class="m-b-5"><span class="label label-xs prtype-4 m-b-5">추가구매상품</span></div>
+							{/}
+							<b><a href="javascript:;" class="link" onclick="ADMIN.product('{.pr_type}','{.productcode}')">{.product_info.product_name}</a></b>
+							{? .option_type=='option'}<div class="m-t-5"><span class="badge badge-sm badge-primary m-r-5" style="background-color:#888">교환취소</span>{.product_info.option_name}</div>{/}
+						</td>
+						<td>
+							{.reason}
+							{? .reason_etc}<div class="text-muted">{.reason_etc}</div>{/}
+						</td>
+						<td>{.date_status_1}</td>
+						<td>{? .date_status_4}{.date_status_4}{:}-{/}</td>
+						<td>
+							<a href="javascript:;" onclick="OrderView.log('{.idx}')" class="link">{.step.msg}</a>
+						</td>
+						<td>
+							<input type="text" class="input w-100" value="{.delivery_company_name}" readonly  placeholder="택배사">
+							<div class="m-t-5">
+							<input type="text" class="input w-100" value="{.delivery_no}" readonly  placeholder="송장번호">
+							</div>
+						</td>
+					</tr>
+					{? .rowspan > 1}
+					<tr>
+						<td class="p-3"><label class="s"><input type="checkbox" class="hj validate[required]" name="checked_exchange[]"  value="{.exchange.idx}" data-errormessage-value-missing="일괄처리할 교환상품을 선택하세요."><span class="lbl"></span></label></td>
+						<td class="ta-l">
+							<span class="badge badge-sm badge-primary m-r-5" style="background-color:#FF8080">교환추가</span>{.exchange.option.option_name} 
+							<span class="text-muted m-t-5">현재고:{.exchange.option.stock}</span>
+						</td>
+						<td colspan="3" class="ta-r">
+							
+						</td>
+						
+						<td>
+							<a href="javascript:;" onclick="OrderView.log('{.exchange.idx}')" class="link">{.exchange.step.msg}</a>
+						</td>
+						<td>
+							<input type="text" class="input w-100" value="{.exchange.delivery_company_name}" readonly  placeholder="택배사">
+							<div class="m-t-5">
+							<input type="text" class="input w-100" value="{.exchange.delivery_no}" readonly  placeholder="송장번호">
+							</div>
+						</td>
+					</tr>
+					{/}
+					
+					{/}
+				</tbody>
+				{? enable.exchange}
+				<tfoot>
+					<tr>
+						<td colspan="8">
+							선택한 상품을 
+							<select name="exchange_status" class="input validate[groupRequired[exchange_batch]" data-errormessage-value-missing="일괄처리 항목을 선택하세요.">
+								<option value="">== 교환상태 ==</option>
+								<option value="2">교환결제완료</option>
+								<option value="3">교환배송준비중</option>
+								<option value="4">교환배송중</option>
+								<option value="5">교환배송완료</option>
+								<option value="6">교환구매확정</option>
+							</select>
+							<select name="delivery_company" id="exchange_delivery_company" class="select validate[groupRequired[exchange_batch]]" data-errormessage-value-missing="일괄처리 항목을 선택하세요.">
+								<option value="">== 택배사 ==</option>
+								{@ cfg.deli_company}
+								<option value="{.key_}">{.company_name}</option>
+								{/}
+							</select>
+							<input type="text" class="input validate[condRequired[exchange_delivery_company]]" data-errormessage-value-missing="송장번호를 입력하세요." name="delivery_no" placeholder="송장번호"> 
+							<button type="submit" class="btn-basic h-small" >일괄변경</button>
+						</td>
+					</tr>
+				</tfoot>
+				{/}
+			</table>
+			</form>
+		</div>
+		{/}
+		<!--{* 교환:E *}-->
+
+
+		<!--{* 사은품:S *}-->
+		{? gift //사은품내역이 있는 경우에만 노출  @todo 재고차감처리프로세스}
+		<div class="inc-tit-sub">사은품 정보</div>
+		<table class="tbl-list">
+			<colgroup>
+				<col style="width:50px"> <!-- 선택 -->
+				<col style="width:50px"> <!-- 번호 -->
+				<col style="width:100px"> <!-- 사은품코드 -->
+				<col> <!-- 사은품명 -->
+				<col style="width:200px"> <!-- 지급기준 -->
+				<col style="width:100px"> <!-- 잔여재고 -->
+				<col style="width:100px"> <!-- 배송상태 -->
+			</colgroup>
+			<thead>
+				<th><input type="checkbox" class="hj" data-all="checked_gift[]"><span class="lbl"></span></th>
+				<th>번호</th>
+				<th>사은품코드</th>
+				<th>사은품명</th>
+				<th>지급기준</th>
+				<th>현재고</th>
+				<th>배송상태</th>
+			</thead>
+			<tbody>
+				{@ gift}
+				<tr>
+					<td><input type="checkbox" class="hj" name="checked_gift[]"  value="{.idx}" data-status="{.status}" {? .quantity_remain<1}disabled{/} ><span class="lbl"></span></td>
+					<td class="p-3">{.index_+1}</td>
+					<td>{.gift_info.giftcode}</td>
+					<td class="ta_l">{.gift_info.giftname}</td>
+					<td>{=number_format(.gift_info.price_s)}원 이상 ~ {=number_format(.gift_info.price_e)}원 미만</td>
+					<td>{=number_format(.quantity_remain)}개</td>
+					<td>
+						{? .status=='1'}배송완료{: .status=='2'}회수대기{: .status=='3'}회수완료{:}배송대기{/}
+					</td>
+				</tr>
+				{/}
+			</tbody>
+			<tfoot>
+				<tr>
+					<td colspan="7">
+						<form id="FrmGift" onsubmit="return false">
+							<input type="hidden" name="mode" value="gift" />
+							<input type="hidden" name="act" value="gift_status" />
+							<input type="hidden" name="idx" id="gift_idx" value="">
+							<input type="hidden" name="order_num" value="{basic.order_num}">
+							<i class="fa fa-check text-danger"></i> 선택한 사은품을 
+							<select name="gift_status" class="select validate[required]" data-errormessage-value-missing="배송상태를를 선택하세요.">
+								<option value="">== 배송상태 ==</option>
+								<option value="0">배송대기</option>
+								<option value="1">배송완료</option>
+								<option value="2">회수대기</option>
+								<option value="3">회수완료</option>
+							</select>
+							<button type="submit" class="btn-basic h-small" >일괄적용</button>
+						</form>
+					</td>
+				</tr>
+			</tfoot>
+
+		</table>
+			
+		{/}
+		<!--{* 사은품:E *}-->
+
+		
+		<div class="row ta-l" >
+			<div class="col-6">
+				<div class="inc-tit-sub">할인/적립금 정보</div>
+				<table class="tbl-form">
+					<colgroup>
+						<col style="width:100px">
+						<col>
+					</colgroup>
+					<tr>
+						<th>총 할인액</th>
+						<td class="text-danger"><b>- {=number_format(basic.coupon_product_discount+basic.coupon_basket_discount+basic.coupon_delivery_discount+basic.sum_discount)}원</b></td>
+					</tr>
+					
+					<tr>
+						<th>상품할인</th>
+						<td>- {=number_format(basic.sum_discount)}원</td>
+					</tr>
+					<tr>
+						<th>상품쿠폰</th>
+						<td>- {=number_format(basic.coupon_product_discount)}원</td>
+					</tr>
+					<tr>
+						<th>장바구니쿠폰</th>
+						<td>- {=number_format(basic.coupon_basket_discount)}원</td>
+					</tr>
+					<tr>
+						<th>배송비쿠폰</th>
+						<td>- {=number_format(basic.coupon_delivery_discount)}원</td>
+					</tr>
+				</table>
+			</div>
+			<div class="col-6">
+				<div class="inc-tit-sub">결제정보</div>
+				<div>
+					<table class="tbl-form">
+						<colgroup>
+							<col style="width:100px">
+							<col>
+							<col style="width:100px">
+							<col>
+						</colgroup>
+						<tr>
+							<th>결제수단</th>
+							<td colspan="3">
+								{payment.set.name}{? payment.escrow_yn=='Y'}(에스크로){/}
+								{? basic.use_mileage>0} + 마일리지{/}
+								{? basic.use_point>0} + 포인트{/}
+							</td>
+						</tr>
+						{? payment.pay_method == 'vcnt'}
+						<tr>
+							<th>가상계좌</th>
+							<td colspan="3">{payment.set.quota} <span class="text-muted">(~{=substr(payment.date_vcnt,0,10)})</span></td>
+						</tr>
+						{: payment.pay_method == 'card'}
+						<tr>
+							<th>카드정보</th>
+							<td colspan="3">{payment.res_info.card_name} {payment.set.quota}</td>
+						</tr>
+						{: payment.pay_method == 'acnt'}
+						<tr>
+							<th>은행명</th>
+							<td colspan="3">{payment.res_info.bank_name}</td>
+						</tr>
+						{/}
+						<tr>
+							<th>총 주문금액</th>
+							<td><b>{=number_format(basic.pay_total)} 원</b></td>
+
+							<th>실 결제금액</th>
+							<td>{=number_format(basic.pay_pg)} 원</td>
+							
+						</tr>
+						{? basic.use_mileage>0}
+						<tr>
+							<th>사용 마일리지</th>
+							<td colspan="3">{=number_format(basic.use_mileage)} 원</td>
+						</tr>
+						{/}
+						{? basic.use_point>0}
+						<tr>
+							<th>사용 포인트</th>
+							<td colspan="3">{=number_format(basic.use_point)} 원</td>
+						</tr>
+						{/}
+						<tr>
+							<th>배송비</th>
+							<td colspan="3">{=number_format(basic.pay_delivery-basic.coupon_delivery_discount)} 원</td>
+						</tr>
+						{? payment.res_info.cash_yn == 'Y'}
+						<tr>
+							<th>현금영수증</th>
+							<td></td>
+						</tr>
+						{/}
+					</table>
+				</div>
+			</div>
+		</div>
+
+		<div class="row" >
+
+			<div class="col-6">
+				<form name="FrmBuyer" id="FrmBuyer" method="post" onsubmit="return false;">
+					<input type="hidden" name="mode" value="order_update">
+					<input type="hidden" name="order_num" value="{basic.order_num}">
+				<div class="inc-tit-sub ta-l">주문자정보
+					<div class="right">
+						<button type="submit" class="btn-basic dark h-xs" data-form="#FrmBuyer">주문자 정보저장</button>
+					</div>
+				</div>
+				<div>
+					<table class="tbl-form">
+						<colgroup>
+							<col style="width:100px">
+							<col>
+						</colgroup>
+						<tr>
+							<th>주문자명</th>
+							<td><input type="text" name="buyer_name" value="{basic.buyer_name}" class="validate[required]" data-errormessage-value-missing="주문자명을 입력하세요."></td>
+						</tr>
+						<tr>
+							<th>이메일</th>
+							<td>
+								<input type="text" name="buyer_email[]" value="{basic.buyer_email_arr[0]}" style="width: 130px;" class="validate[required]" data-errormessage-value-missing="이메일을 입력하세요."> @
+
+								<input type="text" name="email_domain_custom" id ="email_domain_custom" value="{? setting.email_chk!='1'}{basic.buyer_email_arr[1]}{/}" {? setting.email_chk=='1'} style="display: none;"{/} >
+								<select name="buyer_email[]" id="buyer_domain">
+									<option value="" >직접입력</option>
+									{@ _email_domain_arr}
+									<option value="{.value_}" {? .value_==basic.buyer_email_arr[1]}selected{/}>{.value_}</option>
+									{/}
+								</select>
+							</td>
+						</tr>
+						<tr>
+							<th>휴대전화</th>
+							<td>
+								<select name="buyer_mobile[]" id="buyer_mobile">
+									{@ _arrMobile}
+									<option value="{.value_}" {? .value_==basic.buyer_mobile[0]}selected{/}>{.value_}</option>
+									{/}
+								</select> - <input type="text" name="buyer_mobile[]" maxlength="4" value="{basic.buyer_mobile_arr[1]}" class="w80 validate[required,minSize[4]]" data-errormessage-value-missing="휴대전화을 입력하세요."> - <input type="text" name="buyer_mobile[]" maxlength="4" value="{basic.buyer_mobile_arr[2]}" class="w80 validate[required,minSize[4]]" data-errormessage-value-missing="휴대전화을 입력하세요." >
+							</td>
+						</tr>
+						<tr>
+							<th>전화번호</th>
+							<td>
+								<select name="buyer_tel[]" id="buyer_tel">
+									{@ _arrTel}
+									<option value="{.value_}" {? .value_==basic.buyer_tel[0]}selected{/}>{.value_}</option>
+									{/}
+								</select> - <input type="text" name="buyer_tel[]" class="w80" maxlength="4" value="{basic.buyer_tel_arr[1]}"> - <input type="text" name="buyer_tel[]" class="w80" maxlength="4" value="{basic.buyer_tel_arr[2]}">
+							</td>
+						</tr>
+					</table>
+				</div>
+				</form>
+			</div>
+
+			<div class="col-6 ta-l">
+				<form name="FrmReceiver" id="FrmReceiver" method="post" onsubmit="return false;">
+					<input type="hidden" name="mode" value="order_update">
+					<input type="hidden" name="order_num" value="{basic.order_num}">
+				<div class="inc-tit-sub">받는사람정보
+					<div class="right">
+						<button type="submit" class="btn-basic dark h-xs">받는사람 정보저장</button>
+					</div>
+				</div>
+				<div>
+					<table class="tbl-form">
+						<colgroup>
+							<col style="width:100px">
+							<col>
+						</colgroup>
+						<tr>
+							<th>받는사람 이름</th>
+							<td><input type="text" name="receiver_name" value="{basic.receiver_name}" class="validate[required]" data-errormessage-value-missing="받는사람명을 입력하세요."></td>
+						</tr>
+						<tr>
+							<th rowspan="2">주소</th>
+							<td>
+								<input type="text" name="receiver_zipcode" id="receiver_zipcode"  value="{basic.receiver_zipcode}" class="w80 validate[required]" data-errormessage-value-missing="주소를 입력하세요."> <button type="button" class="btn btn-form" onclick="OrderView.daumPostcode();">우편번호찾기</button> <input type="text" name="receiver_addr" id="receiver_addr" value="{basic.receiver_addr}" class="mt-1 w-100 validate[required]" data-errormessage-value-missing="주소를 입력하세요.">
+							</td>
+
+						</tr>
+						<tr>
+							<td>
+								<input type="text" name="receiver_addr_detail" id="receiver_addr_detail" value="{basic.receiver_addr_detail}" class="w-100 validate[required]" data-errormessage-value-missing="상세주소를 입력하세요.">
+							</td>
+						</tr>
+						<tr>
+							<th>휴대전화</th>
+							<td>
+								<select name="receiver_mobile[]" id="receiver_mobile">
+									{@ _arrMobile}
+									<option value="{.value_}" {? .value_==basic.receiver_mobile_arr[0]}selected{/}>{.value_}</option>
+									{/}
+								</select> - <input type="text" name="receiver_mobile[]" maxlength="4" value="{basic.receiver_mobile_arr[1]}" class="w80 validate[required,minSize[4]]" data-errormessage-value-missing="휴대전화을 입력하세요."> - <input type="text" name="receiver_mobile[]"  maxlength="4" value="{basic.receiver_mobile_arr[2]}" class="w80 validate[required,minSize[4]]" data-errormessage-value-missing="휴대전화을 입력하세요.">
+							</td>
+						</tr>
+						<tr>
+							<th>전화번호</th>
+							<td>
+								<select name="receiver_tel[]" id="receiver_tel">
+									{@ _arrTel}
+									<option value="{.value_}" {? .value_==basic.receiver_tel[0]}selected{/}>{.value_}</option>
+									{/}
+								</select> - <input type="text" name="receiver_tel[]" class="w80" maxlength="4" value="{basic.receiver_tel_arr[1]}"> - <input type="text" name="receiver_tel[]" class="w80" maxlength="4" value="{basic.receiver_tel_arr[2]}">
+							</td>
+						</tr>
+						<tr>
+							<th>배송메모</th>
+							<td>
+								<input type="text" name="receiver_memo" class="w-100" value="{basic.receiver_memo}">
+							</td>
+						</tr>
+					</table>
+				</div>
+				</form>
+			</div>
+		</div>
+		<form name="FrmAdminMemo" id="FrmAdminMemo" method="post" onsubmit="return false;">
+			<input type="hidden" name="mode" value="memo">
+			<input type="hidden" name="order_num" value="{basic.order_num}">
+			<div class="inc-tit-sub">관리자 메모 {? memo}<span class="text-muted font-weight-light">({memo.reg_id}, {memo.date_update}, {memo.reg_ip})</span>{/}
+			<div class="right">
+				<button type="submit" class="btn-basic dark h-xs">메모저장</button>
+			</div>
+		</div>
+		<table class="tbl-form">
+			<colgroup>
+				<col style="width:100px">
+			</colgroup>
+			<tr>
+				<th>메모</th>
+				<td style="box-sizing:border-box"><textarea  class="textarea w-100" style="height:100px" name="admin_memo" placeholder="관리메모를 등록하세요. 사용자에게는 노출되지 않습니다.">{memo.memo}</textarea></td>
+			</tr>
+		</table>
+		</form>
+	</div>
+</div>
+<script src="https://spi.maps.daum.net/imap/map_js_init/postcode.v2.js"></script>
+<script type="text/javascript">
+	var OrderView = {
+		order_num:'{basic.order_num}',
+		proc_url : '/admin/proc/order.proc.php',
+		init: function() {
+			var me = this;
+			$('#buyer_domain').on('change',function(){
+				var val = $(this).val();
+				if(val==''){
+					$('#email_domain_custom').css('display','inline-block').val('');
+				}else{
+					$('#email_domain_custom').css('display','none').val('');
+				}
+			});
+			this.option = $.extend({}, validation_option, {
+				validateNonVisibleFields: false,
+				onValidationComplete: function (form, status) {
+					if (status) me.save(form);
+				}
+			});
+			$("#FrmBuyer").validationEngine('attach',this.option);
+			$("#FrmReceiver").validationEngine('attach',this.option);
+			$("#FrmAdminMemo").validationEngine('attach',this.option);
+			$("#FrmExchange").validationEngine('attach',this.option);
+
+			var option_gift = $.extend({}, validation_option, {
+				validateNonVisibleFields: false,
+				onValidationComplete: function (form, status) {
+					if (status) OrderView.changeGift();
+				}
+			});
+			$("#FrmGift").validationEngine('attach', option_gift);
+
+
+			UI.toggleCheck();
+			$('[data-toggle="tooltip"]').tooltip();
+			
+			me.loadProduct();
+
+			$('#list_type').on('click', function() {
+				me.loadProduct();
+			})
+		},
+		loadProduct: function() {
+			var list_type = $('#list_type').is(':checked');
+			$("#inner_product").load('/admin/order/order_view.product.php', {order_num:this.order_num, list_type:(list_type)?'each':'group'})
+		},
+		save: function (form) {
+			UI.confirm('정보를 수정하시겠습니까?', function () {
+				var formdata = $(form).serialize();
+				$.ajax({
+					url:OrderView.proc_url,
+					type:'POST',
+					data:formdata,
+					dataType:'json',
+					success : function(r) {
+						UI.alert(r.msg, function() {
+							if(r.success) {
+								window.location.reload();
+							};
+						});
+					}
+				});
+			})
+		},
+		changeDelivery: function() { //송장번호등록
+			var checked = UI.getChecked('checked_basic[]');
+			if(checked.length < 1) {
+				UI.error('적용할 주문상품을 선택하세요.');
+				return false;
+			}
+
+			var checked_no = checked.map(function() { if(!this.disabled) return this.value}).get().join();
+
+			$('#delivery_idx').val(checked_no);
+
+			var formdata = $('#FrmDelivery').serialize();
+			$.ajax({
+				url:OrderView.proc_url,
+				data:formdata,
+				type:'POST',
+				dataType:'json',
+				success: function(r) {
+					if(r.success){
+						UI.alert(r.msg, function() {
+							OrderView.loadProduct();
+						})
+						
+					}
+					else {
+						UI.error(r.msg);
+					}
+				}
+				
+			})
+		},
+		changeStatus: function(status, e) { //주문상태변경
+			var msg;
+			switch(status) {
+				case 1:
+					msg = "입금대기 상태로 변경하시겠습니까?";
+					break;
+				case 2:
+					msg = "결제완료 상태로 변경하시겠습니까?";
+					break;
+				case 3:
+					msg = "배송준비중 상태로 변경하시겠습니까?";
+					break;
+				case 4:
+					msg = "배송중 상태로 변경하시겠습니까?";
+					break;
+				case 5:
+					msg = "배송완료 상태로 변경하시겠습니까?";
+					break;
+				case 6:
+					msg = "구매확정 상태로 변경하시겠습니까?";
+					break;
+			}
+
+			
+			
+			UI.confirm(msg, function() {
+				if(status<=2) {
+					var data = {
+						mode:'change',
+						act:'order_status',
+						field:'order_num',
+						order_num:e,
+						order_status:status
+					}
+				}
+				else {
+					var checked = UI.getChecked();
+					console.log(checked);
+					var checked_no = checked.map(function() {return this.value}).get().join();
+					//var checked_no = $(e).closest('tr').data('idx');
+					var data = {
+						mode:'change',
+						act:'order_status',
+						field:'order_product_idx',
+						idx:checked_no,
+						order_status:status
+					}
+				}
+
+				$.ajax({
+					url:OrderView.proc_url,
+					type:'POST',
+					data:data,
+					dataType:'json',
+					type:'POST',
+					success: function(r) {
+						if(r.success) {
+							UI.alert(r.msg, function() {
+								OrderView.loadProduct();
+								// document.location.reload();
+							});
+						}
+						else {
+							UI.error(r.msg);
+						}
+					}
+
+				})
+			})
+
+		},
+		daumPostcode: function() {
+			new daum.Postcode({
+				oncomplete: function(data) {
+					// 팝업에서 검색결과 항목을 클릭했을때 실행할 코드를 작성하는 부분.
+					// 우편번호와 주소 정보를 해당 필드에 넣고, 커서를 상세주소 필드로 이동한다.
+					document.getElementById('receiver_zipcode').value = data.zonecode;
+					document.getElementById('receiver_addr').value = data.address;
+					document.getElementById('receiver_addr_detail').value = '';
+					document.getElementById('receiver_addr_detail').focus();
+					//전체 주소에서 연결 번지 및 ()로 묶여 있는 부가정보를 제거하고자 할 경우,
+					//아래와 같은 정규식을 사용해도 된다. 정규식은 개발자의 목적에 맞게 수정해서 사용 가능하다.
+					//var addr = data.address.replace(/(\s|^)\(.+\)$|\S+~\S+/g, '');
+					//document.getElementById('addr').value = addr;
+				}
+			}).open();
+		},
+		log: function(idxs) {
+			UI.modal('/admin/order/order_view.log.php', '로그확인',{idxs : idxs}, 800);
+		},
+		product: function(idxs) {
+			UI.modal('/admin/order/order_product.php', '주문상품정보',{idxs:idxs}, 1000);
+		},
+		changeGift: function() { //송장번호등록
+			var checked = UI.getChecked('checked_gift[]');
+			if(checked.length < 1) {
+				UI.error('적용할 사은품을 선택하세요.');
+				return false;
+			}
+
+			var checked_no = checked.map(function() { if(!this.disabled) return this.value}).get().join();
+			var checked_status = checked.map(function() { if(!this.disabled) return $(this).data('status').toString();}).get();
+			var selected = $("select[name=gift_status]").val();
+			switch(selected) {
+				case '0':
+					if($.inArray( '0', checked_status) >  -1){
+						UI.error('같은 상태값으로 변경이 불가능합니다');
+						return false;
+					}
+				break;
+				case '1':
+					if($.inArray( '1', checked_status) >  -1){
+						UI.error('같은 상태값으로 변경이 불가능합니다');
+						return false;
+					}
+				break;
+                case '2':
+                    if($.inArray( '2', checked_status) >  -1){
+                        UI.error('같은 상태값으로 변경이 불가능합니다');
+                        return false;
+                    }
+                    break;
+                case '3':
+                    if($.inArray( '3', checked_status) >  -1){
+                        UI.error('같은 상태값으로 변경이 불가능합니다');
+                        return false;
+                    }
+                    break;
+			}
+			$('#gift_idx').val(checked_no);
+
+			var formdata = $('#FrmGift').serialize();
+			$.ajax({
+				url:OrderView.proc_url,
+				data:formdata,
+				type:'POST',
+				dataType:'json',
+				success: function(r) {
+					if(r.success){
+						UI.alert(r.msg, function() {
+							window.location.reload();
+						})
+					}
+					else {
+						UI.error(r.msg);
+					}
+				}
+
+			})
+		}
+	}
+
+	$(function() {
+		OrderView.init();
+	})
+</script>

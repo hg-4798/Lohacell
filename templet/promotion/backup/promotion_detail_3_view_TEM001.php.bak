@@ -1,0 +1,226 @@
+<?php
+    $idx = $_GET['idx'];
+    $num = $_GET['num'];
+    $keyword = trim($_GET['keyword']);              // 검색어
+    $view_mode = trim($_GET['view_mode']) ?: "M";   // M : 이미지 형태, L : 리스트 형태
+    $view_type = trim($_GET['view_type']) ?: "A";   // A : 전체, R : 진행중 이벤트, E : 종료된 이벤트, W : 당첨자 발표
+
+    // ==================================================================================
+    // 상단 배너
+    // ==================================================================================
+    $sql    = "SELECT * FROM tblpromo where idx = '{$idx}' ";   
+    $result = pmysql_query($sql);
+    $row    = pmysql_fetch_object($result);
+
+    $title      = $row->title;
+    $start_date = str_replace("-", ".", $row->start_date);
+    $end_date   = str_replace("-", ".", $row->end_date);
+    $banner_img = $row->banner_img;
+
+    // ==================================================================================
+    // 게시물 리스트
+    // ==================================================================================
+
+    // 전체 댓글 수
+    $sql    = "select count(*) from tblboard_promo where board = 'photo' AND promo_idx = {$idx} ";
+    $row    = pmysql_fetch_object(pmysql_query($sql));
+    $total_comment_count = $row->count;
+
+    $sql    = "select * from tblboard_promo where board = 'photo' AND promo_idx = '{$idx}' AND num = {$num} ";
+    $row    = pmysql_fetch_object(pmysql_query($sql));
+
+    $reg_date = date("Y/m/d H:i:s", $row->writetime);
+
+    $content_html = '
+                    <p class="title">' . $row->title . ' <span class="date">' . $reg_date . '</span></p>
+                    <div class="view-content">';
+
+    if ( $row->filename ) { $content_html .= '<img src="/data/shopimages/board/photo/' . $row->filename . '" alt=""><br/>'; }
+    if ( $row->filename2 ) { $content_html .= '<img src="/data/shopimages/board/photo/' . $row->filename2 . '" alt=""><br/>'; }
+    if ( $row->filename3 ) { $content_html .= '<img src="/data/shopimages/board/photo/' . $row->filename3 . '" alt=""><br/>'; }
+    if ( $row->filename4 ) { $content_html .= '<img src="/data/shopimages/board/photo/' . $row->filename4 . '" alt=""><br/>'; }
+    if ( $row->content ) { $content_html .= $row->content; }
+
+    $content_html .= '</div>';
+
+    // 이전/다음 링크용
+    $view_more_html = GetPromotionViewMore($view_type, $keyword, $idx);
+?>
+
+<SCRIPT LANGUAGE="JavaScript" src="/board/chk_form.js.php"></SCRIPT>
+
+<div class="layer-dimm-wrap">
+        <div class="dimm-bg"></div>
+        <div class="layer-inner photo-event-reg"> <!-- layer-class 부분은 width,height, - margin 값으로 구성되며 클래스명은 자유 -->
+            <h3 class="layer-title"></h3>
+            <button type="button" class="btn-close">창 닫기 버튼</button>
+            <div class="layer-content">
+
+                <table class="view-bbs-write" width="100%" summary="포토이벤트 등록">
+                    <caption>포토이벤트 수정</caption>
+                    <colgroup><col style="width:80px"><col style="width:auto"></colgroup>
+                    <tbody>
+                        <tr>
+                            <th><label for="review-reg-title">제목</label></th>
+                            <td><input type="text" id="review-reg-title"></td>
+                        </tr>
+                        <tr>
+                            <th><label for="review-reg-text">내용</label></th>
+                            <td>
+                                <textarea id="review-reg-text" cols="30" rows="10" placeholder="에디터가 들어가는 디자인입니다." title="내용 입력자리"></textarea>
+                            </td>
+                        </tr>
+                        <tr>
+                            <th><label for="add-image">첨부1.</label></th>
+                            <td class="imageAdd">
+                                <input type="file" id="add-image">
+                                <div class="txt-box">이곳에 파일명이 업로드된 파일명이 나올수 있나요?</div>
+                                <label for="add-image">찾아보기</label>
+                            </td>
+                        </tr>
+                        <tr>
+                            <th><label for="add-image">첨부2.</label></th>
+                            <td class="imageAdd">
+                                <input type="file" id="add-image">
+                                <div class="txt-box">이곳에 파일명이 업로드된 파일명이 나올수 있나요?</div>
+                                <label for="add-image">찾아보기</label>
+                            </td>
+                        </tr>
+                        <tr>
+                            <th><label for="add-image">첨부3.</label></th>
+                            <td class="imageAdd">
+                                <input type="file" id="add-image">
+                                <div class="txt-box">이곳에 파일명이 업로드된 파일명이 나올수 있나요?</div>
+                                <label for="add-image">찾아보기</label>
+                            </td>
+                        </tr>
+                        <tr>
+                            <th><label for="add-image">첨부4.</label></th>
+                            <td class="imageAdd">
+                                <input type="file" id="add-image">
+                                <div class="txt-box">이곳에 파일명이 업로드된 파일명이 나올수 있나요?</div>
+                                <label for="add-image">찾아보기</label>
+                                <span>파일명 : 한글,영문,숫자 / 파일용량 : 10M이하 / 첨부기능 파일형식 : GIF,JPG(JPEG)</span>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+                <div class="btn-place"><button class="btn-dib-function" type="button"><span>WRITE</span></button></div>
+            </div>
+        </div>
+    </div>
+
+    <div id="contents">
+        <div class="containerBody sub-page">
+            
+            <div class="breadcrumb">
+                <ul>
+                    <li><a href="#">HOME</a></li>
+                    <li class="on"><a href="#">PROMOTION</a></li>
+                </ul>
+            </div><!-- //.breadcrumb -->
+
+            <div class="promotion-wrap">
+
+                <div class="board-view">
+                    <p class="title"><?=$title?> <span class="date"><?=$start_date?>~<?=$end_date?></span></p>
+                    <div class="view-content">
+                        <img src="/data/shopimages/timesale/<?=$banner_img?>" alt="">
+                    </div>
+
+                    <p class="ea">게시된 포토 (<?=number_format($total_comment_count)?>)</p>
+                    <?=$content_html?>
+                </div><!-- //.board-view -->
+
+
+                <ul class="view-move">
+                    <li><span>이전글</span><a href="#">공지내용 글입니다.</a></li>
+                    <li><span>다음글</span><a href="#">다음 공지글입니다.</a></li>
+                </ul>
+
+                <div class="btn-place-view">
+                    <button class="btn-dib-function photo-event-write" type="button"><span>MODIFY</span></button>
+                    <button class="btn-dib-function" type="button"><span>LIST</span></button>
+                </div>
+
+            </div><!-- //.promotion-wrap -->
+
+        </div><!-- //공통 container -->
+    </div><!-- //contents -->
+
+
+
+<script type="text/javascript">
+
+function chk_from() {
+    if ( $("#keyword").val().trim() == "" ) {
+        // 검색어가 없는 경우
+        alert("검색어를 입력해 주세요.");
+        $("#search_word").val("").focus();
+        return false;
+    }
+
+    document.form2.block.value = "";
+    document.form2.gotopage.value = "";
+}
+
+function GoPage(block,gotopage) {
+    document.form2.block.value=block;
+    document.form2.gotopage.value=gotopage;
+    document.form2.submit();
+}
+
+function chk_writeForm(form) {
+
+	if (typeof(form.tmp_is_secret) == "object") {
+		form.up_is_secret.value = form.tmp_is_secret.options[form.tmp_is_secret.selectedIndex].value;
+	}
+
+	if (!form.up_name.value) {
+		alert('닉네임을 입력하십시오.');
+		form.up_name.focus();
+		return;
+	}
+
+	if (!form.up_passwd.value) {
+		alert('비밀번호를 입력하십시오.');
+		form.up_passwd.focus();
+		return;
+	}
+
+	if (!form.up_subject.value) {
+		alert('제목을 입력하십시오.');
+		form.up_subject.focus();
+		return;
+	}
+
+/*
+	var sHTML = oEditors.getById["ir1"].getIR();
+	form.up_memo.value=sHTML;
+*/
+
+	if (!form.up_memo.value) {
+		alert('내용을 입력하십시오.');
+		form.up_memo.focus();
+		return;
+	}
+
+	form.mode.value = "up_result";
+	reWriteName(form);
+	form.submit();
+}
+
+function putSubject(subject) {
+	document.writeForm.up_subject.value = subject;
+}
+
+function FileUp() {
+	fileupwin = window.open("","fileupwin","width=50,height=50,toolbars=no,menubar=no,scrollbars=no,status=no");
+	while (!fileupwin);
+	document.fileform.action = "<?=$Dir.BoardDir?>ProcessBoardFileUpload.php"
+	document.fileform.target = "fileupwin";
+	document.fileform.submit();
+	fileupwin.focus();
+}
+
+</script>    

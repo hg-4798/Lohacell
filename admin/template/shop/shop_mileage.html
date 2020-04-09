@@ -1,0 +1,239 @@
+<div class="content-wrap">
+	<form name="FrmShopMileage" id="FrmShopMileage" onsubmit="return false">
+		<input type="hidden" name="mode" value="mileage" />
+		<input type="hidden" name="config[usable_max]" value="30"> <!-- 최대사용 -->
+		<!--{*	<input type="hidden" name="config[with_coupon]" value="N" >  쿠폰동시사용여부:N *}-->
+		<table cellpadding="0" cellspacing="0" width="100%">
+			<tr>
+				<td>
+					<!-- 페이지 타이틀 -->
+					<div class="title_depth3">마일리지 정책설정</div>
+				</td>
+			</tr>
+			<tr>
+				<td>
+					<!-- 소제목 -->
+					<div class="title_depth3_sub">마일리지 정책설정</div>
+				</td>
+			</tr>
+			<tr>
+				<td>
+					<div class="table_style01">
+						<table cellSpacing=0 cellPadding=0 width="100%" border=0>
+							<colgroup>
+								<col style="width:150px" />
+								<col />
+							</colgroup>
+							<tr>
+								<th>
+									<span>마일리지 사용여부<span class="req">*</span></span>
+								</th>
+								<td class="td_con1">
+									<div>
+										<label>
+											<input type="radio" name="config[is_use]" value="Y" class="hj validate[required]" {=checked(cfg.mileage.is_use,
+											    'Y' )} data-errormessage-value-missing="마일리지 사용여부를 선택해 주세요.">
+											<span class="lbl">사용함
+												<span class="helper m-l-10">누적된 마일리지를 구매 결제시 공제</span>
+											</span>
+										</label>
+										</label>
+									</div>
+									<div>
+										<label>
+											<input type="radio" name="config[is_use]" value="N" class="hj" {=checked(cfg.mileage.is_use, 'N' )}>
+											<span class="lbl">사용안함
+												<span class="helper m-l-10">주문시에 사용가능한 누적 마일리지 및 사용마일리지 입력항목이 미표시</span>
+											</span>
+										</label>
+										</label>
+									</div>
+
+								</td>
+							</tr>
+							
+							<tr>
+								<th>
+									<span>쿠폰 동시 사용여부<span class="req">*</span></span>
+								</th>
+								<td>
+									<label>
+										<input type="radio" name="config[with_coupon]" value="Y" class="hj validate[required]" {=checked(cfg.mileage.with_coupon,
+										    'Y' )} data-errormessage-value-missing="마일리지/쿠폰 동시사용여부를 선택해주세요.">
+										<span class="lbl">동시 사용</span>
+									</label>
+									<label>
+										<input type="radio" name="config[with_coupon]" value="N" class="hj" {=checked(cfg.mileage.with_coupon, 'N' )}>
+										<span class="lbl">동시 사용안함</span>
+									</label>
+								</td>
+							</tr>
+						
+							<tr>
+								<th>
+									<span>마일리지 절사
+										<span class="req">*</span>
+									</span>
+								</th>
+								<td class="td_con1">마일리지를 %단위로 입력 시
+									<select name="config[round_unit]" style="width:80px">
+										<option value="0">0</option>
+										<option value="1">1</option>
+										<option value="10" selected="">10</option>
+										<option value="100">100</option>
+									</select> 원 단위로
+									<select name="config[round_act]" class="" style="width:100px">
+										<option value="D">내림</option>
+										<option value="B" selected="">반올림</option>
+										<option value="U">올림</option>
+									</select> 하여 지급
+									<div class="helper m-t-5">예) 700원 7%로 마일리지 49원일 경우, [10원 단위로 내림] 설정 시 적립금은 0원 / [1원 단위로 내림] 설정 시 마일리지은 40원 지급</div>
+								</td>
+							</tr>
+							<tr>
+								<th>
+									<span>사용 가능한 누적 마일리지
+										<span class="req">*</span>
+									</span>
+								</th>
+								<td class="td_con1">
+									<input type=text name="config[usable_min_accrue]" value="{=number_format(cfg.mileage.usable_min_accrue)}" size=10 data-filter="price"
+									    class="input validate[required]" data-errormessage-value-missing="사용가능한 누적마일리지를 입력해주세요."> 마일리지 이상 적립된 경우에만
+									사용가능
+
+								</td>
+							</tr>
+							<tr>
+								<th>
+									<span>사용 가능한 상품 구매액</span>
+								</th>
+								<td class="td_con1">
+									<input type=text name="config[usable_min_buy]" value="{=number_format(cfg.mileage.usable_min_buy)}" size=10 data-filter="price"
+									    class="input validate[required]" data-errormessage-value-missing="사용가능한 상품 구매액을 입력해주세요."> 원 이상 구매 시 마일리지
+									사용가능(배송비 제외)
+								</td>
+							</tr>
+							<tr>
+								<th>
+									<span>사용단위</span>
+								</th>
+								<td class="td_con1">
+									<label>
+										<input type="radio" name="config[use_unit]" value="1" class="hj" {=checked(cfg.mileage.use_unit,'1')}><span class="lbl">1 M</span>
+									</label>
+									<label>
+										<input type="radio" name="config[use_unit]" value="10"  class="hj" {=checked(cfg.mileage.use_unit,'10')}><span class="lbl">10 M</span>
+									</label>
+									<label>
+										<input type="radio" name="config[use_unit]" value="100" class="hj" {=checked(cfg.mileage.use_unit,'100')}><span class="lbl">100 M</span>
+									</label>
+								</td>
+							</tr>
+						</table>
+					</div>
+				</td>
+			</tr>
+
+
+			<tr>
+				<td>
+					<!-- 소제목 -->
+					<div class="title_depth3_sub">등급별 마일리지 적립기준 설정</div>
+				</td>
+			</tr>
+			<tr>
+				<td>
+					<div class="table_style01">
+						<table cellspacing="0" cellpadding="0" width="100%" border="0">
+							<tbody>
+								{@ cfg.group}
+								<tr>
+									<th>
+										<span>{.group_name}</span>
+									</th>
+									<td class="td_con1">
+										<input type="text" name="mileage[{.group_code}]" value="{.group_addreserve}" size="10" class="input validate[required, max[99], min[1]]"
+										    data-filter="numeric" maxlength="2" data-filter="numeric" data-errormessage-value-missing="{.group_name}등급의 적립률을 입력하세요">
+										%
+									</td>
+								</tr>
+								{/}
+							</tbody>
+						</table>
+					</div>
+				</td>
+			</tr>
+		</table>
+
+		<div class="ta-c m-t-20 m-b-40">
+			<button type="submit" class="btn-point">적용하기</button>
+		</div>
+	</form>
+
+
+	<div class="sub_manual_wrap mb-5">
+		<div class="title">
+			<p>매뉴얼</p>
+		</div>
+		<ul class="help_list">
+			<li>회원이 마일리지 적용기준 이상이 되면 주문서에 자동으로 [마일리지 입력창] 생성됩니다.</li>
+			<li>추가적립은 고객이 마일리지를 사용하여 구매 시 추가적립여부를 설정합니다.</li>
+			<li>적립방식은 변경한 시점의 주문기준으로 적용됩니다.</li>
+			<li>등록/수정하시면 하단에 [적용하기]버튼을 누르셔야 쇼핑몰에 적용됩니다.</li>
+			<li>추가정보는 회원가입 & 마이페이지 정보수정에서 추가정보(신체 사이즈, 기타 등)를 말합니다.</li>
+			<li>사용하지 않을 항목은 입력하지 않거나, 0으로 입력 시 적용되지 않습니다. </li>
+			<li>등록/수정하시면 하단에 [적용하기]버튼을 누르셔야 쇼핑몰에 적용됩니다.</li>
+			<li>마일리지 절사에서 적립금 단위와 방식을 초기상태로 유지할 경우,<b>소수점 이하 금액만 자동으로 내림하여 계산</b>됩니다. </li>
+			<li>마일리지 절사는 적립율에 따라 [원]으로 변경되는 금액에 대한 부분을 설정합니다.</li>
+			<li>적립금 1회 사용한도에서 회원이 사용 가능한 누적마일리지의 1회 사용한도를 마일리지 또는 구매액에 따른 비율(%)로 설정하실 수 있습니다.</li>
+			<li>등록/수정하시면 하단에 [적용하기]버튼을 누르셔야 쇼핑몰에 적용됩니다.</li>
+		</ul>
+	</div>
+
+
+</div>
+
+<script type="text/javascript">
+	var ShopMileage = {
+		init: function () {
+			var me = this;
+			var option = $.extend({}, validation_option, {
+				validateNonVisibleFields: false,
+				onValidationComplete: function (form, status) {
+					if (status) me.save();
+				}
+			});
+			$("#FrmShopMileage").validationEngine('attach', option);
+
+			//숫자체크
+			$('[data-filter="numeric"], [data-filter="price"]').on('keydown input', function (evt) {
+				var v = $(this).val();
+				v = v.replace(/[^0-9]/g, '');
+				v = v.replace(/(^0+)/, '');
+
+				var filter = $(this).data('filter');
+				if (filter == 'price') v = UI.numberFormat(v);
+				$(this).val(v);
+			});
+
+		},
+		save: function () {
+			UI.confirm('설정을 저장하시겠습니까?', function() {
+				var formdata = $('#FrmShopMileage').serialize();
+				$.ajax({
+					url: '{C.DIR_ADMIN}/proc/shop.proc.php',
+					data: formdata,
+					dataType: 'json',
+					type: 'POST',
+					success: function (r) {
+						UI.alert(r.msg);
+						console.log(r);
+					}
+				})
+			});
+		}
+	}
+	$(function () {
+		ShopMileage.init();
+	})
+</script>

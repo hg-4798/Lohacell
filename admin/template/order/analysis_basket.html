@@ -1,0 +1,110 @@
+<div class="content-wrap">
+	<table cellpadding="0" cellspacing="0" width="100%">
+		<tr>
+			<td>
+				<!-- 페이지 타이틀 -->
+				<div class="title_depth3">장바구니 상품분석
+					<span>일별 고객이 장바구니에 담은 상품을 확인할 수 있습니다.</span>
+				</div>
+
+			</td>
+		</tr>
+		<tr>
+			<td>
+				<!--{* 검색:S *}-->
+				<form id="FrmBasketSearch" name="FrmProductSearch">
+					<input type="hidden" name="limit" value="20" /><!-- 페이지당노출개수 -->
+					<div class="table_style01 pt_20">
+
+						<table cellpadding=0 cellspacing=0 border=0 width="100%">
+
+							<tr>
+								<th><span>조회날짜</span></th>
+								<td>
+									<select name="date_sf" data-toggle="search">
+										{@ date}
+										<option value="{.key_}">{.value_}</option>
+										{/}
+									</select>
+
+								</td>
+							</tr>
+						</table>
+					</div>
+
+
+					<div class="ta_r mb_5">
+						<select name="sort" data-toggle="search">
+							<option value="date_insert">시간순</option>
+							<option value="productname">상품명순</option>
+						</select>
+					</div>
+
+				</form>
+				<!--{* 검색:E *}-->
+
+				<div id="inner"></div>
+			</td>
+		</tr>
+			<tr>
+				<td align="center">
+					<table cellpadding="0" cellspacing="0" width="100%">
+						<?php
+		echo "<tr>\n";
+						echo "	<td width=\"100%\" class=\"font_size\"><p align=\"center\">\n";
+						echo "		".$a_div_prev_page.$paging->a_prev_page.$paging->print_page.$paging->a_next_page.$a_div_next_page;
+						echo "	</td>\n";
+						echo "</tr>\n";
+						?>
+					</table>
+				</td>
+			</tr>
+		</form>
+		<tr>
+			<td height=20></td>
+		</tr>
+		<tr>
+			<td>
+				<!-- 매뉴얼 -->
+				<div class="sub_manual_wrap">
+					<div class="title">
+						<p>매뉴얼</p>
+					</div>
+					<dl>
+						<dt>
+							<span>장바구니 상품분석</span>
+						</dt>
+						<dd>
+							- 장바구니 상품분석은 고객의 구매성향 파악 및 매출 향상을 위한 이벤트 기획에 도움을 줍니다.
+							<br /> - 해당 날짜별로 현재 장바구니에 담겨있는 상품 리스트만 출력됩니다.
+							<br /> - 장바구니 상품 리스트는 일주일(7일)간 유지됩니다.
+							<br /> - [시간]/[상품명]/[장바구니] 순으로 정렬 가능하며, [장바구니] 정렬시 한 고객의 장바구니 상품 리스트는 같은 색상으로 표시됩니다.
+						</dd>
+					</dl>
+				</div>
+
+			</td>
+		</tr>
+	</table>
+</div>
+
+<script type="text/javascript">
+    var AnalysisBasket = {
+        page:1,
+        init: function() {
+            var me = this;
+            $('[data-toggle="search"]').on('change', function() {
+                me.load(1);
+            })
+            this.load();
+        },
+        load: function(p) {
+            var page = p || this.page;
+            var search = $('#FrmBasketSearch').serialize();
+            $('#inner').load('/admin/order_basket.inner.php',{search:search, page:page});
+        }
+    }
+    $(function() {
+        AnalysisBasket.init();
+    })
+</script>

@@ -1,0 +1,74 @@
+<div class="table_style02">
+	<table border=0 cellpadding=0 cellspacing=1 width=100% style="border:1px solid #d1d1d1">
+		<colgroup>
+			<col width=80></col>
+			<col width=80></col>
+			<col width=80></col>
+			<col width=80></col>
+			<col width=80></col>
+		</colgroup>
+
+		<TR bgcolor="#d1d1d1">
+			<td>결제방법</td>
+			<td>결제</td>
+			<td>취소/반품 (환불)</td>
+			<td>순매출</td>
+			<td>비율</td>
+		</TR>
+		{@ list}
+		<!--		if($i%2) $thiscolor="#ffeeff";
+				else $thiscolor="#FFFFFF";-->
+		<tr bgcolor="ffeeff" onmouseover="this.style.background='#FEFBD1'" onmouseleave="this.style.background='#ffeeff'">
+			<td>
+				{.pg_paymethod_txt}
+			</td>
+			<td style="text-align:right;">
+				{=number_format(.pay_pg)}&nbsp;&nbsp;</td>
+			<td style="text-align:right;">
+				{=number_format(.refund_cash)}&nbsp;&nbsp;</td>
+			<td style="text-align:right;">
+				{=number_format(.basic_pay_pg)}&nbsp;&nbsp;</td>
+			<td style="text-align:right;">
+				{=number_format((.basic_pay_pg / total_data.tot_pure_sale_pay_pg) * 100, 2)}%&nbsp;&nbsp;</td>
+		</tr>
+		{:}
+		<tr>
+			<td colspan="19">조회된 데이터가 없습니다.</td>
+		</tr>
+		{/}
+		<tr bgcolor="#d1d1d1" onmouseover="this.style.background='#FEFBD1'" onmouseleave="this.style.background='#d1d1d1'">
+			<td>
+				<b>합계</b>
+			</td>
+			<td style="text-align:right;">
+				<b>
+					{=number_format(total_data.tot_sale_pay_pg)}
+				</b>&nbsp;&nbsp;</td>
+			<td style="text-align:right;">
+				<b>
+					{=number_format(total_data.tot_refund_cash)}
+				</b>&nbsp;&nbsp;</td>
+			<td style="text-align:right;">
+				<b>
+					{=number_format(total_data.tot_pure_sale_pay_pg)}
+				</b>&nbsp;&nbsp;</td>
+			<td style="text-align:right;">
+				<b>
+					{=number_format(100, 2)}%
+				</b>&nbsp;&nbsp;</td>
+		</tr>
+	</table>
+</div>
+
+<script type="text/javascript">
+	var SalesPathMethodInner = {
+		init: function() {
+			$('#count_total').text(UI.numberFormat('{count}'));
+			$('#searched').val('{=addslashes(_POST.search)}');
+		}
+	}
+
+	$(function() {
+		SalesPathMethodInner.init();
+	})
+</script>

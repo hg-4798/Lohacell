@@ -1,0 +1,1440 @@
+<style>
+	.tab:after {
+		content: "";
+		display: block;
+		clear: both;
+		margin-bottom: -1px
+	}
+
+	.tab li {
+		float: left;
+		width: 150px;
+		border: solid 1px #ddd;
+		text-align: center;
+		padding: 10px;
+		font-size: 14px;
+		margin-right: 5px;
+		margin-bottom: -1px;
+	}
+
+	.tab li.selected {
+		font-weight: bold;
+		border-bottom: solid 1px #fff;
+		color: #E50B1F;
+	}
+
+	/* .admin_linemap {display:none;} */
+
+	.bg {
+		background: none;
+	}
+
+	/* sortable용 bshan 추가 */
+
+	.highlight {
+		border: 1px solid grey;
+		font-weight: bold;
+		font-size: 45px;
+		background-color: #e9c05e;
+	}
+
+	html>body #optprd_choice_ul li {
+		height: 14px;
+	}
+
+	.optiontype-C .oc {display:block}
+	.optiontype-C .on {display:none}
+	.oc {display:none}
+	.on {display:block}
+	
+	.file_type::after {
+		content:"";
+		display:block;
+		clear:both;
+	}
+</style>
+
+{? mode == 'copy' && pr_type==''}
+<div class="title_depth3 m-l-10">복사될 상품 유형 선택
+	<div class="m-t-15">
+		<button class="btn btn-primary btn-sm" data-button-insert="1">일반상품으로 복사</button>
+		<button class="btn btn-sm" data-button-insert="2">바로구매상품으로 복사</button>
+		<button class="btn btn-sm" data-button-insert="3">임직원상품으로 복사</button>
+		<button class="btn btn-sm" data-button-insert="4">추가구매상품으로 복사</button>
+	</div>
+</div>
+
+<script>
+	$(function () {
+		//상품등록버튼설정
+		$('[data-button-insert]').on('click', function () {
+			var type = ($(this).data('button-insert'));
+			var href = "/admin/product/product_input.php?mode=copy&prtype=" + type + "&productcode={productcode}";
+			window.opener.location.replace(href);
+			self.close();
+		});
+	});
+</script>
+{:}
+<div class="content-wrap {act}">
+	<div class="title_depth3">{pr_type_text} {? act=='insert'}등록{:}수정{/}</div>
+
+	<div class=" product-input {? act == 'update'}popup{/} m-t-20">
+
+		<div class="product-pop-view">
+			<!--
+			<ul class="tab">
+				<li class="selected">
+					<a href="#basic">상품기본정보</a>
+				</li>
+				<li>
+					<a href="#stock">옵션 및 재고</a>
+				</li>
+				<li>
+					<a href="#detail">상품상세정보</a>
+				</li>
+			</ul>
+			-->
+
+			<a name="basic"></a>
+			<form id="FrmProductInput" onsubmit="return false">
+				<input type="hidden" name="mode" value="product">
+				<input type="hidden" name="act" value="{act}">
+				<input type="hidden" name="productcode" value="{row.productcode}">
+				<input type="hidden" name="categorylink" value="">
+				<input type="hidden" name="pr_type" value="{pr_type}">
+
+				<!-- <div class="title_depth3">상품 {? act=='insert'}등록{:}수정{/}</div> -->
+
+				<!-- 상품유형정보:S -->
+				<!-- 상품유형정보:E -->
+
+				<!-- 쇼핑몰정보:S -->
+				<div class="title_depth4">
+					<i class="fa fa-chevron-circle-right"></i> 쇼핑몰 관리 정보</div>
+				<table class="table-view">
+					<colgroup>
+						<col style="width:180px">
+						<col>
+						<col style="width:180px">
+						<col>
+						<col style="width:180px">
+						<col>
+					</colgroup>
+					{? in_array(pr_type, array('1','3'))}
+					<tr>
+						<th>
+							<span>카테고리 선택</span>
+							<div class="field-req">*</div>
+						</th>
+						<td id="category_wrap" colspan="5">
+							<div class="cate">
+								<h4>1차 카테고리</h4>
+								<ul>
+									{@ category.c2}
+									<li data-code='{.code_all}' onclick="ProductInput.loadCategory(this)">{.code_name}</li>
+									{/}
+								</ul>
+							</div>
+							<div class="cate">
+								<h4>2차 카테고리</h4>
+								<ul></ul>
+							</div>
+							<button type="button" class="btn-point h-x-small" onclick="ProductInput.addCategory();">
+								<i class="fa fa-plus"></i> 카테고리 추가</button>
+						</td>
+					</tr>
+					<tr>
+						<th>
+							<span>카테고리</span>
+						</th>
+						<td colspan="5">
+							<ul class="pi-cate-selected">
+								{@ row.cate_link}
+								<li data-code="{=array_pop(array_column(.value_, 'code'))}">
+									{=implode(' > ', array_column(.value_, 'name'))}
+									<i class="fa fa-times" onclick="ProductInput.removeCategory(this)"></i>
+								</li>
+								{/}
+								<li class="placeholder {? count(row.cate_link)>0}hide{/}">카테고리를 선택하세요.</li>
+							</ul>
+						</td>
+					</tr>
+					{:}
+					<div>
+						<ul class="pi-cate-selected">
+							<li data-code="{category_val}"></li>
+						</ul>
+					</div>
+					{/}
+					<tr>
+						<th>
+							<span>쇼핑몰 상품명</span>
+							<div class="field-req">*</div>
+						</th>
+						<td>
+							<input type="text" name="productname" value="{row.productname}" class="validate[required]" data-errormessage-value-missing="쇼핑몰 상품명을 입력하세요."
+							    style="width:100%" maxlength="40">
+						</td>
+						<th>
+							<span>상품모델명</span>
+							<div class="field-req">*</div>
+						</th>
+						<td>
+							<input type="text" name="prodcode" value="{row.prodcode}" class="validate[required]" data-errormessage-value-missing="상품모델명을 입력하세요." style="width:100%" maxlength="40" {? act=='insert' }{:}disabled{/}>
+						</td>
+						<th>
+							<span>라인</span>
+						</th>
+						<td>
+							<select name="line_code" value="{row.line_code}" style="width:100%">
+								<option value="">선택</option>
+								{@ product_line_list}
+								<option value="{.line_code}" {? row.line_code==. line_code}selected{/}>{.line_name}</option>
+								{:}
+								<option value="" disabled>등록된 라인이 없습니다.</option>
+								{/}
+							</select>
+						</td>
+					</tr>
+					<tr>
+						<th><span>상품홍보문구</span></th>
+						<td colspan="5">
+							<input type="text" name="phrase_ad" value="{row.phrase_ad}" class="input w-100" />
+						</td>
+					</tr>
+					
+					<tr>
+						<th><span>용량 및 추가정보</span></th>
+						<td colspan="5">
+							<input type="text" name="phrase_etc" value="{row.phrase_etc}" class="input w-100" />
+						</td>
+					</tr>
+
+					<tr>
+						<th>
+							<span>승인상태</span>
+							<div class="field-req">*</div>
+						</th>
+						<td colspan="5">
+							<input type="hidden" name="display_old" value="{row.display}">
+							<label>
+								<input type="radio" name="display" value="R" {=checked(row.display, 'R')} class="hj">
+								<span class="lbl">대기</span>
+							</label>
+							<label>
+								<input type="radio" name="display" value="N" {=checked(row.display, 'N')} class="hj">
+								<span class="lbl">승인보류</span>
+							</label>
+							<label>
+								<input type="radio" name="display" value="Y" {=checked(row.display, 'Y')} class="hj">
+								<span class="lbl">승인완료</span>
+							</label>
+						</td>
+					</tr>
+					<tr>
+						<th>
+							<span>승인자</span>
+						</th>
+						<td colspan="5">
+							{? row.display_log.admin_id} {row.display_log.admin_name}({row.display_log.admin_id})
+							<button type="button" class="btn-basic h-x-small ml_10 middle " onclick="ProductInput.history()">승인히스토리</button>
+							{:}
+							<div class="fc-null" style="padding:5px 0px">승인내역이 없습니다.</div>
+							{/}
+						</td>
+					</tr>
+					<tr>
+						<th>
+							<span>정상가</span>
+							<div class="field-req">*</div>
+						</th>
+						<td>
+							<input type="text" name="consumerprice" value="{=format(row.consumerprice,'price')}" class="validate[required, custom[price]]"
+							    data-filter="price" data-errormessage-value-missing="정상가를 입력하세요." style="width:100%" maxlength="40">
+						</td>
+						<th>
+							<span>판매가</span>
+							<div class="field-req">*</div>
+						</th>
+						<td colspan="3">
+							<input type="text" name="sellprice" value="{=format(row.sellprice,'price')}" class="validate[required, custom[price]]" data-filter="price"
+							    data-errormessage-value-missing="판매가를 입력하세요." style="width:30%" maxlength="40">
+						</td>
+					</tr>
+					<tr>
+						<th>
+							<span>상품등록일</span>
+						</th>
+						<td>
+							<div class="div-readonly">{=format(row.regdate,'Y-m-d H:i:s')}</div>
+						</td>
+						<th>
+							<span>승인일</span>
+						</th>
+						<td>{=format(row.selldate,'Y-m-d H:i:s')}</td>
+						<th>
+							<span>업데이트일</span>
+						</th>
+						<td>{=format(row.modifydate, 'Y-m-d H:i:s')}</td>
+					</tr>
+					<tr>
+						<th>
+							<span>판매 상태</span>
+							<div class="field-req">*</div>
+						</th>
+						<td colspan="5">
+							<label>
+								<input type="radio" name="soldout" value="N" {=checked(row.soldout, 'N')} class="hj">
+								<span class="lbl">판매중</span>
+							</label>
+							<label>
+								<input type="radio" name="soldout" value="S" {=checked(row.soldout, 'S')} class="hj">
+								<span class="lbl">판매중지</span>
+							</label>
+							<label>
+								<input type="radio" name="soldout" value="Y" {? row.soldout } {=checked(row.soldout, 'Y')} {:} checked="checked" {/} class="hj">
+								<span class="lbl">품절(SOLDOUT)</span>
+							</label>
+
+							<span class="field-comment">
+								*품절 : 재고와 상관없이 관리자가 수정가능하며, Front에 "<b>SOLD OUT</b>"으로 표시됩니다.
+							</span>
+						</td>
+					</tr>
+					{? pr_type == 1}
+					<tr>
+						<th>
+							<span>네이버 지식쇼핑</span>
+						</th>
+						<td colspan="5">
+							<label>
+								<input type="radio" name="naver_display" value="Y" checked="checked" class="hj">
+								<span class="lbl">노출</span>
+							</label>
+							<label>
+								<input type="radio" name="naver_display" value="N" {=checked(row.naver_display,'N')} class="hj">
+								<span class="lbl">비노출</span>
+							</label>
+						</td>
+					</tr>
+					{/}
+					<tr>
+						<th>
+							<span>일시품절여부</span>
+						</th>
+						<td colspan="5">
+							{? row.quantity > 0}N (재고:{=number_format(row.quantity)}개){:}Y{/}
+							<span class="ml_10 field-comment">
+								* 일시품절 : 재고가 모두 "0"인 경우 자동으로 "<b>Y</b>"로 처리되며, Front에 "<b>일시품절</b>"로 표기됩니다
+							</span>
+						</td>
+					</tr>
+					<tr>
+						<th>
+							<span>키워드</span>
+						</th>
+						<td colspan="5">
+							<input type="text" name="prkeyword" value="{row.prkeyword}" class="w-100">
+							<div class="field-comment mt_5">키워드마다 콤마(,)로 구분하여 표기</div>
+						</td>
+					</tr>
+					<tr>
+						<th rowspan="2">
+							<span>수량제한</span>
+						</th>
+						<td colspan="5">
+							최소구매수량 :
+							<input type="text" name="min_quantity" value="{row.min_quantity}" size=5 maxlength=5 class="validate[required,min[1],custom[numeric]]"  data-errormessage-range-underflow="최소 구매수량은 1이상 입력해주세요." data-filter="numeric"> 개 이상
+						</td>
+
+					</tr>
+					<tr>
+						<td colspan="5">
+							최대구매수량 :
+							<label>
+								<input type="radio" name="max_quantity_type" value="unlimit" class="hj" {=checked(row.max_quantity, '-1')}>
+								<span class="lbl">무제한</span>
+							</label>
+							<label>
+								<input type="radio" name="max_quantity_type" id="max_quantity_type_limit" value="limit" class="hj" {? row.max_quantity> -1}checked{/} >
+								<span class="lbl">
+									<input type="text" name="max_quantity" size="5" maxlength="5" value="{? row.max_quantity>0}{row.max_quantity}{/}" class="validate[condRequired[max_quantity_type_limit],min[1],custom[numeric]]"
+									    data-errormessage-range-overflow="최대구매수량은 1이상 입력해주세요." data-errormessage-value-missing="최대구매수량을 입력해주세요." data-filter="numeric"
+									    {=checked(row.max_quantity, '-1', 'disabled')}> 개 이하</span>
+							</label>
+						</td>
+					</tr>
+					<tr>
+						<th>
+							<span>개별 배송비</span>
+							<div class="field-req">*</div>
+						</th>
+						<td class="delivery" colspan="5">
+							<select name="delivery[deli]" id="deli">
+								<option value="0" {=checked(row.deli,0, 'selected')}>기본배송비</option>
+								<option value="1" {=checked(row.deli,1, 'selected')}>기본배송비무료</option>
+								<!--<option value="2" {=checked(row.deli,2, 'selected')}>개별배송비</option>-->
+							</select>
+
+<!--							<select name="delivery[deli_select]" id="deli_select" class="{? row.deli!=2}hide{/}" data-group="deli_2">
+								<option value="0" {=checked(row.deli_select,0, 'selected')}>고정배송비</option>
+								<option value="1" {=checked(row.deli_select,1, 'selected')}>수량별배송비</option>
+								<option value="2" {=checked(row.deli_select,2, 'selected')}>수량별 비례 배송비</option>
+							</select>-->
+
+							<!--<span class="{? row.deli!=2}hide{/}" data-group="deli_2">
+								<input type="text" name="delivery[deli_price]" value="{row.deli_price}" class="w70 validate[required, custom[numeric]]" data-errormessage-value-missing="배송비를 입력하세요."
+								    placeholder="숫자" data-filter="numeric"> 원
+								<span data-group="deli_select_0" class="{? row.deli_select!=0}hide{/}">(수량/주문금액에 상관없이 배송비 고정)</span>
+								<span data-group="deli_select_1" class="{? row.deli_select!=1}hide{/}">(구매수 대비 개별배송비 증가)</span>
+							</span>
+
+							<span data-group="deli_select_2" class="{? row.deli_select!=2 || row.deli!=2}hide{/}">
+								<input type="text" name="delivery[deli_qty]" value="{row.deli_qty}" class="w50 validate[required, custom[numeric]]" data-numeric="numeric"
+								    data-errormessage-value-missing="배송비 반복부과 기준개수를 입력하세요." placeholder="숫자" data-filter="numeric"> 개 마다 기본 배송비 반복 부과(구매수 대비 배송비)
+							</span>-->
+						</td>
+					</tr>
+					{? pr_type != 4 }
+					<tr>
+						<th>
+							<span>아이콘</span>
+						</th>
+						<td colspan="5">
+							{@ cfg.icon}
+							<label>
+								<input type="checkbox" name="icon[{.index_}]" value="{.idx}" class="hj" {? in_array(.idx, row.icon_arr)}checked{/} />
+								<span class="lbl">{.icon_name}</span>
+							</label>
+							{/}
+						</td>
+					</tr>
+					{/}
+				</table>
+				<!-- 쇼핑몰정보:E -->
+				<a name="stock"></a>
+
+				<div class="title_depth4">
+					<i class="fa fa-chevron-circle-right"></i>{? _GET.prtype == '4'} 재고관리  <span class="helper">＊추가구매상품은 옵션을 등록할 수 없습니다.</span>{:} 옵션 및 재고관리 {/}
+				</div>
+
+				{? pr_type == 4  //추가구매상품}
+				<input type="hidden" name="option_use" value="0" /> <!--{* 추가구매상품은 옵션사용안함으로 강제설정 *}-->
+				
+				<table class="table-view m-t-5" id="tbl_quantity">
+					<colgroup>
+						<col style="width:180px">
+						<col>
+					</colgroup>
+					{@ option_list}
+					<tr>
+						<th>
+							<span>현재고</span>
+						</th>
+						<td>
+							<input type="text" name="option[option_quantity]" value="{? mode == 'copy'}0{:}{.option_quantity}{/}" class="validate[required]" data-errormessage-value-missing="수량을 입력하세요." data-filter="numeric" style="width:10%" maxlength="5">
+						</td>
+					</tr>
+					<tr>
+						<th><span>판매수량 <i class="text-danger" data-toggle="tooltip" title="판매수량은 자동집계되어 노출됩니다." data-placement="right">*</i></span></th>
+						<td>
+							<div class="p-1">{? mode == 'copy'}0{:}{=format(.option_quantity_sales,'price')}{/}</div>
+						</td>
+					</tr>
+					{/}
+				</table>
+				{: //일반, 바로구매, 임직원상품}
+				<input type="hidden" name="option_use" value="1" />
+
+				<!-- 옵션 둥록/수정 START -->
+				<table class="table-view">
+					<colgroup>
+						<col style="width:180px">
+						<col>
+					</colgroup>
+					<tr>
+						<th>
+							<span>옵션유형</span>
+						</th>
+						<td>
+							<label>
+								<input type="radio" name="option_type"  value="N" {=checked(row.option_type,'N')} class="hj">
+								<span class="lbl">일반옵션</span>
+							</label>
+							<label>
+								<input type="radio" name="option_type"  value="C" {=checked(row.option_type, 'C')} class="hj">
+								<span class="lbl">컬러옵션</span>
+							</label>
+						</td>
+					</tr>
+				</table>
+				<table class="table-list table-centered m-t-5" id="tbl_opt">
+					<colgroup>
+						<col style="width:50px">
+						<col style="width:50px">
+						<col>
+						<col style="width:100px">
+						<col style="width:100px">
+						<col style="width:100px">
+					</colgroup>
+					<thead>
+						<tr>
+							<th scope="col" colspan="3">옵션명</th>
+							<th scope="col">현재고</th>
+							<th scope="col" data-toggle="tooltip" title="판매수량은 자동집계되어 노출됩니다.">판매수량 <span class="text-danger" >*</span></th>
+							<th scope="col">상태</th>
+						</tr>
+					</thead>
+					<tbody id="opt_subject_body" class="add-row optiontype-{row.option_type}">
+						{@ option_list}
+						<tr>
+							<td>
+								<button type="button" class="btn-calc {? .option_quantity_sales > 0 && .index_ > 0 && mode != 'copy'}disabled{/}" data-sales="{? mode == 'copy'}0{:}{.option_quantity_sales}{/}" ><span></span></button>
+								<input type="hidden" name="option[option_num][]" value="{? mode == 'copy'}new{:}{.option_num}{/}" data-init="new">
+							</td>
+							<td>
+								<i class="fa fa-sort"></i>
+							</td>
+							<td>
+								<input type="text" class="input w-100 validate[required] on" name="option[option_name][]" value="{.option_name}"  data-errormessage-value-missing="옵션명을 입력하세요."  data-init="" >
+								<div class="w-100 rel oc">
+									<div style="position:absolute;left:0px;top:0px;width:30px">
+										<span class="color-chip" {? .option_num}style="background-image:url('{.colorchip.color_img}')"{/}></span>
+									</div>
+									<div style="padding-left:40px">
+										<select name="option[option_color][]"  class="input w-100 validate[required]" data-toggle="select2" style="width:100%;" data-value="{.colorchip.color_code}" data-errormessage-value-missing="컬러칩코드를 선택하세요.">
+											<option value="">컬러칩코드를 선택하세요.</option>
+										</select>
+									</div>
+								</div>
+							</td>
+							<td>
+								<input type="text" name="option[option_quantity][]" value="{? mode == 'copy'}0{:}{.option_quantity_remain}{/}" class="input validate[required,min[0], max[99999]] ta-c" data-errormessage-value-missing="재고수량을 입력하세요." size="5" maxlength="5" data-init="0" data-filter="numeric">
+								<input type="hidden" name="option[option_quantity_sales][]" value="{? mode == 'copy'}0{:}{.option_quantity_sales}{/}" data-init="0">
+							</td>
+							<td>
+								{? mode == 'copy'}0{:}{=format(.option_quantity_sales,'price')}{/}
+							</td>
+							<td>
+								<select name="option[display][]">
+									<option value="show" {=checked(.display,'show','selected')}>판매중</option>
+									<option value="soldout" {=checked(.display,'soldout','selected')}>품절</option><!-- 품절표시:품절표시할 경우 옵션은 노출되나 재고수량과 관계없이 품절표시됨 -->
+									<option value="hide" {=checked(.display,'hide','selected')}>숨김</option><!-- 숨김표시:숨김체크한경우 프론트에 미노출 -->
+								</select>
+							</td>
+						</tr>
+						{/}
+					</tbody>
+				</table>
+				{/}
+
+				<!--{* 추가상품:S *}-->
+				{? pr_type != 4 //추가상품제외한 나머지상품에 적용가능 }
+				<div class="title_depth4"><i class="fa fa-chevron-circle-right"></i> 추가구매상품</div>
+				<table class="table-view">
+					<colgroup>
+						<col style="width:180px">
+						<col>
+					</colgroup>
+					<tr>
+						<th>
+							<span>사용여부</span>
+						</th>
+						<td>
+							<label>
+								<input type="radio" name="add_product_use" id="add_product_use_1" value="1" {=checked(row.add_product_use, "1")} class="hj">
+								<span class="lbl">사용함</span>
+							</label>
+							<label>
+								<input type="radio" name="add_product_use" id="add_product_use_0" value="0" {=checked(row.add_product_use, "0")} class="hj">
+								<span class="lbl">사용안함</span>
+							</label>
+						</td>
+					</tr>
+					<tr data-ui="add_product_1" class="{=checked(row.add_product_use,0,'hide')}">
+						<th rowspan="2">
+							<span>구매가능상품</span>
+						</th>
+						<td>
+							<button type="button" class="btn btn-sm" onclick="ProductOptRegister.open()">상품선택</button>
+						</td>
+					</tr>
+					<tr data-ui="add_product_1" class="{=checked(row.add_product_use,0,'hide')}">
+						<td style="padding:0px;">
+							<ul class="product_inner">
+								<li class="empty {? add_product_list}hide{/}">선택된 상품이 없습니다.</li>
+								{@ add_product_list}
+								<li data-productcode="{.productcode}"  id="{.productcode}">
+									<span>
+										<i class="fa fa-sort"></i>
+									</span>
+									<span>{.productcode}</span>
+									<span>{.productname}</span>
+									<span>{=number_format(.sellprice)}원</span>
+									<span>
+										<i class="fa fa-times pointer" onclick="ProductOptRegister.remove(this)"></i>
+									</span>
+								</li>
+
+								{/}
+								
+							</ul>
+							<input type="hidden" name="add_product" id="add_product" value="{row.add_product}">
+						</td>
+					</tr>
+				</table>
+				{/}
+				<!--{* 추가상품:E *}-->
+
+
+
+				<a name="detail"></a>
+				<!-- 상품이미지:S -->
+				<div class="title_depth4">
+					<i class="fa fa-chevron-circle-right"></i> 상품이미지 정보
+					<!--{*
+					<button type="button" class="btn-point h-x-small middle ml_10" onclick="ProductInput.getImage(this)">이미지불러오기</button>
+					*}-->
+				</div>
+				<table class="table-view">
+					<colgroup>
+						<col style="width:180px">
+						<col>
+					</colgroup>
+					<tr>
+						<th colspan="2">
+							<label><input type="checkbox" id="idx_use_imgurl" name="use_imgurl" value="Y" {=checked(row.use_imgurl,"Y")} class="hj" data-checked="{? row.use_imgurl=='Y'}true{:}false{/}"><span class="lbl"><B>상품이미지 첨부 방식을 URL로 입력합니다.</B> (예 : https://image.iknowione.co.kr/images/abcd.gif)</span></label>
+							<!--{*
+							<input type="hidden" name="use_imgurl" value="Y" />
+							<B>상품이미지 첨부 방식을 URL로 입력합니다.</B> (예 : http://www.abc.com/images/abcd.gif)
+							*}-->
+						</th>
+					</tr>
+					<tr>
+						<th>
+							<span>대이미지</span>
+							<div class="field-req">*</div>
+							<div class="field-comment">(권장사이즈:760X760)</div>
+						</th>
+						<td class="td_con1">
+							<div class="file_type {=checked(row.use_imgurl,'Y','hide')}">
+								<div style="float:left">
+									<img src="{=preview(row.maximage)}" alt="대이미지" id="preview_file_maximage">
+								</div>
+								{? row.maximage}
+								<button type="button" class="btn-basic dark h-x-small" data-del="maximage" onclick="ProductInput.removeAttach('maximage', this)">삭제</button>
+								{/}
+								<button type="button" class="btn-basic h-x-small attach" data-file="image_file[maximage]">이미지찾기</button>
+								<span>이미지를 선택하세요.</span>
+								
+								<input type="file" data-ext="img" name="image_file[maximage]" class="hide" data-preview="preview_file_maximage">
+								<input type="hidden" name="image_old[maximage]" value="{row.maximage}">
+								<!--{*
+								<div class="mt_5">
+									<label>
+										<input type="checkbox" id="check_resize" name="imgcheck" value="Y" class="hj">
+										<span class="lbl">대 이미지로 중, 소 이미지 자동생성(중, 소 권장 사이즈로 생성)</span>
+									</label>
+								</div>
+								*}-->
+							</div>
+							<div class="url_type {=checked(row.use_imgurl,'N','hide')}">
+								<div>
+									<img src="{=preview(row.maximage)}" alt="대이미지" id="preview_maximage">
+								</div>
+								<div>
+									<input type="text" name="image_url[maximage]" value="{? row.use_imgurl=='Y'}{row.maximage}{/}" class="full" data-preview="preview_maximage">
+								</div>
+							</div>
+						</td>
+					</tr>
+					<tr id="tr_minimage">
+						<th>
+							<span>중 이미지</span>
+							<div class="field-comment">(권장사이즈:550X550)</div>
+						</th>
+						<td class="td_con1">
+							<div class="file_type {=checked(row.use_imgurl,'Y','hide')}">
+								<div style="float:left">
+									<img src="{=preview(row.minimage)}" alt="중이미지" id="preview_file_minimage">
+								</div>
+								{? row.minimage}
+								<button type="button" class="btn-basic dark h-x-small" data-del="minimage" onclick="ProductInput.removeAttach('minimage', this)">삭제</button>
+								{/}
+								<button type="button" class="btn-basic h-x-small attach" data-file="image_file[minimage]">이미지찾기</button>
+								<span>이미지를 선택하세요.</span>
+								<input type="file" data-ext="img" name="image_file[minimage]" class="hide" data-preview="preview_file_minimage">
+								<input type="hidden" name="image_old[minimage]" value="{row.minimage}">
+							</div>
+							<div class="url_type {=checked(row.use_imgurl,'N','hide')}">
+								<div>
+									<img src="{=preview(row.minimage)}" alt="중이미지" id="preview_minimage">
+								</div>
+								<div>
+									<input type=text name="image_url[minimage]" value="{? row.use_imgurl=='Y'}{row.minimage}{/}" class="full" data-preview="preview_minimage">
+								</div>
+							</div>
+						</td>
+					</tr>
+					<tr id="tr_tinyimage">
+						<th>
+							<span>소 이미지</span>
+							<div class="field-comment">(권장사이즈:320X320)</div>
+						</th>
+						<td class="td_con1" style="position:relative;">
+							<div class="file_type {=checked(row.use_imgurl,'Y','hide')}">
+								<div style="float:left">
+									<img src="{=preview(row.tinyimage)}" alt="소이미지" id="preview_file_tinyimage">
+								</div>
+								{? row.tinyimage}
+								<button type="button" class="btn-basic dark h-x-small" data-del="tinyimage" onclick="ProductInput.removeAttach('tinyimage', this)">삭제</button>
+								{/}
+								<button type="button" class="btn-basic h-x-small attach" data-file="image_file[tinyimage]">이미지찾기</button>
+								<span>이미지를 선택하세요.</span>
+								<input type="file" data-ext="img" name="image_file[tinyimage]" class="hide" data-preview="preview_file_tinyimage">
+								<input type="hidden" name="image_old[tinyimage]" value="{row.tinyimage}">
+							</div>
+							<div class="url_type {=checked(row.use_imgurl,'N','hide')}">
+								<div>
+									<img src="{=preview(row.tinyimage)}" alt="소이미지" id="preview_tinyimage">
+								</div>
+								<div>
+									<input type=text name="image_url[tinyimage]" value="{? row.use_imgurl=='Y'}{row.tinyimage}{/}" class="full" data-preview="preview_tinyimage">
+								</div>
+							</div>
+						</td>
+					</tr>
+					<!--{*
+					<tr>
+						<th>
+							<span>PNG 마우스오버이미지</span>
+							<div class="field-comment">(권장사이즈:306 x 428)</div>
+						</th>
+						<td class="td_con1" style="position:relative">
+							<div class="file_type {=checked(row.use_imgurl,'Y','hide')}" data-default="">
+								<button type="button" class="btn-basic h-x-small attach" data-file="image_file[over_minimage]">이미지찾기</button>
+								<span>이미지를 선택하세요.</span>
+								<input type="file" data-ext="img" name="image_file[over_minimage]" class="hide" data-preview="preview_over_minimage">
+								<input type="hidden" name="image_old[over_minimage]" value="{row.over_minimage}">
+							</div>
+							<div class="url_type {=checked(row.use_imgurl,'N','hide')}">
+								<div>
+									<img src="{=preview(row.over_minimage)}" alt="PNG 마우스오버이미지" id="preview_over_minimage">
+								</div>
+								<div>
+									<input type=text name="image_url[over_minimage]" value="{? row.use_imgurl=='Y'}{row.over_minimage}{/}" class="full" data-preview="preview_over_minimage">
+								</div>
+							</div>
+						</td>
+					</tr>
+					*}-->
+					<tr>
+						<th>
+							<span>기타 이미지</span>
+							<div class="field-comment">(권장사이즈:760X760)</div>
+						</th>
+						<td class="td_con1" style="position:relative;padding-top:3px;padding-right:2px">
+							<div class="row">
+							</div>
+								<ul class="image-etc">
+								{@ row.image_etc}
+								<li>
+									<div class="file_type {=checked(row.use_imgurl,'Y','hide')}">
+										<div style="float:left">
+											<img src="{=preview(.value_)}" alt="기타이미지" id="preview_file_{.key_}">
+										</div>
+										{? .value_}
+										<button type="button" class="btn-basic dark h-x-small" data-del="{.key_}" onclick="ProductInput.removeAttach('{.key_}', this)">삭제</button>
+										{/}
+										<button type="button" class="btn-basic h-x-small attach" data-file="image_etc_file[{.key_}]">이미지찾기</button>
+										<span>이미지를 선택하세요.</span>
+										<input type="file" data-ext="img" name="image_etc_file[{.key_}]" class="hide" data-preview="preview_file_{.key_}">
+										<input type="hidden" name="image_old[{.key_}]" value="{.value_}">
+									</div>
+									<div class="url_type {=checked(row.use_imgurl,'N','hide')}">
+										<div>
+											<img src="{=preview(.value_)}" class="" id="preview_{.key_}">
+										</div>
+										<div>
+											<input type="text" name="image_etc_url[{.key_}]" value="{? row.use_imgurl=='Y'}{.value_}{/}" class="" data-preview="preview_{.key_}" placeholder="이미지주소를 입력해주세요">
+										</div>
+									</div>
+								</li>
+								{/}
+							</ul>
+						</td>
+					</tr>
+				</table>
+
+				<div class="title_depth4">
+					<i class="fa fa-chevron-circle-right"></i> 상품 상세내역 입력</div>
+				<table class="table-view m-b-20">
+					<colgroup>
+						<col style="width:180px">
+						<col>
+					</colgroup>
+					<tr>
+						<th>
+							<span>PC 웹</span>
+						</th>
+						<td>
+							<textarea wrap="off" id="ir1" style="width:100%;height:300px" name="content">{=htmlspecialchars_decode(row.content)}</textarea>
+						</td>
+					</tr>
+					<tr>
+						<th>
+							<span>모바일 웹</span>
+						</th>
+						<td>
+							<textarea wrap="off" id="ir2" style="width:100%;height:300px" name="content_m">{=htmlspecialchars_decode(row.content_m)}</textarea>
+						</td>
+					</tr>
+				</table>
+
+				<div class="title_depth4">
+					<i class="fa fa-chevron-circle-right"></i> 상품정보고시
+				</div>
+				<table class="table-view">
+					<colgroup>
+						<col style="width:180px">
+						<col>
+					</colgroup>
+					<tbody><tr>
+						<th>
+							<span>표시여부</span>
+						</th>
+						<td>
+							<label>
+								<input type="radio" name="property_use" id="property_use_1" value="Y"" class="hj" {=checked(row.property_use,'Y')}>
+								<span class="lbl">사용함</span>
+							</label>
+							<label>
+								<input type="radio" name="property_use" id="property_use_2" value="N" class="hj" {=checked(row.property_use,'N')}>
+								<span class="lbl">사용안함</span>
+							</label>
+						</td>
+					</tr>
+				</tbody></table>
+				
+				<table class="table-view m-t-10 {=checked(row.property_use,'N','hide')}" id="property">
+					<colgroup>
+						<col style="width:250px">
+						<col>
+						<col style="width:50px">
+					</colgroup>
+					<thead>
+						<tr>
+							<th class="ta-c">타이틀</th>
+							<th class="ta-c" colspan="2">내용</th>
+						</tr>
+					</thead>
+					<tbody class="add-row">
+						{@ property}
+						<tr>
+							<td style="vertical-align: top">
+								<input type="text" name="property[name][]" value="{.name}" class="w-100 validate[required]" data-errormessage-value-missing="상품정보고시 타이틀을 입력하세요." data-init="">
+								<input type="hidden" name="property[idx][]" value="{? mode == 'copy'}new{:}{.idx}{/}" data-init="new">
+							</td>
+							<td style="box-sizing: border-box">
+								<textarea name="property[conts][]" class="textarea validate[required]" data-errormessage-value-missing="상품정보고시 내용을 입력하세요." data-init="">{.contents}</textarea>
+							</td>
+							<td class="ta-c"><button type="button" class="btn-calc"><span></span></button></td>
+						</tr>
+						{/}
+					</tbody>
+				</table>
+
+
+				<!-- 버튼:S -->
+				<div class="area-button">
+					<div class="is-fixed-bottom">
+						<button type="submit" class="btn-point">저장</button>
+						<button type="button" class="btn-basic" onclick="ProductInput.cancel('{act}')">취소</button>
+					</div>
+				</div>
+
+				<!-- 버튼:E -->
+			</form>
+		</div>
+	</div>
+</div>
+
+<!--{* 상품목록 템플릿:s *}-->
+<textarea id="tpl_li" style="display: none;">
+	<li data-productcode="${\productcode}"  id="${\productcode}">
+		<span>
+			<i class="fa fa-sort"></i>
+		</span>
+		<span>${\productcode}</span>
+		<span>${\name}</span>
+		<span>${\price_consumer}</span>
+		<span>
+			<i class="fa fa-times pointer" onclick="ProductOptRegister.remove(this)"></i>
+		</span>
+	</li>
+</textarea>
+<!--{* 상품목록 템플릿:E *}-->
+
+<style>
+#opt_subject_body td {background-color:#fff;}
+</style>
+
+
+
+<link href="/admin/static/css/select2.min.css?{C.VER}" rel="stylesheet"/>
+
+<script type="text/javascript" src="/third_party/SE2/js/HuskyEZCreator.js" charset="utf-8"></script>
+<script type="text/javascript" src="/admin/static/js/jquery.form.js"></script>
+<script type="text/javascript" src="/admin/static/js/select2.min.js"></script>
+
+<script type="text/javascript" src="{C.DIR_ADMIN}/_config/colorchip.json?{C.VER}"></script>
+
+<script type="text/javascript">
+	
+	var oEditors = [];
+	var ProductInput = {
+		act: '{act}',
+		proc_url: '/admin/proc/product.proc.php',
+		init: function () {
+			var me = this;
+			var option = $.extend({}, validation_option, {
+				validateNonVisibleFields: false,
+				onValidationComplete: function (form, status) {
+					if (status) me.save();
+					//me.save();
+				}
+			});
+			$("#FrmProductInput").validationEngine('attach', option);
+			UI.toggleCheck();
+
+			$('[data-toggle="tooltip"]').tooltip(); //툴팁
+
+			$('#opt_subject_body').sortable({
+				helper: "clone",
+				handle: ".fa-sort",
+				placeholder: "sortable-placeholder",
+				item:' > tr',
+				axis:'y',
+				update:function() {
+					ProductOptRegister.initSort();
+				} 
+			});
+
+			$( ".product_inner").sortable({
+				axis:'y'
+			});
+
+			//숫자체크
+			$('[data-filter="numeric"], [data-filter="price"]').on('keydown.row input.row', function (evt) {
+				var v = $(this).val();
+				v = v.replace(/[^0-9]/g, '');
+				v = v.replace(/^0+(?!$)/, '');
+
+				var filter = $(this).data('filter');
+				if (filter == 'price') v = UI.numberFormat(v);
+				$(this).val(v);
+			});
+		
+			//에디터
+			this.createEditor('ir1');
+			this.createEditor('ir2');
+
+			//최대구매수량
+			$('input[name="max_quantity_type"]').on('click', function () {
+				var target = $('input[name="max_quantity"]');
+				if (this.value == 'unlimit') target.attr('disabled', true).val('');
+				else target.removeAttr('disabled');
+			});
+
+			//배송비정책
+			$('.delivery select').on('change', ProductInput.delivery);
+
+			$('#idx_use_imgurl').on('click', function() {
+				if(this.checked) {
+					$('.file_type').addClass('hide');
+					$('.url_type').removeClass('hide');
+				}
+				else {
+					$('.file_type').removeClass('hide');
+					$('.url_type').addClass('hide');
+				}
+				console.log(this.checked);
+			})
+			//이미지찾기
+			$('button[data-file]').on('click', function () {
+				var target = $(this).data('file');
+				$('input[name="' + target + '"]').trigger('click');
+			});
+
+			//이미지파일 체크
+			$('input[data-ext="img"]').on('change', me.createAttach);
+
+			$('#check_resize').on('click', function () {
+				if (this.checked) $('#tr_tinyimage, #tr_minimage').addClass('hide');
+				else $('#tr_tinyimage, #tr_minimage').removeClass('hide');
+			});
+
+			//이미지미리보기
+			$('.url_type  input[type=text]').on('blur', function () {
+				var preview = $(this).data('preview');
+				$('#' + preview).attr('src', this.value);
+			});
+
+			//하단버튼 스크롤
+			$(window).scroll(function (event) {
+				me.fixset();
+			});
+
+			//상품정보고시노출여부
+			$('[name="property_use"]').on('click', function() {
+				if(this.value == 'N') $('#property').addClass('hide');
+				else $("#property").removeClass('hide');
+			})
+
+			//상품정보고시
+			$('#property tr:first-child td .btn-calc').off('click.row').on('click.row', me.propertyAdd);
+			$('#property tr:gt(1) td .btn-calc').off('click.row').on('click.row', me.propertyRemove);
+			
+		},
+		propertyAdd: function() {
+			var tr = $('#property tbody tr:first-child').clone();
+			tr.find('input, textarea').each(function(i,e){ 
+				var v = $(this).data('init');
+				$(this).val(v);
+			});
+
+			tr.find(".btn-calc").on('click.row', ProductInput.propertyRemove)
+
+			$('#property tbody').append(tr);
+		},
+		propertyRemove: function() {
+			var tr = $(this).closest("tr");
+			tr.remove();
+			console.log(this);
+		},
+		fixset: function () {
+			var top = $(window).scrollTop(); //+$('.area-button').height();
+			var offset = $('.area-button').offset();
+			var bottom = ($(document).height() - top) - $(window).height();
+
+			if (bottom <= 184) {
+				$('.area-button').addClass('abs');
+			} else {
+				$('.area-button').removeClass('abs');
+			}
+		},
+		createAttach: function () {
+			var input = this;
+			var path = input.value;
+			var accept = (/\.(gif|png|jpg|jpeg)$/i).test(path);
+			if (!accept) {
+				alert('이미지 파일만 업로드 가능합니다.');
+				return false;
+			}
+
+			$(input).prev('span').text(this.value);
+
+			var preview_id = $(input).data('preview');
+
+			//preview
+			var isIE = (navigator.appName == "Microsoft Internet Explorer");
+			if (isIE) {
+				$('#' + preview_id).attr('src', path);
+			} else {
+				if (input.files[0]) {
+					var reader = new FileReader();
+					reader.onload = function (e) {
+						$('#' + preview_id).attr('src', e.target.result);
+						console.log(e.target.result);
+					}
+					reader.readAsDataURL(input.files[0]);
+				}
+				
+			}
+
+			$(input).siblings('[data-del]').removeClass('hide');
+		},
+		removeAttach: function(id, btn) {
+			$('#preview_file_'+id).attr('src','/admin/images/product/noimg.jpg');
+
+			var del_path = $('[name="image_old['+id+']"]').val();
+			$('[name="image_old['+id+']"]').val(del_path+'#del');
+			$('[name="image_file['+id+']]').val('');
+			$(btn).addClass('hide');
+			$(btn).siblings('span').text('이미지를 선택하세요.');
+		},
+		createEditor: function (id) {
+			//if(this.board_type == 'youtube') return false;
+			nhn.husky.EZCreator.createInIFrame({
+				oAppRef: oEditors,
+				elPlaceHolder: id,
+				sSkinURI: "/third_party/SE2/SmartEditor2Skin.html",
+				fCreator: "createSEditor2",
+				htParams: {
+					//aAdditionalFontList : [['NotoSansKR', 'sans-serif']]
+				},
+				fOnAppLoad: function () {
+					//oEditors.getById['contents'].setDefaultFont( "NotoSansKR", 9);
+				}
+			});
+		},
+		loadCategory: function (ele) {
+			var el = $(ele);
+			var parent_code = el.attr('data-code');
+			var next = el.closest('div').next('div.cate');
+			el.siblings('li').removeClass('selected');
+			el.addClass('selected');
+
+			var target = next.find('ul');
+			el.closest('div').nextAll('div.cate').find('ul').empty();
+
+			//target.empty();
+
+			$.ajax({
+				url: '/admin/proc/product.proc.php',
+				data: {
+					mode: 'category',
+					act: 'get_children',
+					parent_code: parent_code
+				},
+				dataType: 'json',
+				type: 'POST',
+				success: function (r) {
+					if (r.success) {
+						$.each(r.data, function (i, e) {
+							var li = $('<li data-code="' + e.code_all + '" onclick="ProductInput.loadCategory(this);">' + e.code_name +
+								'</li>');
+							target.append(li);
+						})
+					}
+
+				}
+			})
+		},
+		removeCategory: function (e) {
+			$(e).closest('li').remove();
+			this.uiCategory();
+		},
+		addCategory: function () { //카테고리 추가
+			var li = $('#category_wrap li.selected');
+			if (li.length < 1) {
+				alert('추가할 카테고리를 선택하세요.');
+				return false;
+			}
+
+			//동일카테고리 중복선택체크
+			var select_code = li.last().attr("data-code"); //선택된 카테고리코드값
+			var selected = $('.pi-cate-selected li').map(function () {
+				return $(this).attr('data-code')
+			}).get();
+			if ($.inArray(select_code, selected) > -1) {
+				alert('이미 선택된 카테고리입니다.');
+				return false;
+			}
+
+			var select_label = [];
+			$.each(li, function (i, e) {
+				select_label.push($(e).text());
+			})
+
+			$('.pi-cate-selected').append('<li data-code="' + select_code + '">' + select_label.join(' &gt; ') +
+				' <i class="fa fa-times" onclick="ProductInput.removeCategory(this)"></i></li>');
+
+			this.uiCategory();
+		},
+		uiCategory: function () {
+			var li = $('.pi-cate-selected li:not(.placeholder)').length;
+			if (li < 1) $('.pi-cate-selected li.placeholder').removeClass('hide');
+			else $('.pi-cate-selected li.placeholder').addClass('hide');
+		},
+		delivery: function () {
+			var deli = $('#deli').val();
+			var deli_select = $('#deli_select').val();
+
+			$('[data-group]').addClass('hide');
+			$('[data-group ~= "deli_' + deli + '"]').removeClass('hide');
+			if (deli == '2') $('[data-group ~= "deli_select_' + deli_select + '"]').removeClass('hide');
+		},
+		cancel: function (mode) {
+			//alert(mode); return false;
+			var mode = mode || ProductInput.act;
+			if (mode == 'update') {
+				if ('{_GET.callback}') {
+					opener.location.href = "javascript:{_GET.callback}()";
+				}
+
+				window.close();
+			} else {
+				document.location.href = '/admin/product/product_list.php'
+			}
+		},
+		save: function () {
+			var me = ProductInput;
+			//카테고리
+			var category = $('.pi-cate-selected li').map(function () {
+				return $(this).attr('data-code')
+			}).get();
+
+			if (category.length < 1) {
+				UI.warning('카테고리를 1개 이상 선택하세요.');
+				return false;
+			}
+			$('input[name="categorylink"]').val(category.join());
+
+			UI.confirm('저장하시겠습니까?', function() {
+				//에디터
+				oEditors.getById["ir1"].exec("UPDATE_CONTENTS_FIELD", []);
+				oEditors.getById["ir2"].exec("UPDATE_CONTENTS_FIELD", []);
+
+				//추가구매상품
+				var addproduct = []; //$('.product_inner').sortable('toArray');
+				$('.product_inner li:not(.empty)').each(function(i,e) {
+					addproduct.push(this.id);
+				})
+				$('#add_product').val(addproduct.join());
+				
+				var options = {
+					url: me.proc_url,
+					type: 'POST',
+					dataType: 'json',
+					success: function (r) {
+						if(r.success) {
+							// UI.alert(r.msg);
+							ProductInput.cancel();
+						}
+						else {
+							UI.error(r.msg);
+						}
+					}
+				}
+				$('#FrmProductInput').ajaxSubmit(options);
+			});
+
+			
+		},
+		history: function () { //승인히스토리
+			UI.modal('/admin/product/display_log.php', '승인 히스토리', {
+				productcode: '{row.productcode}'
+			}, 600);
+		},
+		getImage: function (e) {
+			if (!confirm('이미지서버에 등록된 이미지를 불러오시겠습니까?')) return false;
+			$(e).html('<img src="/admin/static/img/common/btn-point-loading.gif" alt="" class="middle" /> 이미지를 불러오는 중입니다...')
+				.attr('disabled', true);
+
+			$.ajax({
+				url: this.proc_url,
+				data: {
+					productcode: '{row.productcode}',
+					mode: 'list',
+					act: 'batch_image'
+				},
+				type: 'POST',
+				dataType: 'json',
+				success: function (r) {
+					UI.alert(r.msg);
+					if (r.success) {
+						$(e).html('이미지 적용을 위해 페이지를 새로고침합니다.').removeAttr("disabled");
+						document.location.reload();
+					}
+				}
+			})
+		}
+	}
+
+	//상품옵션관련
+	var ProductOptRegister = {
+		tr: null,
+		tbody: null,
+		init: function () {
+			var me = this;
+			//필드추가
+			if ($("input[name='option_use']:checked").val() == 1) {
+				$("#tbl_opt").toggle();
+				$("#tbl_quantity").toggle();
+			}
+
+			$("input[name='option_use']").on("change", function () {
+				$("#tbl_opt").toggle();
+				$("#tbl_quantity").toggle();
+			});
+			$("input[name='add_product_use']").on("change", function () {
+				var target = $('[data-ui="add_product_1"]');
+				if(this.value == 1) {
+					target.removeClass('hide');
+				}
+				else target.addClass('hide');
+			});
+
+			//필드추가제거 바인딩
+			me.initSort();
+			
+			this.tbody = $('#opt_subject_body');
+			this.tr = this.tbody.find('tr:first-child').clone();
+
+
+			//컬러칩 select 생성
+			$('[data-toggle="select2"]').select2({
+				placeholder: '컬러칩코드를 선택하세요.',
+				data:colorchip,
+				templateSelection: function (data, container) {
+					$(container).closest('.rel').find('span.color-chip').css('background-image','url('+data.image+')');
+					return data.text;
+				}
+			});
+			$('[data-toggle="select2"]').each(function() {
+				var data = $(this).data('value');
+				$(this).val(data).trigger('change');
+				
+			})
+
+			//옵션유형 바인딩
+			$('[name="option_type"]').on('click', function() {
+				var target = $('.add-row');
+
+				if (this.value == 'C') target.addClass('optiontype-C');
+				else target.removeClass('optiontype-C');
+			});
+
+
+
+		},
+		
+
+		initSort: function() {
+			$('#opt_subject_body tr:first-child td .btn-calc').off('click.row').on('click.row', ProductOptRegister.addRow);
+			$('#opt_subject_body tr:gt(0) td .btn-calc').off('click.row').on('click.row', ProductOptRegister.removeRow);
+		},
+		addRow: function () { //옵션row추가
+			var me = ProductOptRegister;
+			var tr = me.tr.clone();
+
+			$.each(tr.find('input, i, button'), function (i, e) {
+				var tag = this.tagName.toUpperCase();
+				switch (tag) {
+					case 'INPUT':
+						var type = $(this).attr('type');
+						var default_value = $(this).data('init');
+						switch (type) {
+							case 'checkbox':
+								if(this.value == default_value) $(this).prop('checked',true);
+								else $(this).removeAttr("checked");
+								break;
+							case 'text':
+							default:
+								$(this).val(default_value);
+								break;
+						}
+						break;
+					case 'BUTTON':
+						$(this).off('click.row').on('click.row', ProductOptRegister.removeRow);
+						break;
+				}
+			});
+			tr.find('.color-chip').css('background-image','');
+			me.tbody.append(tr);
+			me.addRowCallback(tr);
+
+		},
+		removeRow: function () {
+			if($(this).data('sales') > 0) {
+				UI.warning("판매된 옵션은 삭제할 수 없습니다.<br>숨김처리하세요. ");
+				return false;
+			}
+			$(this).closest('tr').remove();
+		},
+		addRowCallback: function(tr) {
+			$(tr).find('[data-toggle="select2"]').select2({
+				placeholder: '컬러칩코드를 선택하세요.',
+				data:colorchip,
+				templateSelection: function (data, container) {
+					$(container).closest('.rel').find('span.color-chip').css('background-image','url('+data.image+')');
+					return data.text;
+				}
+			});
+
+			$(tr).find('[data-filter="numeric"]').off('keydown.row input.row').on('keydown.row input.row', function (evt) {
+				var v = $(this).val();
+				v = v.replace(/[^0-9]/g, '');
+				v = v.replace(/(^0+)/, '');
+				var filter = $(this).data('filter');
+				$(this).val(v);
+				console.log('a');
+			});
+
+		},
+		open: function () { //상품추가모달열기
+			UI.modal('/admin/product_choice.php', '상품추가', {
+				search: "pr_type=4" //추가구매상품만 검색
+			}, 1100);
+		},
+		getProduct: function () { //기등록상품목록리턴
+			return $('.product_inner').find('li:not(.empty)');
+		},
+		remove: function (ele) { //삭제(단순감춤)
+			$(ele).closest('li').remove();
+			var li = this.getProduct()
+			var cnt = li.length;
+			if(!cnt) $('.product_inner').find('li.empty').removeClass('hide');
+		}
+	}
+
+
+
+
+	//상품선택 콜백
+	var ChoiceCallback = function (tr_new) {
+		var tmpObj = TrimPath.parseDOMTemplate("tpl_li");
+		var target = $('.product_inner');
+		var li = ProductOptRegister.getProduct();
+
+		var cnt = li.length;//기등록상품수
+
+		//기등록상품 리스트
+		var exist = li.map(function () {
+			return $(this).attr('data-productcode');
+		}).get();
+
+		var idx = cnt;
+		$.each(tr_new, function (i, e) {
+			//console.log(i,e);
+			var prcode = $(e).attr('data-productcode');
+			if ($.inArray(prcode, exist) != -1) return true;
+
+			idx++;
+			target.find('li.empty').addClass('hide');
+			var data = {
+				idx: idx
+			};
+
+			$.each($(e).find('td'), function (ii, ee) {
+				var field = $(ee).data('field');
+				if (typeof field == 'undefined') return true;
+
+				var data_v = $(ee).html();
+				if(field == 'price_consumer') data_v+='원';
+				data[field] = data_v;
+			});
+			
+			var html = tmpObj.process(data);
+			target.append(html);
+
+		});
+
+		$( ".product_inner").sortable({
+			axis:'y'
+		});
+
+	}
+
+
+
+	//ready
+	$(function () {
+		ProductInput.init();
+		ProductOptRegister.init();
+	});
+</script>
+<script type="text/javascript" src="/admin/static/js/template.js"></script>
+{/}

@@ -1,0 +1,238 @@
+<!-- 쿠폰적용팝업 -->
+
+<div class="layer-contents layer_coupon_use">
+	<form id="FrmOrderCoupon" onsubmit="return false">
+	<input type="hidden" name="mode" value="coupon"> 
+	<input type="hidden" name="act" value="touse">
+	<input type="hidden" name="order_num_temp" value="{order_num_temp}">
+		
+	<div class="cart-item-wrap">
+		<div class="title-section with-border mt-15">
+			<span class="comment">※ 상품쿠폰과 장바구니 쿠폰은 동시 사용이 불가능합니다.</span>
+		</div>
+
+		<!--{* 상품쿠폰:S *}-->
+		{@ list}
+		<div class="box-sector">
+			<div class="sector-inner">
+				<div class="goods-item is-mygoods">
+					<figure>
+						<div class="img"><a href=""><img src="{.tinyimage}" alt="상품 썸네일"></a></div>
+						<figcaption>
+							<p class="code">{.prodcode}</p>
+							<p class="goods-nm">{.productname}</p>
+						</figcaption>
+					</figure>
+				</div>
+				{@ .children}
+
+				<div class="cart-item-opt">
+					<div class="opt-wrp">
+						<p class="opt"><span class="point-color">[옵션]</span> {..option_name}</p>
+						{? ..coupon}
+						<select class="select_line" title="쿠폰 선택" name="product_coupon[{..temp_no}]" data-coupon="product" data-temp="{..temp_no}">
+							<option value="">쿠폰을 선택하세요!</option>
+							{@ ..coupon}
+							<option value="{...ci_no}" data-discount="{...discount}">{...coupon_name}</option>
+							{/}
+						</select>
+						{:}
+						<select title="쿠폰 선택" disabled class="select_line">
+							<option value="">적용 가능한 쿠폰이 없습니다!</option>
+						</select>
+						{/}
+						<div class="discount-price">
+							<label class="v-hidden">할인금액</label>
+							<strong class="discount-color">- <i id="discount_{..temp_no}">0</i></strong> 원
+						</div>
+					</div>
+				</div>
+				{/}
+			</div>
+		</div>
+		{/}
+		<!--{* 상품쿠폰:E *}-->
+
+		<!--{* 장바구니쿠폰:S*}-->
+		<div class="box-sector no-line">
+			<div class="sector-inner">
+				<div class="cart-item-opt alltype">
+					<div class="opt-wrp">
+						<p class="opt"><strong>장바구니쿠폰</strong> (중복 사용 불가)</p>
+						{? coupon.basket}
+						<select title="쿠폰 선택" class="select_line" name="coupon_basket" data-coupon="basket" data-temp="basket">
+							<option value="" selected>쿠폰을 선택하세요!</option>
+							{@ coupon.basket}
+							<option value="{.ci_no}" data-discount="{.discount}">{.coupon_name}</option>
+							{/}
+						</select>
+						{:}
+						<select title="쿠폰 선택" disabled class="select_line">
+							<option value="">적용 가능한 쿠폰이 없습니다!</option>
+						</select>
+						{/}
+						<div class="discount-price">
+							<label class="v-hidden">할인금액</label>
+							<strong class="discount-color">- <i id="discount_basket">0</i></strong> 원
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+		<!--{* 장바구니쿠폰:E*}-->
+
+		<div class="price-sum-total with-bg">
+			<dl class="total">
+				<dt>총 할인금액</dt>
+				<dd><strong class="discount-color">- <i id="discount_sum">0</i></strong> <span>원</span></dd>
+			</dl>
+		</div>
+
+		<div class="box-sector no-line">
+			<div class="sector-inner">
+				<div class="btn_area mt-5">
+					<ul class="ea2">
+						<li><button type="button" class="btn-line h-large" data-toggle="close">취소</button></li>
+						<li><button type="submit" class="btn-point h-large">적용</button></li>
+					</ul>
+				</div>
+			</div>
+		</div>
+	</div>
+	</form>
+</div>
+
+<!-- //쿠폰적용팝업 -->
+
+
+<script type="text/javascript">
+	var OrderCoupon = {
+		init: function() {
+			var me = this;
+			var option = $.extend({}, validation_option, {
+				validateNonVisibleFields: false,
+				onValidationComplete: function (form, status) {
+					if (status) me.apply();
+				}
+			});
+			$("#FrmOrderCoupon").validationEngine('attach', option);
+	
+			$('[data-toggle="close"]').on('click', function() {
+				$('.btn_close').trigger('click');
+			});
+	
+			$('[data-coupon]').on('change', function(){
+				me.select($(this));
+			})
+		},
+		select: function(e) { //쿠폰선택
+			var coupon_type = e.data('coupon');
+			var coupon_value = e.val();
+	
+			switch(coupon_type) {
+				case 'product':
+					if(coupon_value)  {
+						$('[data-coupon="basket"]').attr("disabled",true);
+					}
+					else  {
+						//선택된 상품쿠폰이 없는경우 장바구니쿠폰선택가능
+						var valid_basket = true;
+						$('[data-coupon="product"]').each(function(i,e){
+							if($(this).find('option:selected').val()) {
+								valid_basket = false;
+								return false;
+							}
+						});
+	
+						if(valid_basket) $('[data-coupon="basket"]').removeAttr("disabled");
+					}
+				break;
+				case 'basket':
+					if(coupon_value) $('[data-coupon="product"]').attr("disabled",true);
+					else $('[data-coupon="product"]').removeAttr("disabled");
+				break;
+				case 'delivery':
+					
+				break;
+			}
+	
+			//변경전 선택상품 활성화
+			var coupon_value_pre = e.data('couponValue');
+			if(coupon_value_pre) $('select[data-coupon] option[value="'+coupon_value_pre+'"]').removeClass('hide');
+	
+			//선택쿠폰이 있는경우 쿠폰 숨김
+			if(coupon_value) {
+				e.data('coupon-value', coupon_value);
+				$('select[data-coupon] option[value="'+coupon_value+'"]:not(:selected)').addClass('hide');
+			}
+	
+			$('select[data-coupon]').each(function(i,e) {
+				var valid_option = $(this).find('option:not(.hide)');
+				if(valid_option.length==1) $(this).find("option[value='']").text('적용 가능한 쿠폰이 없습니다!');
+				else  $(this).find("option[value='']").text('쿠폰을 선택하세요!');
+			})
+	
+			OrderCoupon.calc();
+		},
+		calc: function() { //쿠폰할인금액 적용 및 합계금액 계산
+			var sum = 0;
+			$('select[data-coupon]').each(function(i,e) {
+			
+				var opt = $(e).find('option:selected');
+				var no = $(e).data('temp');
+				if(opt.val()) {
+					var discount = opt.data('discount');
+					sum +=  parseInt(discount);
+				}
+				else {
+					var discount = 0;
+				}
+	
+				$('#discount_'+no).text(UI.numberFormat(discount));
+			});
+	
+			$('#discount_sum').text(UI.numberFormat(sum));
+	
+	
+		},
+		apply: function() {
+			var formdata = $('#FrmOrderCoupon').serialize();
+			$.ajax({
+				url:'/proc/order.proc.php',
+				data:formdata,
+				dataType:'json',
+				type:'POST',
+				success: function(r) {
+					if(r.success){
+						var frm = document.FrmOrder;
+						$.each(r.data, function(i,e) {
+							switch(i) {
+								case 'product':
+									frm.coupon_product_discount.value = e.discount; //상품쿠폰할인금액
+									frm.coupon_basket_discount.value = 0;
+									frm.coupon_basket.value = '';
+									break;
+								case 'basket':
+									frm.coupon_product_discount.value = 0;
+									frm.coupon_basket_discount.value = e.discount;
+									frm.coupon_basket.value = e.coupon_issue_no; //장바구니쿠폰번호
+									break;
+							}
+						})
+						
+						Order.calc();
+						$('.btn_close').trigger('click');
+					}
+					else {
+						UI.error(r.msg);
+					}
+				}
+			})
+		}
+	
+	}
+	
+	$(function() {
+		OrderCoupon.init();
+	})
+	</script>

@@ -1,0 +1,133 @@
+<div class="p-t-20 p-l-10 p-r-10 p-b-20 rel">
+	<div style="margin-left:400px;min-height:400px">
+		<div>
+			사용가능 마일리지 : <b id="sum_mileage">{=number_format(member.act_mileage)}</b> M
+			<div class="pull-right">
+				<!--{*<button type="button" onclick="MemberMileage.register()" class="btn btn-sm btn-danger">마일리지지급/차감</button>*}-->
+			</div>
+		</div>
+
+		<!--{* 마일리지내역:S *}-->
+		<div id="mileage_inner"></div>
+		<!--{* 마일리지내역:E *}-->
+	</div>
+	<div class="abs" style="position:absolute;left:20px;top:0px;width:370px">
+		<h4>마일리지 지급/차감</h4>
+		<!--{* 마일리지입력폼:S *}-->
+		<form id="FrmMemberMileage" onsubmit="return false">
+			<input type="hidden" name="mode" value="member">
+			<input type="hidden" name="mem_id" value="{member.id}">
+			<table class="tbl-form">
+
+				<colgroup>
+					<col style="width:100px">
+					<col>
+
+				</colgroup>
+				<tr>
+					<th>유형</th>
+					<td>
+						<label><input type="radio" class="hj" name="act" value="give" checked><span class="lbl">지급</span></label>
+						<label><input type="radio" class="hj" name="act" value="get"><span class="lbl">차감</span></label>
+					</td>
+				</tr>
+				<tr></tr>
+				<th>마일리지</th>
+				<td>
+					<input type="text" name="mileage" value="" data-filter="price" class="validate[required, min[1]] w-500-px" data-errormessage-value-missing="마일리지를 입력하세요." data-errormessage-range-underflow="마일리지는 0이상의 값을 입력하세요." placeholder="숫자로만 입력"> M
+
+				</td>
+				</tr>
+				<tr>
+					<th>유효기간</th>
+					<td>
+						<input type="text" placeholder="유효기간" class="w-75-px" name="term" value="{mileage.term}" data-filter="numeric"> 일
+					</td>
+				</tr>
+				<tr>
+					<th>사유</th>
+					<td>
+						<input type="text" placeholder="차감/적립사유" class="w-100 validate[required]" name="reason" data-errormessage-value-missing="사유를 입력하세요." value="{mileage.reason}">
+					</td>
+				</tr>
+
+
+			</table>
+			<div class="ta_c mt_10">
+				<button type="submit" class="btn btn-md btn-primary">적용</button>
+				<button type="button" class="btn btn-md btn-secondary m-l-10" onclick="UI.modalClose()">닫기</button>
+			</div>
+		</form>
+		<!--{* 마일리지입력폼:E *}-->
+	</div>
+</div>
+
+<form id="FrmSearchMileage">
+	<input type="hidden" name="mem_id" value="{member.id}">
+</form>
+
+<script type="text/javascript">
+	var MemberMileage = {
+		page: 1,
+		init: function () {
+			var me = this;
+			var option = $.extend({}, validation_option, {
+				validateNonVisibleFields: false,
+				onValidationComplete: function (form, status) {
+					if (status) me.save();
+				}
+			});
+			$("#FrmMemberMileage").validationEngine('attach', option);
+
+			//숫자체크
+			$('[data-filter="numeric"], [data-filter="price"]').on('keydown.row input.row', function (evt) {
+				var v = $(this).val();
+				v = v.replace(/[^0-9]/g, '');
+				v = v.replace(/^0+(?!$)/, '');
+
+				var filter = $(this).data('filter');
+				if (filter == 'price') v = UI.numberFormat(v);
+				$(this).val(v);
+			});
+
+			me.load();
+		},
+		load: function (page) {
+			var p = page || MemberMileage.page;
+			var search = $('#FrmSearchMileage').serialize();
+
+			$('#mileage_inner').load('/admin/member/mileage.inner.php', {
+					page: p,
+					search: search
+				},
+				function () {
+					MemberMileage.page = p;
+				}
+			);
+		},
+		register: function () {
+			UI.modal('/admin/member/mileage.register.php', '마일리지지급/차감', {}, 500);
+		},
+		save: function () {
+			var formdata = $('#FrmMemberMileage').serialize();
+			$.ajax({
+				url: '/admin/proc/mileage.proc.php',
+				data: formdata,
+				dataType: 'json',
+				type: 'POST',
+				success: function (r) {
+					if (r.success) {
+						$('#FrmMemberMileage')[0].reset();
+						MemberMileage.load(1);
+						MemberList.load(); //회원목록리로드
+					} else {
+						UI.error(r.msg);
+					}
+				}
+			})
+		}
+	}
+	$(function () {
+		MemberMileage.init();
+	})
+</script>

@@ -1,0 +1,235 @@
+<div class="content-wrap">
+	<form name="FrmShopPoint" id="FrmShopPoint" onsubmit="return false">
+		<input type="hidden" name="mode" value="point" />
+
+		<input type="hidden" name="config[usable_max]" value="30"> <!-- 최대사용 -->
+		<!--{* <input type="hidden" name="config[with_coupon]" value="N" > 쿠폰동시사용 *}-->
+		
+		<table cellpadding="0" cellspacing="0" width="100%">
+			<tr>
+				<td>
+					<!-- 페이지 타이틀 -->
+					<div class="title_depth3">포인트 정책설정</div>
+				</td>
+			</tr>
+			<tr>
+				<td>
+					<!-- 소제목 -->
+					<div class="title_depth3_sub">포인트 정책설정</div>
+				</td>
+			</tr>
+			<tr>
+				<td>
+					<div class="table_style01">
+						<table cellSpacing=0 cellPadding=0 width="100%" border=0>
+							<colgroup>
+								<col style="width:150px" />
+								<col />
+							</colgroup>
+							<tr>
+								<th>
+									<span>포인트 사용여부
+										<span class="req">*</span>
+									</span>
+								</th>
+								<td class="td_con1">
+									<div>
+										<label>
+											<input type="radio" name="config[is_use]" value="Y" class="hj validate[required]" {=checked(cfg.point.is_use,
+											    'Y' )} data-errormessage-value-missing="포인트 사용여부를 선택해 주세요.">
+											<span class="lbl">사용함
+												<span class="helper m-l-10">누적된 포인트를 구매 결제시 공제</span>
+											</span>
+										</label>
+										</label>
+									</div>
+									<div>
+										<label>
+											<input type="radio" name="config[is_use]" value="N" class="hj" {=checked(cfg.point.is_use, 'N' )}>
+											<span class="lbl">사용안함
+												<span class="helper m-l-10">주문시에 사용가능한 누적 포인트 및 사용포인트 입력항목이 미표시</span>
+											</span>
+										</label>
+										</label>
+									</div>
+								</td>
+							</tr>
+							<tr>
+								<th>
+									<span>쿠폰 동시 사용여부
+										<span class="req">*</span>
+									</span>
+								</th>
+								<td>
+									<label>
+										<input type="radio" name="config[with_coupon]" value="Y" class="hj validate[required]" {=checked(cfg.point.with_coupon,
+										    'Y' )} data-errormessage-value-missing="포인트/쿠폰 동시사용여부를 선택해주세요.">
+										<span class="lbl">동시 사용</span>
+									</label>
+									<label>
+										<input type="radio" name="config[with_coupon]" value="N" class="hj" {=checked(cfg.point.with_coupon, 'N' )}>
+										<span class="lbl">동시 사용안함</span>
+									</label>
+								</td>
+							</tr>
+							<tr>
+								<th>
+									<span>사용 가능한 누적 포인트
+										<span class="req">*</span>
+									</span>
+								</th>
+								<td class="td_con1">
+									<input type=text name="config[usable_min_accrue]" value="{=number_format(cfg.point.usable_min_accrue)}" size=10 data-filter="price"
+									    class="input validate[required]" data-errormessage-value-missing="사용가능한 누적포인트를 입력해주세요."> 포인트 이상 적립된 경우에만
+									사용가능
+
+								</td>
+							</tr>
+							<tr>
+								<th>
+									<span>사용 가능한 상품 구매액</span>
+								</th>
+								<td class="td_con1">
+									<input type=text name="config[usable_min_buy]" value="{=number_format(cfg.point.usable_min_buy)}" size=10 data-filter="price"
+									    class="input validate[required]" data-errormessage-value-missing="사용가능한 상품 구매액을 입력해주세요."> 원 이상 구매 시 포인트
+									사용가능(배송비 제외)
+								</td>
+							</tr>
+							<tr>
+								<th>
+									<span>사용단위</span>
+								</th>
+								<td class="td_con1">
+									<label>
+										<input type="radio" name="config[use_unit]" value="1" class="hj" {=checked(cfg.point.use_unit,'1')}><span class="lbl">1 M</span>
+									</label>
+									<label>
+										<input type="radio" name="config[use_unit]" value="10"  class="hj" {=checked(cfg.point.use_unit,'10')}><span class="lbl">10 M</span>
+									</label>
+									<label>
+										<input type="radio" name="config[use_unit]" value="100" class="hj" {=checked(cfg.point.use_unit,'100')}><span class="lbl">100 M</span>
+									</label>
+								</td>
+							</tr>
+						</table>
+					</div>
+				</td>
+			</tr>
+
+			<tr>
+				<td>
+					<!-- 소제목 -->
+					<div class="title_depth3_sub">포인트 지급 기준 설정</div>
+				</td>
+			</tr>
+
+			<tr>
+				<td>
+					<div class="table_style01">
+						<table cellSpacing=0 cellPadding=0 width="100%" border=0>
+
+							<tr>
+								<th>
+									<span>신규 회원가입시</span>
+								</th>
+								<td class="td_con1">
+									<input type=text name="point[join]" value="{=number_format(cfg.pointset.join)}" size=10 class="input validate[required]"
+									    data-errormessage-value-missing="신규 회원가입시 지급 포인트를 입력해주세요." data-filter="price"> 포인트 지급
+								</td>
+							</tr>
+
+							<tr>
+								<th>
+									<span>추가정보 기입시</span>
+								</th>
+								<td class="td_con1">
+									<input type=text name="point[join_info]" value="{=number_format(cfg.pointset.join_info)}" size=10 class="input"
+									    data-filter="price"> 포인트 지급
+								</td>
+							</tr>
+							<tr>
+								<th>
+									<span>텍스트 상품평 작성시</span>
+								</th>
+								<td class="td_con1">
+									<div>30자 미만 <input type=text name="point[review_text_short]" value="{=number_format(cfg.pointset.review_text_short)}" size=10 class="input" data-filter="price"> 포인트 지급</div>
+									<div class="m-t-5">30자 이상 <input type=text name=point[review_text_long] value="{=number_format(cfg.pointset.review_text_long)}" size=10 class="input" data-filter="price"> 포인트 지급</div>
+								</td>
+							</tr>
+							<tr>
+								<th>
+									<span>포토 상품평 작성시</span>
+								</th>
+								<td class="td_con1">
+									<input type=text name="point[review_photo]" value="{=number_format(cfg.pointset.review_photo)}" size=10 class="input"
+									    data-filter="price"> 포인트 지급
+								</td>
+							</tr>
+						</table>
+					</div>
+				</td>
+			</tr>
+		</table>
+
+		<div class="ta-c m-t-20 m-b-40">
+			<button type="submit" class="btn-point">적용하기</button>
+		</div>
+
+		<!-- 도움말 -->
+		<div class="sub_manual_wrap mb-5">
+			<div class="title">
+				<p>매뉴얼</p>
+			</div>
+			<ul class="help_list">
+				<li>회원이 포인트 적용기준 이상이 되면 주문서에 자동으로 [포인트 입력창] 생성됩니다.</li>
+				<li>등록/수정하시면 하단에 [적용하기]버튼을 누르셔야 쇼핑몰에 적용됩니다.</li>
+			</ul>
+		</div>
+	</form>
+</div>
+
+<script type="text/javascript">
+	var ShopPoint = {
+		init: function () {
+			var me = this;
+			var option = $.extend({}, validation_option, {
+				validateNonVisibleFields: false,
+				onValidationComplete: function (form, status) {
+					if (status) me.save();
+				}
+			});
+			$("#FrmShopPoint").validationEngine('attach', option);
+
+			//숫자체크
+			$('[data-filter="numeric"], [data-filter="price"]').on('keydown input', function (evt) {
+				var v = $(this).val();
+				v = v.replace(/[^0-9]/g, '');
+				v = v.replace(/(^0+)/, '');
+
+				var filter = $(this).data('filter');
+				if (filter == 'price') v = UI.numberFormat(v);
+				$(this).val(v);
+			});
+
+		},
+		save: function () {
+			UI.confirm('설정을 저장하시겠습니까?', function() {
+				var formdata = $('#FrmShopPoint').serialize();
+				$.ajax({
+					url: '{C.DIR_ADMIN}/proc/shop.proc.php',
+					data: formdata,
+					dataType: 'json',
+					type: 'POST',
+					success: function (r) {
+						UI.alert(r.msg);
+						console.log(r);
+					}
+				})
+				
+			});
+		}
+	}
+	$(function () {
+		ShopPoint.init();
+	})
+</script>

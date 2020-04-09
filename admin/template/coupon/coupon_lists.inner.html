@@ -1,0 +1,106 @@
+<div class="table_style02">
+	<table width=100% cellpadding=0 cellspacing=0 border=0 style="table-layout:fixed">
+		<colgroup>
+			<col style="width:50px" />
+			<col style="width:200px"><!-- 쿠폰명 -->
+			<col /><!-- 쿠폰설명 -->
+			<col style="width:100px" /><!-- 발급방식 -->
+			<col style="width:150px" /><!-- 혜택 -->
+			<col style="width:200px" /><!-- 사용기간 -->
+			<col style="width:100px" /><!-- 발급수 -->
+            <col style="width:80px" /><!-- 사용대상 -->
+			<col style="width:100px" /><!-- 발급상태 -->
+			<col style="width:80px" /><!-- 발급목록 -->
+			<col style="width:80px" /><!-- 발급링크 -->
+		</colgroup>
+
+		<thead>
+			<tr>
+				<th><input type="checkbox" class="hj" data-all="checked[]"><span class="lbl"></span></th>
+				<th>쿠폰명</th>
+				<th>쿠폰설명</th>
+				<th>발급방식</th>
+				<th>혜택</th>
+				<th>사용기간</th>
+				<th>발급수</th>
+                <th>사용대상</th>
+				<th>발급상태</th>
+				<th>발급목록</th>
+				<th>발급링크</th>
+			</tr>
+		</thead>
+		<tbody>
+			{@ list}
+			<tr>
+				<td><input type="checkbox" class="hj" data-all="checked[]"><span class="lbl"></span></td>
+				<td>{.coupon_name}</td>
+				<td>{.coupon_description}</td>
+				<td>
+					{? .type_publish=='I'}
+					<span><button type="button" class="btn btn-sm btn-outline-info" onclick="CouponList.issue('{.idx}')">수동발급</button></span>
+					{:}
+					<span>{type_publish[.type_publish]}</span>
+					{/}
+				</td>
+				<td>{? .type_use!='D'}
+						{.sale_price}
+						{? .sale_type=='R'}
+							%
+							{? .sale_max_price > 0 }
+								{=format(.sale_max_price,'price')}원까지
+							{/}
+						{:}원{/}
+					{:}
+						무료배송
+					{/}</td>
+				<td>{? .use_period_type=='D'}{=format(.use_period_start,'Y-m-d')}~{=format(.use_period_end,'Y-m-d')}{:}무제한{/}</td>
+				<td>{.download_count}</td>
+                <td>
+                    {.part_cnt}개
+                    <i class="fa fa-search pointer" onclick="CouponList.partDetail('{.use_part}','{.idx}')" data-toggle="tooltip" data-title="사용대상보기" data-original-title="" title=""></i>
+                </td>
+				<td>
+					{? .issue_status =='Y'}
+						<button type="button" class="btn btn-sm btn-outline-info" onclick="CouponList.change('Y','{.idx}')">발급중</button>
+					{: .issue_status =='N'}
+						<a class="btn btn-sm btn-outline-danger">불급불가</a>
+					{: .issue_status =='S'}
+						<button type="button" class="btn btn-sm btn-outline-warning" onclick="CouponList.change('S','{.idx}')">발급중지</button>
+					{/}
+				</td>
+				<td>
+                    <button type="button" class="btn btn-sm btn-outline-info" onclick="CouponList.detail('{.idx}')">조회</button>
+				</td>
+				<td>
+					{? .type_publish=='D'}
+					<button type="button" class="btn btn-sm btn-outline-info coupon_btn" data-clipboard-text="{C.HOST}{.url}" onclick="CouponList.urlCopy()" ><i class="fa fa-link"></i></button>
+					{/}
+				</td>
+			</tr>
+            {:}
+            <tr height="28">
+                <td colspan="11" align="center">조회된 내용이 없습니다.</td>
+            </tr>
+			{/}
+		</tbody>
+	</table>
+
+	{this->xprint('include/pagination.html')}
+
+</div>
+
+
+<script type="text/javascript">
+    var CouponInner = {
+        total:'{total}',
+        init: function () {
+            var me = this;
+            $('#count_total').html(me.total);
+        },
+
+    }
+
+    $(function () {
+        CouponInner.init();
+    })
+</script>

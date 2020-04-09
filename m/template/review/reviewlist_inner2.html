@@ -1,0 +1,86 @@
+<div class="best-slide-wrap">
+	<div class="review-total">
+		<ul>
+			{@ best_list}
+			<li>
+				<div class="item-wrap">
+					<div class="review-ct">
+						<div class="function clear">
+							<div class="score"><img src="/jayjun/web/static/img/icon/rating_score{.marks}.png" alt="5점 만점중 4점"></div>
+							<div class="writer">{=format(.id,'id')}<span>{=format(.date,'Y-m-d')}</span></div>
+						</div>
+						<div class="subject ellipsis">{.subject}</div>
+						<p>{.content}</p>
+						<a href="javascript:;" class="more" onclick="ReviewList.detailOpen('{.num}');">more+</a>
+						{? .type=='1'}
+						<div class="photos clear">
+							{@ .image}
+							<div class="cell {? count(.image)=='1'} is-one {/}">
+								<span style="background-image:url('{..value_}');"></span>
+							</div>
+							{/}
+						</div>
+						{/}
+						<a href="{=C.DIR_M}/productdetail.php?productcode={.productcode}" class="move-item">{.productname} <i class="icon-arr-move"></i></a>
+					</div>
+				</div>
+			</li>
+			{/}
+		</ul>
+	</div>
+</div>
+
+<div class="review-total">
+	<ul>
+		{@ review_list}
+		<li>
+			<div class="item-wrap">
+				<div class="review-ct">
+					<div class="function clear">
+						<div class="score"><img src="/jayjun/web/static/img/icon/rating_score{.marks}.png" alt="5점 만점중 4점"></div>
+						<div class="writer">{=format(.id,'id')}<span>{=format(.date,'Y-m-d')}</span></div>
+					</div>
+					<div class="subject ellipsis">{.subject}</div>
+					<p>{.content}</p>
+					<a href="javascript:;" class="more" onclick="ReviewList.detailOpen('{.num}');">more+</a>
+					{? .type=='1'}
+					<div class="photos clear">
+						{@ .image}
+						<div class="cell {? count(.image)=='1'} is-one {/}">
+							<span style="background-image:url('{..value_}');"></span>
+						</div>
+						{/}
+					</div>
+					{/}
+					<a href="{=C.DIR_M}/productdetail.php?productcode={.productcode}" class="move-item">{.productname} <i class="icon-arr-move"></i></a>
+				</div>
+			</div>
+		</li>
+		{:}
+		<li class="no-data">검색결과가 없습니다.</li>
+		{/}
+	</ul>
+</div>
+
+<p class="att">※ 리뷰 게시판은 제이준코스메틱 쇼핑몰 회원이 구매한 제품에 대한 이용후기를 공유하는 게시판입니다.</p>
+{this->xprint('_include/pagination.html')}
+
+<script type="text/javascript">
+
+    var ReviewInner = {
+        total:'{total}',
+        init: function(){
+            var me = this;
+            $('#total > strong').html('총 '+me.total+'건');
+
+            $('.best-slide-wrap .review-total ul').bxSlider({
+                controls:false,
+                adaptiveHeight:true
+            })
+        },
+    }
+
+    $(function() {
+        ReviewInner.init();
+    })
+</script>

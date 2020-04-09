@@ -1,0 +1,435 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+	<title>제이준 Web Component</title>
+	<meta charset="UTF-8">
+	<meta http-equiv="X-UA-Compatible" content="IE=edge">
+	<meta name="Generator" content="">
+	<meta name="Author" content="">
+	<meta name="Keywords" content="">
+	<meta name="Description" content="">
+
+	<link href="https://fonts.googleapis.com/css?family=Montserrat:400,500,600" rel="stylesheet">
+	<link rel="stylesheet" type="text/css" href="../static/css/common.min.css">
+	<link rel="stylesheet" type="text/css" href="../static/css/component.min.css">
+	<link rel="stylesheet" type="text/css" href="../static/css/content.min.css">
+	<link rel="stylesheet" type="text/css" href="../static/css/temporary.min.css">
+
+	<script src="../static/js/jquery-1.12.0.min.js"></script>
+	<script src="../static/js/placeholders.min.js"></script>
+	<script src="../static/js/jquery.bxslider.min.js"></script>
+	<script src="../static/js/ui.js"></script>
+
+	<style>
+	body {margin:0; padding:0 0 0 200px; box-sizing:border-box;}
+	.wrap {position:relative; min-width:1300px; padding:0 40px 40px 0; box-sizing:border-box;}
+	h1 {padding-top:40px; font-size:24px; font-weight:400; color:#e60b1f ;}
+	h2 {margin-top:50px; background:#666; padding:10px; font-size:20px; color:#fff; border-radius:5px 5px 0 0; text-align:center; font-weight:400;}
+	#lnb {position:fixed; overflow-y:auto; top:0; bottom:0; left:0; width:160px; border-right:1px solid #aaa;}
+	#lnb span {padding:10px 0; display:block; text-align:center; border-bottom:1px solid #eee;}
+	#lnb span img {max-width:120px;}
+	#lnb a {font-size:16px; padding:10px; display:block; border-bottom:1px solid #eee;}
+	#lnb a:hover {color:#e60b1f ;}
+	#lnb a.active {background:#e60b1f ; color:#fff;}
+	.box-area {padding:25px; padding-top:0; border:1px solid #666; border-radius:0 0 5px 5px; box-sizing:border-box;}
+	.box-area h3 {padding-bottom:5px; margin:30px 0 20px; border-bottom:1px solid #e4e4e4; font-size:16px; color:#e60b1f ; }
+	.colors div {display:inline-block; margin-right:10px; width:100px; line-height:50px; text-align:center;}
+	.other-icon-sort i + i {margin-left:10px;}
+	</style>
+</head>
+
+<body>
+
+<div class="wrap">
+	<h1>Web Component Guide</h1>
+	<nav id="lnb">
+		<span class="logo"><img src="../static/img/common/h1_logo.png" alt="브랜드"></span>
+		<a href="#category1">color</a>
+		<a href="#category2">button</a>
+		<a href="#category3">paginate</a>
+		<a href="#category4">form</a>
+		<a href="#category5">tabs</a>
+		<a href="#category6">accordions</a>
+		<a href="#category7">layer</a>
+		<a href="#category8">table</a>
+		<a href="#category9">divide</a>
+		<a href="#category10">scroll</a>
+		<a href="#category11">thumbnail</a>
+		<a href="#category12">icon</a>
+		<a href="#category13">etc</a>
+	</nav>
+
+
+	<h2 id="category1" class="categorys">color</h2>
+	<div class="box-area">
+		<h3>Main</h3>
+		<div class="colors">
+			<div style="background-color:#222; color:#fff">222222</div>
+			<!-- <div style="background-color:#f1f1f1">#F1F1F1</div> -->
+		</div>
+
+		<h3>TEXT</h3>
+		<div class="colors">
+			<div style="background-color:#222; color:#fff">#222222</div>
+			<div style="background-color:#888; color:#fff">#666666</div>
+		</div>
+
+		<h3>POINT</h3>
+		<div class="colors">
+			<div style="background-color:#e9c05e; color:#fff; line-height:25px">#e9c05e<br>.point-color</div>
+			<!-- <div style="background-color:#ff5151; color:#fff; line-height:25px">#FF5151<br>.discount-color</div>
+			<div style="background-color:#1182e2; color:#fff; line-height:25px">#1182e2<br>.sub-color</div>
+			<div style="background-color:#111; color:#fff; line-height:25px">#111<br>.emphasis-color</div> -->
+		</div>
+
+	</div>
+
+	<h2 id="category2" class="categorys">button</h2>
+	<div class="box-area">
+		<h3>btn - 3종</h3>
+		<button class="btn-basic"><span>btn-basic</span></button>
+		<button class="btn-point"><span>btn-point</span></button>
+		<button class="btn-line"><span>btn-line</span></button>
+
+		<h3>btn - 3종 + 높이 조합</h3>
+		<button class="btn-basic h-small"><span>btn-basic + h-small</span></button>
+		<button class="btn-basic "><span>btn-basic</span></button>
+		<button class="btn-basic h-large"><span>btn-basic + h-large</span></button>
+	</div>
+
+	<h2 id="category3" class="categorys">paginate</h2>
+	<div class="box-area">
+		<h3>일반형</h3>
+		<div class="list-paginate mt-20 mb-20">
+			<a href="#" class="prev-all"></a>
+			<a href="#" class="prev"></a>
+			<a href="#" class="number on">1</a>
+			<a href="#" class="number">2</a>
+			<a href="#" class="number">3</a>
+			<a href="#" class="number">4</a>
+			<a href="#" class="number">5</a>
+			<a href="#" class="number">6</a>
+			<a href="#" class="number">7</a>
+			<a href="#" class="number">8</a>
+			<a href="#" class="number">9</a>
+			<a href="#" class="number">10</a>
+			<a href="#" class="next "></a>
+			<a href="#" class="next-all "></a>
+		</div>
+
+	</div>
+
+	<h2 id="category4" class="categorys">form</h2>
+	<div class="box-area">
+		<h3>Checkbox</h3>
+		<div class="checkbox">
+			<input type="checkbox" title="타이틀 작성필수" id="ex_id1" checked>
+			<label for="ex_id1">큰 체크박스 선택</label>
+		</div>
+		<div class="checkbox">
+			<input type="checkbox" title="타이틀 작성필수" id="ex_id2">
+			<label for="ex_id2">큰 체크박스 해제</label>
+		</div>
+		<br><br>
+		<div class="checkbox small">
+			<input type="checkbox" title="타이틀 작성필수" id="ex_id3" checked>
+			<label for="ex_id3">작은 체크박스 선택</label>
+		</div>
+		<div class="checkbox small">
+			<input type="checkbox" title="타이틀 작성필수" id="ex_id4">
+			<label for="ex_id4">작은 체크박스 해제</label>
+		</div>
+
+		<h3>Radio</h3>
+		<div class="radio">
+			<input type="radio" name="ex_radio" id="ex_id5" checked>
+			<label for="ex_id5">라디오 선택</label>
+		</div>
+		<div class="radio">
+			<input type="radio" name="ex_radio" id="ex_id6">
+			<label for="ex_id6">라디오 해제</label>
+		</div>
+
+		<h3>Select</h3>
+		<div class="select">
+			<select title="타이틀작성 필수">
+				<option>기본 셀렉트박스</option>
+			</select>
+		</div>
+
+		<h3>Select + Design</h3>
+		<div class="select is-custom">
+			<select title="타이틀작성 필수">
+				<option>디자인 셀렉트박스</option>
+			</select>
+		</div>
+
+	</div>
+
+	<h2 id="category5" class="categorys">tabs</h2>
+	<div class="box-area">
+		<h3>none style</h3>
+		<div data-ui="TabMenu">
+			<div class="clear">
+				<button data-content="menu" class="active">MENU1</button>
+				<button data-content="menu">MENU2</button>
+			</div>
+			<div data-content="content" class="active">1번 컨텐츠 오픈</div>
+			<div data-content="content">2번 컨텐츠 오픈</div>
+		</div>
+	</div>
+
+	<h2 id="category6" class="categorys">accordions</h2>
+	<div class="box-area">
+		<h3>일반형</h3>
+		
+	</div>
+
+	<h2 id="category7" class="categorys">layer</h2>
+	<div class="box-area">
+		<h3>팝업 기본형</h3>
+		
+	</div>
+
+	<h2 id="category8" class="categorys">table</h2>
+	<div class="box-area">
+		<h3>제목 상단형</h3>
+		<table class="th-top">
+			<caption>테이블 제목</caption>
+			<colgroup>
+				<col style="width:15%">
+				<col style="width:65%">
+				<col style="width:20%">
+			</colgroup>
+			<thead>
+				<tr>
+					<th scope="col">사용일자</th>
+					<th scope="col">내용</th>
+					<th scope="col">사용포인트</th>
+				</tr>
+			</thead>
+			<tbody>
+				<tr>
+					<td>2018.01.23</td>
+					<td class="dir-flow"><a href="">[온라인몰 구입] 상품 구매 및 리뷰 작성</a></td>
+					<td><strong class="point-color">200,000 P</strong></td>
+				</tr>
+			</tbody>
+		</table>
+		
+		<h3>제목 좌측형</h3>
+		<table class="th-left">
+			<caption>테이블 제목</caption>
+			<colgroup>
+				<col style="width:150px">
+				<col style="width:auto">
+			</colgroup>
+			<tbody>
+				<tr>
+					<th scope="row"><label>이름</label></th>
+					<td><strong>홍길동</strong></td>
+				</tr>
+				<tr>
+					<th scope="row"><label for="input-connect1" class="required">제목</label></th>
+					<td><input id="input-connect1" class="w100-per" type="text" name="텍스트박스" title="타이틀 작성"></td>
+				</tr>
+				
+			</tbody>
+		</table>
+		
+	</div>
+
+	<h2 id="category9" class="categorys">divide</h2>
+	<div class="box-area">
+		<h3>분할 50%</h3>
+		<div class="divide-box-wrap two">
+			<ul class="divide-box ">
+				<li><a href="#">category1</a></li>
+				<li><a href="#">category2</a></li>
+				<li><a href="#">category3</a></li>
+			</ul>
+		</div>
+
+		<h3>분할 33%</h3>
+		<div class="divide-box-wrap three">
+			<ul class="divide-box ">
+				<li><a href="#">category1</a></li>
+				<li><a href="#">category2</a></li>
+				<li><a href="#">category3</a></li>
+				<li><a href="#">category4</a></li>
+				<li><a href="#">category5</a></li>
+				<li><a href="#">category6</a></li>
+				<li><a href="#">category7</a></li>
+				<li><a href="#">category8</a></li>
+			</ul>
+		</div>
+
+		<h3>분할 - 25%</h3>
+		<div class="divide-box-wrap four">
+			<ul class="divide-box ">
+				<li><a href="#">category1</a></li>
+				<li><a href="#">category2</a></li>
+				<li><a href="#">category3</a></li>
+				<li><a href="#">category4</a></li>
+				<li><a href="#">category5</a></li>
+			</ul>
+		</div>
+	</div>
+
+	<h2 id="category10" class="categorys">scroll</h2>
+	<div class="box-area">
+		<h3>기본형</h3>
+		
+	</div>
+
+	<h2 id="category11" class="categorys">thumbnail</h2>
+	<div class="box-area">
+		<h3>기본형</h3>
+		<div class="goods-item" style="width:320px"> <!-- [D] style width 삭제하고 사용할 것 -->
+			<div class="thumb-img">
+				<a href="#"><img src="../static/img/test/@goods_thumb320_01.jpg" alt="상품 썸네일"></a>
+				<div class="layer">
+					<div class="btn">
+						<button type="button"><span><i class="icon-like">좋아요</i></span><span>11</span></button> <!-- [D] 좋아요 선택시 .on 처리 -->
+					</div>
+				</div>
+			</div><!-- //.thumb-img -->
+			<div class="price-box">
+				<div class="goods-nm">I LIKE EYE SHADOW TRIO</div>
+				<div class="opt">SPF50/PA+++/20ml</div>
+				<div class="price">105,800<span>원</span></div>
+				<div class="color-chip">
+					<span><img src="../static/img/test/chip_color01.png" alt="컬러이름 출력"></span>
+					<span><img src="../static/img/test/chip_color02.png" alt="컬러이름 출력"></span>
+					<span><img src="../static/img/test/chip_color03.png" alt="컬러이름 출력"></span>
+					<span><img src="../static/img/test/chip_color04.png" alt="컬러이름 출력"></span>
+					<span><img src="../static/img/test/chip_color05.png" alt="컬러이름 출력"></span>
+					<span><img src="../static/img/test/chip_color06.png" alt="컬러이름 출력"></span>
+					<span><img src="../static/img/test/chip_color07.png" alt="컬러이름 출력"></span>
+				</div>
+			</div>
+		</div>
+
+		<h3>마이페이지에 사용</h3>
+		<div class="goods-in-td">
+			<div class="thumb-img"><a href="#"><img src="../static/img/test/@goods_thumb320_02.jpg" alt="썸네일"></a></div>
+			<div class="info">
+				<p class="brand-nm">BESTI BELLI</p>
+				<p class="goods-nm">솔리드 심플 벨티트 자켓 베이직 스타일</p>
+				<p class="opt">색상 : NAM  / 사이즈 74</p>
+				<button class="btn-line h-small" type="button"><span>옵션변경</span></button>
+			</div>
+		</div>
+		
+	</div>
+
+	<h2 id="category12" class="categorys">icon</h2>
+	<div class="box-area">
+		<h3>Like Count</h3>
+		<button class="btn-like-count"><span><i class="icon-like">좋아요</i> 12</span></button>
+
+		<h3>other</h3>
+		<div class="other-icon-sort">
+		</div>
+	</div>
+	
+	<h2 id="category13" class="categorys">etc</h2>
+	<div class="box-area">
+		<h3>quantity</h3>
+		<div class="quantity">
+			<input type="text" value="1" title="타이틀 작성" readonly>
+			<button class="plus">수량증가</button>
+			<button class="minus">수량감소</button>
+		</div>
+
+		<h3>size opt (radio or checkbox)</h3>
+		<div class="opt-size">
+			<div><input type="radio" name="optSize" id="size44" value="44"><label for="size44">44</label></div>
+			<div><input type="radio" name="optSize" id="size55" value="55" disabled><label for="size55">55</label></div>
+			<div><input type="radio" name="optSize" id="size66" value="66" checked><label for="size66">66</label></div>
+			<div><input type="radio" name="optSize" id="size77" value="77"><label for="size77">77</label></div>
+		</div>
+
+		<h3>rating</h3>
+		<div style="">
+			<strong style="display:inline-block;width:60px;line-height:20px;vertical-align:middle">Size</strong>
+			<div class="rating clear">
+				<input type="radio" class="rating-input" id="rating-size5" name="ratingSize"><label for="rating-size5" class="rating-star score5"><span><em>10점 만점 중</em>10<em>점</em></span></label>
+				<input type="radio" class="rating-input" id="rating-size4" name="ratingSize"><label for="rating-size4" class="rating-star score4"><span><em>10점 만점 중</em>8<em>점</em></span></label>
+				<input type="radio" class="rating-input" id="rating-size3" name="ratingSize"><label for="rating-size3" class="rating-star score3"><span><em>10점 만점 중</em>6<em>점</em></span></label>
+				<input type="radio" class="rating-input" id="rating-size2" name="ratingSize"><label for="rating-size2" class="rating-star score2"><span><em>10점 만점 중</em>4<em>점</em></span></label>
+				<input type="radio" class="rating-input" id="rating-size1" name="ratingSize"><label for="rating-size1" class="rating-star score1"><span><em>10점 만점 중</em>2<em>점</em></span></label>
+			</div>
+		</div>
+
+		<div style="margin-top:10px">
+			<strong style="display:inline-block;width:60px;line-height:20px;vertical-align:middle">Color</strong>
+			<div class="rating clear">
+				<input type="radio" class="rating-input" id="rating-color5" name="ratingColor"><label for="rating-color5" class="rating-star score5"><span><em>10점 만점 중</em>10<em>점</em></span></label>
+				<input type="radio" class="rating-input" id="rating-color4" name="ratingColor"><label for="rating-color4" class="rating-star score4"><span><em>10점 만점 중</em>8<em>점</em></span></label>
+				<input type="radio" class="rating-input" id="rating-color3" name="ratingColor"><label for="rating-color3" class="rating-star score3"><span><em>10점 만점 중</em>6<em>점</em></span></label>
+				<input type="radio" class="rating-input" id="rating-color2" name="ratingColor"><label for="rating-color2" class="rating-star score2"><span><em>10점 만점 중</em>4<em>점</em></span></label>
+				<input type="radio" class="rating-input" id="rating-color1" name="ratingColor"><label for="rating-color1" class="rating-star score1"><span><em>10점 만점 중</em>2<em>점</em></span></label>
+			</div>
+		</div>
+
+		<div style="margin-top:10px">
+			<strong style="display:inline-block;width:60px;line-height:20px;vertical-align:middle">Delivery</strong>
+			<div class="rating clear">
+				<input type="radio" class="rating-input" id="rating-deli5" name="ratingDeli"><label for="rating-deli5" class="rating-star score5"><span><em>10점 만점 중</em>10<em>점</em></span></label>
+				<input type="radio" class="rating-input" id="rating-deli4" name="ratingDeli"><label for="rating-deli4" class="rating-star score4"><span><em>10점 만점 중</em>8<em>점</em></span></label>
+				<input type="radio" class="rating-input" id="rating-deli3" name="ratingDeli"><label for="rating-deli3" class="rating-star score3"><span><em>10점 만점 중</em>6<em>점</em></span></label>
+				<input type="radio" class="rating-input" id="rating-deli2" name="ratingDeli"><label for="rating-deli2" class="rating-star score2"><span><em>10점 만점 중</em>4<em>점</em></span></label>
+				<input type="radio" class="rating-input" id="rating-deli1" name="ratingDeli"><label for="rating-deli1" class="rating-star score1"><span><em>10점 만점 중</em>2<em>점</em></span></label>
+			</div>
+		</div>
+
+		<h3>attention</h3>
+		
+
+		<h3>coupon</h3>
+		<div class="coupon-item"><p class="discount-color"><strong>10</strong>%</p></div>
+		<div class="coupon-item"><p class="discount-color"><strong>1,000</strong>원</p></div>
+
+	</div>
+
+</div>
+
+<script>
+$(document).ready(function() {
+	//lnb
+	$('#lnb a').click(function(event) {
+		event.preventDefault();
+		$('html,body').animate({scrollTop:$(this.hash).offset().top}, 400);
+	});
+	
+});
+$(window).scroll(function () {
+	//lnb
+	$('.categorys').each(function() {
+		var doc_scroll_top = $(window).scrollTop() + 30,
+				categorys       = $(this),
+				category_id     = categorys.attr('id'),
+				category_top   = categorys.offset().top,
+				components_top = $('h1').offset().top;
+
+		if (components_top > $(window).scrollTop()) {
+			$('#lnb a').removeClass('active');
+		} else if(category_top <= doc_scroll_top) {
+			$("#lnb a[href='#" + category_id + "']").addClass('active').siblings('a').removeClass('active');
+		} else if ($(document).height()- $(window).height() === $(window).scrollTop()) {
+			$('#lnb a:last-child').addClass('active').siblings('a').removeClass('active');
+		}
+	});
+
+	if ($('#lnb').length) snb_xscroll();
+});
+function snb_xscroll () {
+	var window_scroll = $(window);
+	$('#lnb').css('left', - window_scroll.scrollLeft());
+};
+</script>
+
+</body>
+
+</html>

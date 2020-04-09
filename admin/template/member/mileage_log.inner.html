@@ -1,0 +1,77 @@
+<table class="tbl-list m-t-10">
+		<colgroup>
+			<col style="width:50px">
+			<col style="width:150px">
+			<col style="width:150px">
+			<col style="width:100px">
+			<col style="width:150px">
+			<col>
+			<col style="width:150px">
+			<col style="width:150px">
+		</colgroup>
+		<thead>
+			<tr>
+				<th>No</th>
+				<th>회원아이디</th>
+				<th>회원명</th>
+				<th>등급</th>
+				<th>날짜</th>
+				<th>발생사유</th>
+				<th>적립마일리지</th>
+				<th>사용마일리지</th>
+			</tr>
+		</thead>
+	
+		<tbody>
+			{? list}
+			<tr class="sum">
+				<td>합계</td>
+				<td colspan="5"></td>
+				<td class="text-primary">{=number_format(sum.plus)} M</td>
+				<td class="text-danger">{=number_format(sum.minus)} M</td>
+			</tr>
+			{/}
+			{@ list}
+			<tr data-id="{.mem_id}" data-name="">
+				<td>{.num}</td>
+				<td><a href="javascript:;" onclick="MileageLog.crm(this)" class="link">{.mem_id}</a></td>
+				<td>{.name}</td>
+				<td>{.group_name}</td>
+				<td>{=format(.date_insert,'Y-m-d')}</td>
+				
+				<td class="ta-l">
+					{? .mileage_reason_flag == 'order'}주문결제시 사용 
+					<div class="text-muted">주문번호 : {.order_num}</div>
+					{:}
+					{.mileage_reason}
+					{/}
+
+					{? .mileage>0}<div class="text-muted">유효기간 : {=format(.date_expire,'Y-m-d')}</div>{/}
+				</td>
+				<td>{? .mileage >= 0}+{=number_format(.mileage)} M{/}</td>
+				<td>{? .mileage < 0}{=number_format(.mileage)} M{/}</td>
+			</tr>
+			{:}
+			<tr>
+				<td colspan="8">조회된 마일리지 내역이 없습니다.</td>
+			</tr>
+			{/}
+		</tbody>
+	</table>
+	
+	{this->xprint('include/pagination.html')}
+	
+	
+	<script type="text/javascript">
+	var MileageInner = {
+		init: function() {
+			$('#count_total').text(UI.numberFormat('{count.total}'));
+			$('#count_search').text(UI.numberFormat('{count.search}'));
+			$('#sum_mileage').text(UI.numberFormat({sum}));
+            $('#searched').val('{_POST.search}');
+		}
+	}
+	$(function() {
+		MileageInner.init();
+	});
+	</script>

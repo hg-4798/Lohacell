@@ -1,0 +1,130 @@
+<div class="listpage-wrap">
+  <div class="page-top">
+    <h2 class="tit">전체보기 스페셜</h2>
+    <div class="wrap_select">
+      <ul class="ea2">
+        <li>
+          <select class="select_line" title="타이틀 작성">
+            <option selected="">전체보기</option>
+            <option>선택1</option>
+            <option>선택2</option>
+            <option>선택3</option>
+          </select>
+        </li>
+        <li>
+          <select class="select_line" title="타이틀 작성">
+            <option selected="">소분류 전체</option>
+            <option>선택1</option>
+            <option>선택2</option>
+            <option>선택3</option>
+          </select>
+        </li>
+      </ul>
+    </div>
+    <div class="sorting-area clear">
+      <ul class="sorting clear">
+        <li>최신순</li>
+        <li>판매순</li>
+        <li>상품순</li>
+      </ul>
+      <div class="btns-align">
+        <button class="btn-align-one">
+          <img src="../../jayjun/m/static/img/btn/btn-align-one.png" alt="한줄로 나열 버튼">
+        </button>
+        <button class="btn-align-two active">
+          <img src="../../jayjun/m/static/img/btn/btn-align-two.png" alt="두줄로 나열 버튼">
+        </button>
+      </div>
+    </div>
+  </div>
+  <ul class="goods-list mb-30 clear">
+    <li>
+      <a href="#" class="clear">
+        <div class="thumb-wrap">
+          <img class="thumb" src="../../jayjun/m/static/img/common/goods-list-thumb01.jpg" alt="상품 썸네일">
+          <img class="label" src="../../jayjun/m/static/img/common/thumb-label.png" alt="이미지 라벨">
+        </div>
+        <div class="goods-info">
+          <p class="desc">[의약외품 손 소독제] 폴톤 핸드 세니타이저 겔 ★무료배송 이벤트★</p>
+          <div class="tags">
+            <img src="../../jayjun/m/static/img/common/label-tag-new.png" alt="라벨 태그">
+          </div>
+          <div class="price-wrap">
+            <span class="origin">15,000원</span>
+            <span class="divider"></span>
+            <span class="sale">9,000원</span>
+          </div>
+        </div>
+      </a>
+    </li>
+    <li>
+      <a href="#">
+        <div class="thumb-wrap">
+          <img class="thumb" src="../../jayjun/m/static/img/common/goods-list-thumb01.jpg" alt="상품 썸네일">
+          <img class="label" src="../../jayjun/m/static/img/common/thumb-label.png" alt="이미지 라벨">
+        </div>
+        <div class="goods-info">
+          <p class="desc">[의약외품 손 소독제] 폴톤 핸드 세니타이저 겔 ★무료배송 이벤트★</p>
+          <div class="price-wrap">
+            <span class="origin">15,000원</span>
+            <span class="divider"></span>
+            <span class="sale">9,000원</span>
+          </div>
+        </div>
+      </a>
+    </li>
+    <li>
+      <a href="#">
+        <div class="thumb-wrap">
+          <img class="thumb" src="../../jayjun/m/static/img/common/goods-list-thumb01.jpg" alt="상품 썸네일">
+          <img class="label" src="../../jayjun/m/static/img/common/thumb-label.png" alt="이미지 라벨">
+        </div>
+        <div class="goods-info">
+          <p class="desc">[의약외품 손 소독제] 폴톤 핸드 세니타이저 겔 ★무료배송 이벤트★</p>
+          <div class="price-wrap">
+            <span class="origin">15,000원</span>
+            <span class="divider"></span>
+            <span class="sale">9,000원</span>
+          </div>
+        </div>
+      </a>
+    </li>
+    <li>
+      <a href="#">
+        <div class="thumb-wrap">
+          <img class="thumb" src="../../jayjun/m/static/img/common/goods-list-thumb01.jpg" alt="상품 썸네일">
+          <img class="label" src="../../jayjun/m/static/img/common/thumb-label.png" alt="이미지 라벨">
+        </div>
+        <div class="goods-info">
+          <p class="desc">[의약외품 손 소독제] 폴톤 핸드 세니타이저 겔 ★무료배송 이벤트★</p>
+          <div class="price-wrap">
+            <span class="origin">15,000원</span>
+            <span class="divider"></span>
+            <span class="sale">9,000원</span>
+          </div>
+        </div>
+      </a>
+    </li>
+
+  </ul>
+  <div class="btn-list-more">
+    <button>
+      <span>더보기</span>
+    </button>
+  </div>
+</div>
+
+<script>
+  $(function(){
+    $('.btns-align button').on('click',function(){
+      $(this).addClass('active');
+      $(this).siblings().removeClass('active');
+
+      if($(this).hasClass('btn-align-one')){
+        $(this).parents('.listpage-wrap').find('.goods-list').addClass('one-column')
+      } else {
+        $(this).parents('.listpage-wrap').find('.goods-list').removeClass('one-column')
+      }
+    });
+  });
+</script>

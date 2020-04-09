@@ -1,0 +1,89 @@
+<div class="content-wrap">
+	<div class="contentsBody">
+	<div class="table_style01 pt_20">
+	<form name="FrmSearch" id="FrmSearch">
+		<input type="hidden" name="id" value="{member_id}">
+		<input type="hidden" name="menu" value="sms">
+		<h3 class="table-title">SMS 발송내역 조회</h3>
+		<table class="tbl-search">
+
+			<colgroup>
+				<col style="width:18%"><col style="width:82%">
+			</colgroup>
+			<tbody>
+
+			<TR>
+				<th scope="row">전송일</th>
+				<td>
+					<div class="date-choice">
+						<input type="text" name="date_s" OnClick="Calendar(event)" value="" class="input calendar" autocomplete="off" /> ~
+						<input type="text" name="date_e" OnClick="Calendar(event)" value="" class="calendar input" autocomplete="off"/>
+					</div>
+				</td>
+			</TR>
+			</tbody>
+		</table>
+		<!-- <div class="detail-find"><input type="image" src="static/img/btn/detail_search.gif" alt="상세검색"></div> -->
+		<div class="btn-place">
+			<a href="javascript:;" class="btn-dib on" onclick="CrmSmsList.search()">검색</a>
+			<!-- <a href="#" class="btn-dib">초기화</a> -->
+		</div>
+	</form>
+	</div>
+	<div id="inner"></div>
+	<dl class="help-attention mt-50">
+		<dt>도움말</dt>
+		<!-- <dd>1. 비회원인 경우는 어쩌고 저쩌고</dd>
+		<dd>2. 회원인 경우는 어쩌고 저쩌고</dd> -->
+	</dl>
+
+	</div>
+</div><!-- //.contentsBody -->
+
+<script type="text/javascript" src="/admin/static/js/moment.js"></script>
+<script type="text/javascript" src="/admin/static/js/calendar.js"></script>
+<script type="text/javascript">
+    var CrmSmsList = {
+        page: 1,
+        init: function() {
+            var me = this;
+            //$('.datepicker').datepicker();
+            me.load(1);
+            UI.reverseCheck();
+        },
+        setPeriod: function (sub) {
+            var period = UTIL.period('<?=TIMESTAMP?>', sub);
+            document.FrmSearch.date_start.value = period.start;
+            document.FrmSearch.date_end.value = period.end;
+        },
+        search: function (field, value) {
+            if (field && value) $('#FrmSearch').find('[name="' + field + '"]').val(value);
+            this.load(1);
+        },
+        searchReset: function () {
+            $('#FrmSearch')[0].reset();
+            $('[data-reverse]').prop('checked',true);
+            this.load(1);
+        },
+        load: function (page) {
+            UI.ing('데이터를 불러오는 중입니다...');
+            var p = page || CrmSmsList.page;
+            var search = $('#FrmSearch').serialize();
+
+            $('#inner').load('/admin/crm_sms_list.inner.php', {
+                    page: p,
+                    search: search
+                },
+                function () {
+                    CrmSmsList.page = p;
+                    UI.toggleCheck();
+                    UI.ing();
+                    $('[data-toggle="tooltip"]').tooltip();
+                }
+            );
+        }
+    }
+    $(function() {
+        CrmSmsList.init();
+    });
+</script>

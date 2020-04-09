@@ -1,0 +1,59 @@
+<div class="active" data-content="content" >
+	<header class="my-title mt-40">
+		<h3 class="fz-0">사용완료 쿠폰 내역</h3>
+		<div class="count">전체 <strong><span id="used_total"></span></strong></div>
+	</header>
+	<table class="th-top">
+		<caption>사용완료 쿠폰 목록</caption>
+		<colgroup>
+			<col style="width:auto">
+			<col style="width:150px">
+			<col style="width:150px">
+			<col style="width:200px">
+		</colgroup>
+		<thead>
+		<tr>
+			<th scope="col">쿠폰명</th>
+			<th scope="col">사용혜택</th>
+			<th scope="col">사용일</th>
+			<th scope="col">주문번호</th>
+		</tr>
+		</thead>
+		<tbody>
+		{@ list}
+		<tr>
+			<td>{.issue.coupon_name}</td>
+			<td class="point-color fw-bold">{=format(.issue.sale_price,'price')}{? .issue.sale_type=='K'}원{:}%{/} 할인</td>
+			<td>{=format(.order.date_insert,'Y-m-d')}</td>
+			<td>{.order.order_num}</td>
+		</tr>
+		{:}
+		<tr>
+			<td colspan="4">내역이 없습니다.</td>
+		</tr>
+		{/}
+		</tbody>
+	</table>
+	<div class="list-paginate mt-20">
+		{this->xprint('_include/pagination.html')}
+	</div>
+</div>
+
+
+
+<script type="text/javascript">
+
+    var CouponInner = {
+		total:'{total}',
+        init: function(){
+            var me = this;
+			$('#used_total').html(me.total);
+        },
+    }
+
+    $(function() {
+        CouponInner.init();
+    })
+</script>
+
+

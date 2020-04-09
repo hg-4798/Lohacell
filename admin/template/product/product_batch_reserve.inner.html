@@ -1,0 +1,131 @@
+<div class="table_style02">
+	
+	<table width=100% cellpadding=0 cellspacing=0 border=0 style="table-layout:fixed">
+		<colgroup>
+			<col style="width:50px" />
+			<col style="width:50px" />
+			<col style="width:80px" /><!-- 이미지 -->
+			<col style="width:250px"><!-- 상품명 -->
+			<col style="width:150px" /><!-- 상품코드 -->
+			<col style="width:80px" /><!-- 승인상태 -->
+			<col style="width:80px" /><!-- 판매상태 -->
+			<col style="width:80px" /><!-- 정상가 -->
+			<col style="width:80px" /><!-- 할인율 -->
+			<col style="width:80px" /><!-- 컬러 -->
+			<col style="width:80px" /><!-- 사이즈 -->
+			<col style="width:60px" /><!-- ERP재고 -->
+			<col style="width:80px" /><!-- 당일배송재고 -->
+			<col style="width:180px" /><!-- 예약판매설정 -->
+			<!-- <col style="width:80px" />예약판매재고 -->
+			<col style="width:80px" /><!-- 예약판매수량 -->
+			<col style="width:80px" /><!-- 예약판매잔여수량 -->
+			<col style="width:80px" /><!-- 품절 -->
+		</colgroup>
+		
+		<tr>
+			<th><input type="checkbox" class="hj" data-all="checked[]"><span class="lbl"></span></th>
+			<th>No</th>
+			<th>이미지</th>
+			<th>상품명</th>
+			<th>상품코드</th>
+			<th>승인상태</th>
+			<th>판매상태</th>
+			<th>판매가<br />정상가</th>
+			<th>할인율</th>
+			<th>컬러</th>
+			<th>사이즈</th>
+			<th>ERP재고</th>
+			<th>당일배송<br />재고</th>
+			<th>예약판매설정/재고</th>
+			<!--{* <th>예약판매<br />재고</th> *}-->
+			<th>예약판매<br />수량</th>
+			<th>예약판매<br />잔여수량</th>
+			<th>품절</th>
+			
+		</tr>
+		{@ list}
+		<tr>
+			<td><input type="checkbox" name="checked[]" value="{.productcode}" class="hj"><span class="lbl"></span></td>
+			<td>{.no}</td>
+			<td><a href="{link.view}?productcode={.productcode}" target="_blank"><img data-src="{=preview(.tinyimage, 'list')}" src="/static/img/common/img_default_list.gif" alt="" class="b-lazy" style="width:70px"></a></td>
+			<td class="ta_l"><a href="javascript:;" onclick="ProductBatchReserve.input('{.productcode}');">{.productname}</a></td>
+			<td>
+				{.prodcode}
+				<div class="fc-null">({.productcode})</div>
+			</td>
+			<td>{class.product->trans('display',.display)}</td><!-- 승인상태 -->
+			<td>
+				{class.product->trans('soldout',.soldout)}
+				{? .soldout == 'N' && .quantity==0}<div class="fc-red fs-11">(일시품절)</div>{/}
+			</td><!-- 판매상태 -->
+			<td>
+				<img src="images/won_icon.gif" class="middle" style="margin-right:2px;"><span class="font_orange">{=number_format(.sellprice)}</span><br />
+				<img src="images/won_icon_black.gif" class="middle" style="margin-right:2px;"><span class="">{=number_format(.consumerprice)}</span>
+			</td>
+			<td>{.sellprice_dc_rate}%</td>
+			
+			<td>{.option_color}</td><!-- 컬러 -->
+			<td>{.option_code}</td><!-- 사이즈 -->
+			<td>{=number_format(.option_quantity)}</td> <!-- ERP재고 -->
+			<td>{=number_format(.option_quantity_day)}</td> <!-- 당일배송재고 -->
+			<td>
+				<label class="s"><input type="checkbox"  name="option[{.option_num}][reserve_yn]" id="reserve_yn_{.option_num}" value="Y" class="hj" {=checked(.reserve_yn,'Y')}><span class="lbl"></span></label><!-- 예약판매설정 -->
+				<input type="text" name="option[{.option_num}][reserve_quantity]" value="{.reserve_quantity}" data-filter="numeric" class="input_bd_st01 validate[required]" style="width:80px" data-errormessage-value-missing="예약판매 수량을 입력하세요.">
+			</td>
+			<td>{=number_format(.reserve_sold)}</td><!-- 예약판매수량 -->
+			<td>{=number_format(.reserve_quantity-.reserve_sold)}</td><!-- 예약판매잔여수량 -->
+			<td><label class="s"><input type="checkbox" name="option[{.option_num}][option_soldout]" value="Y" class="hj" {=checked(.option_soldout,'Y')}><span class="lbl"></span></label></td><!-- 풉절 -->
+		</tr>
+		{:}
+		<tr height="28">
+			<td colspan="17" align="center">조회된 내용이 없습니다.</td>
+		</tr>
+		{/}
+	</table>
+
+	{this->xprint('include/pagination.html')}
+</div>
+
+
+<script type="text/javascript">
+var ProductBatchUpdateInner = {
+	init: function() {
+		$('#count_total').html('{count.search}');
+		$('#searched').val('{_POST.search}');
+		setTimeout(function(){ new Blazy(); }, 100);
+		// $('#count_search').html('{count.search}');
+		
+		var me = this;
+		var option = $.extend({}, validation_option, {
+			validateNonVisibleFields: false,
+			onValidationComplete: function (form, status) {
+				if (status) ProductBatchReserve.saveBatch();
+			}
+		});
+		$("#FrmBatchReserveList").validationEngine('attach', option);
+
+		//숫자체크 + 앞0제거
+		$('[data-filter="numeric"]').on('keydown input', function (evt) {
+			var v = $(this).val();
+			v = v.replace(/[^0-9]/g, '');
+			v = v.replace(/(^0+)/, '');
+			$(this).val(v);
+		});
+
+		//예약판매
+		$('input[name^="reserve_yn"]').on('click', function() {
+			var input = $(this).closest('td').find('input');
+			if(this.checked) {
+				input.removeAttr('readonly');
+			}
+			else {
+				input.attr('readonly', true);
+			}
+		})
+	}
+}
+
+$(function() {
+	ProductBatchUpdateInner.init();
+})
+</script>

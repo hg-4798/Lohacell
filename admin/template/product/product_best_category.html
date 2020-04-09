@@ -1,0 +1,283 @@
+<div class="admin_linemap"><div class="line"><p>현재위치 : 상품관리 &gt; 상품관리 &gt; <span>카테고리 베스트 관리</span></p></div></div>
+<table cellpadding="0" cellspacing="0" width="100%" style="table-layout:fixed">
+	<colgroup>
+		<col width=240 id="menu_width">
+		<col width=10>
+		<col width="*">
+		<col width=20>
+	</colgroup>
+	<tr>
+		<td valign="top">
+			{=include("menu_product.php")}
+		</td>
+		<td></td>
+		<td valign="top">
+			<div class="title_depth3">카테고리 베스트 관리
+				<span>1Depth 상단에 노출될 상품을 관리합니다.</span>
+			</div>
+
+			<!--{* 카테고리선택:S *}-->
+
+			<div class="table_style01  mt_10">
+				<form id="FrmBestSearch" onsubmit="return false">
+					<input type="hidden" name="mode" value="best">
+					<input type="hidden" name="act" value="save">
+					<table cellspacing="0" cellpadding="0" width="100%" border="0">
+						<colgroup>
+							<col width="120">
+							<col width="">
+						</colgroup>
+						<tbody>
+							<tr>
+								<th><span>카테고리선택</span></th>
+								<td>
+									<select name="category_d2" class="w200" onchange="ProductBest.load(1)">
+										{@ category}
+										<option value="{.code_all}">{.code_name}</option>
+										{:}
+										<option value="">등록된 카테고리가 없습니다.</option>
+										{/}
+									</select>
+								</td>
+							</tr>
+
+						</tbody>
+					</table>
+
+					<div class="area-button">
+						<button type="button" id="btn_register" class="btn-point" onclick="ProductBest.load()">조회</button>
+					</div>
+				</form>
+			</div>
+			<!--{* 카테고리선택:E *}-->
+
+			<!--{* 상품목록:S*}-->
+			<div id="inner"></div>
+			
+
+
+			
+
+			<!--{* 상품목록:E *}-->
+
+			<div class="sub_manual_wrap mt_100">
+				<div class="title"><p>매뉴얼</p></div>
+				<dl>
+					<dt><span>상품추가</span></dt>
+					<dd>
+						<div class="fc-red">- 카테고리 베스트는 최대 <b>10</b>개까지 등록 가능합니다.</div>
+						- 동일 상품을 중복등록 할 수 없습니다.<br />
+						- 순서 변경은 변경을 원하는 상품을 선택 후 키보드 ↑(상), ↓(하) 키를 이용하거나 마우스로 드래그하여 이동할 수 있습니다.<br>
+						- [설정저장]버튼을 눌러야 최종 적용됩니다.
+					</dd>
+				</dl>
+			</div>
+
+		</td>
+	</tr>
+</table>
+
+<!--{* 상품목록 템플릿:s *}-->
+<textarea id="tpl_tr" style="display:none">
+	<tr data-productcode="${\productcode}">
+		<td>${\idx}</td>
+		<td>${\thumbnail}</td>
+		<td class="ta_l">${\name}</td>
+		<td>${\prodcode} <div class="fc-null">(${\productcode})</div></td>
+		<td>${\soldout}</td>
+		<td>${\price_consumer}</td>
+		<td>${\price_sell}</td>
+		<td>${\sale_rate}</td>
+		<td>${\stock}</td>
+		<td><button type="button" class="btn_type1" onclick="ProductBest.remove(this)">삭제</td>
+	</tr>
+</textarea>
+<!--{* 상품목록 템플릿:E *}-->
+
+
+<script type="text/javascript" src="/admin/static/js/template.js"></script>
+<script type="text/javascript">
+var ProductBest ={
+	proc_url:'/admin/proc/product_best.proc.php',
+	init: function(){
+		this.load();
+	},
+	loadCallback: function() {
+		//이동항목선택바인딩
+		$('#inner tr[data-productcode]').on('click.selected', function() {
+			$(this).siblings('tr').removeClass('selected');
+			$(this).addClass('selected');
+		})
+
+		//화살표키이벤트
+		$(document).keyup(function(evt) {
+			if(evt.keyCode == 38 || evt.keyCode==40) {
+				ProductBest.move(evt.keyCode);
+				evt.preventDefault();
+			}
+			
+		});
+
+		//상품소터블설정
+		$("#inner tbody").sortable({
+			axis:'y',
+			containment:'parent',
+			helper: function(e, tr) {
+				$('#inner tbody tr').removeClass('selected');
+				tr.addClass('selected');
+				var $originals = tr.children();
+				var $helper = tr.clone();
+				
+				$helper.children().each(function(index) {
+					$(this).width($originals.eq(index).width());
+				});
+				return $helper;
+			},
+			scroll : false,
+			placeholder: "sortable-placeholder",
+			items:'tr',
+			stop: function() {
+				ProductBest.resetSort();
+			}
+		});
+
+	},
+	load:function() { //목록비동기로드
+		UI.loading('inner');
+		var search = $('#FrmBestSearch').serialize();
+		$('#inner').load('/admin/product_best_category.inner.php',{search:search},
+			function() {
+				UI.loading('inner');
+				ProductBest.loadCallback();
+			}
+		);
+	},
+	save: function() { //설정저장
+		var tr = ProductBest.getProduct();
+		if(tr.length <5) {
+			alert('최소 5개 이상 적용하셔야 합니다.');
+			return false;
+		}
+		if(tr.length >10) {
+			alert('최대 10개까지만 적용가능합니다.');
+			return false;
+		}
+
+		if(!confirm('적용하시겠습니까?')) return false;
+		
+		var formdata = $('#FrmBestSearch').serializeArray();
+		var productcode = tr.map(function () {return $(this).attr('data-productcode');}).get();
+		formdata.push({name:'productcode', value:productcode});
+		$.ajax({
+			url:this.proc_url,
+			type:'POST',
+			data:formdata,
+			dataType:'json',
+			success : function(r) {
+				alert(r.msg);
+				if(r.success) {
+					ProductBest.load();
+				}
+			}
+		});
+	},
+	getProduct: function() {//기등록상품목록리턴
+		return $('#best_tbody').find('tr:not(.empty)');
+	},
+	open: function() { //상품추가모달열기
+		var search = $('#FrmBestSearch').serialize();
+		UI.modal('/admin/product_choice.php','상품추가', {search:search}, 1100);
+	},
+	move: function(mode) { //위치이동
+		var tr = $('tr.selected');
+		if(tr.length<1) {
+			alert('이동할 상품을 선택하세요.');
+			return false;
+		}
+		switch (mode) {
+			case 'top':
+				var li_top = ul.find('li').first();
+				li_top.before(li);
+				break;
+			case 'up' :
+			case 38:
+				var tr_prev  = $(tr).prev();
+				tr_prev.before(tr);
+				break;
+			case 'down' :
+			case 40:
+				var tr_next  = $(tr).next();
+				tr_next.after(tr);
+				break;
+			case 'bottom' :
+				var tr_bottom = ul.find('li').last();
+				li_bottom.after(li);
+				break;
+		}
+		ProductBest.resetSort();
+	},
+	resetSort: function() { //정렬번호재설정
+		var tr = ProductBest.getProduct();
+		var sort = 1;
+		$.each(tr, function(i,e) {
+			$(e).find('td:eq(0)').html(i+1);
+		});
+	},
+	remove: function(ele) { //삭제(단순감춤)
+		$(ele).closest('tr').remove();
+		var tr = ProductBest.getProduct();
+		var cnt = tr.length;
+		if(cnt > 0) {
+			ProductBest.resetSort();
+		}
+		else {
+			$('#best_tbody').find('tr.empty').removeClass('hide');
+		}
+	}
+}
+
+
+
+
+//상품선택 콜백
+var ChoiceCallback = function(tr_new){
+	var tmpObj = TrimPath.parseDOMTemplate("tpl_tr");
+	var target = $('#best_tbody');
+	var tr = ProductBest.getProduct();
+
+	//기등록상품수
+	var cnt = tr.length;
+
+	//기등록상품 리스트
+	var exist = tr.map(function () {return $(this).attr('data-productcode');}).get();
+
+	var idx = cnt;
+	$.each(tr_new, function(i,e) {
+		var prcode = $(e).attr('data-productcode');
+		if($.inArray(prcode, exist) != -1) return true;
+		if(idx >= 10) {
+			alert('베스트상품은 최대 10개까지 등록가능합니다.');
+			return false;
+		}
+
+		idx++;
+		target.find('tr.empty').addClass('hide');
+		var data = {idx:idx};
+		$.each($(e).find('td'), function(ii,ee) {
+			var field = $(ee).data('field');
+			if(typeof field == 'undefined') return true;
+			data[field] = $(ee).html();
+		});
+		var html  = tmpObj.process(data);
+		target.append(html);
+
+	});
+
+	ProductBest.loadCallback();
+}
+
+
+$(function() {
+	ProductBest.init();
+})
+</script>

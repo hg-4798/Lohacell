@@ -1,0 +1,168 @@
+<!-- 내용 -->
+<div id="page">
+	<main id="content">
+
+		<section class="page_local is-line">
+			<h2 class="page_title">
+				<a href="javascript:history.back();" class="prev">이전페이지</a>
+				<span><!-- {? type=='photo'}PHOTO {/} -->REVIEW</span>
+			</h2>
+		</section>
+
+		<section class="review_wrp ">
+			<div class="best_review hide"> <!-- 2018-10-08 기능 감춤 -->
+				<div class="main_tit">
+					<h2>BEST REVIEW</h2>
+					<p class="exp">i KNOW iONE 고객들의 생생 리뷰입니다</p>
+				</div>
+				<ul class="best_review_list">
+					{@ review_banner_list}
+					<li>
+						<a {? .type=='0'} href="{url.productdetail}?productcode={.productcode}" {/}>
+						<figure class="post">
+							{? .type=='0'}
+							<div class="img" style="background-image:url('{.minimage}')"></div>
+							{:}
+							<div class="img" style="background-image:url('{.upfile}')"></div>
+							{/}
+							<figcaption>
+								<p class="subject">{.productname}</p>
+								<p class="text">{.content}</p>
+								<p class="writer">{=format(.id, 'id')}</p>
+							</figcaption>
+						</figure>
+						</a>
+					</li>
+					{/}
+				</ul>
+			</div>
+
+			<div class="review-movie hide">
+				<div class="video-container">
+					<iframe width="100%" height="auto" src="https://www.youtube.com/embed/7YG4zqXOBoc?playlist=7YG4zqXOBocw&autoplay=1&loop=1&mute=1" frameborder="0" allow="autoplay; encrypted-media" allowfullscreen></iframe>
+				</div>
+				<div class="area-related">
+					<div class="copy-wrap">
+						<div class="copy-title">조효진 x 아이노아이원<br>'가을 레드 메이크업'</div>
+						<div class="copy-sub">모공쟁이 홍조쟁이들을 위한<br>찰떡 베이스 메이크업과 가을에 바르면<br>예쁜 고혹한 레드 립 메이크업까지!</div>
+					</div>
+					<div class="goods-wrap with-bx-arrow">
+						<ul class="goods">
+							<li>
+								<a href="https://www.iknowione.co.kr/m/productdetail.php?productcode=001004005000000002&code=001005000000" target="_blank">
+									<div class="cell-thumb"><img src="https://image.iknowione.co.kr/images/5II/event/needcusion2_1_E.jpg" alt=""></div>
+									<div class="cell-info">
+										<div class="name">[1+1] 아이 니드 유 쿠션</div>
+										<div class="price">28,000 <span>원</span></div>
+									</div>
+								</a>
+							</li>
+							<li>
+								<a href="https://www.iknowione.co.kr/m/productdetail.php?productcode=001005002000000005&code=001006000000" target="_blank">
+									<div class="cell-thumb"><img src="https://image.iknowione.co.kr/images/5II/event/iliketrio2_1_O.jpg" alt=""></div>
+									<div class="cell-info">
+										<div class="name">[1+1] 아이 라이크 아이섀도 트리오</div>
+										<div class="price">19,000 <span>원</span></div>
+									</div>
+								</a>
+							</li>
+							<li>
+								<a href="https://www.iknowione.co.kr/m/productdetail.php?productcode=001005002000000002&code=001001000000" target="_blank">
+									<div class="cell-thumb"><img src="https://image.iknowione.co.kr/images/5II/RL/RL001001/RL001001_B.jpg" alt=""></div>
+									<div class="cell-info">
+										<div class="name">[선착순 무료체험] 아이 러브 멀티 컬러 펜</div>
+										<div class="price">0 <span>원</span></div>
+									</div>
+								</a>
+							</li>
+						</ul>
+					</div>
+				</div>
+			</div>
+			<div class="list_area">
+				<form id="FrmReviewSearch" name="FrmReviewSearch" onsubmit="return false;">
+					<fieldset class="v-hidden">검색</fieldset>
+					<div class="board_search">
+						<select title="정렬순서" class="select_line" name="sort" onchange="ReviewList.search('sort',this.value)">
+							<option value="date">최신순</option>
+							<option value="marks">평점순</option>
+						</select>
+						<div class="input_addr">
+							<input type="text" title="검색어 입력" name="productname" id="productname" placeholder="상품명을 입력해주세요.">
+							<div class="btn_addr"><a href="javascript:;" class="btn-point h-input" onclick="ReviewList.search()">검색</a></div>
+						</div>
+					</div>
+				</form>
+				<div class="board_msg" id="total"><strong>총 123건</strong>의 상품평이 작성되었습니다.</div>
+				<div id="review_list"></div>
+			</div>
+			<script type="text/javascript">
+                $(function(){
+                    $('.goods-wrap .goods').bxSlider({
+                        pager:false
+                    })
+                })
+			</script>
+		</section><!-- //.review_wrp -->
+
+	</main>
+</div>
+<!-- //내용 -->
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/Swiper/4.3.5/css/swiper.min.css">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Swiper/4.3.5/js/swiper.js"></script>
+<script type="text/javascript" src="/static/js/blazy.min.js"></script> <!--{* 이미지lazy 처리js *}-->
+<script type="text/javascript">
+
+    var ReviewList = {
+        page: 1,
+        num:'{num}',
+        init: function(){
+            var me = this;
+            me.load(1);
+            $("#productname").keydown(function (e) {
+
+                if (e.keyCode == 13){
+                    ReviewList.search();//실행할 이벤트
+                }
+            });
+
+            // console.log(me.type, me.num);
+            if(me.num > 0) {
+                setTimeout(function() {
+                    me.detailOpen(me.num);
+                },300);
+            }
+
+
+        },
+        load: function (page) {
+            var p = page || ReviewList.page;
+            var search = $('#FrmReviewSearch').serialize();
+            $('#review_list').load('/m/review/reviewlist_inner.php', {
+                page: p,
+                search:search
+            });
+
+        },
+        loadPage: function (page) {
+            this.load(page);
+        },
+        search: function (field, value) {
+            if (field && value) $('#FrmReviewSearch').find('[name="' + field + '"]').val(value);
+            this.load(1);
+        },
+        detailOpen: function(idx) {
+            UI.popup('/m/review/review_detail.php','리뷰보기', {
+                idx :idx
+            },function () {
+                new Blazy(); //이미지 바인딩
+            });
+        }
+
+    }
+
+    $(function() {
+        ReviewList.init();
+    })
+</script>

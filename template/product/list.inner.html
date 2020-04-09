@@ -1,0 +1,53 @@
+{@ list.goods}
+<li>
+	<div class="goods-item">
+		<div class="thumb-img">
+			<a href="{url.view}?productcode={.productcode}&code={code}">
+				<!-- <img src="{}" alt="상품 썸네일"> -->
+				<img class="already b-lazy" data-src="{=preview(.minimage)}" src="/admin/images/product/noimg.jpg" >
+			</a>
+			<div class="layer">
+				<div class="btn">
+					<button type="button" data-hottcode="{.productcode}" data-section="product" data-cnt="{.pr_like_cnt}">
+						<span>
+							<i class="icon-like {? .is_liked}on{/}">좋아요</i>
+						</span>
+						<span>{=number_format(.pr_like_cnt)}</span>
+					</button>
+					<!-- [D] 좋아요 선택시 .on 처리 -->
+				</div>
+			</div>
+		</div>
+		<!-- //.thumb-img -->
+		<div class="price-box">
+			<div class="goods-nm">{.productname}</div>
+			<div class="opt">{.phrase_etc}</div>
+			<div class="price">{=number_format(.endprice)}
+				<span>원</span>
+			</div>
+			<!--{* 컬러칩:S *}-->
+			<div class="color-chip">
+				{? .option_type == 'C'}
+				{@ .option_valid}
+					<span>
+						<img src="{..colorchip.color_img}" alt="{..colorchip.color_name}">
+					</span>
+				{/}
+				{/}
+			</div>
+
+			<div class="tag">
+				{@ .icon_arr}
+				<span>
+						<img src="{..icon_pc}" alt="{..icon_name}">
+				</span>
+				{/}
+			</div>
+		</div>
+	</div>
+</li>
+{:}
+<li class="no-content">
+	등록된 상품이 없습니다.
+</li>
+{/}

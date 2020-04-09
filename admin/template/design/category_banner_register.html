@@ -1,0 +1,264 @@
+<div class="content-wrap">
+	<div class="title_depth3">{__NAV.page_tit} - {? dml == 'update'}수정{:}등록{/}</div>
+
+	<form id="FrmCategoryRegister" onsubmit="return false">
+		<input type="hidden" name="mode" value="category_register" />
+		<input type="hidden" name="category_idx" value="{row.idx}" />
+		
+
+		<table class="table-view m-t-20">
+			<colgroup>
+				<col style="width:200px">
+				<col>
+				<col style="width:150px">
+				<col>
+			</colgroup>
+			<tbody>
+				<tr>
+					<th>
+						<span>선택 카테고리</span>
+					</th>
+					<td colspan="3">
+						{? dml == 'insert'}
+						<select name="categorycode" id="category_select" class="w200">
+							{@ category.c2}
+							<option value="{.code_all}">{.code_name}</option>
+							{:}
+							<option value="">등록된 카테고리가 없습니다.</option>
+							{/}
+						</select>
+						{:}
+						<span>{categoryinfo.code_name}<input type="hidden" name="categorycode" id="categorycode" value="{row.categorycode}"></span>
+						{/}
+					</td>
+				</tr>
+				<tr>
+					<th>
+						<span>상품선택</span>
+					</th>
+					<td colspan="3">
+						<span>
+							<button type="button" class="btn btn-form btn-info"  style="vertical-align: top" onclick="CategoryBannerRegister.open()">상품선택</button>
+						</span>
+						<span class="product_inner" id="product_inner" style="line-height: 30px">
+
+							{? row.product.productcode}
+							<span>{row.product.productcode}<input type="hidden" name="productcode" value="{row.product.productcode}"></span>
+							<span>{row.product.productname}</span>
+							<span>{row.product.consumerprice}</span>
+							<span><i class="fa fa-times" onclick="CategoryBannerRegister.remove(this)"></i></span>
+							{/}
+						</span>
+						<span><input type="hidden" name="code_check" id="code_check" value="{row.product.productcode}" class="input validate[required]" data-errormessage-value-missing="상품을 선택하세요."></span>
+					</td>
+				</tr>
+				<tr>
+					<th>
+						<span>PC 배너이미지</span>
+						<div class="font_orange">(권장사이즈:900X498)</div>
+					</th>
+					<td colspan="3">
+						<span><img src="{row.pc_img}" id="span_pc_img" style="width: 100px;border:solid 1px #ddd;"></span>
+						<button type="button" class="btn btn-form btn-info" data-file="pc_img" style="vertical-align: top">이미지선택</button>
+						<input type="file" name="pc_img" id="pc_img" data-ext="pc_img" value="{row.pc_img}" class="hide {? row.pc_img =='/admin/images/product/noimg.jpg'}validate[required]{/} requiredMe" data-errormessage-value-missing="PC배너 이미지를 선택하세요."/>
+					</td>
+				</tr>
+				<tr>
+					<th>
+						<span>MOBILE 배너이미지</span>
+						<div class="font_orange">(권장사이즈:900X498)</div>
+					</th>
+					<td colspan="3">
+						<span><img src="{row.mobile_img}" id="span_mobile_img" style="width: 100px;border:solid 1px #ddd;"></span>
+						<button type="button" class="btn btn-form btn-info" data-file="mobile_img" style="vertical-align: top">이미지선택</button>
+						<input type="file" name="mobile_img" id="mobile_img" data-ext="mobile_img" value="{row.mobile_img}" class="hide {? row.mobile_img =='/admin/images/product/noimg.jpg'}validate[required]{/} requiredMe" data-errormessage-value-missing="MOBILE 배너 이미지를 선택하세요."/>
+					</td>
+				</tr>
+				<tr>
+					<th>
+						<span>사용여부</span>
+					</th>
+					<td colspan="3">
+						<label>
+							<input type="radio" name="use_yn" value="Y" class="hj validate[required] minRadio"  data-errormessage-value-missing="사용여부를 선택하세요." {=checked(row.use_yn, 'Y')} >
+							<span class="lbl">사용함</span>
+						</label>
+						<label>
+							<input type="radio" name="use_yn" value="N"  class="hj validate[required] minRadio"  data-errormessage-value-missing="사용여부를 선택하세요." {=checked(row.use_yn, 'N')}>
+							<span class="lbl">사용안함</span>
+						</label>
+					</td>
+				</tr>
+				{? dml == 'update'}
+				<tr>
+					<th style="padding:12px 8px"><span>최신업데이트</span></th>
+					<td>{row.date_update}</td>
+					<th><span>관리자</span></th>
+					<td>{row.admin_id}</td>
+				</tr>
+				{/}
+
+			</tbody>
+		</table>
+
+		<div class="area-button">
+			
+			<button type="button" class="btn-basic m-r-10" onclick="CategoryBannerRegister.list()">목록</button>
+			<button type="submit" class="btn-point" >저장</button>
+		</div>
+	</form>
+
+</div>
+<textarea id="tpl_li" style="display: none;">
+	<span data-productcode="${\productcode}">
+		<span>${\productcode}<input type="hidden" name="productcode" value="${\productcode}"></span>
+		<span>${\name}</span>
+		<span>${\price_consumer}</span>
+		<span><i class="fa fa-times" onclick="CategoryBannerRegister.remove(this)"></i></span>
+	</span>
+</textarea>
+<script type="text/javascript" src="/admin/static/js/template.js"></script><!--{* 상품목록 템플릿:E *}-->
+<script type="text/javascript" src="/admin/static/js/jquery.form.js"></script>
+<script type="text/javascript">
+	var CategoryBannerRegister = {
+        target: '',
+        categorycode:'',
+		mode : '{dml}',
+	    init: function () {
+			var me = this;
+            me.categorycode = $("#categorycode").val();
+
+            var option = $.extend({}, validation_option, {
+				validateNonVisibleFields: true,
+				onValidationComplete: function (form, status) {
+				    if (status) me.save();
+				}
+			});
+			$("#FrmCategoryRegister").validationEngine('attach', option);
+
+			$('[data-file]').on('click', function() {
+                me.target = $(this).data('file');
+				$('#'+me.target).trigger('click');
+                $("input[data-ext="+me.target+"]").on('change', me.createAttach);
+			});
+
+			$('#category_select').on('change', function() {
+                me.categorycode = $("#category_select option:selected").val();
+            });
+		},
+		createAttach: function () {
+		    var input = this;
+			var path = input.value;
+			var accept = (/\.(gif|png|jpg|jpeg)$/i).test(path);
+			if (!accept) {
+				UI.error('이미지 파일만 업로드 가능합니다.');
+				return false;
+			}
+
+			$(input).prev('span').text(this.value);
+
+			var preview_id = $(input).data('preview');
+
+			//preview
+			var isIE = (navigator.appName == "Microsoft Internet Explorer");
+			if (isIE) {
+			    $('#span_'+CategoryBannerRegister.target).css('background-image','url('+path+')');
+				$('#' + preview_id).attr('src', path);
+			} else {
+                if (input.files[0]) {
+					var reader = new FileReader();
+					reader.onload = function (e) {
+						//$('#span_'+CategoryBannerRegister.target).html(e.target.result);
+                        $('#span_'+CategoryBannerRegister.target).attr("src",e.target.result);
+					}
+					reader.readAsDataURL(input.files[0]);
+				}
+			}
+		},
+		save: function () {
+			var option = {
+				type: "POST",
+				url: "{C.DIR_ADMIN}/proc/design.proc.php",
+				dataType: "json",
+				success: function (data) {
+					if (data.success) {
+					    if(CategoryBannerRegister.mode=='insert'){
+                            CategoryBannerRegister.categorycode = $("#category_select option:selected").val();
+						}else{
+                            CategoryBannerRegister.categorycode = $("#categorycode").val();
+						}
+                        CategoryBannerRegister.list();
+                    } else {
+						UI.error(data.msg);
+					}
+				},
+				error: function (result) {
+				}
+			}
+
+			$("#FrmCategoryRegister").ajaxSubmit(option);
+
+
+		},
+		list: function () {
+			document.location.href="{C.DIR_ADMIN}/category_banner.php?code="+CategoryBannerRegister.categorycode;
+		},
+        open: function () { //상품추가모달열기
+
+        	var search = "category_fix="+CategoryBannerRegister.categorycode;
+            UI.modal('/admin/product_choice.php', '상품추가', {type:'radio', search:search}, 1100);
+        },
+        getProduct: function() {//기등록상품목록리턴
+            return $('#product_inner').find('li:not(.empty)');
+        },
+        remove: function() { //삭제(단순감춤)
+			$('#product_inner').children().remove();
+			$('#code_check').val('');
+        },
+	}
+    //상품선택 콜백
+    var ChoiceCallback = function (tr_new) {
+        //console.log(tr_new);
+        var tmpObj = TrimPath.parseDOMTemplate("tpl_li");
+        var target = $('#product_inner');
+        var li = CategoryBannerRegister.getProduct();
+        //console.log(tr_new);
+        //기등록상품수
+        var cnt = li.length;
+
+        //기등록상품 리스트
+        var exist = li.map(function () {
+            return $(this).attr('data-productcode');
+        }).get();
+
+        var idx = cnt;
+        $.each(tr_new, function (i, e) {
+            //console.log(i,e);
+            var prcode = $(e).attr('data-productcode');
+            if ($.inArray(prcode, exist) != -1) return true;
+            idx++;
+            target.find('li.empty').addClass('hide');
+            var data = {
+                ul_idx:CategoryBannerRegister.idx,
+                idx: idx
+            };
+
+            $.each($(e).find('td'), function (ii, ee) {
+                var field = $(ee).data('field');
+                if (typeof field == 'undefined') return true;
+                data[field] = $(ee).html();
+            });
+
+            //console.log(data);
+
+            var html = tmpObj.process(data);
+            target.html(html);
+            $('#code_check').val('1');
+
+        });
+	}
+
+	$(function () {
+        CategoryBannerRegister.init();
+	})
+</script>

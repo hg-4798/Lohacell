@@ -1,0 +1,62 @@
+<style>
+	.swiper-pagination-bullet-active {
+		background:#E9C05E;
+	}
+</style>
+
+<div class="ptreview_view">
+	{? list.photo_img}
+	<div class="img">
+		<div class="swiper-container">
+			<div class="swiper-wrapper">
+				{@ list.photo_img}
+				<div class="swiper-slide"><img src="{.value_.path}" alt="리뷰이미지"></div>
+				{/}
+			</div>
+			<div class="swiper-pagination"></div>
+		</div>
+	</div>
+	{/}
+	<div class="con">
+		<div class="user clear">
+			<div class="writer">{=format(list.c_mem_id,'id')} <span></span> {=format(list.writetime,'Y.m.d H:i')}</div>
+			{? list.owner && !end_yn}
+			<div class="function-btn">
+				<!--<button class="btn-point" type="button"><span>수정</span></button>-->
+				<button class="btn-line" type="button"><span>삭제</span></button>
+			</div>
+			{/}
+		</div>
+		<div class="txt">
+			<strong>{list.title}</strong>
+			{list.comment}
+		</div>
+		<div class="review-goods-link">
+			<div class="info">
+			</div>
+		</div>
+	</div>
+</div>
+<script type="text/javascript">
+    var CommentPhoto = {
+		init: function() {
+            var  me = this;
+			me.createSlider();
+		},
+		createSlider: function() {
+			var swiper = new Swiper('.swiper-container', {
+				navigation: {
+					nextEl: '.ptreview-next',
+					prevEl: '.ptreview-prev',
+				},
+				 pagination: {
+			        el: '.swiper-pagination',
+			    }
+		    });
+		}
+    }
+
+    $(function() {
+        CommentPhoto.init();
+    })
+</script>

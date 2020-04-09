@@ -1,0 +1,180 @@
+<div class="content-wrap">
+	<div class="title_depth3">{__NAV.page_tit}</div>
+
+	<div class="table_style01 m-t-20">
+		<form id="FrmSearch" onsubmit="return false">
+			<input type="hidden" name="limit" value="20">
+			<table cellspacing="0" cellpadding="0" width="100%" border="0">
+				<colgroup>
+					<col width="140">
+					<col width="">
+				</colgroup>
+				<tbody>
+					<tr>
+						<th>
+							<span>컬러계열</span>
+						</th>
+						<td>
+							<select name="color_group">
+								<option value="">전체</option>
+								{@ cfg.color_group}
+								<option value="{.color_group}">{.color_group}</option>
+								{/}
+							</select>
+						</td>
+					</tr>
+					<tr>
+						<th>
+							<span>검색어</span>
+						</th>
+						<td>
+							<select name="sf">
+								<option value="color_code">컬러코드</option>
+								<option value="color_name">컬러명칭</option>
+							</select>
+							<input type="text"  name="sw" class="full input w-200-px">
+						</td>
+					</tr>
+					<tr>
+						<th>
+							<span>사용여부</span>
+						</th>
+						<td>
+							<label>
+								<input type="radio" name="use_yn" value="all" class="hj" checked="">
+								<span class="lbl">전체</span>
+							</label>
+							<label>
+								<input type="radio" name="use_yn" value="Y" class="hj">
+								<span class="lbl">사용</span>
+							</label>
+							<label>
+								<input type="radio" name="use_yn" value="N" class="hj">
+								<span class="lbl">미사용</span>
+							</label>
+						</td>
+					</tr>
+				</tbody>
+			</table>
+
+			<div class="area-button">
+				<button type="button" id="btn_register" onclick="ProductColor.search()" class="btn-point">조회</button>
+				<button type="button" id="btn_cancel"  onclick="ProductColor.searchReset()" class="btn-basic">초기화</button>
+			</div>
+		</form>
+	</div>
+
+	
+	<div class="tools mb_10">
+		<div class="pull-left">
+			<img src="/admin/images/icon_8a.gif" border="0"> 전체
+			<span id="count_total"></span>건 조회
+			<button type="button" class="btn-basic dark h-x-small" onclick="ProductColor.excel()" style="vertical-align:middle">엑셀 다운로드</button>
+		</div>
+		<div class="pull-right">
+			<select name="limit" onchange="ProductColor.search('limit',this.value)">
+				{@ __CONFIG.limit}
+				<option value="{.value_}">{.value_}개씩 보기</option>
+				{/}
+			</select>
+		</div>
+	</div>
+
+	<div id="inner"></div>
+
+	
+	
+
+</div>
+<textarea id="searched" style="display:none">{searched}</textarea>
+<script type="text/javascript">
+var ProductColor = {
+
+	page:1,
+	init: function() {
+		var me = this;
+		me.load(1);
+	},
+	search: function (field, value) {
+		if (field && value) $('#FrmSearch').find('[name="' + field + '"]').val(value);
+		this.load(1);
+	},
+	searchReset: function () {
+		$('#FrmSearch')[0].reset();
+		this.load(1);
+	},
+	load: function (page) {
+		var p = page || ProductColor.page;
+		var search = $('#FrmSearch').serialize();
+		$('#inner').load('{C.DIR_ADMIN}/product/colorchip.inner.php', {page: p, search:search},
+			function () {
+				ProductColor.page = p;
+				UI.toggleCheck();
+				$('[data-toggle="tooltip"]').tooltip();
+			}
+		);
+	},
+	modify: function(color_code) {
+		var search = $('#FrmSearch').serialize();
+		search+='&page='+this.page;
+		document.location.href="{C.DIR_ADMIN}/product/colorchip_register.php?cc="+color_code+"&argu="+encodeURIComponent(search);	
+	},
+	remove: function(idx) {
+		UI.confirm('삭제하시겠습니까?', function() {
+			$.ajax({
+				url:'{C.DIR_ADMIN}/proc/product_color.proc.php',
+				data:{
+					mode:"list",
+					act:'remove',
+					idx:idx
+				},
+				dataType:'json',
+				type:'POST',
+				success: function(r) {
+					UI.alert(r.msg, function() {
+						ProductColor.load(1);
+					})
+				}
+			})
+		})
+	},
+	toggleUse: function(use_yn) {
+		var checked = UI.getChecked('checked[]');
+		if (checked.length < 1) {
+			UI.warning('적용할 컬러칩을 선택하세요.');
+			return false;
+		}
+
+		UI.confirm(checked.length + "개의 컬러칩의 사용정보를 일괄변경하시겠습니까?", function() {
+			var idx = checked.map(function() {return this.value}).get();
+			$.ajax({
+				url:'{C.DIR_ADMIN}/proc/product_color.proc.php',
+				data:{
+					mode:'list',
+					act:'batch_use',
+					use_yn:use_yn,
+					idx:idx.join()
+				},
+				dataType:'json',
+				type:'POST',
+				success: function(r) {
+					UI.alert(r.msg, function() {
+						ProductColor.load();
+					})
+				}
+			})
+		});
+	},
+    excel: function () {
+        var search = $('#searched').val();
+        UI.modal('/admin/common/excel.php', '엑셀다운로드', {
+            type:'colorchip',
+            search: search
+        }, 800);
+    }
+}
+$(function(){
+	ProductColor.init();
+})
+</script>
+

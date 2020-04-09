@@ -1,0 +1,119 @@
+<div class="layer-content">
+	<p class="ml-5"><span class="point-color">*</span> 필수정보</p>
+	<form name="FrmChange" id="FrmChange" onsubmit="return false;">
+		<input type="hidden" name="mode" value="delivery_change">
+		<input type="hidden" name="order_num" value="{order_num}">
+	<table class="th-left mt-5" id="section_receiver">
+		<caption>배송지 정보 등록</caption>
+		<colgroup>
+			<col style="width:210px">
+			<col style="width:auto">
+		</colgroup>
+		<tbody>
+		<tr>
+			<th scope="row"><label class="essential" for="receiver_name">받는분</label></th>
+			<td><input type="text" title="받는분 입력자리" placeholder="이름을 입력하세요." name="receiver_name" value="{member.name}" id="receiver_name" style="width:296px" class="validate[required]" data-errormessage-value-missing="받는분 이름을 입력해주세요."></td>
+		</tr>
+		<tr>
+			<th scope="row"><label class="essential" for="order_address">주소</label></th>
+			<td>
+				<div class="form-multi">
+					<input type="text" id="order_address" class="validate[required]" data-errormessage-value-missing="주소를 입력해주세요." title="우편번호 입력자리" value="{member.home_post}" style="width:130px" name="receiver_zipcode" data-post="zonecode" readonly="" onclick="OrderAddress.post()">
+					<button type="button" class="btn-basic" style="min-width:90px" onclick="OrderAddress.post()"><span>우편번호찾기</span></button>
+				</div>
+				<div class="form-multi"><input type="text" name="receiver_addr" class="validate[required]" data-errormessage-value-missing="주소를 입력해주세요." title="주소 입력자리" value="{member.home_addr}" style="width:470px" data-post="address" onclick="OrderAddress.post()" readonly=""></div>
+				<div class="form-multi"><input type="text" name="receiver_addr_detail" id="receiver_addr_detail" title="상세주소 입력자리" placeholder="상세 주소를 입력하세요." data-post="buildingName" value="{member.home_addr_detail}" style="width:470px" class="validate[required]" data-errormessage-value-missing="상세주소를 입력해주세요." ></div>
+			</td>
+		</tr>
+		<tr>
+			<th scope="row"><label class="essential" for="receiver_mobile_2">휴대전화</label></th>
+			<td>
+				<div class="form-multi">
+					<div class="select" style="width:102px">
+						<select name="receiver_mobile[0]" title="휴대전화 첫번째 번호" id="receiver_mobile_1" class="validate[required]" data-errormessage-value-missing="휴대전화번호를 입력해주세요." >
+							<option value="">선택</option>
+							{@ _arrMobile}
+							<option value="{.value_}" {=checked(member.mobile_arr[0],.value_,'selected')}>{.value_}</option>
+							{/}
+						</select>
+					</div>
+					<span class="txt">-</span>
+					<input type="text" name="receiver_mobile[1]" title="휴대전화 중간 번호" value="{member.mobile_arr[1]}" style="width:102px" id="receiver_mobile_2" data-filter="numeric" class="validate[required, minSize[4], maxSize[4]]" data-errormessage-value-missing="휴대전화번호를 입력해주세요." maxlength="4">
+					<span class="txt">-</span>
+					<input type="text" name="receiver_mobile[2]" title="휴대전화 마지막 번호" value="{member.mobile_arr[2]}" style="width:102px" id="receiver_mobile_3" data-filter="numeric" class="validate[required, minSize[4], maxSize[4]]" data-errormessage-value-missing="휴대전화번호를 입력해주세요." maxlength="4">
+				</div>
+			</td>
+		</tr>
+		<tr>
+			<th scope="row"><label for="receiver_tel_2">전화번호</label></th>
+			<td>
+				<div class="form-multi">
+					<div class="select" style="width:102px">
+						<select name="receiver_tel[0]" title="전화번호 첫번째 번호" id="receiver_tel_1">
+							<option value="">선택</option>
+							{@ _arrTel}
+							<option value="{.value_}" {=checked(member.home_tel_arr[0],.value_,'selected')}>{.value_}</option>
+							{/}
+						</select>
+					</div>
+					<span class="txt">-</span>
+					<input type="text" name="receiver_tel[1]" value="{member.home_tel_arr[1]}" title="전화번호 중간 번호" style="width:102px" id="receiver_tel_2" data-filter="numeric" maxlength="4">
+					<span class="txt">-</span>
+					<input type="text" name="receiver_tel[2]" value="{member.home_tel_arr[2]}" title="전화번호 마지막 번호" style="width:102px" id="receiver_tel_3" data-filter="numeric" maxlength="4">
+				</div>
+			</td>
+		</tr>
+		</tbody>
+	</table>
+
+	<div class="btnPlace mt-20">
+		<button class="btn-line h-large btn-cancel" type="button" data-toggle="close"><span>취소</span></button>
+		<button class="btn-point h-large" type="submit"><span>등록</span></button>
+	</div>
+	</form>
+</div>
+
+
+
+<script type="text/javascript">
+    var DeliveryChange = {
+        proc_url:'/proc/order.proc.php',
+        changed:false,
+        init: function() {
+            var me = this;
+            $('[data-toggle="close"]').on('click', function() {
+                $('.btn-close').trigger('click');
+            });
+            var option = $.extend({}, validation_option, {
+                validateNonVisibleFields: false,
+                onValidationComplete: function (form, status) {
+                    if (status) me.save();
+                }
+            });
+            $("#FrmChange").validationEngine('attach', option);
+		},
+        save: function () {
+            UI.confirm('배송지를 변경하시겠습니까?', function () {
+                var formdata = $('#FrmChange').serialize();
+                $.ajax({
+                    url:DeliveryChange.proc_url,
+                    type:'POST',
+                    data:formdata,
+                    dataType:'json',
+                    success : function(r) {
+                        UI.alert(r.msg, function() {
+                            if(r.success) {
+                                window.location.reload();
+                            };
+                        });
+                    }
+                });
+            })
+        }
+
+    }
+
+    $(function() {
+        DeliveryChange.init();
+    })
+</script>

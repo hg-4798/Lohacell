@@ -1,0 +1,204 @@
+<!DOCTYPE html PUBtdC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:fb="http://ogp.me/ns/fb#">
+<head>
+<meta http-equiv="X-UA-Compatible" content="IE=8;IE=EDGE">
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<title>주문취소완료</title>
+</head>
+<body bgcolor="f8f8f8" style="background-color:#f8f8f8;">
+<style type="text/css">
+body {padding:0px; margin:0px;}
+a , a:link , a:visited , a:active , a:hover , img {text-decoration:none; outline:0;border:none;}
+</style>
+<div align="center" style="width:100%;min-height:100%;background-color:#f8f8f8;">
+<table width="800" cellpadding="0" cellspacing="0" border="0" align="center" style="width:800px;margin:0 auto;color:#555;font-family:'돋움',dotum,sans-serif;font-size:12px;">
+	<tr>
+		<td align="center">
+
+<!-- 로고 -->
+<table width="800" cellpadding="0" cellspacing="0" border="0" align="center">
+	<tr>
+		<td height="80" align="center"><a href="" target="_blank"><img src="{C.SHOPURL}/jayjun/web/static/img/mail/h1_logo.png" border="0" title="i KNOW iONE" alt="i KNOW iONE"></a></td>
+	</tr>
+</table>
+<!-- //로고 -->
+
+<!-- 내용 -->
+<table width="800" cellpadding="0" cellspacing="0" border="0" align="center" bgcolor="ffffff" style="border:1px solid #ebebeb;border-collapse:collapse;">
+	<tr>
+		<td height="20"></td>
+	</tr>
+	<tr>
+		<td align="center">
+			<table width="760" cellpadding="0" cellspacing="0" border="0" align="center">
+				<!-- 제목 -->
+				<tr>
+					<td height="90" align="center" bgcolor="000000" style="color:#fff;font-family:'돋움',dotum,sans-serif;font-size:20px;">주문 취소가 완료되었습니다</td>
+				</tr>
+				<!-- //제목 -->
+
+				<tr><td height="35"></td></tr>
+				<tr>
+					<td align="left" style="color:#555;font-family:'돋움',dotum,sans-serif;font-size:12px;line-height:24px;">
+						∙ i KNOW iONE에서 주문하신 내역이 주문 취소 요청, 입금 미확인 또는 기타 사유로 인해 주문이 취소되었습니다. <br>
+						∙ 주문 취소 내역은 [ MYPAGE > 주문내역조회 > 취소/교환/반품 완료 ] 에서 확인하실 수 있습니다.
+					</td>
+				</tr>
+				<tr><td height="33"></td></tr>
+				<tr>
+					<td align="left" style="color:#000;font-family:'돋움',dotum,sans-serif;font-size:14px;font-weight:700;">주문정보</td>
+				</tr>
+				<tr><td height="13"></td></tr>
+				<tr>
+					<td height="44" align="center" bgcolor="f1f1f1">
+						<table width="760" align="center" cellpadding="0" cellspacing="0" border="0">
+							<tr>
+								<td width="10"></td>
+								<td align="left" bgcolor="f1f1f1" style="color:#111;font-family:'돋움',dotum,sans-serif;font-size:12px;">주문번호 : <span style="color:#888;font-size:13px;text-decoration:underline;">{order_num}</span></td>
+								<td width="150" align="right" style="color:#555;font-family:'돋움',dotum,sans-serif;font-size:12px;box-sizing:border-box;">취소신청일 : {date_refund}</td>
+								<td width="10"></td>
+							</tr>
+						</table>
+					</td>
+				</tr>
+				<tr>
+					<td align="center" style="border-top:2px solid #000;border-bottom:1px solid #e5e5e5;border-collapse:collapse;">
+						<table width="760" align="center" cellpadding="0" cellspacing="0" border="0">
+							<tr>
+								<th scope="col" height="50" align="center" style="color:#111;font-family:'돋움',dotum,sans-serif;font-size:12px;font-weight:400;">상품정보</th>
+								<th scope="col" width="120" height="50" align="center" style="color:#111;font-family:'돋움',dotum,sans-serif;font-size:12px;font-weight:400;">수량</th>
+								<th scope="col" width="120" height="50" align="center" style="color:#111;font-family:'돋움',dotum,sans-serif;font-size:12px;font-weight:400;">주문금액</th>
+								<th scope="col" width="120" height="50" align="center" style="color:#111;font-family:'돋움',dotum,sans-serif;font-size:12px;font-weight:400;">적립 마일리지</th>
+							</tr>
+						</table>
+					</td>
+				</tr>
+				<tr>
+					<td align="center">
+						<table width="760" align="center" cellpadding="0" cellspacing="0" border="0">
+							{@product_list}
+							<tr>
+								<td width="100" align="left" valign="top" style="border-bottom:1px solid #e5e5e5;"><img src="{=preview(.tinyimage)}" alt="상품 썸네일" width="90" border="0"></td>
+								<td align="center" style="border-bottom:1px solid #e5e5e5;">
+									<table width="660" align="center" cellpadding="0" cellspacing="0" border="0">
+										<tr>
+											<td height="50" align="left" style="color:#555;font-family:'돋움',dotum,sans-serif;font-size:12px;">
+												<p style="margin:0;margin-top:3px;padding:0;color:#000;font-size:12px;font-weight:bold;">{? .option_type=='product'}[추가 구매 상품] {/}{.productname}</p>
+												{? .option_type=='option'}<p style="margin:0;padding:0;color:#888;font-size:11px;">{.option_info.option_name}</p>{/}
+											</td>
+											<td width="120" align="center" style="color:#888;font-family:'돋움',dotum,sans-serif;font-size:12px;">{.quantity}</td>
+											<td width="120" align="center" style="color:#888;font-family:'돋움',dotum,sans-serif;font-size:12px;"><span style="color:#111;">{=number_format(.price_end)}</span> 원</td>
+											<td width="120" align="center" style="color:#888;font-family:'돋움',dotum,sans-serif;font-size:12px;">{=number_format(.mileage_expect)}M</td>
+										</tr>
+									</table>
+								</td>
+							</tr>
+							{/}
+						</table>
+					</td>
+				</tr>
+
+				<tr><td height="38"></td></tr>
+				<tr>
+					<td align="left" style="color:#000;font-family:'돋움',dotum,sans-serif;font-size:14px;font-weight:700;">주문취소 정보</td>
+				</tr>
+				<tr><td height="10"></td></tr>
+				<tr>
+					<td align="center">
+						<table width="760" align="center" cellpadding="0" cellspacing="0" border="0" style="border-top:1px solid #000;">
+							<tr>
+								<td width="190" height="48" align="left" style="border-bottom:1px solid #eee;color:#000;font-family:'돋움',dotum,sans-serif;font-size:12px;">취소사유</td>
+								<td align="left" style="border-bottom:1px solid #eee;color:#555;font-family:'돋움',dotum,sans-serif;font-size:12px;">{reason}</td>
+							</tr>
+						</table>
+					</td>
+				</tr>
+				<tr><td height="38"></td></tr>
+
+				<tr>
+					<td align="left" style="color:#000;font-family:'돋움',dotum,sans-serif;font-size:14px;font-weight:700;">환불정보</td>
+				</tr>
+				<tr><td height="10"></td></tr>
+				<tr>
+					<td align="center">
+						<table width="760" align="center" cellpadding="0" cellspacing="0" border="0" style="border-top:1px solid #000;">
+							<tr>
+								<td width="190" height="48" align="left" style="border-bottom:1px solid #eee;color:#000;font-family:'돋움',dotum,sans-serif;font-size:12px;">총 상품금액</td>
+								<td align="left" style="border-bottom:1px solid #eee;color:#555;font-family:'돋움',dotum,sans-serif;font-size:12px;">{=number_format(price_product)} 원</td>
+							</tr>
+							<tr>
+								<td width="190" height="48" align="left" style="border-bottom:1px solid #eee;color:#000;font-family:'돋움',dotum,sans-serif;font-size:12px;">할인 환급 상세내용</td>
+								<td align="left" style="border-bottom:1px solid #eee;">
+									<table width="" align="left" cellpadding="0" cellspacing="0" border="0">
+										<tr>
+											<td width="150" height="36" align="left" style="color:#555;font-family:'돋움',dotum,sans-serif;font-size:12px;">포인트</td>
+											<td align="left" style="color:#555;font-family:'돋움',dotum,sans-serif;font-size:12px;">-{=number_format(refund_point)} 원</td>
+										</tr>
+										<tr>
+											<td width="150" height="36" align="left" style="color:#555;font-family:'돋움',dotum,sans-serif;font-size:12px;">마일리지</td>
+											<td align="left" style="color:#555;font-family:'돋움',dotum,sans-serif;font-size:12px;">-{=number_format(refund_mileage)} 원</td>
+										</tr>
+									</table>
+								</td>
+							</tr>
+							<tr>
+								<td width="190" height="48" align="left" style="border-bottom:1px solid #eee;color:#000;font-family:'돋움',dotum,sans-serif;font-size:12px;">배송비</td>
+								<td align="left" style="border-bottom:1px solid #eee;color:#555;font-family:'돋움',dotum,sans-serif;font-size:12px;">{price_delivery} 원</td>
+							</tr>
+							<tr>
+								<td width="190" height="48" align="left" style="border-bottom:1px solid #eee;color:#000;font-family:'돋움',dotum,sans-serif;font-size:12px;">총 결제금액</td>
+								<td align="left" style="border-bottom:1px solid #eee;color:#555;font-family:'돋움',dotum,sans-serif;font-size:12px;"><strong style="color:#111;">{=number_format(refund_cash+refund_card+refund_vcnt+refund_acnt)}</strong> 원</td>
+							</tr>
+							<tr>
+								<td width="190" height="48" align="left" style="border-bottom:1px solid #eee;color:#000;font-family:'돋움',dotum,sans-serif;font-size:12px;">환불정보</td>
+								<td align="left" style="border-bottom:1px solid #eee;color:#111;font-family:'돋움',dotum,sans-serif;font-size:12px;">{? refund_method == 'card'}카드취소{:}{_kcp_bank_code[bank_info.code]} {bank_info.account} (예금주 : {bank_info.depositor}){/}</td>
+							</tr>
+						</table>
+					</td>
+				</tr>
+
+				<tr><td height="50"></td></tr>
+				<tr>
+					<td align="center">
+						<table width="200" cellpadding="0" cellspacing="0" border="0" align="center">
+							<tr>
+								<td height="46" align="center" bgcolor="000000"><a href="{url}" target="_blank" style="display:block;width:100%;height:46px;color:#fff;font-family:'돋움',dotum,sans-serif;font-size:16px;line-height:46px;font-weight:700;text-decoration:none;">상세정보 확인하기</a></td>
+							</tr>
+						</table>
+					</td>
+				</tr>
+				<tr><td height="50"></td></tr>
+			</table>
+		</td>
+	</tr>
+	<tr>
+		<td height="86" align="center" style="border-top:1px solid #ededed;color:#999;font-family:'돋움',dotum,sans-serif;font-size:12px;line-height:18px;">본 메일은 메일 수신에 동의한 회원에게만 발송되며, 발신전용 메일이므로 회신되지 않습니다.</td>
+	</tr>
+</table>
+<!-- //내용 -->
+
+<!-- 푸터 -->
+<table width="800" cellpadding="0" cellspacing="0" border="0" align="center">
+	<tr><td height="18"></td></tr>
+	<tr>
+		<td align="center">
+			<table width="800" cellpadding="0" cellspacing="0" border="0" align="center">
+				<tr>
+					<td width="280" align="center" style="color:#b1b1b1;font-family:'돋움',dotum,sans-serif;font-size:11px;line-height:18px;"><img src="{C.SHOPURL}/jayjun/web/static/img/mail/ft_logo.png" alt="i KNOW iONE"></td>
+					<td align="left" style="color:#b1b1b1;font-family:'돋움',dotum,sans-serif;font-size:11px;line-height:18px;"><strong>CS CENTER</strong> 080 881 2001 &nbsp;<strong>TEL</strong> 02 2193 9513 &nbsp;<strong>FAX</strong> 02 2193 9595<br>서울특별시 강남구 논현로 526 &nbsp;<strong>대표자</strong> 이진형 &nbsp;<strong>사업자번호</strong> 222-85-12156</td>
+				</tr>
+			</table>
+		</td>
+	</tr>
+	<tr><td height="34"></td></tr>
+</table>
+<!-- //푸터 -->
+
+		</td>
+	</tr>
+</table>
+</div>
+
+
+</body>
+</html>

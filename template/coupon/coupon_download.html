@@ -1,0 +1,54 @@
+<style>
+    .layer-dimm-wrap .layer-inner{width:530px; !important;}
+    .coupon_down_list > li + li .coupon_wrp {border-top:0;}
+    .coupon_wrp {position:relative;min-height:60px; padding-right:181px;border:1px solid #d3d3d3;box-sizing:border-box;}
+    .coupon_wrp .info {padding:13px 0 13px 20px;line-height:20px;}
+    .coupon_wrp .info .tit {font-size:14px;font-weight:700;}
+    .coupon_wrp .info .date {margin-top:2px;color:#888;font-size:13px;}
+    .coupon_wrp .discount {position:absolute;top:21px;right:61px; width:120px;text-align:center;}
+    .coupon_wrp .discount .discount-color {font-size:18px;}
+    .coupon_wrp .discount .discount-color strong {font-size:24px;font-weight:700;}
+    .coupon_wrp .discount .ea {display:inline-block;min-width:54px;margin-top:2px;padding:3px 10px 3px;border-radius:2px;background:#ff5151;color:#fff;font-size:12px;box-sizing:border-box;}
+    .coupon_wrp .discount .ea strong {font-size:14px;}
+    .coupon_wrp .icon {position:absolute;top:0;right:0;width:60px;height:100%;border-left:1px dashed #d3d3d3;}
+    .coupon_wrp .icon .icon-download {display:block;width:100%;height:100%;background-position:50%;}
+    .coupon_wrp.disable {background:#f1f1f1;}
+    .coupon_wrp.disable .info .tit {color:#888;}
+    .coupon_wrp.disable .discount .discount-color {color:#888 !important;}
+    .coupon_wrp.disable .icon .icon-download {opacity:.2;}
+</style>
+<div class="layer-content ">
+
+    <ul class="coupon_down_list">
+        {@ list}
+        <li>
+            <div class="coupon_wrp">
+                <a href="{.url}">
+                    <div class="info">
+                        <p class="tit">{.coupon_name}</p>
+                        <p class="date">
+                            {? .use_period_type=='U'}
+                                제한없음
+                            {: .use_period_type=='D'}
+                                {=format(.use_period_end, 'Y-m-d H:i')}시 까지
+                            {: .use_period_type=='L'}
+                                발급일로부터 {.use_period_limit}일까지 사용가능
+                            {/}
+
+                        </p>
+                    </div>
+                    <div class="discount trans-y">
+							<span class="discount-color">
+							<strong>{=format(.sale_price,'price')}</strong>{? .sale_type=='K'}원{:}%{/}</span>
+                    </div>
+                    <div class="icon">
+                        <a href="{.url}"><i class="icon-download">다운로드</i></a>
+                    </div>
+                </a>
+            </div>
+        </li>
+        {/}
+
+    </ul>
+
+</div><!-- //.layer-content -->

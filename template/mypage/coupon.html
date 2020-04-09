@@ -1,0 +1,82 @@
+
+<div id="contents">
+	<div class="mypage-page">
+
+		<h2 class="page-title">쿠폰</h2>
+
+		<div class="inner-align page-frm clear">
+
+			{=include("mypage_TEM01_left.php")}
+			<article class="my-content">
+
+				<section class="mt-45">
+
+					<header class="my-title mt-50">
+						<section class="" data-ui="TabMenu">
+							<div class="tabs">
+								<button type="button" data-content="menu" class="active" data-tab="1"><span>사용가능 쿠폰</span></button>
+								<button type="button" data-content="menu" data-tab="2"><span>사용완료 쿠폰</span></button>
+							</div>
+
+							<!-- 사용가능 쿠폰 -->
+							<div id="coupon_list"></div>
+
+
+
+							<dl class="attention-box mt-75">
+								<dt>유의사항</dt>
+								<dd>유효기간이 지난 쿠폰은 자동 소멸되며 재발행 되지 않습니다.</dd>
+								<dd>쿠폰 유효기간 종료 이후 취소, 반품 시 쿠폰은 재발급되지 않습니다.</dd>
+								<dd>할인 쿠폰의 할인금액이 상품의 판매가를 초과할 경우 사용이 불가능합니다.</dd>
+							</dl>
+						</section>
+					</header>
+				</section>
+			</article><!-- //.my-content -->
+		</div><!-- //.page-frm -->
+
+	</div>
+</div><!-- //#contents -->
+
+
+
+<div id="create_openwin" style="display:none"></div>
+
+<script type="text/javascript">
+
+    var CouponList = {
+        page: 1,
+        init: function(){
+            var me = this;
+            me.load(1,1);
+            $('.tabs > button').on('click', function() {
+                var tab_idx = $(this).data('tab');
+                if(tab_idx==1){
+                    CouponList.load(1,tab_idx);
+                }else{
+                    CouponList.load(1,tab_idx);
+                }
+            });
+        },
+        load: function (page,tab) {
+            var p = page || CouponList.page;
+            if(tab==1){
+                $('#coupon_list').load('/front/coupon/couponlist_inner.php', {
+                    page: p
+                });
+            }else{
+                $('#coupon_list').load('/front/coupon/used_couponlist_inner.php', {
+                    page: p
+                });
+            }
+        },
+        loadPage: function (page) {
+            this.load(page);
+        }
+    }
+
+    $(function() {
+        CouponList.init();
+    })
+</script>
+

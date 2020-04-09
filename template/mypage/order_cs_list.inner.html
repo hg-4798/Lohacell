@@ -1,0 +1,70 @@
+<header class="my-title">
+	<h3 class="fz-0">주문 목록</h3>
+	<div class="count">전체 <strong>{=number_format(count.total)}</strong></div>
+	<div class="ord-no txt-toneB">※ 취소, 교환, 반품은 주문상세보기 페이지에서 가능합니다.</div>
+</header>
+<table class="th-top">
+	<caption>주문 목록</caption>
+	<colgroup>
+		<col style="width:138px">
+		<!-- <col style="width:138px"> -->
+		<col style="width:auto">
+		<col style="width:150px">
+		<col style="width:120px">
+		<col style="width:120px">
+	</colgroup>
+	<thead>
+		<tr>
+			<th scope="col">주문일</th>
+			<!-- <th scope="col" class="fz-0">주문번호</th> -->
+			<th scope="col">주문상품</th>
+			<th scope="col">주문수량</th>
+			<th scope="col">실결제금액</th>
+			<th scope="col">진행상태</th>
+
+		</tr>
+	</thead>
+	<tbody>
+		{@ list}
+		{@ .children}
+		<tr>
+			{? ..index_==0}
+			<td class="my-order-nm" rowspan="{.count}">
+				<strong>{=format(.date_insert,'Y-m-d')}</strong><span>{..order_num}</span>
+				<a href="{C.DIR_FRONT}/mypage_orderlist_view.php?oid={..oid}" class="btn-line h-small mt-5">주문상세보기</a>
+			</td>
+			{/}
+			<td class="pl-5">
+				<div class="goods-in-td">
+					<div class="thumb-img"><a href="/front/productdetail.php?productcode={..productcode}"><img src="{=preview(..product_info.tinyimage,'default')}" alt="상품이미지"></a></div>
+					<div class="info">
+						<p class="brand-nm">{? ..option_type == 'product'}<span class="point-color fw-normal">[추가] </span>{/}{..product_info.productname}</p>
+						<p class="goods-nm">{..option_info.option_name}</p>
+					</div>
+				</div>
+			</td>
+			<td>{=number_format(..cnt)}개</td>
+			<td class="point-color fw-bold">{=number_format(..price_end*..cnt)}원</td>
+			<td class="txt-toneA fz-13">
+				{..status_info.msg}
+				<!--{*
+				{? ..step.enable == 'cancel'}
+				<div class="refund-btnGroup">
+					<button type="button" class="btn-basic cancel btn-deliveryRefund w100-per ord_cancel"><span>취소신청</span></button>
+				</div>
+				{/}
+				*}-->
+			</td>
+			
+		</tr>
+		{/}
+		{:}
+		<tr>
+			<td colspan="6">내역이 없습니다.</td>
+		</tr>
+		{/}
+
+	</tbody>
+</table>
+
+{this->xprint('_include/pagination.html')}

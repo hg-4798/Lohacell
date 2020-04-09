@@ -1,0 +1,191 @@
+<script type="text/javascript" src="/admin/static/js/jquery.validationEngine.js?{C.VER}"></script>
+<script type="text/javascript" src="/admin/static/js/jquery.validationEngine-kr.js?{C.VER}"></script>
+<script type="text/javascript" src="/admin/static/js/jquery.form.js?{C.VER}"></script>
+<style>
+#icon_pc, #icon_mobile {vertical-align: middle;display:inline-block;}
+#icon_pc > img, #icon_mobile > img{margin-right:10px;}
+</style>
+<div class="admin_linemap"><div class="line"><p>현재위치 : 상품관리 &gt; 상품관리 &gt; <span>사이즈 조견표 등록/수정</span></p></div></div>
+<table cellpadding="0" cellspacing="0" width="100%" style="table-layout:fixed">
+	<colgroup>
+		<col width=240 id="menu_width">
+		<col width=10>
+		<col width="*">
+		<col width=20>
+	</colgroup>
+	<tr>
+		<td valign="top">
+			{=include("menu_product.php")}
+		</td>
+		<td></td>
+		<td valign="top">
+			<div class="title_depth3">사이즈 조견표 등록/수정 <span>사이즈 조견표를 등록/수정/삭제할 수 있습니다.</span></div>
+			<form id="FrmSizeRegister" onsubmit="return false">
+			<input type="hidden" name="mode" value="size">
+			<input type="hidden" name="act" value="register">
+			<input type="hidden" name="size_idx" id="size_idx" value="{row.idx}">
+			<table cellspacing="0" cellpadding="0" width="100%" border="0" class="table-view mt_30">
+				<colgroup>
+					<col width="140">
+					<col width="">
+				</colgroup>
+				<tbody>
+					<tr>
+						<th><span>조견표구분</span></th>
+						<td>
+							<select name="size_grp" id="">
+								{@ cfg.category}
+								<option value="{.value_}" {=checked(.value_, row.size_grp,'selected')} >{.value_}</option>
+								{/}
+							</select>
+							<input type="text" name="size_name" class="validate[required] w200"  value="{row.size_name}" data-errormessage-value-missing="조견표명을 입력하세요." placeholder="조견표명">
+						</td>
+					</tr>
+
+					<tr>
+						<th><span>사이즈 조견표 값</span></th>
+						<td>
+							<ul class="addrow">
+								{@ row.info}
+								<li>
+									<input type="text" name="info[label][]" class="" placeholder="항목명(예:사이즈)" value="{.label}" data-errormessage-value-missing="조견표 항목을 입력하세요.">
+									<input type="text" name="info[value][]" class="w400" placeholder="항목값(예:S,L,XL)" value="{.value}"  data-errormessage-value-missing="조견표 항목의 값을 입력하세요.">
+									<button type="button" class="btn-calc" onclick="ProductSizeRegister.addRow()"><span></span></button>
+								</li>
+								{/}
+							</ul>
+						</td>
+					</tr>
+					<tr>
+						<th><span>실측사이즈이미지</span></th>
+						<td>
+							<input type="file" name="size_image" class="">
+							
+							{? row.size_image}
+							<div class="mt_10">
+								<img src="{=preview(row.size_image)}" alt="">
+							</div>
+							{/}
+						</td>
+					</tr>
+
+				</tbody>
+			</table>
+
+			<div class="area-button mb_50">
+				{? act == 'update'}
+				<button type="submit" class="btn-point">수정</button>
+				<button type="button" class="btn-basic dark" onclick="ProductSizeRegister.remove('{row.idx}')">삭제</button>
+				{:}
+				<button type="submit" class="btn-point">등록</button>
+				{/}
+				<button type="button" onclick="ProductSizeRegister.goList()" class="btn-basic">취소</button>
+			</div>
+			</form>
+		</td>
+	</tr>
+</table>
+
+<script type="text/javascript">
+on_menu_sub(1,4);
+
+var ProductSizeRegister = {
+	proc_url:'/admin/proc/product_size.proc.php',
+	act:'{act}',
+	init: function() {
+		var me = this;
+		var option = $.extend({},validation_option, {
+			validateNonVisibleFields:true,
+			onValidationComplete: function(form, status){
+				if(status) me.checkDuplicate();
+			}
+		});
+		$("#FrmSizeRegister").validationEngine('attach',option);
+
+		//필드추가
+		$('.addrow li:first-child .btn-calc').on('click', me.addRow);
+
+	},
+	save: function(idx) {
+		if(idx>0) {
+			if(!confirm("이미 등록된 조견표 구분입니다.\n기존내용에 업데이트 하시겠습니까?")) return false;
+			else {
+				$('#size_idx').val(idx);
+			}
+		}
+		
+		var options = {
+			url:this.proc_url,
+			type:'POST',
+			dataType:'json',
+			success : function(r) {
+				alert(r.msg);
+				if(r.success) {
+					ProductSizeRegister.goList();
+				}
+			}
+		}
+
+		$('#FrmSizeRegister').ajaxSubmit(options);
+	},
+	checkDuplicate: function() {
+		var frm = $('#FrmSizeRegister');
+		if(this.act == 'insert') { //신규일때만 중복체크
+			var size_grp = frm.find('select[name="size_grp"]').find('option:selected').val();
+			var size_name = frm.find('input[name="size_name"]').val();
+			$.ajax({
+				url:this.proc_url,
+				data:{
+					mode:'size',
+					act:'duplicate',
+					size_grp:size_grp,
+					size_name:size_name
+				},
+				dataType:'json',
+				type:'POST',
+				success: function(r) {
+					ProductSizeRegister.save(r.data.idx);
+				}
+			});
+		}
+		else {
+			ProductSizeRegister.save();
+		}
+	},
+	remove: function(size_idx) {
+		if(!confirm('삭제하시겠습니까?')) return false;
+		$.ajax({
+			url:this.proc_url,
+			data:{
+				mode:'size',
+				act:'delete',
+				size_idx:size_idx
+			},
+			dataType:'json',
+			type:'POST',
+			success: function(r) {
+				ProductSizeRegister.goList();
+			}
+		});
+	},
+	addRow: function() {
+		var ul = $(this).closest('ul');
+		var li = ul.find('li:first-child').clone();
+		li.find('input[type="text"]').val('');
+		li.find('button').on('click.row', ProductSizeRegister.removeRow);
+		ul.append(li);
+	},
+	removeRow: function() {
+		$(this).closest('li').remove();
+	},
+	goList: function() {
+		document.location.href="/admin/product_size.php";
+	}
+}
+
+$(function() {
+	ProductSizeRegister.init();
+})
+
+//function onmenu_sub('on_dd1',5);
+</script>

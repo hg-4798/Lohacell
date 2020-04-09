@@ -1,0 +1,65 @@
+<div class="p_20">
+	<form id="FrmDeliveryInc" onsubmit="return false">
+	<input type="hidden" name="product_idx" value="{idx}" />
+	<input type="hidden" name="mode" value="delivery">
+	<input type="hidden" name="act" value="set">
+	<table class="tbl-form">
+		<colgroup>
+			<col style="width:120px">
+			<col>
+		</colgroup>
+		<tr>
+			<th>택배사</th>
+			<td>
+				<select name="delivery_company" class="validate[required]" data-errormessage-value-missing="택배사를 선택하세요.">
+					<option value="">== 택배사 선택 ==</option>
+					{@ company}
+					<option value="{.key_}">{.company_name}</option>
+					{/}
+				</select>
+			</td>
+		</tr>
+		<tr>
+			<th>송장번호</th>
+			<td><input type="text" name="delivery_no" value="" class="w-100 validate[required]" data-errormessage-value-missing="송장번호를 입력하세요." ></td>
+		</tr>
+	</table>
+
+	<div class="mt_10 mb_10 ta_c">
+		<button type="submit" class="btn-basic dark h-small">적용하기</button>
+		<button type="button" class="btn-basic h-small" onclick="UI.modalClose();">취소</button>
+	</div>
+	</form>
+</div>
+
+<script type="text/javascript">
+var DeliveryInc = {
+	init: function() {
+		var me = this;
+		var option = $.extend({}, validation_option, {
+			validateNonVisibleFields: false,
+			onValidationComplete: function (form, status) {
+				if (status) me.save();
+				//me.save();
+			}
+		});
+		$("#FrmDeliveryInc").validationEngine('attach', option);
+	},
+	save: function() {
+		var formdata = $('#FrmDeliveryInc').serialize();
+		$.ajax({
+			url:'/admin/proc/order.proc.php',
+			data:formdata,
+			dataType:'json',
+			type:'POST',
+			success: function(r){
+				
+			}
+		})
+	}
+}
+
+$(function() {
+	DeliveryInc.init();
+})
+</script>

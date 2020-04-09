@@ -1,0 +1,17 @@
+<html>
+    <body>
+<br>
+@for($i = 0; $i < count($data); $i++)
+    <p>{{ $i+1 }} / {{ $data[$i]->productname }} / {{ $data[$i]->sellprice }} / {{ $data[$i]->reserve }} / {{ $data[$i]->model }}</p>
+@endfor
+
+@if (count($data) === 1)
+    I have one record!
+@elseif (count($data) > 1)
+    I have multiple records!
+@else
+    I don't have any records!
+@endif
+
+    </body>
+</html>

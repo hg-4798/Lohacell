@@ -1,0 +1,448 @@
+<div class="content-wrap">
+	<div class="title_depth3">상품관리 리스트
+		<div class="pull-right">
+			<button class="btn btn-primary btn-sm" data-button-insert="1">일반상품등록</button>
+			<button class="btn btn-sm" data-button-insert="2">바로구매상품등록</button>
+			<button class="btn btn-sm" data-button-insert="3">임직원상품등록</button>
+			<button class="btn btn-sm" data-button-insert="4">추가구매상품등록</button>
+		</div>
+	</div>
+
+	<!--{* 검색:S *}-->
+	<form id="FrmProductSearch" name="FrmProductSearch">
+		<input type="hidden" name="sort" value="reg_desc" />
+		<!-- 정렬기준 -->
+		<input type="hidden" name="limit" value="20" />
+		<!-- 페이지당노출개수 -->
+		<div class="table_style01 pt_20">
+
+			<table cellpadding=0 cellspacing=0 border=0 width="100%">
+				<tr>
+					<th>
+						<span>상품검색</span>
+					</th>
+					<td>
+						<label>
+							<input type="radio" name="sf" value="productname" class="hj" checked>
+							<span class="lbl">쇼핑몰상품명</span>
+						</label>
+						<label>
+							<input type="radio" name="sf" value="prodcode" class="hj">
+							<span class="lbl">상품코드</span>
+						</label>
+						<label>
+							<input type="radio" name="sf" value="productcode" class="hj">
+							<span class="lbl">관리코드</span>
+						</label>
+						<label>
+							<input type="radio" name="sf" value="prkeyword" class="hj">
+							<span class="lbl">키워드</span>
+						</label>
+						<textarea rows="2" cols="10" class="w200" name="sv" id="s_keyword" style="resize:none;vertical-align:middle;width:500px"></textarea>
+					</td>
+				</tr>
+				<tr>
+					<th>
+						<span>카테고리검색</span>
+					</th>
+					<td>
+						<select name="category[]" style="width:200px;" onchange="ProductList.loadCategory(this)">
+							<option value="">〓〓 1차 카테고리 〓〓</option>
+							{@ category.c2}
+							<option value="{.code_all}">{.code_name}</option>
+							{/}
+						</select>
+						<select name="category[]" style="width:200px;" onchange="ProductList.loadCategory(this)">
+							<option value="">〓〓 2차 카테고리 〓〓</option>
+						</select>
+					</td>
+				</tr>
+				<tr>
+					<th>
+						<span>기간검색</span>
+					</th>
+					<td>
+						<select name="date_sf">
+							<option value="regdate">등록일</option>
+							<option value="selldate">승인일</option>
+							<option value="modifydate">업데이트일</option>
+						</select>
+						<input type="text" name="date_start" OnClick="Calendar(event)" value="" class="input calendar" autocomplete="off" /> ~
+						<input type="text" name="date_end" OnClick="Calendar(event)" value="" class="calendar input" autocomplete="off"/>
+						<a href="javascript:;" onclick="ProductList.setPeriod('today')">
+							<img src="/admin/images/btn_today01.gif" class="middle" />
+						</a>
+						<a href="javascript:;" onclick="ProductList.setPeriod('7_days')">
+							<img src="/admin/images/btn_day07.gif" class="middle" />
+						</a>
+						<a href="javascript:;" onclick="ProductList.setPeriod('14_days')">
+							<img src="/admin/images/btn_day14.gif" class="middle" />
+						</a>
+						<a href="javascript:;" onclick="ProductList.setPeriod('1_months')">
+							<img src="/admin/images/btn_day30.gif" class="middle" />
+						</a>
+						<a href="javascript:;" onclick="ProductList.setPeriod('all')">
+							<img src="/admin/images/btn_day_total.gif" class="middle">
+						</a>
+					</td>
+				</tr>
+				<tr>
+					<th>
+						<span>상품금액별 검색</span>
+					</th>
+					<td>
+						<input class="input" type="text" name="sellprice_min" value="" data-filter="numeric" placeholder="숫자로만 검색" /> 원 ~
+						<input class="input" type="text" name="sellprice_max" value="" data-filter="numeric" /> 원</td>
+				</tr>
+				<tr>
+					<th>
+						<span>재고</span>
+					</th>
+					<td>
+						<input class="input" type="text" name="quantity_min" value="" data-filter="numeric" placeholder="숫자로만 검색" /> ~
+						<input class="input" type="text" name="quantity_max" value="" data-filter="numeric" />
+					</td>
+				</tr>
+				<tr>
+					<th>
+						<span>판매상태</span>
+					</th>
+					<td>
+						<label>
+							<input type="radio" name="soldout" value="" class="hj">
+							<span class="lbl">전체</span>
+						</label>
+						<label>
+							<input type="radio" name="soldout" value="N" class="hj" checked>
+							<span class="lbl">판매중</span>
+						</label>
+						<label>
+							<input type="radio" name="soldout" value="S" class="hj">
+							<span class="lbl">판매중지</span>
+						</label>
+						<label>
+							<input type="radio" name="soldout" value="Y" class="hj">
+							<span class="lbl">품절</span>
+						</label>
+					</td>
+				</tr>
+				<tr>
+					<th>
+						<span>상품종류</span>
+					</th>
+					<td>
+						<label>
+							<input type="radio" name="pr_type" value="" class="hj" checked>
+							<span class="lbl">전체</span>
+						</label>
+						<label>
+							<input type="radio" name="pr_type" value="1" class="hj">
+							<span class="lbl">일반상품</span>
+						</label>
+						<label>
+							<input type="radio" name="pr_type" value="2" class="hj">
+							<span class="lbl">바로구매상품</span>
+						</label>
+						<label>
+							<input type="radio" name="pr_type" value="3" class="hj">
+							<span class="lbl">임직원상품</span>
+						</label>
+						<label>
+							<input type="radio" name="pr_type" value="4" class="hj">
+							<span class="lbl">추가옵션상품</span>
+						</label>
+					</td>
+				</tr>
+				<tr>
+					<th>
+						<span>라인</span>
+					</th>
+					<td>
+						<select name="line_code" style="width:10%">
+							<option value="">선택</option>
+							{@ product_line_list}
+							<option value="{.line_code}">{.line_name}</option>
+							{/}
+						</select>
+					</td>
+				</tr>
+			</table>
+
+			<div class="ta_c mt_20">
+				<button type="button" class="btn-point" onclick="ProductList.search()">조회</button>
+				<button type="button" class="btn-basic" onclick="ProductList.searchReset()">초기화</button>
+			</div>
+		</div>
+	</form>
+	<!--{* 검색:E *}-->
+
+	<!--{* 상단툴:S *}-->
+	<div class="tools mb_10">
+		<div class="pull-left">
+			<img src="/admin/images/icon_8a.gif" border="0"> 전체
+			<span id="count_total"></span>건 조회
+			<button type="button" class="btn-basic dark h-x-small" onclick="ProductList.excel()" style="vertical-align:middle">엑셀 다운로드</button>
+		</div>
+		<div class="pull-right">
+			<select name="sort" onchange="ProductList.search('sort',this.value)">
+				<option value="reg_desc">최근 등록일순으로 보기</option>
+				<option value="sale_desc">할인율 높은순으로 보기</option>
+				<option value="sale_asc">할인율 낮은순으로 보기</option>
+			</select>
+			<select name="listnum_select" onchange="ProductList.search('limit',this.value)">
+				{@ __CONFIG.limit}
+				<option value="{.value_}">{.value_}개씩 보기</option>
+				{/}
+			</select>
+		</div>
+	</div>
+	<!--{* 상단툴:E *}-->
+
+	<form id="FrmProductList">
+		<input type="hidden" name="mode" value="list" />
+		<input type="hidden" name="act" value="batch" />
+		<!--{* 목록:S *}-->
+		<div id="inner"></div>
+		<!--{* 목록:E *}-->
+
+		<!--{* 일괄변경:S *}-->
+		<div class="area-bottom">
+			<div class="pull-left ta_l">
+				<span class="tit m-r-5">일괄변경</span>
+				<select name="batch[display]">
+					<option value="">==== 승인상태 ====</option>
+					{@ cfg.conts.display}
+					<option value="{.key_}">{.value_}</option>
+					{/}
+				</select>
+				<select name="batch[soldout]">
+					<option value="">==== 판매상태 ====</option>
+					{@ cfg.conts.soldout}
+					<option value="{.key_}">{.value_}</option>
+					{/}
+				</select>
+				<!--				<select name="batch[o2o_yn]">
+						<option value="">==== 퀵배송 ====</option>
+						{@ cfg.conts.o2o_yn}
+						<option value="{.key_}">{.value_}</option>
+						{/}
+					</select>-->
+				<!--				<select name="batch[staff_dc_yn]">
+						<option value="">==== 임직원할인 ====</option>
+						{@ cfg.conts.staff_dc_yn}
+						<option value="{.key_}">{.value_}</option>
+						{/}
+					</select>-->
+				<!--				<select name="batch[naver_display]">
+						<option value="">==== 지식쇼핑 ====</option>
+						{@ cfg.conts.naver_display}
+						<option value="{.key_}">{.value_}</option>
+						{/}
+					</select>-->
+
+				<button type="button" class="ml_10 m-r-10 btn-danger" onclick="ProductList.batch()">일괄적용</button>
+			</div>
+			<div class="pull-right">
+				<button type="button" class="ml_10 btn-danger" onclick="alert('@todo')">엑셀일괄업로드</button> <button type="button" class="ml_10 btn-secondary" onclick="alert('@todo')">양식다운로드</button>
+			</div>
+		</div>
+		<!--{* 일괄변경:E *}-->
+	</form>
+</div>
+
+
+
+
+<textarea id="searched" style="display:none">{searched}</textarea>
+<script type="text/javascript" src="/static/js/blazy.min.js"></script>
+<script type="text/javascript" src="/admin/static/js/moment.js"></script>
+<script type="text/javascript" src="/admin/static/js/calendar.js"></script>
+<script type="text/javascript">
+	var ProductList = {
+		page: 1,
+		proc_url: '/admin/proc/product.proc.php',
+		init: function () {
+			var me = this;
+			this.load();
+
+			//숫자만입력
+			$('[data-filter="numeric"]').on('keydown input', function (evt) {
+				var v = $(this).val();
+				$(this).val(v.replace(/[^0-9]/g, ''));
+			});
+
+			//상품등록버튼설정
+			$('[data-button-insert]').on('click', function () {
+				me.input($(this).data('button-insert'));
+			});
+		},
+		load: function (page) {
+			UI.ing('데이터를 불러오는 중입니다...');
+			var p = page || ProductList.page;
+			var search = $('#FrmProductSearch').serialize();
+
+			$('#inner').load('/admin/product/product_list.inner.php', {
+					page: p,
+					search: search
+				},
+				function () {
+					ProductList.page = p;
+					UI.toggleCheck();
+					UI.ing();
+					$('[data-toggle="tooltip"]').tooltip();
+				}
+			);
+		},
+		loadPage: function (page) {
+			this.load(page);
+			var offset = $('#inner').offset();
+			UI.top(offset.top - 60);
+
+		},
+		loadCategory: function (ele) {
+			var el = $(ele);
+			var parent_code = el.val();
+			var target = el.next('select');
+			el.nextAll('select').find('option[value!=""]').remove();
+
+			//target.empty();
+
+			$.ajax({
+				url: '/admin/proc/product.proc.php',
+				data: {
+					mode: 'category',
+					act: 'get_children',
+					parent_code: parent_code
+				},
+				dataType: 'json',
+				type: 'POST',
+				success: function (r) {
+					if (r.success) {
+						$.each(r.data, function (i, e) {
+							var opt = $('<option value="' + e.code_all + '">' + e.code_name + '</option>');
+							target.append(opt);
+						})
+					}
+
+				}
+			})
+		},
+		search: function (field, value) {
+			if (field && value) $('#FrmProductSearch').find('[name="' + field + '"]').val(value);
+			this.load(1);
+		},
+		searchReset: function () {
+			$('#FrmProductSearch')[0].reset();
+			this.load(1);
+		},
+		setPeriod: function (sub) {
+			var period = UTIL.period('<?=TIMESTAMP?>', sub);
+			document.FrmProductSearch.date_start.value = period.start;
+			document.FrmProductSearch.date_end.value = period.end;
+		},
+		input: function (type, productcode) {
+			var search = $('#FrmProductSearch').serialize();
+			var q = encodeURIComponent(search);
+			var href = "/admin/product/product_input.php?prtype=" + type + "&callback=ProductList.load";
+			if (productcode) {
+				href += "&productcode=" + productcode;
+				window.open(href, "register", "width=1500,height=700,scrollbars=yes,status=no");
+			} else {
+				document.location.href = href;
+			}
+
+		},
+		batch: function () {
+			var act = false;
+			$.each($('select[name^="batch["'), function () {
+				if ($(this).val()) act = true;
+			})
+			if (!act) {
+				alert('일괄변경할 항목을 선택하세요.');
+				return false;
+			}
+			var checked = UI.getChecked('checked[]');
+			if (checked.length < 1) {
+				alert('적용할 상품을 선택하세요.');
+				return false;
+			}
+
+			if (!confirm(checked.length + "개의 상품을 일괄변경하시겠습니까?")) return false;
+
+			var formdata = $('#FrmProductList').serialize();
+			$.ajax({
+				url: this.proc_url,
+				data: formdata,
+				dataType: 'json',
+				type: 'POST',
+				success: function (r) {
+					alert(r.msg);
+					if (r.success) {
+						ProductList.load();
+						$('#FrmProductList')[0].reset();
+					}
+				}
+			})
+		},
+		batchImage: function () {
+			var checked = UI.getChecked('checked[]');
+			if (checked.length < 1) {
+				alert("이미지를 불러올 상품을 선택하세요.\n최대 20개까지만 일괄 불러오기가 가능합니다.");
+				return false;
+			}
+
+			if (checked.length > 20) {
+				alert('이미지 불러오기는 한번에 최대 20개까지만 가능합니다.');
+				return false;
+			}
+			if (!confirm(checked.length + "개의 상품의 이미지를 불러오시겠습니까?")) return false;
+
+			var productcode = checked.map(function () {
+				return this.value
+			}).get();
+
+			$.ajax({
+				url: this.proc_url,
+				data: {
+					productcode: productcode,
+					mode: 'list',
+					act: 'batch_image'
+				},
+				type: 'POST',
+				dataType: 'json',
+				success: function (r) {
+					console.log(r);
+				}
+			})
+
+		},
+		stock: function (productcode) { //재고
+			UI.modal('/admin/product_list.stock.php', '옵션 및 재고', {
+				productcode: productcode
+			}, 1100);
+		},
+		excel: function () {
+			var search = $('#searched').val();
+			UI.modal('/admin/common/excel.php', '엑셀다운로드', {
+				type:'product',
+				search: search
+			}, 800);
+		},
+		review: function (productcode) {
+			var href = "product_review_reg_form.php?productcode=" + productcode;
+			if (productcode) {
+				window.open(href, "register", "width=600,height=700,scrollbars=yes,status=no");
+			} else {
+				document.location.href = href;
+			}
+		},
+		copy: function (productcode) {
+			var href = "/admin/product/product_input.php?mode=copy&productcode=" + productcode;
+			window.open(href, "register", "width=600,height=130,scrollbars=yes,status=no");
+		},
+	}
+
+	$(function () {
+		ProductList.init();
+	});
+</script>

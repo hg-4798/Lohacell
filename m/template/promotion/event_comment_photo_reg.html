@@ -1,0 +1,220 @@
+<!-- 포토댓글작성팝업 -->
+<form id="FrmPhotoReg"  name="FrmPhotoReg" class="" method="post" onsubmit="return false;">
+    <input type="hidden" name="board" value="photo">
+    <input type="hidden" name="parent" value="{promoinfo.idx}">
+    <input type="hidden" name="mode" value="comment">
+    <input type="hidden" name="act" value="insert">
+
+    <div class="layer-contents regist_lyr">
+        <div class="board-title">
+            <div class="comment no-padding"><strong class="point-color">*</strong> 필수입력</div>
+        </div>
+        <table class="th-left">
+            <caption>포토댓글 작성</caption>
+            <colgroup>
+                <col style="width:80px">
+                <col style="width:auto">
+            </colgroup>
+            <tbody>
+            <tr>
+                <th scope="row"><label for="title" class="required">제목</label></th>
+                <td><input name="title" id="title" class="w100-per validate[required]" type="text" title="제목 입력자리" data-errormessage-value-missing="제목을 입력해주세요."></td>
+            </tr>
+            <tr>
+                <th scope="row"><label for="comment" class="required">내용</label></th>
+                <td><textarea rows="6" id="comment" class="w100-per validate[required]" name="comment" style="height:192px" data-errormessage-value-missing="내용을 입력하세요."></textarea></td>
+            </tr>
+            <tr>
+                <th scope="row"><label class="required">사진</label></th>
+                <td>
+                    <div class="box-photoUpload">
+                        <div class="filebox preview-image">
+                            <div class="upload-display" id="user_img_view1" style="display: none;">
+                                <div class="upload-thumb-wrap" id="user_img_img1"><img src="" class="upload-thumb"></div>
+                            </div>
+                            <input class="upload-nm hide" value="파일선택" disabled="disabled">
+
+                            <label id="user_img_label1" class="photoBox " for="input_file1"><span><i class="icon-photo-grey"></i></span></label>
+                            <a class="del" data-del="1"></a>
+
+                            <input type="file" name="photo_img[]" id="input_file1" class="upload-hidden" data-idx="1">
+                            <input type="hidden" name="delchk1" id="delchk1" value="N">
+                        </div>
+                        <div class="filebox preview-image">
+                            <div class="upload-display" id="user_img_view2" style="display: none;">
+                                <div class="upload-thumb-wrap" id="user_img_img2"><img src="" class="upload-thumb"></div>
+                            </div>
+                            <input class="upload-nm hide" value="파일선택" disabled="disabled">
+                            <label id="user_img_label2" class="photoBox" for="input_file2"><span><i class="icon-photo-grey"></i></span></label>
+                            <a class="del" data-del="2"></a>
+                            <input type="file" name="photo_img[]" id="input_file2" class="upload-hidden" data-idx="2">
+                            <input type="hidden" name="delchk2" id="delchk2" value="N">
+                        </div>
+                        <div class="filebox preview-image">
+                            <div class="upload-display" id="user_img_view3" style="display: none;">
+                                <div class="upload-thumb-wrap" id="user_img_img3"><img src="" class="upload-thumb"></div>
+                            </div>
+                            <input class="upload-nm hide" value="파일선택" disabled="disabled">
+                            <label id="user_img_label3" class="photoBox" for="input_file3"><span><i class="icon-photo-grey"></i></span></label>
+                            <a class="del" data-del="3"></a>
+                            <input type="file" name="photo_img[]" id="input_file3" class="upload-hidden" data-idx="3">
+                            <input type="hidden" name="delchk3" id="delchk3" value="N">
+                        </div>
+                        <div class="filebox preview-image">
+                            <div class="upload-display" id="user_img_view4" style="display: none;">
+                                <div class="upload-thumb-wrap" id="user_img_img4"><img src="" class="upload-thumb"></div>
+                            </div>
+                            <input class="upload-nm hide" value="파일선택" disabled="disabled">
+                            <label id="user_img_label4" class="photoBox" for="input_file4"><span><i class="icon-photo-grey"></i></span></label>
+                            <a class="del" data-del="4"></a>
+                            <input type="file" name="photo_img[]" id="input_file4" class="upload-hidden" data-idx="4">
+                            <input type="hidden" name="delchk4" id="delchk4" value="N">
+                        </div>
+                    </div>
+                    <p class="pt-5">파일명: 한글, 영문, 숫자 / 파일 크기: 3mb 이하 / 파일 형식: GIF, JPG, JPEG</p>
+                </td>
+            </tr>
+            </tbody>
+        </table>
+        <div class="btn_area">
+            <ul class="ea2">
+                <li><a href="javascript:;" class="btn-line h-large btn-cancel">취소</a></li>
+                <li><button type="submit" class="btn-point h-large">등록</button></li>
+            </ul>
+        </div>
+    </div>
+</form>
+
+
+
+
+<!-- <div class="layer-close"><button type="button" class="btn-close is-large pop-close"><span>닫기</span></button></div> -->
+
+<script type="text/javascript" src="/admin/static/js/jquery.form.js"></script>
+<script type="text/javascript">
+    var EventPhoto = {
+        init: function() {
+            var me = this;
+            $('.btn-cancel').on('click', function() {
+                $('.btn_close').trigger('click');
+                /*$('.layer-dimm-wrap').hide();
+                $('#jayjun_modal .layer-body').css('height', 'auto').empty();*/
+            });
+            var option = $.extend({}, validation_option, {
+                validateNonVisibleFields: false,
+                onValidationComplete: function (form, status) {
+                    if (status) me.save(form);
+                }
+            });
+            $("#FrmPhotoReg").validationEngine('attach', option);
+
+            //작성글수제한
+            $('#myreview-txt').on('input', function() {
+                var length = this.value.length;
+                if(length>500) {
+                    this.value = this.value.substr(0,500);
+                    return false;
+                }
+
+                $('.full_textarea .count > span').text(length);
+            });
+
+
+
+            $('#input_file1').on('change', me.createAttach);
+            $('#input_file2').on('change', me.createAttach);
+            $('#input_file3').on('change', me.createAttach);
+            $('#input_file4').on('change', me.createAttach);
+
+            $('.filebox .del').on('click', function() {
+                var del_idx = $(this).data('del');
+                $(this).siblings('.upload-display').remove();
+                $(this).siblings('.photoBox').removeClass('after');
+                $('#input_file'+del_idx).val('');
+
+            })
+        },
+        save: function(form) {
+
+            //이미지 개수 체크
+            var include_img = false;
+            $(".upload-thumb").each(function (obj) {
+                if($(this).attr("src")){
+                    include_img = true;
+                }
+            });
+            if(!include_img){
+                UI.alert("사진을 1개 이상 등록해주세요.");
+                return false;
+            }
+            if(!confirm('포토댓글을 등록하시겠습니까?')) return false;
+            var option = {
+                type: "POST",
+                url: "/proc/promotion.proc.php",
+                dataType: "json",
+                success: function (r) {
+                    $('.btn_close').trigger('click');
+                    alert(r.msg);
+                    EventDetail.page=1;
+                    EventDetail.load(EventDetail.event_type,EventDetail.page);
+                },
+                error: function (result) {
+                }
+            };
+            $(form).ajaxSubmit(option);
+        },
+        createAttach: function() {
+            var path = this.value;
+            var idx = $(this).data('idx');
+
+            var accept = (/\.(gif|png|jpg|jpeg)$/i).test(path);
+            if (!accept) {
+                alert('GIF, JPG, JPEG, PNG 파일만 등록 가능합니다.');
+                return false;
+            }
+
+            //용량체크
+            var file = document.getElementById('input_file'+idx).files[0];
+            //console.log(file);
+            if(file && file.size > 1024*1024*10) { //10MB제한
+                alert('파일 용량을 확인해주세요.');
+                return false;
+            }
+
+            var parent = $(this).parent();
+            parent.children('.upload-display').remove();
+
+            if(window.FileReader){
+                //image 파일만
+                if (!$(this)[0].files[0].type.match(/image\//)) {
+                    alert('GIF, JPG, JPEG, PNG 파일만 등록 가능합니다.');
+                    return false;
+                }
+
+                var reader = new FileReader();
+                reader.onload = function(e){
+                    var src = e.target.result;
+                    //alert(src);
+                    parent.prepend('<div class="upload-display"><div class="upload-thumb-wrap"><img src="'+src+'" class="upload-thumb"></div></div>');
+                    parent.children('.photoBox').addClass('after');
+                }
+                reader.readAsDataURL($(this)[0].files[0]);
+            }
+
+            else {
+                $(this)[0].select();
+                $(this)[0].blur();
+                var imgSrc = document.selection.createRange().text;
+                parent.prepend('<div class="upload-display"><div class="upload-thumb-wrap"><img class="upload-thumb"></div></div>');
+                parent.children('.photoBox').addClass('after');
+
+                var img = $(this).siblings('.upload-display').find('img');
+                img[0].style.filter = "progid:DXImageTransform.Microsoft.AlphaImageLoader(enable='true',sizingMethod='scale',src=\""+imgSrc+"\")";
+            }
+        }
+    }
+
+    $(function(){
+        EventPhoto.init();
+    })
+</script>

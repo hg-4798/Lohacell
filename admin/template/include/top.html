@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>관리자 페이지</title>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+
+<link rel="stylesheet" href="/admin/static/css/admin.min.css?<?=time()?>">
+<link rel="stylesheet" href="/admin/static/plugins/fontawesome/css/font-awesome.min.css">
+
+<!-- <link rel='shortcut icon' href="../static/img/common/favicon.ico" type="image/x-ico" > -->
+<script src="/admin/static/js/jquery.min.js"></script>
+<script src="/admin/static/js/jquery-ui.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.3/umd/popper.min.js" integrity="sha384-ZMP7rVo3mIykV+2+9J3UJ46jBk0WLaUAdn689aCwoqbBJiSnjAK/l8WvCWPIPm49" crossorigin="anonymous"></script>
+<script src="/admin/static/js/bootstrap.min.js"></script>
+
+
+<script type="text/javascript" src="/admin/static/js/jquery.validationEngine.js"></script>
+<script type="text/javascript" src="/admin/static/js/jquery.validationEngine-kr.js"></script>
+<script type="text/javascript" src="/admin/static/js/jquery.cookie.js"></script>
+<script type="text/javascript" src="/admin/static/js/pace.js"></script>
+
+<script src="https://cdn.polyfill.io/v2/polyfill.min.js"></script>
+<script src="/static/js/sweetalert2.min.js"></script>
+<link rel="stylesheet" href="/static/css/sweetalert2.min.css">
+
+<link rel="stylesheet" href="/static/css/jquery-ui.min.css">
+
+<script type="text/javascript" src="/admin/static/js/ui.js"></script>
+<script type="text/javascript" src="/admin/static/js/admin.js"></script> <!--{* 관리자전용js*}-->
+
+
+<script language="JavaScript">
+var Top = {
+	init: function() {
+
+	},
+	clearCache: function(flag) {
+		$.ajax({
+			type: "GET",
+			url: "/admin/clear_cache.php",
+		}).done(function(msg) {
+		});
+
+		if (flag != 'N') {
+			UI.alert('초기화했습니다.');
+		}
+	},
+	refreshImage: function() {
+		$.ajax({
+			url:'/admin/proc/product.proc.php',
+			data:{
+				mode:'config',
+				act:'refresh'
+			},
+			dataType:'json',
+			type:'POST',
+			success: function(r) {
+				UI.alert(r.msg);
+			}
+		});
+	},
+	lnb: function(e) {
+		var li = $(e).closest('li');
+		var li_id = li.attr('id');
+		
+		li.toggleClass('collapse');
+		if(li.hasClass('collapse')) $.cookie('JJLNB-'+li_id, 'collapse');
+		else $.removeCookie('JJLNB-'+li_id);
+		
+		//$.cookie('JJLNB', $('body').hasClass('nav-collapse')?'nav-collapse':'');
+	},
+	navToggle: function() {
+		$('body').toggleClass('nav-collapse');
+		$.cookie('JJLNB', $('body').hasClass('nav-collapse')?'nav-collapse':'');
+	}
+}
+
+</script>
+</head>
+<body class="{_COOKIE.JJLNB} {layout}">
+
+<!--{* CRM:S*}-->
+<form name="crmview" method="post" action="/admin/crm_view.php">
+	<input type="hidden" name="id">
+	<input type="hidden" name="menu" value="mem_list">
+	<input type="hidden" name="search_key" value="id">
+	<input type="hidden" name="search_keyword">
+</form>
+<!--{* CRM:E*}-->
+
+
+{? layout !='inc'}
+<div id="header">
+	<div class="shop-info">
+		<div class="logo"><img src="/admin/img/common/admin_logo.png" alt=""></div>
+		<div class="tools">
+			<ul>
+				<li class="profile">Welcome, {__SHOPINFO.name}님 ({__SHOPINFO.id})</li>
+				<li><a href="/" target="_blank"><i class="fa fa-home"></i> 마이샵</a></li>
+				<li><a href="javascript:;" onclick="Top.clearCache()"><i class="fa fa-refresh"></i> 캐시초기화</a></li>
+				<li><a href="javascript:;" onclick="Top.refreshImage()"><i class="fa fa-refresh"></i> 상품이미지새로고침</a></li>
+				<li><a href="/admin/logout.php" data-toggle="tooltip" title="로그아웃" ><i class="fa fa-sign-out"></i> 로그아웃</a></li>
+			</ul>
+		</div>
+	</div>
+
+	<div class="gnb">
+		<ul>
+			<li>
+				<a onclick="Top.navToggle()" ></a>
+			</li>
+			{@ __MENU}
+			<li class="{.active}">
+				<a href="{.href}">{.name}</a>
+			</li>
+			{/}
+		</ul>
+	</div>
+</div>
+
+<div class="admin_linemap">
+	<div class="line">
+		<p> 
+			{@ __NAV.nav}<span>{.value_}</span>{/}
+		</p>
+	</div>
+</div>
+
+
+<div class="lnb">
+	<h4>
+		{__NAV.nav[0]}
+	</h4>
+	<ul class="lnb-d1">
+		{@ __NAV.lnb}
+		<li class="{.active} {.collapse}" id="{.id}">
+			<a onclick="Top.lnb(this)">{.name}</a>
+			{? .children}
+			<ul class="lnb-d2">
+				{@ .children}
+				<li class="{..active}"><a href="{..href}">{..name}</a></li>
+				{/}
+			</ul>
+			{/}
+		</li>
+		{/}
+	</ul>
+</div>
+{/}

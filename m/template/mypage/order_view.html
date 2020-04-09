@@ -1,0 +1,332 @@
+<div id="page">
+	<!-- 내용 -->
+	<main id="content" class="subpage">
+		<section class="page_local">
+			<h2 class="page_title">
+				<a href="javascript:history.back();" class="prev">이전페이지</a>
+				<span>주문/배송조회</span>
+			</h2>
+		</section><!-- //.page_local -->
+
+		<section class="orderlist_view list_myorder sub_bdtop">
+			<!-- //주문상세 테이블 -->
+			<div class="my_orderlist ">
+				<h3 class="order_title clear">
+					<span class="fl-l">주문번호: {basic.order_num}</span>
+					<span class="fl-r">{=format(basic.date_insert,'Y-m-d')}</span>
+				</h3>
+			<ul class="cart_goods">
+				{@ product}
+				<li>
+					<div class="cart_wrap">
+						<div class="clear">
+							<div class="goods_area">
+								<div class="img"><a href="{C.DIR_M}/productdetail.php?productcode={.productcode}"><img src="{=preview(.product_info.tinyimage,'default')}" alt="상품 이미지"></a></div>
+								<div class="info">
+									<p class="brand">{? .option_type == 'product'}<span class="point-color fw-normal">[추가] </span>{/}{.product_info.productname}</p>
+									<p class="name">{? .option_info.option_name} {.option_info.option_name} / {/}{=number_format(.cnt)}개</p>
+									<p class="point-color fw-bold">{=number_format(.price_sell*.cnt)}원</p>
+									<p>{.status_info.msg}</p>
+									<span class="status_tag">
+										{? in_array('cancel',.status_info.enable)}
+										<button class="btn-basic cancel btn-deliveryRefund ord_cancel" type="button" onclick="OrderView.cancel('{basic.oid}')"><span>주문취소</span></button>
+										{/}
+
+										{? in_array('confirm',.status_info.enable)}
+										<button class="btn-point w100-per block" type="button" onclick="OrderView.confirm('{basic.oid}', '{.idxs}')"><span>구매확정</span></button>
+										{/}
+
+										{? in_array('return',.status_info.enable)}
+										<button class="btn-basic btn-deliveryRefund ord_regoods block" type="button" onclick="OrderView.refund('{basic.oid}')"><span>반품</span></button>
+										{/}
+										{? in_array('exchange',.status_info.enable)}
+										<button class="btn-line btn-deliveryExchange ord_change block" type="button" onclick="OrderView.exchange('{basic.oid}')"><span>교환</span></button>
+										{/}
+
+										{? in_array('review',.status_info.enable)}
+											{? .option_type == 'option'}
+												{? .review.idx == '4'}
+												<button class="btn-basic w100-per" type="button" onclick="OrderView.review()"><span>리뷰보기</span></button>
+												{:}
+												<button class="btn-point w100-per" type="button" onclick="OrderView.open('{.review.idx}','{.productcode}','{.option_code}','{basic.order_num}')"><span>리뷰작성</span></button>
+												{/}
+											{/}
+										{/}
+
+										{? in_array('return_cancel',.status_info.enable)}
+										<button class="btn-basic cancel  w100-per ord_cancel" type="button" onclick="OrderView.return_cancel(this)"><span>반품철회</span></button>
+										{/}
+
+										{? in_array('exchange_cancel',.status_info.enable)}
+										<button class="btn-basic cancel  w100-per ord_cancel" type="button" onclick="OrderView.exchange_cancel(this)"><span>교환철회</span></button>
+										{/}
+									</span>
+								</div>
+							</div>
+						</div>
+					</div><!-- //.cart_wrap -->
+				</li>
+				{/}
+			</ul><!-- //.cart_goods -->
+			</div>
+			<!-- 주문상세 테이블 -->
+
+
+			<div class="btn_area mt-20 mr-10 ml-10">
+				<ul class="ea2 dib_type">
+					<li><a href="javascript:history.back();" class="btn-point h-input">목록</a></li>
+				</ul>
+			</div>
+
+			<!-- 할인 및 결제정보 -->
+			<div class="order_table mt-25">
+				<h3 class="cart_tit">할인 및 결제정보</h3>
+				<table class="th-left">
+					<colgroup>
+						<col style="width:32.8%;">
+						<col style="width:auto;">
+					</colgroup>
+					<tbody>
+					<tr>
+						<th>총 상품금액</th>
+						<td>{=number_format(basic.sum_consumer)}원</td>
+					</tr>
+					<tr>
+						<th>할인</th>
+						<td><span class="point-color">- {=number_format(basic.sum_discount)} 원</span></td>
+					</tr>
+					<tr>
+						<th>포인트 사용</th>
+						<td><span class="point-color">- {=number_format(basic.use_point)} P</span></td>
+					</tr>
+					<tr>
+						<th>마일리지 사용</th>
+						<td><span class="point-color">- {=number_format(basic.use_mileage)} M</span></td>
+					</tr>
+					<tr>
+						<th>쿠폰할인</th>
+						<td><span class="point-color">- {=number_format(basic.coupon_product_discount+basic.coupon_basket_discount)} 원</span></td>
+					</tr>
+					<tr>
+						<th>배송비</th>
+						<td>{? basic.pay_delivery-basic.coupon_delivery_discount > 0}
+							{=number_format(basic.pay_delivery-basic.coupon_delivery_discount)} 원
+							{:}
+							무료배송
+							{/}</td>
+					</tr>
+					<tr>
+						<th>실 결제금액</th>
+						<td><strong class="point-color">{=number_format(basic.pay_pg)} 원</strong> <p class="mt-5">적립 예상 마일리지 {=number_format(basic.sum_mileage)} M</p></td>
+					</tr>
+					<tr>
+						<th>결제방법</th>
+						<td>
+							{? payment.pay_method == 'vcnt'}
+							가상계좌
+							<div class="mt-5">
+								{payment.detail}
+							</div>
+							{: payment.pay_method == 'acnt'}
+							실시간계좌이체
+							{:}
+							카드결제
+							<div class="mt-5">
+								{payment.res_info.card_name} {payment.detail}
+							</div>
+							{/}
+						</td>
+					</tr>
+					</tbody>
+				</table>
+			</div><!-- //.order_table -->
+			<!-- //할인 및 결제정보 -->
+
+			<!-- 배송지 정보 -->
+			<div class="order_table">
+				<h3 class="cart_tit">
+					배송지 정보
+					<!-- [D] 주문 상태: 주문접수, 결제완료인 경우에만 노출 -->
+					{? basic.order_status_max < 4}
+					<a href="javascript:;" class="btn_change_addr btn-line" onclick="OrderView.delivery_change('{basic.order_num}');">배송지변경</a>
+					{/}
+					<!-- //[D] 주문 상태: 주문접수, 결제완료인 경우에만 노출 -->
+				</h3>
+				<table class="th-left">
+					<colgroup>
+						<col style="width:32.8%;">
+						<col style="width:auto;">
+					</colgroup>
+					<tbody>
+					<tr>
+						<th>받는사람</th>
+						<td>{basic.receiver_name}</td>
+					</tr>
+					<tr>
+						<th>휴대전화</th>
+						<td>{basic.receiver_mobile}</td>
+					</tr>
+					<tr>
+						<th>전화번호(선택)</th>
+						<td>{basic.receiver_tel}</td>
+					</tr>
+					<tr>
+						<th>주소</th>
+						<td>
+							<div class="mt-5">(우편번호:{basic.receiver_zipcode})</div><br>
+							주소 : {basic.receiver_addr} {basic.receiver_addr_detail}
+						</td>
+					</tr>
+					<tr>
+						<th>배송 요청사항</th>
+						<td>
+							{? basic.receiver_memo}{basic.receiver_memo}{:}-{/}
+						</td>
+					</tr>
+					</tbody>
+				</table>
+			</div><!-- //.order_table -->
+			<!-- //배송지 정보 -->
+		</section><!-- //.orderlist_view -->
+
+	</main>
+	<!-- //내용 -->
+</div>
+
+<script type="text/javascript" src="{C.POST_JS}"></script>
+<script type="text/javascript" src="/m/template/order/order_address.js"></script>
+<script type="text/javascript">
+var OrderView = {
+	page:1,
+	init: function() {
+		var me = this;
+	},
+	cancel: function (order_num) { //취소, 취소는 일괄취소만 가능하므로 가능여부를 먼저 체크한다
+
+		$.ajax({
+			url:'/proc/order.proc.php',
+			data:{
+				mode:'validator',
+				act:'cancel',
+				order_num:order_num
+			},
+			dataType:'json',
+			type:'POST',
+			success: function(r) {
+				if(r.success){ 
+					document.location.href=r.data.url;
+				}
+				else {
+					UI.warning(r.msg);
+				}
+			}
+		});
+	},
+	refund: function (order_num) { //반품
+		$.ajax({
+			url:'/proc/order.proc.php',
+			data:{
+				mode:'validator',
+				act:'refund',
+				order_num:order_num
+			},
+			dataType:'json',
+			type:'POST',
+			success: function(r) {
+				if(r.success){ 
+					document.location.href=r.data.url;
+				}
+				else {
+					UI.warning(r.msg);
+				}
+			}
+		});
+	},
+	exchange: function (order_num) { //교환
+		document.location.href="/m/mypage_exchangelist.php?oid="+order_num;
+	},
+	confirm: function(order_num, pidx) {
+		UI.confirm("구매확정 시 교환/반품이 불가합니다.<br>구매확정 하시겠습니까?", function() {
+			$.ajax({
+				url:'/proc/order.proc.php',
+				data:{
+					mode:'order_confirm',
+					order_num:order_num,
+					order_product_idx:pidx
+				},
+				dataType:'json',
+				type:'POST',
+				success: function(r) {
+					if(r.success){ 
+						document.location.reload();
+					}
+					else {
+						UI.warning('부분취소는 고객센터로 문의하세요.');
+					}
+				}
+			});
+		})
+	},
+    open: function(productorder_idx,productcode,option_code,order_num) {
+        switch(productorder_idx) {
+            case '2': //미로그인
+            case 2:
+                UI.confirm("로그인 후 이용이 가능합니다.\n로그인 화면으로 이동하시겠습니까?", function() {
+                    document.location.href="/m/login.php?chUrl={_SERVER.REQUEST_URI}";
+                })
+                break;
+            case '3': //권한없음(리뷰기작성)
+            case 3:
+                UI.alert('상품에 대한 주문 내역이 없습니다.');
+                break;
+            case '4': //권한없음(주문내역없음)
+            case 4:
+                UI.alert('이미 구매후기를 등록했습니다. (구매확정 후 1회 등록 가능).');
+                break;
+            case '1': //작성창
+            default:
+                UI.popup('/m/review/review_write.php','리뷰작성', {productorder_idx:productorder_idx,productcode:productcode,option_code:option_code,order_num:order_num});
+                break;
+        }
+
+    },
+	return_cancel: function() { //@todo 반품철회
+		UI.alert('고객센터로 문의하세요.');
+		// UI.confirm('철회후에는 재 반품 신청이 불가합니다.<br>반품철회하시겠습니까?',function() {})
+	},
+	exchange_cancel: function() { //@todo 교환철회
+		UI.alert('고객센터로 문의하세요.');
+		//UI.confirm('철회후에는 재 반품 신청이 불가합니다.<br>반품철회하시겠습니까?',function() {})
+	},
+	delivery_change : function (order_num) {
+		UI.popup('/m/mypage/delivery_change.php','배송지변경', {order_num:order_num});
+    },
+	review : function(){
+	document.location.href="/m/mypage_review.php?review_type=reviewok";
+}
+
+}
+
+$(function() {
+
+	OrderView.init();
+})
+
+	/*
+	var OrderView = {
+		page:1,
+		init: function() {
+			var me = this;
+		},
+		cancel: function (order_num) {
+			document.location.href="/m/mypage_cancellist.php?oid="+order_num;
+		},
+		refund: function (order_num) {
+			document.location.href="/m/mypage_refundlist.php?oid="+order_num;
+		},
+		exchange: function (order_num) {
+			document.location.href="/m/mypage_exchangelist.php?oid="+order_num;
+		}
+	}
+	*/
+</script>

@@ -1,0 +1,43 @@
+<div id="container">
+	[LEFT_MENU]
+	<div class="cs_contents">
+		<div class="title">
+			<h2><img src="/image//community/title_recipe_review.gif" alt="레시피후기" /></h2>
+			<div class="path">
+				<ul>
+					<li class="home">홈&nbsp;&gt;&nbsp;</li>
+					<li>커뮤니티&nbsp;&gt;&nbsp;</li>
+					<li>상품후기</li>
+				</ul>
+			</div>
+		</div>
+
+		<div class="sub_title"><img src="/image//community/community_title_reviewall.png" alt="레시피후기" /></div>
+
+		<div class="quick_category">
+			
+			<table cellpadding="0" cellspacing="0" align="center">
+			 <colgroup>
+				<col width="700" /><col width="" />
+			 </colgroup>
+			 <tr>
+			 	<td>
+					<p>[CODEA_width:150px;background-color:#EBEBEB]&nbsp;[CODEB_width:150px;background-color:#EBEBEB]&nbsp;[CODEC_width:150px;background-color:#EBEBEB]&nbsp;[CODED_width:150px;background-color:#EBEBEB]</p>
+					<p class="product">[PRCODE_width:315px;background-color:#EBEBEB]</p>
+				</td>
+				<td>
+					<a href="javascript:[SEARCHOK]" class="btn_search01"><img src="../image/community/bt_search_board.gif"></a>
+				</td>
+			 </tr>
+			 </table>
+		</div>
+		
+		<div class="boardlist_warp" style="padding-top:30px">
+			<div class="boardlist_w_list">
+				[LIST_55]
+			</div>
+		</div>
+		[PAGE]
+	</div>	<!-- cs_contents 끝 -->
+</div><!-- //container 끝 -->
+<div class="clearboth"></div>		

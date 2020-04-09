@@ -1,0 +1,22 @@
+<?
+$pointSet['join']['point'] = '100'; 
+$pointSet['addRecommand']['point'] = '100'; 
+$pointSet['recommand']['count'] = '1'; 
+$pointSet['recommand']['point'] = '100'; 
+$pointSet['login']['count'] = '1'; 
+$pointSet['login']['point'] = '10'; 
+$pointSet['photo']['count'] = '1'; 
+$pointSet['photo']['point'] = '200'; 
+$pointSet['textr']['count'] = '1'; 
+$pointSet['textr']['point'] = '100'; 
+$pointSet['best']['count'] = '999'; 
+$pointSet['best']['point'] = '100'; 
+$pointSet['board']['count'] = '999'; 
+$pointSet['board']['point'] = '40'; 
+$pointSet['comment']['count'] = '999'; 
+$pointSet['comment']['point'] = '20'; 
+$pointSet['like']['point'] = '5'; 
+$pointSet['feelingUp']['point'] = '5'; 
+$pointSet['feelingDown']['point'] = '0'; 
+$pointSet['sns']['point'] = '40'; 
+?>

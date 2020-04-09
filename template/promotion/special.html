@@ -1,0 +1,161 @@
+<div id="contents">
+	<div class="promotion-page">
+
+		<article class="promotion-wrap">
+			<header>
+				<h2 class="promotion-title" id="page_title"></h2>
+			</header>
+			<div class="promotionList-slider-wrap">
+				<ul class="promotionList-slider">
+					{@ range(1,10)}
+					<li>
+						<img src="https://dev-jayjun-pub.ajashop.co.kr/data/shopimages/mainbanner/14859e97f44c8bfb3e2b0c5b97d0b79c0.jpg" alt="">
+					</li>
+					{/}
+
+				</ul>
+			</div>
+			<div class="promotion-list-wrap ta-c mt-25" data-ui="TabMenu">
+
+				<div class="tabs" id="menu_event" style="display: none;">
+					<button data-content="menu" class="active1" onclick="DivControl(2,1);">
+						<span>진행중 이벤트</span>
+					</button>
+					<button data-content="menu" class="active2" onclick="DivControl(2,2);">
+						<span>종료된 이벤트</span>
+					</button>
+					<!-- <button data-content="menu" onclick="DivControl(2,3);"><span>당첨자발표</span></button> -->
+				</div>
+				<div class="tabs" id="menu_special" style="display: none;">
+					<button data-content="menu" class="active1" onclick="DivControl(2,1);">
+						<span>진행중 기획전</span>
+					</button>
+					<button data-content="menu" class="active2" onclick="DivControl(2,2);">
+						<span>종료된 기획전</span>
+					</button>
+				</div>
+				<div id="nowEventArea">
+					<!--이벤트리스트-->
+					<ul class="list-photoType clear" id="getEventList">
+						<li>컨텐츠가 없습니다.</li>
+					</ul>
+					<div class="list-paginate mt-45" id="paging_area">
+						<li>등록된 컨텐츠가 없습니다.</li>
+					</div>
+				</div>
+				<div id="oldEventArea" style="display: none;">
+					<!--이벤트리스트-->
+					<ul class="list-photoType clear" id="getEventList_old">
+						<li>컨텐츠가 없습니다</li>
+					</ul>
+					<div class="list-paginate mt-45" id="paging_area_old">
+						<li>컨텐츠가 없습니다</li>
+					</div>
+				</div>
+
+				<div id="boardEventArea" style="display: none;">
+					<div class="ta-r">
+						<form>
+							<fieldset>
+								<legend>당첨자 발표 검색</legend>
+								<input type="text" class="w250" placeholder="검색어를 입력해주세요." title="당첨자 검색어 입력자리">
+								<button class="btn-point ml-5 w70" type="submit">
+									<span>검색</span>
+								</button>
+							</fieldset>
+						</form>
+					</div>
+					<table class="th-top mt-10">
+						<caption>이벤트 당첨자 목록</caption>
+						<colgroup>
+							<col style="width:100px">
+							<col style="width:auto">
+							<col style="width:250px">
+							<col style="width:150px">
+						</colgroup>
+						<thead>
+							<tr>
+								<th scope="col">No.</th>
+								<th scope="col">이벤트명</th>
+								<th scope="col">이벤트 기간</th>
+								<th scope="col">발표일</th>
+							</tr>
+						</thead>
+						<tbody>
+							<tr>
+								<td class="txt-toneA">25</td>
+								<td class="subject">
+									<a href="">설 연휴 이벤트 당첨자 발표</a>
+								</td>
+								<td class="txt-toneA">2017.01.14 ~ 2017.02.28</td>
+								<td class="txt-toneA">2017.03.02</td>
+							</tr>
+							<tr>
+								<td class="txt-toneA">24</td>
+								<td class="subject">
+									<a href="">설 연휴 이벤트 당첨자 발표</a>
+								</td>
+								<td class="txt-toneA">2017.01.14 ~ 2017.02.28</td>
+								<td class="txt-toneA">2017.03.02</td>
+							</tr>
+							<tr>
+								<td class="txt-toneA">23</td>
+								<td class="subject">
+									<a href="">설 연휴 이벤트 당첨자 발표</a>
+								</td>
+								<td class="txt-toneA">2017.01.14 ~ 2017.02.28</td>
+								<td class="txt-toneA">2017.03.02</td>
+							</tr>
+							<tr>
+								<td class="txt-toneA">22</td>
+								<td class="subject">
+									<a href="">설 연휴 이벤트 당첨자 발표</a>
+								</td>
+								<td class="txt-toneA">2017.01.14 ~ 2017.02.28</td>
+								<td class="txt-toneA">2017.03.02</td>
+							</tr>
+							<tr>
+								<td class="txt-toneA">21</td>
+								<td class="subject">
+									<a href="">설 연휴 이벤트 당첨자 발표</a>
+								</td>
+								<td class="txt-toneA">2017.01.14 ~ 2017.02.28</td>
+								<td class="txt-toneA">2017.03.02</td>
+							</tr>
+							<tr>
+								<td class="txt-toneA">20</td>
+								<td class="subject">
+									<a href="">설 연휴 이벤트 당첨자 발표</a>
+								</td>
+								<td class="txt-toneA">2017.01.14 ~ 2017.02.28</td>
+								<td class="txt-toneA">2017.03.02</td>
+							</tr>
+						</tbody>
+					</table>
+					<div class="list-paginate mt-20">
+						<a href="#" class="prev-all"></a>
+						<a href="#" class="prev"></a>
+						<a href="#" class="number on">1</a>
+						<a href="#" class="number">2</a>
+						<a href="#" class="number">3</a>
+						<a href="#" class="number">4</a>
+						<a href="#" class="number">5</a>
+						<a href="#" class="number">6</a>
+						<a href="#" class="number">7</a>
+						<a href="#" class="number">8</a>
+						<a href="#" class="number">9</a>
+						<a href="#" class="number">10</a>
+						<a href="#" class="next on"></a>
+						<a href="#" class="next-all on"></a>
+					</div>
+				</div>
+
+
+
+			</div>
+
+		</article>
+
+	</div>
+</div>
+<!-- //#contents -->

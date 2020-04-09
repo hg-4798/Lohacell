@@ -1,0 +1,72 @@
+<style>
+	.swiper-pagination-bullet-active {
+		background:#E9C05E;
+	}
+</style>
+<div class="ptreview_view">
+{? review_detail.image}
+<div class="img">
+	<div class="swiper-container">
+		<div class="swiper-wrapper">
+			{@ review_detail.image}
+			<div class="swiper-slide"><img src="{.value_}" alt="리뷰이미지"></div>
+			{/}
+		</div>
+		<div class="swiper-pagination"></div>
+	</div>
+</div>
+{/}
+<div class="con">
+	<div class="user clear">
+		<div class="score"><img src="/jayjun/m/static/img/icon/rating_score{review_detail.marks}.png" alt="5점 만점중 {review_detail.marks}점"></div>
+		<div class="writer">{=format(review_detail.id,'id')} <span></span> {=format(review_detail.date,'Y.m.d')}</div>
+		{? C.MEMID == review_detail.id }
+		<div class="function-btn">
+			<!--
+			<button class="btn-point" type="button"><span>수정</span></button>
+			<button class="btn-line" type="button"><span>삭제</span></button>
+			-->
+		</div>
+		{/}
+	</div>
+	<div class="txt">
+		<strong>{review_detail.subject}</strong>
+		{review_detail.content}
+	</div>
+	<div class="review-goods-link">
+		<div class="thumbnail"><img src="{review_detail.minimage}" alt=""></div>
+		<div class="info">
+			<div class="copy-main">{review_detail.productname}</div>
+			<div class="copy-sub">{review_detail.phrase_ad}</div>
+			<div class="copy-sub color">{? review_detail.option_info.color_img}<img src="{review_detail.option_info.color_img}" alt="">{/}{review_detail.option_name}</div>
+			<div class="price-link">
+				<div class="price">{=format(review_detail.consumerprice,'price')}<span>원</span></div>
+				<a href="{url.productdetail}?productcode={review_detail.productcode}" target="_blank" class="btn-point">리뷰상품 보기</a>
+			</div>
+		</div>
+	</div>
+</div>
+</div>
+<script type="text/javascript">
+    var ReviewDetail = {
+		init: function() {
+            var  me = this;
+			me.createSlider();
+		},
+		createSlider: function() {
+			var swiper = new Swiper('.swiper-container', {
+				navigation: {
+					nextEl: '.ptreview-next',
+					prevEl: '.ptreview-prev',
+				},
+				 pagination: {
+			        el: '.swiper-pagination',
+			    }
+		    });
+		}
+    }
+
+    $(function() {
+        ReviewDetail.init();
+    })
+</script>

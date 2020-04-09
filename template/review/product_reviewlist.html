@@ -1,0 +1,59 @@
+<h2 class="v-hidden">구매후기</h2>
+<div class="review">
+	<div class="head clear">
+		<div class="fl-l"><p class="count"><strong>구매후기</strong>({total})</p></div>
+		<div class="fl-r"><a href="javascript:;" class="btn-point" onclick="ProductDetail.open('{auth}','{productcode}','{auth.option_code}','{auth.order_num}')">구매후기 작성</a></div>
+	</div>
+	<div id="review_text"></div>
+	<ul class="review_accordion">
+		{@ productReview_list}
+		<li>
+			<div class="score">
+				<img src="/jayjun/web/static/img/icon/rating_score{.marks}.png" alt="5점 만점중 {marks}점">
+			</div>
+			<div class="review_txt">
+				<div class="editor-area">
+					{.content}
+				</div>
+				<a href="javascript:;" class="btn_more">더보기</a>
+			</div>
+			<div class="writer">
+				<p class="date">{=format(.date,'Y.m.d')}</p>
+				<p class="id">{=format(.id,'id')}</p>
+			</div>
+		</li>
+		{:}
+		<li class="no-content is-bdt-none">상품리뷰가 없습니다.</li>
+		{/}
+
+	</ul>
+	{this->xprint('_include/pagination.html')}
+</div>
+
+
+<script type="text/javascript">
+	var ProductReview = {
+
+		init: function() {
+			var me = this;
+
+
+			// 구매후기 toggle
+			$('.review_accordion .btn_more').click(function(){
+			    var item = $(this).parents('li'),
+					other = item.siblings('li');
+				if( item.hasClass('active') ){
+					item.removeClass('active').find('.btn_more').text('더보기');
+				}else{
+					other.removeClass('active').find('.btn_more').text('더보기');
+					item.addClass('active').find('.btn_more').text('닫기');
+				}
+			});
+
+		},
+	}
+
+	$(function() {
+		ProductReview.init();
+	})
+</script>

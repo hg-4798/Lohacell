@@ -1,0 +1,55 @@
+<div class="p_20">
+	<div class="m-b-5 ta_r">
+		{? row}
+		최근 수정정보 : {row.reg_id} <span class="text-muted">{row.date_update}</span>
+		{/}
+	</div>
+
+	<form id="FrmOrderMEmo" onsubmit="return false">
+		<input type="hidden" name="mode" value="memo">
+		<input type="hidden" name="order_num" value="{order_num}">
+		<textarea class="textarea w-100" style="height:200px" name="admin_memo" placeholder="관리메모를 등록하세요. 사용자에게는 노출되지 않습니다.">{row.memo}</textarea>
+
+		<div class="mt_10 mb_10 ta_c">
+			<button type="submit" class="btn-basic dark h-small">저장</button>
+			<button type="button" class="btn-basic h-small" onclick="UI.modalClose();">취소</button>
+		</div>
+	</form>
+</div>
+
+<script type="text/javascript">
+var Memo = {
+	init: function() {
+		var me = this;
+		var option = $.extend({}, validation_option, {
+			validateNonVisibleFields: false,
+			onValidationComplete: function (form, status) {
+				if (status) me.save();
+			}
+		});
+		$("#FrmOrderMEmo").validationEngine('attach', option);
+	},
+	save: function() {
+		var formdata = $('#FrmOrderMEmo').serialize();
+		$.ajax({
+			url:'/admin/proc/order.proc.php',
+			data:formdata,
+			dataType:'json',
+			type:'POST',
+			success: function(r) {
+				if(r.success) {
+					UI.alert(r.msg, function() {
+						UI.modalClose();
+					});
+				}
+				else {
+					UI.error(r.msg);
+				}
+			}
+		})
+	}
+}
+$(function() {
+	Memo.init();
+})
+</script>

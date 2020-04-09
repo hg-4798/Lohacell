@@ -1,0 +1,74 @@
+<div class="title_depth3_sub">
+	<b id="code_name">{=implode(' &gt; ', array_column(nav,'name'))}</b>
+	<div style="float:right">
+		{? list}
+		<span>최종업데이트 일시 : {=format(list[0].date_update,'Y-m-d H:i')}  {list[0].updater_name}({list[0].updater_id})</span>
+		{/}
+	</div>
+</div>
+
+<div class="table_style02">
+	<table border="0" cellpadding="0" cellspacing="0" width="100%" class="table-hover">
+		<colgroup>
+			<col width="100">
+			<col width="150">
+			<col width="*">
+			<col width="150">
+			<col width="150">
+			<col width="100">
+			<col width="100">
+			<col width="100">
+			<col width="100">
+			<col width="100">
+		</colgroup>
+		<thead>
+			<tr>
+				<th>노출순서</th>
+				<th>상품이미지</th>
+				<th>상품명</th>
+				<th>상품코드</th>
+				<th>판매상태</th>
+				<th>정상가</th>
+				<th>판매가</th>
+				<th>할인율</th>
+				<th>재고</th>
+				<th>삭제</th>
+			</tr>
+		</thead>
+		<tbody id="recommend_tbody">
+			{@ list}
+			<tr data-productcode="{.productcode}">
+				<td>{.sort}</td>
+				<td><img src="{=preview(.tinyimage)}" alt="" class="thumbnail"></td>
+				<td class="ta_l">{.productname}</td>
+				<td>
+					{.prodcode}
+					<div class="fc-null">({.productcode})</div>
+				</td>
+				<td>{class.product->trans('soldout',.soldout)}</td>
+				<td>{=number_format(.consumerprice)}</td>
+				<td>{=number_format(.sellprice)}</td>
+				<td>{.sellprice_dc_rate}%</td>
+				<td>{=number_format(.quantity)}</td>
+				<td><button type="button" class="btn_type1" onclick="ProductRecommend.remove(this)">삭제</td>
+			</tr>
+			{/}
+
+			<tr height="28" class="empty {? list}hide{/}">
+				<td colspan="11" align="center">등록된 추천상품이 없습니다.</td>
+			</tr>
+		</tbody>
+	</table>
+</div>
+
+<div class="row">
+	<div class="pull-left">
+		<button type="button" class="btn-basic" onclick="ProductRecommend.move('up')" style="min-width:38px" alt="위로"><i class="fa fa-chevron-up"></i></button>
+		<button type="button" class="btn-basic" onclick="ProductRecommend.move('down')" style="min-width:38px" alt="아래로"><i class="fa fa-chevron-down"></i></button>
+	</div>
+	<div class="pull-right">
+		<button type="button" class="btn-basic dark" onclick="ProductRecommend.open()"> 상품추가</button>
+		<button type="button" class="btn-point" onclick="ProductRecommend.save()">설정저장</button>
+	</div>
+	
+</div>

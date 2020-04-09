@@ -1,0 +1,138 @@
+<!-- 마이페이지 > 주문상세 > 교환신청 -->
+<div class="layer-dimm-wrap popDelivery-return exchange">
+		<div class="layer-inner">
+			<h2 class="layer-title">교환신청</h2>
+			<button class="btn-close" type="button"><span>닫기</span></button>
+			<div class="layer-content">
+	
+				<table class="th-top" id="cg_list">
+					<caption>주문 목록</caption>
+					<colgroup>
+						<col style="width:105px">
+						<col style="width:auto">
+						<col style="width:80px">
+						<col style="width:180px">
+						<col style="width:110px">
+					</colgroup>
+					<thead>
+						<tr>
+							<th scope="col">주문일</th>
+							<th scope="col">상품정보</th>
+							<th scope="col">수량</th>
+							<th scope="col">변경할 옵션</th>
+							<th scope="col">판매가</th>
+						</tr>
+					</thead>
+	
+					<tbody></tbody>
+					<tfoot></tfoot>
+				</table>
+	
+				<table class="th-left mt-40 exchange-reason-info">
+					<caption>교환사유 작성</caption>
+					<colgroup>
+						<col style="width:120px">
+						<col style="width:auto">
+					</colgroup>
+					<tbody>
+						<tr>
+							<th scope="row"><label for="exchane_reason" class="essential">교환사유</label></th>
+							<td>
+								<div class="input-cover">
+									<div class="select">
+										<select name="c_sel_code" id="exchane_reason" style="width:190px" title="교환사유 선택" class="tab-select">
+											<option value=''>선택</option>
+											<?php
+											$oc_reason_sub_code_html = "";
+											$oc_reason_sub_code_html .= '<div class="mt-10 checkbox-set">';
+											foreach($exchange_oc_code as $key => $val) {
+	?>
+											<option value="<?=$key?>">
+												<?=$val['name']?>
+											</option>
+											<?
+												if($val['detail_code']) {
+													$oc_rsc_addClass	= " style='display:none'";
+													$oc_reason_sub_code_html .= '
+														<div class="mt-10 CLS_sel_sub_code chk_sub_code_'.$key.'" '.$oc_rsc_addClass.'>
+													';
+													foreach($val['detail_code'] as $c2key => $c2val) {
+														$oc_reason_sub_code_html	.= '<div >
+																							<input id="checkbox-'.$key.$c2key.'" class="b_sel_sub_code" type="checkbox" name="b_sel_sub_code" value="'.$c2key.'">
+																							<label for="checkbox-'.$key.$c2key.'">'.$c2val.'</label>
+																							</div>
+																						';
+													}
+													$oc_reason_sub_code_html .= '</div>';
+												}
+											}
+											$oc_reason_sub_code_html .= '</div>';
+	?>
+										</select>
+	
+									</div>
+								</div>
+								<?=$oc_reason_sub_code_html?>
+							</td>
+						</tr>
+						<tr>
+							<th scope="row"><label for="detail_reason">상세사유</label></th>
+							<td>
+								<textarea id="detail_reason" class="w100-per" name="memo" cols="5" rows="3" style="height:79px" title="상세사유 입력"
+									placeholder="교환내용을 자세하게 작성해주세요."></textarea>
+							</td>
+						</tr>
+					</tbody>
+				</table>
+	
+				<dl class="return-delivery-price">
+					<dt>택배비 발송</dt>
+					<?
+					$oc_delivery_fee_type_cnt = 0;
+					foreach($delivery_fee_type as $key => $val) {
+					 ?>
+					<?if($key  == "3"){ ?>
+					<dd>
+						<div class="radio">
+							<input type="radio" id="radio-delivery-fee-re<?=$key?>" value="<?=$key ?>" name="return_deli_type">
+							<label for="radio-delivery-fee-re<?=$key?>">
+								<?=$val ?></label>
+						</div>
+						<div class="input-cover d-iblock ml-10"><input type="text" title="입금자명 입력" name="return_deli_memo" id="return_deli_memo2"
+								placeholder="입금자명"></div>
+					</dd>
+					<?}else{ ?>
+					<dd>
+						<div class="radio">
+							<input type="radio" id="radio-delivery-fee-re<?=$key?>" value="<?=$key ?>" name="return_deli_type">
+							<label for="radio-delivery-fee-re<?=$key?>">
+								<?=$val ?></label>
+						</div>
+					</dd>
+					<?} ?>
+	
+					<?} ?>
+				</dl>
+	
+				<dl class="attention-box mt-40">
+					<dt>유의사항</dt>
+					<dd>교환은 같은 옵션상품만 가능합니다. 다른 옵션의 상품으로 교환을 원하실 경우, 반품 후 재구매를 해주세요 </dd>
+					<dd>상품이 손상/훼손되었거나 이미 사용하셨다면 교환이 불가능합니다 </dd>
+					<dd>교환 사유가 구매자 사유일 경우 왕복 교환 배송비를 상품과 함께 박스에 동봉해 주세요 </dd>
+					<dd>교환 왕복 배송비가 동봉되지 않았을 경우 별도 입금 요청을 드릴 수 있습니다 </dd>
+					<dd>교환 사유가 판매자 사유일 경우 별도 배송비를 동봉하지 않으셔도 됩니다 </dd>
+					<dd>상품 확인 후 실제로 판매자 사유가 아닐 경우 별도 배송비 입금 요청을 드릴 수 있습니다</dd>
+				</dl>
+	
+				<div class="btnPlace mt-40 mb-40 button_open">
+					<!--<button class="btn-line h-large" type="button"><span>취소</span></button>-->
+					<button class="btn-point h-large refundSubmit" type="button"><span>신청</span></button>
+				</div>
+	
+				<div class="mt-40 mb-40 button_close" style="text-align:center; display:none;">
+					========== 처리중 입니다 ==========
+				</div>
+	
+			</div><!-- //.layer-content -->
+		</div>
+	</div><!-- //마이페이지 > 주문상세 > 교환신청 -->

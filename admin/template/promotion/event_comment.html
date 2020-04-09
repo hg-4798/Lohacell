@@ -1,0 +1,70 @@
+<div class="m-b-50 m-t-10 order-view">
+	<div class="inc-tit">댓글목록 - {event.title}
+		<div class="right" style="top:10px"><button type="button" class="btn btn-sm btn-dark" onclick="EventComment.excel();">엑셀다운로드</button></div>
+	</div>
+
+	<form id="FrmCommentSearch">
+		<input type="hidden" name="no" value="{event.idx}">
+	</form>
+
+	<div id="inner" class="p-l-10 p-r-10 m-t-20"></div>
+</div>
+
+<form name="FrmCommentExcel" method="POST" action="/admin/common/excel.download.php">
+	<input type="hidden" name="type" value="event_comment">
+	<input type="hidden" name="column" value="c_mem_id,name,email,mobile,comment,writetime">
+	<input type="hidden" name="search" value="no={event.idx}">
+</form>
+
+
+<script type="text/javascript">
+var EventComment = {
+	page:1,
+	init: function() {
+		this.load();
+	},
+	load: function(page) {
+		var p = page || EventComment.page;
+		var search = $('#FrmCommentSearch').serialize();
+
+		$('#inner').load('/admin/promotion/event_comment.inner.php', {
+				page: p,
+				search: search
+			},
+			function () {
+				EventComment.page = p;
+			}
+		);
+	},
+	remove: function(num) {
+		UI.confirm('삭제하시겠습니까?', function() {
+			$.ajax({
+				url:'/admin/proc/promotion.proc.php',
+				data:{
+					mode:'comment',
+					act:'delete',
+					num:num
+				},
+				dataType:'json',
+				type:'POST',
+				success: function(r) {
+					if(r.success){
+						EventComment.load(1);
+					}
+					else {
+						UI.error(r.msg);
+					}
+				}
+			})
+		})
+
+	},
+	excel: function() {
+		document.FrmCommentExcel.submit();
+	}
+}
+
+$(function() {
+	EventComment.init();
+})
+</script>

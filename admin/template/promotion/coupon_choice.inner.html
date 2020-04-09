@@ -1,0 +1,72 @@
+<div class="table_style02 mt_0">
+	<table width=100% cellpadding=0 cellspacing=0 border=0 style="table-layout:fixed">
+		<colgroup>
+			<col style="width:100px" /><!-- 생성일자 -->
+			<col style="width:85px" /><!-- 쿠폰코드 -->
+			<col style="width:200px"><!-- 쿠폰명 -->
+			<col style="width:75px" /><!-- 수량 -->
+			<col style="width:130px" /><!-- 혜택 -->
+			<col style="width:100px" /><!-- 유효기간 -->
+			<col style="width:80px" /><!-- 상태 -->
+			<col style="width:80px" /><!-- 선택 -->
+		</colgroup>
+		
+		<tr>
+			<th>생성일자</th>
+			<th>쿠폰코드</th>
+			<th>쿠폰명</th>
+			<th>수량</th>
+			<th>혜택</th>
+			<th>유효기간</th>
+			<th>상태</th>
+			<th>선택</th>
+		</tr>
+		<tbody id="choice-tbody">
+		{@ list}
+		<tr data-couponcode='{.coupon_code}'>
+			<td data-field="regdate">{.regdate}</td>
+			<td data-field="couponcode"><a href="javascript:CouponView('{.coupon_code}')">{.coupon_code}</a></td>
+			<td data-field="couponname" class="ta_l">{.coupon_name}</td>
+			<td data-field="qty">
+				<a href="coupon_view_excel_paper.php?coupon_code={.coupon_code}"> ({.coupon_left_cnt} / {.coupon_cnt})</a>
+			</td>
+			<td data-field="sale_text">{.sale_text}</td>
+			<td data-field="date_time">{.date_time}</td>
+			<td data-field="state">{.issue_status_text}</td>
+			<td data-field="btn">
+				<button type="button" class="h-small btn-point" onclick="CouponChoice.choice(this, 'close')">선택</button>
+			</td>
+		</tr>
+		{:}
+		<tr height="28">
+			<td colspan="9" align="center">조회된 내용이 없습니다.</td>
+		</tr>
+		{/}
+		</tbody>
+	</table>
+
+
+	<div class="row">
+		<div class="pull-center">
+			{this->xprint('include/pagination.html')}
+		</div>
+		<div class="pull-left mt_10 w200">
+		</div>
+		<div class="pull-right mt_10  w200">
+			<button type="button" class="h-small btn-basic" onclick="UI.modalClose()">닫기</button>
+		</div>
+		
+	</div>
+</div>
+
+<script type="text/javascript">
+var CouponChoiceInner = {
+	init: function() {
+		$('.modal #count_total').html('{count.total}');
+	}
+}
+
+$(function() {
+	CouponChoiceInner.init();
+})
+</script>

@@ -1,0 +1,158 @@
+<div class="container m-b-50 m-t-10 order-view">
+	<div class="inc-tit">교환 접수
+		<div class="right">주문번호 : {basic.order_num} <span class="bar"></span> 주문일시 : {basic.date_insert}</div>
+	</div>
+
+	<!--{* 결제금액정보:S *}-->
+	<div class="inc-body">
+		<div class="inc-tit-sub">결제금액 정보</div>
+		<table class="tbl-summery tbl-center">
+			<thead>
+				<th>총결제금액</th>
+				<th>상품판매금액</th>
+				<th>배송비</th>
+				<th>사용 포인트</th>
+				<th>사용 마일리지</th>
+				<th>쿠폰할인 금액</th>
+				<th>PG사 결제금액</th>
+				<th>지급 마일리지</th>
+			</thead>
+			<tbody>
+				<tr>
+					<td class="ta-c">{=number_format(basic.pay_total)} 원</td><!--{* 총결제금액 *}-->
+					<td class="ta-c">{=number_format(basic.pay_total-basic.pay_delivery)} 원</td><!--{* 상품판매금액 *}-->
+					<td class="ta-c">{=number_format(basic.pay_delivery-basic.coupon_delivery_discount)} 원</td><!--{* 배송비-무료배송쿠폰할인액 *}-->
+					<td class="ta-c">{=number_format(basic.use_point)} P</td><!--{* 사용 포인트 *}-->
+					<td class="ta-c">{=number_format(basic.use_mileage)} M</td><!--{* 사용 마일리지 *}-->
+					<td class="ta-c">{=number_format(basic.coupon_basket_discount+basic.coupon_product_discount)} 원</td><!--{* 쿠폰할인 금액 *}-->
+					<td class="ta-c">{=number_format(basic.pay_pg)} 원</td><!--{* PG사 결제금액 *}-->
+					<td class="ta-c">{=number_format(basic.mileage_expect)} M</td><!--{* 지급 적립금 *}-->
+				</tr>
+			</tbody>
+		</table>
+	<!--{* 결제금액정보:E *}-->
+
+	<!--{* 주문상품:S *}-->
+	<div class="inc-tit-sub">교환가능 상품정보</div>
+	<form id="FrmProduct" onsubmit="return false">
+	<input type="hidden" name="order_num" value="{basic.order_num}">
+	<table class="tbl-list">
+		<colgroup>
+			<col style="width:50px"> <!-- 선택 -->
+			<col style="width:50px"> <!-- 번호 -->
+			<col style="width:50px"> <!-- 상품이미지 -->
+			<col> <!-- 주문상품명 -->
+			<col style="width:50px"> <!-- 수량 -->
+			<col style="width:80px"> <!-- 반품수량 -->
+			<col style="width:100px"> <!-- 상품금액 -->
+			<col style="width:100px"> <!-- 총상품금액 -->
+			<col style="width:80px"> <!-- 쿠폰할인 -->
+			<col style="width:100px"> <!-- 처리상태 -->
+		</colgroup>
+		<thead>
+			<th><input type="checkbox" class="hj" id="check_toggle" data-all="checked[product][]"><span class="lbl"></span></th>
+			<th>번호</th>
+			<th colspan="2">주문상품</th>
+			<th>수량</th>
+			<th>반품수량</th>
+			<th>상품금액</th>
+			<th>총상품금액</th>
+			<th>쿠폰할인</th>
+			<th>처리상태</th>
+		</thead>
+		<tbody>
+			{@ product}
+			<tr data-idx="{.idxs}" data-index="{.index_}">
+				<td><input type="checkbox" class="hj validate[required]" name="checked[product][]"  value="{.idxs}"  data-errormessage-value-missing="주문 상품을 선택하세요." ><span class="lbl"></span></td>
+				<td>{.num}</td>
+				<td><img src="{=preview(.product_info.tinyimage,'default')}" alt="" class="thumb-50"></td>
+				<td class="ta-l">
+					{? .option_type=='product'}
+					<div class="m-b-5"><span class="label label-xs prtype-4 m-b-5">추가구매상품</span></div>
+					{/}
+					<b><a href="javascript:;" class="link" onclick="ADMIN.product('{.product_info.pr_type}','{.product_info.productcode}')">{.product_info.productname}</a></b>
+					{? .option_type=='option'}<div>{.option_info.option_name}</div>{/}
+				</td>
+	
+				<td>{.cnt}개</td>
+				<td>
+					<select name="checked[count][]" class="select" disabled>
+						{@ range(.cnt,1)}
+					<option value="{..value_}">{..value_}개</option>
+					{/}
+					</select>
+				</td>
+	
+				<td>
+					{=number_format(.price_sell)}
+				</td>
+				<td>
+					{=number_format(.price_sell*.cnt)}원
+				</td>
+	
+				{? .coupon_discount > 0 //@TODO 사용쿠폰이 있는경우 사용쿠폰정보 링크}
+				<td>{=number_format(.coupon_discount)}</td>
+				{:}
+				<td class="text-muted">{=number_format(.coupon_discount)}</td>
+				{/}
+				<td>
+					{.status_info.msg}
+				</td>
+			</tr>
+			{/}
+		</tbody>
+	</table>
+	<!--{* 주문상품:S *}-->
+
+	<div class="text-center m-t-10">
+		<button type="submit" class="btn-basic">선택상품 교환</button>
+	</div>
+	</form>
+
+	<div id="inner_form"></div>
+
+</div>
+
+<script type="text/javascript" src="{C.POST_JS}"></script>
+<script type="text/javascript">
+var Exchange = {
+	init: function() {
+		var me = this;
+		UI.toggleCheck();
+		// me.loadForm();
+		$('[name="checked[product][]"]').on('click', function() {
+			var tr = $(this).closest('tr');
+			if(this.checked) tr.find("select").removeAttr('disabled');
+			else tr.find("select").attr('disabled', true);
+			$('#inner_form').empty();
+		});
+
+		$('#check_toggle').on('click', function() {
+			if(this.checked) $('[name="checked[count][]"]').removeAttr('disabled');
+			else  $('[name="checked[count][]"]').attr('disabled', true);
+			
+		});
+
+		$('[name="checked[count][]"]').on('change', function() {
+			$('#inner_form').empty();
+		})
+
+		var option = $.extend({}, validation_option, {
+			validateNonVisibleFields: false,
+			onValidationComplete: function (form, status) {
+				if (status) me.loadForm(form);
+			}
+		});
+		$("#FrmProduct").validationEngine('attach',option);
+
+	},
+	loadForm: function() {
+		var formdata = $('#FrmProduct').serializeArray();
+		$('#inner_form').load('/admin/order/exchange.form.php',formdata);
+	}
+}
+
+$(function() {
+	Exchange.init();
+})
+</script>

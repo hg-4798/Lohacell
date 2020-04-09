@@ -1,0 +1,33 @@
+
+<table class="th-top">
+	<caption>SMS 발송내역 리스트</caption>
+	<colgroup>
+		<col style="width:60px"><col style="width:120px"><col style="width:120px"><col style="width:auto"><col style="width:120px">
+	</colgroup>
+	<thead>
+	<tr>
+		<th scope="row">번호</th>
+		<th scope="row">전송일</th>
+		<th scope="row">메세지</th>
+		<th scope="row">기타정보</th>
+		<th scope="row">처리상태</th>
+	</tr>
+	</thead>
+	<tbody>
+	{@ list}
+	<tr>
+		<td>{.no}</td>
+		<td>{.send_date}</td>
+		<td>{.msg}</td>
+		<td class="ta-l">{.etc_msg}</td>
+		<td class="ta-l">{.res_msg}</td>
+	</tr>
+	{:}
+	<tr>
+		<td colspan="7" class="ta-c">발송내역이 없습니다.</td>
+	</tr>
+	{/}
+	</tbody>
+</table>
+
+{this->xprint('include/pagination.html')}

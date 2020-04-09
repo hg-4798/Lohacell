@@ -1,0 +1,87 @@
+{? !end_yn}
+<div class="ta-c mt-60">
+    {? login.id }
+    <button class="btn-point h-large" style="width:160px" onclick="EventDetail.photoReg('{pidx}');">
+        <span>포토등록</span>
+    </button>
+    {:}
+    <button class="btn-point" type="button" onclick="location.href='{C.DIR_FRONT}/login.php?chUrl={C.DIR_FRONT}/promotion/event_detail.php?idx={pidx}&status=ing'">
+        <span>로그인 후 포토등록</span>
+    </button>
+    {/}
+</div>
+{/}
+<section class="reply-list-wrap photo-reply mt-20">
+    <header>
+        <h2>댓글 입력과 댓글 리스트 출력</h2>
+    </header>
+    <div class="reply-count clear">
+        <div class="fl-l">댓글
+            <strong class="fz-16" id="total_photo">{total}</strong>
+        </div>
+    </div>
+
+    <!-- //.reply-list -->
+    <ul class="reply-list" id="comment_list">
+        {@ list}
+        <li>
+            <div class="reply">
+                {? .owner && !end_yn}
+                <div class="btn">
+                    <button class="btn-line h-small" type="button" onclick="EventDetail.removeComment('{.num}')">
+                        <span>삭제</span>
+                    </button>
+                </div>
+                {/}
+                <p class="name">
+                    <!--{* @TODO 아이디 별처리 *}-->
+                    <!--{* @TODO 포토댓글 리스트 형식 수정 *}-->
+                    <strong>{=format(.c_mem_id,'id')}</strong>
+                    <span class="pl-5">{=format(.writetime,'Y-m-d H:i')}</span>
+                </p>
+                <p class="photo-title" onclick="CommentPhotoList.photoView('{.num}','{end_yn}')"><a class="btn-photoReply">{=nl2br(.comment)}{? .photo_img}<i class="icon-photo" style="margin-left: 10px;"></i>{/}</a></p>
+            </div>
+		</li>
+		{:}
+		<li>
+            <div class="reply">
+                <div class="comment editor-output">
+                    <p style="word-wrap: break-word;">
+                        댓글이 없습니다. 첫 댓글의 주인이 되어주세요.
+                    </p>
+                </div>
+            </div>
+        </li>
+		{/}
+	</ul>
+	<!-- //.reply-list -->
+
+	<div class="list-paginate mt-20" id="photo_paging_area">
+		{= this->xfetch('_include/pagination.html')}
+	</div>
+	<!-- //.list-paginate -->
+</section>
+
+
+
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/Swiper/4.3.5/css/swiper.min.css">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Swiper/4.3.5/js/swiper.js"></script>
+<script type="text/javascript" src="/static/js/blazy.min.js"></script> <!--{* 이미지lazy 처리js *}-->
+<script type="text/javascript">
+
+    var CommentPhotoList = {
+        init: function () {
+        },
+        photoView: function (bcnum,end_yn) {
+            UI.modal('/front/promotion/event_comment_photo_view.php', '포토댓글보기', {
+                bcnum: bcnum, end_yn: end_yn
+            });
+        }
+    };
+
+$(function () {
+    CommentPhotoList.init();
+});
+
+</script>

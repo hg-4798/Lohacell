@@ -1,0 +1,47 @@
+@charset "utf-8";
+
+/* 주문/결제 - 입력테이블 */
+table.input{border-bottom:1px solid #d6d6d6;margin-top:-1px;color:#424242;font-size:12px}
+table.input:nth-of-type(1){margin-top:0px}
+table.input caption{position:relative;padding:8px 10px 7px;border-top:1px solid #7c7c7c;font-weight:bold;background:#f2f2f2}
+table.input tr{border-top:1px solid #d6d6d6}
+table.input th{padding-left:10px;font-weight:normal;text-align:left}
+table.input td{padding:6px 0;text-align:left}
+
+table.input select{float:left;margin-right:5px}
+table.input a{float:left;height:28px;margin-right:5px;color:#fff;font-size:11px;text-align:center;line-height:28px;letter-spacing:-1px;background:#555;overflow:hidden;display:block}
+table.input input[type="text"]{float:left;height:26px;padding:0 8px;border:1px solid #c1c1c1;margin-right:5px}
+
+table.input select.shipping{width:108px}
+table.input a.btn_new{width:46px}
+table.input a.btn_book{width:56px}
+table.input input.name{width:63px}
+table.input select.phone{width:66px}
+table.input input.phone{width:54px}
+table.input .postbox:after{clear:both;content:"";display:block}
+table.input .postbox input.post{width:48px}
+table.input .postbox span{float:left;margin:0 4px 0 -1px;line-height:28px}
+table.input .postbox a.btn_post{width:72px}
+table.input input.address{width:202px;margin-top:5px}
+table.input textarea.note{width:202px;height:68px;padding:9px 8px;border:1px solid #c1c1c1;line-height:1.3}
+
+/* 결제완료 */
+.orderpage .completebox{padding:33px;border-top:1px solid #071232;text-align:center}
+.orderpage .completebox img{width:auto;height:89px}
+.orderpage .completebox p{margin-top:25px;color:#424242;line-height:1.5}
+.orderpage .completebox p strong{color:#ff4e08;font-weight:normal}
+
+.orderpage section.product h3{position:relative;padding:7px 10px 5px;border-top:1px solid #7c7c7c;border-bottom:1px solid #d6d6d6;color:#424242;font-size:12px;font-weight:bold;line-height:1.3;background:#f2f2f2}
+.orderpage .productwrap{margin-bottom:-1px}
+.orderpage .productwrap img.item{margin-right:15px}
+.orderpage .productwrap .infobox{padding-top:5px}
+.orderpage .productwrap .infobox span.option{margin-top:2px;color:#272727;font-size:13px;display:block}
+.orderpage .productwrap .infobox a.btn_detail{width:70px;height:23px;border:1px solid #c1c1c1;margin-top:3px;color:#666;font-size:12px;font-weight:bold;text-align:center;line-height:24px;background:linear-gradient(#f4f4f4,#dadada);background:-webkit-linear-gradient(#f4f4f4,#dadada);overflow:hidden;display:block}
+
+.orderpage nav.button{margin:25px 0;text-align:center}
+.orderpage nav.button ul{display:inline-block}
+.orderpage nav.button li{float:left;width:120px;margin:0 3px}
+.orderpage nav.button li a{padding:1px;color:#fff;font-size:13px;font-weight:bold;text-align:center;background:#555;display:block}
+.orderpage nav.button li a span{height:27px;border:1px solid #898989;line-height:28px;overflow:hidden;display:block}
+.orderpage nav.button li a.red{background:#ff4e08}
+.orderpage nav.button li a.red span{border-color:#ff9e78}

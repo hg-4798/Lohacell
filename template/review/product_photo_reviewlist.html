@@ -1,0 +1,57 @@
+<h2 class="v-hidden">포토리뷰</h2>
+<div class="pt_review">
+	<div class="head clear">
+		<div class="fl-l"><p class="count"><strong>포토리뷰</strong>({total})</p></div>
+		<div class="fl-r"><a href="javascript:;" class="btn-point btn-reviewReg" onclick="ProductDetail.open('{auth}','{productcode}','{auth.option_code}','{auth.order_num}')">포토리뷰 작성</a></div>
+	</div>
+	<ul class="pt_review_list {? !productReview_list }no-review {/}">
+		{@ productReview_list}
+		<li>
+			<div class="post">
+				<a href="javascript:;" class="btn_ptreview_view" data-idx="{.num}">
+					<div class="img" style="background-image:url('{? .upfile}{.upfile}{:}{.upfile2}{/}')"></div>
+					<div class="score">
+						<img src="/jayjun/web/static/img/icon/rating_score{.marks}.png" alt="5점 만점중 {.marks}점">
+					</div>
+					<div class="txt">{.content}</div>
+					<div class="clear">
+						<p class="id">{=format(.id,'id')}</p>
+						<span class="btn_more">더보기 +</span>
+					</div>
+				</a>
+			</div>
+		</li>
+		{:}
+		<li class="no-content is-bdt-none">포토리뷰가 없습니다.</li>
+		{/}
+	</ul>
+</div>
+<!--{* 페이징:S *}-->
+{this->xprint('_include/pagination.html')}
+
+
+<script type="text/javascript">
+    var ProductPhotoReview = {
+
+        init: function() {
+            var me = this;
+            // 상세 > 포토리뷰보기 팝업
+            $('.btn_ptreview_view').click(function() {
+                var idx = $(this).data('idx');
+                me.detailOpen(idx);
+            });
+
+		},
+        detailOpen: function(idx) {
+            UI.modal('/front/review/review_detail.php','리뷰보기', {
+                idx :idx
+            },function () {
+                new Blazy(); //이미지 바인딩
+            });
+        }
+    }
+
+    $(function() {
+        ProductPhotoReview.init();
+    })
+</script>

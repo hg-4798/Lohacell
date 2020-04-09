@@ -1,0 +1,261 @@
+<div class="table_style02">
+	<table border=0 cellpadding=0 cellspacing=1 width=100% style="border:1px solid #d1d1d1">
+		<colgroup>
+			<col width=80></col>
+			<col width=80></col>
+			<col width=80></col>
+			<col width=80></col>
+			<col width=80></col>
+			<col width=80></col>
+			<col width=80></col>
+			<col width=80></col>
+			<col width=80></col>
+			<col width=80></col>
+			<col width=80></col>
+			<col width=80></col>
+			<col width=80></col>
+			<col width=80></col>
+			<col width=80></col>
+			<col width=80></col>
+			<col width=80></col>
+			<col width=80></col>
+			<col width=80></col>
+		</colgroup>
+
+		<TR bgcolor="#d1d1d1">
+			<td rowspan=2>
+				<b>구분
+					<b>
+			</td>
+			<td colspan=6>
+				<b>판매
+					<b>
+			</td>
+			<td colspan=6>
+				<b>환불
+					<b>
+			</td>
+			<td colspan=6>
+				<b>순매출
+					<b>
+			</td>
+		</TR>
+		<TR bgcolor="#d1d1d1">
+			<td>
+				<b>상품구매금액
+					<b>
+			</td>
+			<td>
+				<b>배송비
+					<b>
+			</td>
+			<td>
+				<b>쿠폰
+					<b>
+			</td>
+			<td>
+				<b>포인트
+					<b>
+			</td>
+			<td>
+				<b>마일리지
+					<b>
+			</td>
+			<td>
+				<b>실결제금액
+					<b>
+			</td>
+
+			<td>
+				<b>상품환불금액
+					<b>
+			</td>
+			<td>
+				<b>배송비
+					<b>
+			</td>
+			<td>
+				<b>쿠폰
+					<b>
+			</td>
+			<td>
+				<b>포인트
+					<b>
+			</td>
+			<td>
+				<b>마일리지
+					<b>
+			</td>
+			<td>
+				<b>실결제금액
+					<b>
+			</td>
+
+			<td>
+				<b>상품구매금액
+					<b>
+			</td>
+			<td>
+				<b>배송비
+					<b>
+			</td>
+			<td>
+				<b>쿠폰
+					<b>
+			</td>
+			<td>
+				<b>포인트
+					<b>
+			</td>
+			<td>
+				<b>마일리지
+					<b>
+			</td>
+			<td>
+				<b>실결제금액
+					<b>
+			</td>
+		</TR>
+		{@ list}
+<!--		if($i%2) $thiscolor="#ffeeff";
+		else $thiscolor="#FFFFFF";-->
+		<tr bgcolor="ffeeff" onmouseover="this.style.background='#FEFBD1'" onmouseleave="this.style.background='#ffeeff'">
+			<td>
+				{.cdt}
+			</td>
+			<td style="text-align:right;">
+				{=number_format(.sale_sum_end)}&nbsp;&nbsp;</td>
+			<td style="text-align:right;">
+				{=number_format(.pay_delivery)}&nbsp;&nbsp;</td>
+			<td style="text-align:right;">
+				{=number_format(.coupon_discount)}&nbsp;&nbsp;</td>
+			<td style="text-align:right;">
+				{=number_format(.use_point)}&nbsp;&nbsp;</td>
+			<td style="text-align:right;">
+				{=number_format(.use_mileage)}&nbsp;&nbsp;</td>
+			<td style="text-align:right;">
+				{=number_format(.pay_pg)}&nbsp;&nbsp;</td>
+			<td style="text-align:right;">
+				{=number_format(.refund_price_product)}&nbsp;&nbsp;</td>
+			<td style="text-align:right;">
+				{=number_format(.refund_price_delivery)}&nbsp;&nbsp;</td>
+			<td style="text-align:right;">
+				{=number_format(.refund_cancel_coupon)}&nbsp;&nbsp;</td>
+			<td style="text-align:right;">
+				{=number_format(.refund_point)}&nbsp;&nbsp;</td>
+			<td style="text-align:right;">
+				{=number_format(.refund_mileage)}&nbsp;&nbsp;</td>
+			<td style="text-align:right;">
+				{=number_format(.refund_cash)}&nbsp;&nbsp;</td>
+			<td style="text-align:right;">
+				{=number_format(.basic_sum_end)}&nbsp;&nbsp;</td>
+			<td style="text-align:right;">
+				{=number_format(.basic_pay_delivery)}&nbsp;&nbsp;</td>
+			<td style="text-align:right;">
+				{=number_format(.basic_coupon_discount)}&nbsp;&nbsp;</td>
+			<td style="text-align:right;">
+				{=number_format(.basic_use_point)}&nbsp;&nbsp;</td>
+			<td style="text-align:right;">
+				{=number_format(.basic_use_mileage)}&nbsp;&nbsp;</td>
+			<td style="text-align:right;">
+				{=number_format(.basic_pay_pg)}&nbsp;&nbsp;</td>
+		</tr>
+		{:}
+		<tr>
+			<td colspan="19">조회된 데이터가 없습니다.</td>
+		</tr>
+		{/}
+		<tr bgcolor="#d1d1d1" onmouseover="this.style.background='#FEFBD1'" onmouseleave="this.style.background='#d1d1d1'">
+			<td>
+				<b>합계</b>
+			</td>
+			<td style="text-align:right;">
+				<b>
+					{=number_format(total_data.tot_sale_sum_end)}
+				</b>&nbsp;&nbsp;</td>
+			<td style="text-align:right;">
+				<b>
+					{=number_format(total_data.tot_sale_pay_delivery)}
+				</b>&nbsp;&nbsp;</td>
+			<td style="text-align:right;">
+				<b>
+					{=number_format(total_data.tot_sale_coupon_discount)}
+				</b>&nbsp;&nbsp;</td>
+			<td style="text-align:right;">
+				<b>
+					{=number_format(total_data.tot_sale_use_point)}
+				</b>&nbsp;&nbsp;</td>
+			<td style="text-align:right;">
+				<b>
+					{=number_format(total_data.tot_sale_use_mileage)}
+				</b>&nbsp;&nbsp;</td>
+			<td style="text-align:right;">
+				<b>
+					{=number_format(total_data.tot_sale_pay_pg)}
+				</b>&nbsp;&nbsp;</td>
+			<td style="text-align:right;">
+				<b>
+					{=number_format(total_data.tot_refund_price_product)}
+				</b>&nbsp;&nbsp;</td>
+			<td style="text-align:right;">
+				<b>
+					{=number_format(total_data.tot_refund_price_delivery)}
+				</b>&nbsp;&nbsp;</td>
+			<td style="text-align:right;">
+				<b>
+					{=number_format(total_data.tot_refund_cancel_coupon)}
+				</b>&nbsp;&nbsp;</td>
+			<td style="text-align:right;">
+				<b>
+					{=number_format(total_data.tot_refund_point)}
+				</b>&nbsp;&nbsp;</td>
+			<td style="text-align:right;">
+				<b>
+					{=number_format(total_data.tot_refund_mileage)}
+				</b>&nbsp;&nbsp;</td>
+			<td style="text-align:right;">
+				<b>
+					{=number_format(total_data.tot_refund_cash)}
+				</b>&nbsp;&nbsp;</td>
+			<td style="text-align:right;">
+				<b>
+					{=number_format(total_data.tot_pure_sale_sum_end)}
+				</b>&nbsp;&nbsp;</td>
+			<td style="text-align:right;">
+				<b>
+					{=number_format(total_data.tot_pure_sale_pay_delivery)}
+				</b>&nbsp;&nbsp;</td>
+			<td style="text-align:right;">
+				<b>
+					{=number_format(total_data.tot_pure_sale_coupon_discount)}
+				</b>&nbsp;&nbsp;</td>
+			<td style="text-align:right;">
+				<b>
+					{=number_format(total_data.tot_pure_sale_use_point)}
+				</b>&nbsp;&nbsp;</td>
+			<td style="text-align:right;">
+				<b>
+					{=number_format(total_data.tot_pure_sale_use_mileage)}
+				</b>&nbsp;&nbsp;</td>
+			<td style="text-align:right;">
+				<b>
+					{=number_format(total_data.tot_pure_sale_pay_pg)}
+				</b>&nbsp;&nbsp;</td>
+		</tr>
+	</table>
+
+	{this->xprint('include/pagination.html')}
+</div>
+
+<script type="text/javascript">
+var SalesMonthInner = {
+	init: function() {
+		$('#count_total').text(UI.numberFormat('{count}'));
+        $('#searched').val('{=addslashes(_POST.search)}');
+	}
+}
+
+$(function() {
+	SalesMonthInner.init();
+})
+</script>

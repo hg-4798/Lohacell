@@ -1,0 +1,106 @@
+<style>
+	img.lazy {
+        display: block;
+    }
+	a:hover {color:#000;}
+</style>
+<div class="table_style02">
+	<table width=100% cellpadding=0 cellspacing=0 border=0 style="table-layout:fixed">
+		<colgroup>
+			<col style="width:50px" />
+			<col style="width:50px" />
+			<col style="width:80px" /><!-- 이미지 -->
+			<col style="width:200px"><!-- 상품명 -->
+			<col style="width:150px" /><!-- 상품코드 -->
+			<col style="width:80px" /><!-- 승인상태 -->
+			<col style="width:80px" /><!-- 판매상태 -->
+			<col style="width:80px" /><!-- 정상가 -->
+			<col style="width:80px" /><!-- 판매가 -->
+			<col style="width:80px" /><!-- 할인율 -->
+			<col style="width:60px" /><!-- 재고 -->
+			<col style="width:80px" /><!-- 등록일 -->
+			<col style="width:80px" /><!-- 승인일 -->
+			<col style="width:80px" /><!-- 업데이트일 -->
+			<col style="width:80px" /><!-- 비고 -->
+		</colgroup>
+		
+		<tr>
+			<th><label class="single"><input type="checkbox" class="hj" data-all="checked[]"><span class="lbl"></span></label></th>
+			<th>No</th>
+			<th>이미지</th>
+			<th>상품명</th>
+			<th>상품코드</th>
+			<th>승인상태</th>
+			<th>판매상태</th>
+			<th>정상가</th>
+			<th>판매가</th>
+			<th>할인율</th>
+			<th>재고</th>
+			<th>등록일</th>
+			<th>승인일</th>
+			<th>업데이트일</th>
+			<th>비고</th>
+		</tr>
+		{@ list}
+		<tr style="height:110px">
+			<td><label class="single"><input type="checkbox" name="checked[]" value="{.productcode}" class="hj"><span class="lbl"></span></label></td>
+			<td>{.no}</td>
+			<td><a href="{link.view}?productcode={.productcode}" target="_blank"><img data-src="{=preview(.minimage,'default')}" class="b-lazy" src="/admin/images/common/noimg_list.jpg" alt="" style="width:70px"></a></td>
+			<td class="ta_l">
+				<div class="m-b-5">
+					<span class="label label-xs prtype-{.pr_type}">{class.product->trans('pr_type',.pr_type)}<!-- 상품종류 --></span>
+					<a href="/front/productdetail.php?productcode={.productcode}" target="_blank" data-toggle="tooltip" data-title="상품상세 바로가기"><i class="fa fa-share-square-o" ></i></a>
+				</div>
+				<a href="javascript:;" onclick="ProductList.input('{.pr_type}','{.productcode}');">{.productname}</a>
+				<ul class="c-list">
+					{@ .link}
+					<li>- {=implode(' &gt; ', array_column(..value_,'name'))}</li>
+					{/}
+				</ul>
+			</td>
+			<td>
+				{.prodcode //erpcode} 
+				<div class="fc-null">({.productcode})</div>
+			</td>
+			<td>{class.product->trans('display',.display)}</td><!-- 승인상태 -->
+			<td>
+				{class.product->trans('soldout',.soldout)}
+				{? .soldout == 'N' && .quantity==0}<div class="fc-red fs-11">(일시품절)</div>{/}
+			</td><!-- 판매상태 -->
+			<td><img src="/admin/images/won_icon.gif" class="middle" style="margin-right:2px;"><span class="font_orange">{=number_format(.consumerprice)}</span></td>
+			<td><img src="/admin/images/won_icon.gif" class="middle" style="margin-right:2px;"><span class="font_orange">{=number_format(.sellprice)}</span></td>
+			<td>{=number_format(.sellprice_dc_rate)}%</td>
+			<td><a href="javascript:;" onclick="ProductList.stock('{.productcode}')">{=number_format(.quantity)}</a></td>
+			
+			<td>{=format(.regdate,'Y-m-d H:i:s')}</td><!-- 등록일 -->
+			<td>{=format(.selldate,'Y-m-d H:i:s')}</td><!-- 승인일 -->
+			<td>{=format(.modifydate, 'Y-m-d H:i:s')}</td>
+			<td>{? .pr_type !='4'}<input type="button" class="btn  btn-sm" value="리뷰등록({.review_cnt})" onclick="ProductList.review('{.productcode}')">{/}
+			<div class="m-t-5"><input type="button" class="btn  btn-sm" value="상품복사" onclick="ProductList.copy('{.productcode}')"></div></td>
+		</tr>
+		{:}
+		<tr height="28">
+			<td colspan="15" align="center">조회된 내용이 없습니다.</td>
+		</tr>
+		{/}
+	</table>
+
+	{this->xprint('include/pagination.html')}
+</div>
+
+
+
+
+<script type="text/javascript">
+var ProductListInner = {
+	init: function() {
+		$('#count_total').html('{count.search}');
+		$('#searched').val('{_POST.search}');
+		setTimeout(function(){ new Blazy(); }, 100);
+	}
+}
+
+$(function() {
+	ProductListInner.init();
+})
+</script>

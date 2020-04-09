@@ -1,0 +1,193 @@
+<!-- 할인 및 결제정보 -->
+<form id="FrmReturnConfirm">
+{@ refund}
+<input type="hidden" name="refund[{.key_}]" value="{.value_}">
+{/}
+<input type="hidden" name="pay_delivery" value="{pay_delivery}">
+{@ cancel}
+<input type="hidden" name="cancel[{.key_}]" value="{.value_}">
+{/}
+<div class="order_table is-right mt-25">
+	
+	<h3 class="cart_tit">할인 및 결제정보</h3>
+	<table class="th-left">
+		<colgroup>
+			<col style="width:32.8%;">
+			<col style="width:auto;">
+		</colgroup>
+		<tbody>
+		<tr>
+			<th scope="row"><label>총 상품금액</label></th>
+			<td class="fw-bold">
+				{=number_format(basic.sum_consumer)} 원
+			</td>
+		</tr>
+		<tr>
+			<th scope="row"><label class="txt-toneC fz-12">할인 (-)</label></th>
+			<td class="point-color">- {=number_format(basic.sum_discount)} 원</td>
+		</tr>
+		{? basic.coupon_product_discount > 0 //상품쿠폰할인}
+		<tr>
+			<th scope="row"><label class="txt-toneC fz-12">상품쿠폰 할인 (-)</label></th>
+			<td class="point-color">- {=number_format(basic.coupon_product_discount)} 원</td>
+		</tr>
+		{/}
+		{? basic.coupon_basket_discount > 0 //장바구니쿠폰할인}
+		<tr>
+			<th scope="row"><label class="txt-toneC fz-12">장바구니쿠폰 할인 (-)</label></th>
+			<td class="point-color">- {=number_format(basic.coupon_basket_discount)} 원</td>
+		</tr>
+		{/}
+		<tr>
+			<th scope="row"><label class="txt-toneC fz-12">마일리지 사용 (-)</label></th>
+			<td class="point-color">- {=number_format(basic.use_mileage)} M</td>
+		</tr>
+		<tr>
+			<th scope="row"><label class="txt-toneC fz-12">포인트 사용 (-)</label></th>
+			<td class="point-color">- {=number_format(basic.use_point)} P</td>
+		</tr>
+		<tr>
+			<th scope="row"><label class="txt-toneC fz-12">배송비 (+)</label></th>
+			<td class="point-color">- {=number_format(basic.pay_delivery - basic.coupon_delivery_discount)} 원</td>
+		</tr>
+		<tr>
+			<th scope="row"><label>총 결제금액</label></th>
+			<td><span class="fw-bold point-color">{=number_format(basic.pay_pg)}원</span><p class="mt-5">적립 차감 마일리지 {=number_format(basic.sum_mileage)} M</p></td>
+		</tr>
+		<tr>
+			<th scope="row"><label>{basic.payment_info.name}</label></th>
+			<td class="fz-13 ta-r">
+				<div class="mt-5">
+				{? basic.pg_paymethod == 'vcnt'}
+				
+				{basic.payment_info.quota}
+				
+				{: basic.pg_paymethod == 'acnt'}
+
+					{? payment.escrow_yn=='Y'} / 에스크로{/}
+				{:}
+				{basic.payment_info.quota}
+				{/}
+				</div>
+			</td>
+		</tr>
+		</tbody>
+	</table>
+</div><!-- //.order_table -->
+<!-- //할인 및 결제정보 -->
+
+<!-- 할인 및 결제정보 -->
+<div class="order_table is-right mt-25">
+	<h3 class="cart_tit">환불정보 결제 수단</h3>
+	<table class="th-left">
+		<colgroup>
+			<col style="width:32.8%;">
+			<col style="width:auto;">
+		</colgroup>
+		<tbody>
+		<tr>
+			<th scope="row"><label>취소 금액</label></th>
+			<td class="fw-bold">{=number_format(refund.product)}원</td>
+		</tr>
+		<tr>
+			<th scope="row"><label class="txt-toneC fz-12">마일리지 복원(+)</label></th>
+			<td class="point-color">{=number_format(refund.mileage)}원</td>
+		</tr>
+		<tr>
+			<th scope="row"><label class="txt-toneC fz-12">포인트 복원(+)</label></th>
+			<td class="point-color">{=number_format(refund.point)}원</td>
+		</tr>
+		<tr>
+			<th scope="row"><label class="txt-toneC fz-12">배송비</label></th>
+			<td>{=number_format(pay_delivery)}원</td>
+		</tr>
+		<tr>
+			<th scope="row"><label>환불예정금액</label></th>
+			<td><span class="fw-bold">{=number_format(refund.end)}원</span><p class="mt-5">적립 차감 마일리지 {=number_format(cancel.mileage)} M</p></td>
+		</tr>
+		{? basic.pg_paymethod != 'card'}
+		<tr>
+			<td colspan="2" class="pl-10 ta-l">
+				<div><strong class="txt-toneA fz-14 mt-5">무통장입금(환불계좌)</strong></div>
+				<div class="mt-10">
+
+					<select class="select_line" id="bank_code" title="은행 선택">
+						<option value="">은행을 선택해주세요.</option>
+						{@ _kcp_bank_code}
+						<option value="{.key_}">{.value_}</option>
+						{/}
+					</select>
+
+					<input type="text" class="refund_account" title="예금주명 입력자리" id="depositor" name="depositor" placeholder="예금주명" style="width:90px">
+					<div class="mt-5">
+						<input type="text" class="refund_account" title="계좌번호 입력자리" id="account_num" name="account_num" placeholder="'-' 없이 입력해주세요." style="width:220px">
+						<button id="confirm_account" class="btn-line h-input" type="button" onclick="Account.acnt_chk()" ><span>본인계좌 인증</span></button>
+						<button type="button" class="btn-basic h-input hide" id="re_auth" onclick="Account.acnt_del()">재인증</button>
+						<input type="hidden" id="bank_checked" value="0">
+						<input type="hidden" id="bank_code_val" class="refund_account" name="bank_code" value="0">
+					</div>
+				</div>
+			</td>
+		</tr>
+		{/}
+		</tbody>
+	</table>
+</div><!-- //.order_table -->
+<!-- //할인 및 결제정보 -->
+<div class="layer_add_option">
+	<div class="btn_area">
+		<ul class="ea2">
+			<li><a href="javascript:Refund.close();" class="btn-line h-input">취소</a></li>
+			<li><a href="javascript:;" class="btn-point h-input" onclick="Refund.act()">반품신청</a></li>
+		</ul>
+	</div>
+</div>
+</form>
+
+<!--계좌인증스크립트-->
+<script src="/static/js/account.js"></script>
+
+<script type="text/javascript">
+	var Refund = {
+		init: function() {
+			
+		},
+		close: function() {
+			$('#jayjun_popup .btn_close').trigger('click');
+		},
+		act: function() {
+			var me = this;
+			var fd1 = $('#FrmReturn').serializeArray();
+			var fd2 = $('#FrmReturnConfirm').serializeArray();
+			var formdata = $.merge(fd1, fd2);
+			var bank_checked = $('#bank_checked').val();
+
+            if(bank_checked =="0"){
+				UI.alert("본인계좌인증이 필요합니다");
+				return false;
+            }
+
+			UI.confirm('반품신청하시겠습니까?', function() {
+				$.ajax({
+					url:'/proc/order.proc.php',
+					data:formdata,
+					dataType:'json',
+					type:'POST',
+					success: function(r) {
+						if(r.success){
+							//이동
+							document.location.href="/m/mypage_complete.php?oid="+r.data.oid+"&order_status=return";
+						}
+						else {
+							UI.error(r.msg);
+						}
+					}
+				})
+			})
+		}
+    }
+	
+	$(function() {
+		Refund.init();
+	})
+	</script>

@@ -1,0 +1,126 @@
+<!-- 쿠폰적용팝업 -->
+
+<div class="layer-contents">
+	<div class="cart-item-wrap">
+		<form id="FrmOrderCoupon" onsubmit="return false">
+		<input type="hidden" name="mode" value="coupon"> 
+		<input type="hidden" name="act" value="touse">
+		<input type="hidden" name="order_num_temp" value="{order_num_temp}">
+		<div class="box-sector no-line">
+			<div class="sector-inner">
+				<div class="cart-item-opt alltype">
+					<div class="opt-wrp">
+						<p class="opt"><strong>배송비 쿠폰</strong></p>
+						{? coupon.delivery}
+						<select title="쿠폰 선택" name="coupon_delivery" data-coupon="delivery" data-temp="delivery" class="select_line validate[required]" data-errormessage-value-missing="쿠폰을 선택하세요.">
+							<option value="" selected>쿠폰을 선택하세요!</option>
+							{@ coupon.delivery}
+							<option value="{.ci_no}" data-discount="{.discount}">{.coupon_name}</option>
+							{/}
+						</select>
+						{:}
+						<select title="쿠폰 선택" disabled class="select_line">
+							<option value="">적용 가능한 쿠폰이 없습니다!</option>
+						</select>
+						{/}
+
+
+						
+						<div class="discount-price">
+							<label class="v-hidden">할인금액</label>
+							<span class="discount-color">- <i id="discount_delivery">0</i> 원</span>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+
+
+		<div class="box-sector no-line">
+			<div class="sector-inner">
+				<div class="btn_area mt-5">
+					<ul class="ea2">
+						<li><button href="button" class="btn-line h-large"  data-toggle="close">취소</button></li>
+						<li><button type="submit" class="btn-point h-large">적용</button></li>
+					</ul>
+				</div>
+			</div>
+		</div>
+		</form>
+	</div>
+</div>
+<!-- //쿠폰적용팝업 -->
+
+
+
+
+<script type="text/javascript">
+	var OrderCoupon = {
+		init: function() {
+			var me = this;
+			var option = $.extend({}, validation_option, {
+				validateNonVisibleFields: false,
+				onValidationComplete: function (form, status) {
+					if (status) me.apply();
+				}
+			});
+			$("#FrmOrderCoupon").validationEngine('attach', option);
+	
+			$('[data-toggle="close"]').on('click', function() {
+				$('.btn_close').trigger('click');
+			});
+	
+			$('[data-coupon]').on('change', function(){
+				me.select($(this));
+			})
+		},
+		select: function(e) { //쿠폰선택
+			OrderCoupon.calc();
+		},
+		calc: function() { //쿠폰할인금액 적용 및 합계금액 계산
+			var sum = 0;
+			$('select[data-coupon]').each(function(i,e) {
+			
+				var opt = $(e).find('option:selected');
+				var no = $(e).data('temp');
+				if(opt.val()) {
+					var discount = opt.data('discount');
+					sum +=  parseInt(discount);
+				}
+				else {
+					var discount = 0;
+				}
+	
+				$('#discount_'+no).text(UI.numberFormat(discount));
+			});
+	
+			$('#discount_sum').text(UI.numberFormat(sum));
+		},
+		apply: function() {
+			var formdata = $('#FrmOrderCoupon').serialize();
+			$.ajax({
+				url:'/proc/order.proc.php',
+				data:formdata,
+				dataType:'json',
+				type:'POST',
+				success: function(r) {
+					if(r.success){
+						var frm = document.FrmOrder;
+						frm.coupon_delivery.value = r.data.delivery.coupon_issue_no;
+						frm.coupon_delivery_discount.value = r.data.delivery.discount
+						Order.calc();
+						$('.btn_close').trigger('click');
+					}
+					else {
+						UI.error(r.msg);
+					}
+				}
+			})
+		}
+	
+	}
+	
+	$(function() {
+		OrderCoupon.init();
+	})
+</script>

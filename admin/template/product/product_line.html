@@ -1,0 +1,173 @@
+<div class="content-wrap">
+	<div class="title_depth3">라인관리</div>
+	<!--{* 라인등록/수정:S *}-->
+	<div class="title_depth3_sub">라인 등록/수정</div>
+
+	<div class="table_style01">
+		<form id="FrmLineInput" onsubmit="return false">
+			<input type="hidden" name="mode" value="product_line">
+			<input type="hidden" id="line_idx" name="line_idx" value="">
+			<input type="hidden" name="act" value="line">
+			<table cellspacing="0" cellpadding="0" width="100%" border="0">
+				<colgroup>
+					<col width="140">
+					<col width="">
+				</colgroup>
+				<tbody>
+					<tr>
+						<th>
+							<span>라인명</span>
+						</th>
+						<td>
+							<input type="text" id="line_name" name="line_name" class="validate[required] full input" data-errormessage-value-missing="라인명을 입력하세요.">
+						</td>
+					</tr>
+					<tr>
+						<th>
+							<span>라인코드</span>
+						</th>
+						<td>
+							<input type="text" id="line_code" name="line_code" class="validate[required] full input" data-errormessage-value-missing="라인코드를 입력하세요.">
+						</td>
+					</tr>
+					<tr>
+						<th>
+							<span>사용여부</span>
+						</th>
+						<td>
+							<label>
+								<input type="radio" name="display" value="Y" class="hj" {? row.display=='Y' || row.display=='' } checked{/}>
+								<span class="lbl">사용</span>
+							</label>
+							<label>
+								<input type="radio" name="display" value="N" class="hj" {? row.display=='N' } checked{/}>
+								<span class="lbl">미사용</span>
+							</label>
+						</td>
+					</tr>
+				</tbody>
+			</table>
+
+			<div class="area-button">
+				<button type="submit" id="btn_register" class="btn-point">등록</button>
+				<button type="button" id="btn_cancel" onclick="ProductLine.cancel()" class="btn-basic hide">취소</button>
+			</div>
+		</form>
+	</div>
+	<!--{* 라인등록:E *}-->
+
+	<!--{* 라인목록:S*}-->
+	<div class="title_depth3_sub">라인 리스트</div>
+
+	<div id="inner"></div>
+	<!--{* 라인목록:E *}-->
+
+
+</div>
+<script type="text/javascript" src="/admin/static/js/jquery.form.js?{C.VER}"></script>
+<script type="text/javascript">
+	var ProductLine = {
+		page: 1,
+		proc_url: '/admin/proc/product.proc.php',
+		init: function () {
+			this.load();
+
+			var me = this;
+			var option = $.extend({}, validation_option, {
+				validateNonVisibleFields: true,
+				onValidationComplete: function (form, status) {
+					if (status) me.save();
+				}
+			});
+			$("#FrmLineInput").validationEngine('attach', option);
+		},
+		load: function (page) {
+			var p = page || ProductLine.page;
+			$('#inner').load('/admin/product/product_line.inner.php', {
+					page: p
+				},
+				function () {
+					ProductLine.page = p;
+					$('[data-toggle="tooltip"]').tooltip();
+				}
+			);
+		},
+		save: function () {
+			var options = {
+				url: this.proc_url,
+				type: 'POST',
+				dataType: 'json',
+				success: function (r) {
+					alert(r.msg);
+					if (r.success) {
+						ProductLine.load(1);
+						//$("#FrmIconInput")[0].reset();
+						ProductLine.cancel();
+					}
+				}
+
+			}
+			$('#FrmLineInput').ajaxSubmit(options);
+		},
+		modify: function (line_idx) {
+			//버튼세팅
+			$('#btn_cancel').removeClass('hide');
+			$('#btn_register').text('수정');
+			$('#line_code').attr('readonly', true);
+			var tr = $('tr[data-idx="' + line_idx + '"]');
+			$.each(tr.find('td'), function (i, v) {
+				var td = $(v);
+				var field = td.data('field');
+				switch (field) {
+					case 'line_name':
+						$('#line_name').val(td.html());
+						break;
+					case 'line_code':
+						$('#line_code').val(td.html());
+						break;
+					case 'display':
+						$('input:radio[name="' + field + '"][value="' + td[0].innerText + '"]').prop('checked', true);
+						break;
+
+				}
+			});
+			$('#line_idx').val(line_idx);
+
+		},
+		remove: function (line_code) {
+			if (!confirm('삭제하시겠습니까?')) return false;
+
+			$.ajax({
+				url: this.proc_url,
+				data: {
+					mode: 'product_line',
+					act: 'delete',
+					line_code: line_code
+				},
+				dataType: 'json',
+				type: 'POST',
+				success: function (r) {
+					alert(r.msg);
+					ProductLine.load(1);
+				}
+			})
+		},
+		cancel: function () {
+			//버튼세팅
+			$('#btn_cancel').addClass('hide');
+			$('#btn_register').text('등록');
+			$("#FrmLineInput")[0].reset();
+			$('input:radio[name="display"][value="Y"]').prop('checked', true);
+			$('#line_code').attr('readonly', false);
+		},
+		product: function (line_code) { //할인적용상품보기
+			UI.modal('/admin/product/product_line.product.php', '할인율 적용상품', {
+				line_code: line_code
+			}, 500);
+		}
+	}
+
+	$(function () {
+		ProductLine.init();
+	})
+</script>

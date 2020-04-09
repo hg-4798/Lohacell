@@ -1,0 +1,911 @@
+<div class="container m-b-50 m-t-10 order-view" style="min-width:1000px">
+	<div class="inc-tit">반품 처리
+		<div class="right">주문번호 : {cs.order_num} <span class="bar"></span> 반품신청일 : {cs.date_status_1} {? basic.pr_type == '3'}<span class="bar"></span>임직원상품주문{/}</div>
+	</div>
+
+	<!--{* 결제금액정보:S *}-->
+	<div class="inc-body">
+		<div class="inc-tit-sub">반품수량 정보</div>
+		<table class="tbl-summery tbl-center">
+			<thead>
+				<th>반품신청</th>
+				<th>반품접수</th>
+				<th>반품처리중</th>
+				<th>반품완료</th>
+				<th>반품철회</th>
+				<th>반품상품총액</th>
+			</thead>
+			<tbody>
+				<tr>
+					<td class="ta-c">{=number_format(cnt.status_1)} 개</td> <!--{* 반품신청 *}-->
+					<td class="ta-c">{=number_format(cnt.status_2)} 개</td> <!--{* 반품접수 *}-->
+					<td class="ta-c">{=number_format(cnt.status_3)} 개</td> <!--{* 반품처리중 *}-->
+					<td class="ta-c">{=number_format(cnt.status_4)} 개</td> <!--{* 반품완료 *}-->
+					<td class="ta-c">{=number_format(cnt.flag_WD)} 개</td> <!--{* 반품철회 *}-->
+					<td class="ta-c">{=number_format(price.return_product)} 원</td> <!--{* 반품상품총액 *}-->
+				</tr>
+			</tbody>
+		</table>
+		<!--{* 결제금액정보:E *}-->
+
+		<!--{* 주문상품:S *}-->
+		<div class="inc-tit-sub">반품신청 상품정보</div>
+		<form id="FrmReturnProduct" onsubmit="return false">
+			<input type="hidden" name="mode" value="return">
+			<input type="hidden" name="act" value="status" />
+			<input type="hidden" name="order_num" value="{cs.order_num}">
+			<input type="hidden" name="cs_idx" value="{cs.idx}">
+			<input type="hidden" name="escrow_yn" id="escrow_yn" value="{payment.escrow_yn}">
+			<table class="tbl-list">
+				<colgroup>
+					<col style="width:50px"> <!-- 선택 -->
+					<col style="width:50px"> <!-- 번호 -->
+					<col style="width:50px"> <!-- 상품이미지 -->
+					<col> <!-- 주문상품명 -->
+					<col style="width:100px"> <!-- 상품금액 -->
+					<col style="width:100px"> <!-- 쿠폰할인액 -->
+					<col > <!-- 반품사유 -->
+					<col style="width:150px"> <!-- 처리상태 -->
+				</colgroup>
+				<thead>
+					<th><input type="checkbox" class="hj" id="check_toggle"data-all="checked[]"><span class="lbl"></span></th>
+					<th>번호</th>
+					<th colspan="2">주문상품</th>
+					<th>상품금액</th>
+					<th>쿠폰할인액</th>
+					<th>반품사유</th>
+					<th>처리상태</th>
+				</thead>
+				<tbody>
+					{@ product}
+					<tr>
+						<td><input type="checkbox" class="hj validate[required]" name="checked[]" value="{.order_product_idx}" data-errormessage-value-missing="반품상품을 선택하세요." {? .cs_status==4}disabled{/}> <span class="lbl"></span></td>
+						<td>{.index_+1}</td>
+						<td><img src="{.tinyimage}" alt="" class="thumb-50"></td>
+						<td class="ta-l">
+							{? .option_type=='product'}
+							<div class="m-b-5"><span class="label label-xs prtype-4 m-b-5">추가구매상품</span></div>
+							{/}
+							<b><a href="javascript:;" class="link" onclick="ADMIN.product('{.pr_type}','{.productcode}')">{.productname}</a></b>
+							<div>{.option.option_name}</div>
+						</td>
+						<td>{=number_format(.price_end)} 원</td>
+						<td>{=number_format(.coupon_discount)} 원</td>
+						<td>
+							<div><b class="text-primary">{? .reason_charger == 'seller'}판매자책임{:}구매자책임{/}</b></div>
+							{.reason}
+							{? .reason_etc}<div class="text-muted">{.reason_etc}</div>{/}
+						</td>
+						<td>
+							<a href="javascript:;" onclick="CSReturn.log('{.order_product_idx}')" class="link">{.step.msg}{? .step.msg_flag}({.step.msg_flag}){/}</a>
+
+						</td>
+					</tr>
+					{/}
+				</tbody>
+				{? cnt.active > 0}
+				<tfoot>
+					<tr>
+						<td colspan="6">
+							<select name="cs_status" id="cs_status" class="select validate[required]" data-errormessage-value-missing="반품상태를 선택하세요.">
+								<option value="">== 반품상태 == </option>
+								<option value="R|1|0">반품신청</option>
+								<option value="R|1|HD">반품신청(보류)</option>
+								<option value="R|2|0">반품접수</option>
+								<option value="R|2|HD">반품접수(보류)</option>
+								<option value="R|3|AG">반품처리중(제품도착)</option>
+								<option value="R|3|RR">반품처리중(환불접수)</option>
+								<!-- <option value="R|4|HB">반품완료(환불완료)</option> -->
+							</select>
+							<button type="submit" class="btn-basic h-small">일괄변경</button>
+							<span class="m-l-10 text-success" id="status_helper"></span>
+						</td>
+						<td colspan="2" class="text-right">
+							{? cnt.active > 0}
+							<button type="button" class="btn-basic dark h-xs" onclick="CSReturn.withdraw()">반품철회</button>
+							{/}
+						</td>
+					</tr>
+				</tfoot>
+				{/}
+			</table>
+			<!--{* 주문상품:S *}-->
+		</form>
+
+		<!--{* 환불금액 (환불접수상태인 상품에 대한 가격 노출):S *}-->
+		<!--{* 환불금액:S *}-->
+	
+		
+		<div class="row ta-l">
+			<div class="col-6">
+				<div class="inc-tit-sub">결제정보</div>
+				<table class="tbl-form">
+					<colgroup>
+						<col style="width:120px">
+						<col>
+					</colgroup>
+					<tr>
+						<th>결제수단</th>
+						<td>
+							{? payment.pay_method == 'card' //카드결제}
+							{payment.info.name}<span class="text-muted">({payment.res_info.card_name})</span> {payment.info.quota} 
+							
+							{: payment.pay_method == 'vcnt' //무통장결제(가상계좌)}
+							{payment.info.name}
+							{: payment.pay_method == 'acnt' //실시간계좌이체}
+							{payment.info.name}
+							{/}
+
+							{? basic.use_mileage > 0}
+							+ 마일리지
+							{/}
+							{? basic.use_point > 0}
+							+ 포인트
+							{/}
+							
+						</td>
+					</tr>
+					<tr>
+						<th>결제금액</th>
+						<td>
+							{=number_format(basic.pay_total)} 원 (PG사 결제금액 : {=number_format(basic.pay_pg)}원)
+							<!-- <input type="hidden" name="refund[product]" value="{refund.total}" /> -->
+						</td>
+					</tr>
+
+					{? basic.use_mileage>0}
+					<tr>
+						<th>사용 마일리지</th>
+						<td>
+							{=number_format(basic.use_mileage)} M
+						</td>
+					</tr>
+					{/}
+					{? basic.use_point>0}
+					<tr>
+						<th>사용 포인트</th>
+						<td>
+							{=number_format(basic.use_point)} P
+						</td>
+					</tr>
+					{/}
+					{? basic.coupon_basket_discount>0}
+					<tr>
+						<th>장바구니쿠폰</th>
+						<td>
+							{=number_format(basic.coupon_basket_discount)} 원
+						</td>
+					</tr>
+					{/}
+					<tr>
+						<th>배송비</th>
+						<td>
+							<span style="width:200px;display:inline-block" id="pay_delivery_txt">{=number_format(basic.pay_delivery_end)} 원</span>
+						</td>
+					</tr>
+				</table>
+			</div>
+			<div class="col-6">
+				<form id="FrmRefund" onsubmit="return false" autocomplete="off">
+				<input type="hidden" name="mode" value="return" />
+				<input type="hidden" name="act" value="refund">
+				<input type="hidden" name="op_idx" value='{refund_list}' />
+				<input type="hidden" name="order_num" value="{basic.order_num}">
+				<input type="hidden" name="return_idx" value="{_GET.csidx}">
+				<input type="hidden" id="escrow_yn" value="{payment.escrow_yn}">
+				<div class="inc-tit-sub">환불금액
+					<div class="right">
+						{? refund_list}
+						<button type="submit" class="btn-point h-xs">환불처리</button>
+						{/}
+					</div>
+				</div>
+				
+				{? refund_list}
+				<table class="tbl-form m-t-5">
+					<colgroup>
+						<col style="width:120px">
+						<col>
+					</colgroup>
+					<tr>
+						<th>환품접수총액 <i class="fa fa-question-circle" data-toggle="tooltip" title="환불접수상태의 상품금액 합계입니다."></i></th>
+						<td>
+							<b>{=number_format(refund.product)}</b>원 (반품 후 잔여주문총액 : {=number_format(refund.remain)}원)
+						</td>
+					</tr>
+					
+					
+					{? delivery.pay >= 0 //배송비를 부과해야하는경우}
+					<tr>
+						<th>배송비 차감 <i class="fa fa-question-circle" data-toggle="tooltip" title="환불금액에서 차감할 배송비항목입니다."></i></th>
+						<td>
+							<input type="text" name="pay_delivery_add" class="w100 text-primary" value="{=number_format(delivery.pay)}" data-calc="minus" data-filter="price"> 원
+							<span class="muted">({? delivery.charger=='buyer'}구매자책임{:}판매자책임{/}반품)</span>
+						</td>
+					</tr>
+					{:}
+					<tr>
+						<th>배송비 환불 <i class="fa fa-question-circle" data-toggle="tooltip" title="환불금액에 포함할 배송비항목입니다."></i></th>
+						<td>
+							<label><input type="checkbox" id="check_delivery" value="{=abs(delivery.pay)}" class="hj" checked><span class="lbl"> 배송비환불</span></label>
+							<input type="hidden" name="price[delivery]" id="price_delivery" value="{=abs(delivery.pay)}" data-calc="plus">
+						</td>
+					</tr>
+					{/}
+					{@ coupon.product}
+					<tr>
+						{? .index_==0}
+						<th rowspan="{=count(coupon.product)}">상품쿠폰할인</th>
+						{/}
+						<td>
+							<span style="width:300px;display:inline-block">
+								-{=number_format(.discount)} 원
+								<span class="text-muted ">({.coupon_name})</span>
+								<input type="hidden" value="{.discount}" data-calc="minus">
+							</span>
+							<div>
+								<label><input type="radio" name="coupon[product][{.key_}]" value="{.ci_no}" class="hj" checked><span class="lbl">복원</span></label>
+								<label><input type="radio" name="coupon[product][{.key_}]" value="" class="hj"><span class="lbl">복원안함</span></label>
+							</div>
+							<!---->
+						</td>
+					</tr>
+					{/}
+
+					{? coupon.basket}
+					<tr>
+						<th rowspan="2">장바구니쿠폰</th>
+						<td>
+							<span>{=number_format(basic.coupon_basket_discount)}원 할인 <span class="text-muted">({coupon.basket.info.coupon_name})</span></span>
+							<div>
+								<label><input type="radio" name="coupon[basket]" value="{coupon.basket.ci_no}" class="hj" checked><span class="lbl">쿠폰복원</span></label>
+								<label><input type="radio" name="coupon[basket]" value="" class="hj"><span class="lbl">복원안함</span></label>
+							</div>
+						</td>
+					</tr>
+					<tr>
+						<td>
+							환불차감액 : <input type="text" name="price[basket]" class="w100 text-primary"  id="discount_basket" data-calc="minus" data-filter="price" disabled value="{=number_format(basic.coupon_basket_discount)}"> 원
+						</td>
+					</tr>
+					
+					{/}
+
+					{? coupon.delivery}
+					<tr>
+						<th>무료배송쿠폰</th>
+						<td>
+							<span style="width:300px;display:inline-block">{coupon.delivery.info.coupon_name}</span>
+							<label><input type="radio" name="coupon[delivery]" value="" class="hj" data-discount="{basic.coupon_delivery_discount}" checked><span class="lbl">적용</span></label>
+							<label><input type="radio" name="coupon[delivery]" value="{coupon.delivery.ci_no}" class="hj" data-discount="0"><span class="lbl">적용취소</span></label>
+						</td>
+					</tr>
+					{/}
+
+					<tr>
+						<th>총 환불금액</th>
+						<td>
+							<span class="text-danger"><b id="price_total_txt">{=number_format(refund.total)}</b></span> 원
+							<input type="hidden" name="price[total]"  id="price_total" value="{refund.product}">
+							<input type="hidden" name="price[product]" id="price_product" value="{refund.product}" data-calc="plus">
+							
+
+							(미환불 금액 : <span class="text-danger"><b id="refund_total_txt">{=number_format(0)}</b></span> 원)
+
+							<div class="hide">
+								= {=number_format(refund.product)}원(환불접수총액) {? coupon.basket}- {=number_format(basic.coupon_basket_discount)}원(장바구니쿠폰할인액){/}
+							</div>
+						</td>
+					</tr>
+
+					{? basic.use_mileage > 0}
+					<tr>
+						<th>환불 마일리지</th>
+						<td>
+							<input type="text" name="refund[mileage]" data-refund="mileage" value="{=number_format(refund.mileage)}" class="w100 text-danger validate[max[{refund.mileage}], min[0]]" data-filter="price" data-errormessage-range-overflow="최대 {=number_format(refund.mileage)} M 까지 환불가능합니다."> M <span>(환불가능 마일리지: <b>{=number_format(refund.mileage)}</b> M)</span>
+						</td>
+					</tr>
+					{/}
+					{? basic.use_point > 0}
+					<tr>
+						<th>환불 포인트</th>
+						<td>
+							<input type="text" name="refund[point]" value="{=number_format(refund.point)}" data-refund="point" class="w100 text-danger validate[max[{refund.point}], min[0]]" data-filter="price" data-errormessage-range-overflow="최대 {=number_format(refund.point)} P 까지 환불가능합니다."> P <span>(환불가능 포인트: <b>{=number_format(refund.point)}</b> P)</span>
+						</td>
+					</tr>
+					{/}
+					
+					
+					<tr>
+						<th>환불수단</th>
+						<td>
+							<select name="refund_method" id="refund_method" class="validate[required]" data-errormessage-value-missing="환불수단을 선택하세요.">
+								<option value="">== 환불수단 선택 ==</option>
+								<option value="cash">현금환불</option>
+								{? basic.pg_paymethod == 'card'}
+								<option value="card">카드환불</option>
+								{/}
+								{? basic.pg_paymethod == 'vcnt'}
+								<option value="vcnt">가상계좌환불</option>
+								{/}
+								{? basic.pg_paymethod == 'acnt'}
+								<option value="acnt">실시간계좌이체환불</option>
+								{/}
+							</select>
+						</td>
+					</tr>
+
+					<tr data-cond="refund_method" data-cond-value="cash" class="hide">
+						<th>현금 환불액</th>
+						<td>
+							<!-- <i class="fa fa-refresh pointer" onclick="CSReturn.calcRemain(this)"></i>  --><input type="text" name="refund[cash]" data-refund="cash" class="w100 text-danger validate[required]" value="0" data-filter="price" data-errormessage-value-missing="현금 환불액을 입력하세요."> 원
+							<div class="text-primary m-t-5">현금 환불액은 최대 <b>{=number_format(basic.pay_pg)}</b>원을 넘을 수 없습니다.</div>
+						</td>
+					</tr>
+					{? basic.pg_paymethod == 'card'}
+					<tr data-cond="refund_method" data-cond-value="card" class="hide">
+						<th>카드 환불액</th>
+						<td>
+							<input type="text" name="refund[card]" data-refund="card" id="refund_card" class="w100 text-danger validate[required, max[{basic.pay_pg}]]" data-errormessage-value-missing="카드 환불액을 입력하세요." value="" data-filter="price"> 원
+							<div class="text-primary m-t-5">카드 환불액은 최대 <b>{=number_format(basic.pay_pg)}</b>원을 넘을 수 없습니다.</div>
+						</td>
+					</tr>
+					{/}
+					{? basic.pg_paymethod == 'acnt'}
+					<tr data-cond="refund_method" data-cond-value="acnt" class="hide">
+						<th>계좌이체 환불액</th>
+						<td>
+							<input type="text" name="refund[acnt]" data-refund="acnt" id="refund_acnt" class="w100 text-danger validate[required, max[{basic.pay_pg}]]" value="" data-errormessage-value-missing="계좌이체 환불액을 입력하세요." data-filter="price"> 원
+							<div class="text-primary m-t-5">계좌이체 환불액은 최대 <b>{=number_format(basic.pay_pg)}</b>원을 넘을 수 없습니다.</div>
+						</td>
+					</tr>
+					{/}
+					{? basic.pg_paymethod == 'vcnt'}
+					<tr data-cond="refund_method" data-cond-value="vcnt" class="hide">
+						<th>가상계좌 환불액</th>
+						<td>
+							<input type="text" name="refund[vcnt]" data-refund="vcnt" id="refund_vcnt" class="w100 text-danger validate[required, max[{basic.pay_pg}]]" value="" data-errormessage-value-missing="가상계좌 환불액을 입력하세요." data-filter="price" data-vcnt="mod_mny"> 원
+							<div class="text-primary m-t-5">가상계좌 환불액은 최대 <b>{=number_format(basic.pay_pg)}</b>원을 넘을 수 없습니다.</div>
+						</td>
+					</tr>
+
+					{/}
+
+					<tr data-cond="refund_method" data-cond-value="cash vcnt" class="hide">
+						<th>환불계좌</th>
+						<td>
+							<select name="bank[code]" class="validate[required]" data-errormessage-value-missing="환불계좌(은행)을 선택하세요." data-vcnt="bankcode">
+								<option value="">== 은행선택 == </option>
+								{@ _kcp_bank_code}
+								<option value="{.key_}" {=checked(cs.refund_info.bank_info.code,.key_,'selected')}>{.value_}</option>
+								{/}
+							</select>
+							
+							<input type="text" name="bank[depositor]" class="validate[required]" data-errormessage-value-missing="환불계좌(예금주)를 입력하세요." placeholder="예금주" value="{cs.refund_info.bank_info.depositor}" data-vcnt="depositor" style="width:100px">
+							<div class="m-t-5">
+									<input type="text" name="bank[account]" class="w-100 validate[required]" data-errormessage-value-missing="환불계좌(계좌번호)를 입력하세요." placeholder="계좌번호(숫자로만 입력)" value="{cs.refund_info.bank_info.account}" data-filter="numeric" data-vcnt="account">
+							</div>
+						</td>
+					</tr>
+				</table>
+				{:}
+				<table class="tbl-form m-t-5">
+					<colgroup>
+						<col style="width:120px">
+						<col>
+					</colgroup>
+					<tr>
+						<th>총 환불금액</th>
+						<td>환불접수건이 없습니다.</td>
+					</tr>
+				</table>
+
+				{/}
+				</form>
+			</div>
+		</div>
+		<!--{* 환불금액:E *}-->
+
+
+
+
+		<!--{* 반품상품 수거정보:S *}-->
+		<div class="inc-tit-sub">
+			반품수거지 정보
+			<div class="right">
+				<button type="submit" class="btn-basic dark h-xs">반품수거지 정보변경</button>
+			</div>
+		</div>
+		<div>
+			<table class="tbl-form">
+				<colgroup>
+					<col style="width:120px">
+					<col>
+					<col style="width:120px">
+					<col>
+				</colgroup>
+				<tr>
+					<th>보내는 이름</th>
+					<td colspan="3"><input type="text" name="receiver_name" value="{cs.receiver_name}" class="validate[required]" data-errormessage-value-missing="받는사람명을 입력하세요."></td>
+				</tr>
+				<tr>
+					<th rowspan="2">주소</th>
+					<td colspan="3">
+						<input type="text" name="receiver_zipcode" id="receiver_zipcode" data-post="zonecode" value="{cs.receiver_zipcode}" class="w80 validate[required]" data-errormessage-value-missing="주소를 입력하세요." data-receiver="{cs.receiver_zipcode}"> <button type="button" class="btn btn-form" onclick="CSReturn.post();">우편번호찾기</button> <input type="text" name="receiver_addr" data-post="address" id="receiver_addr" value="{cs.receiver_addr}" class="mt-1 w-100 validate[required]" data-errormessage-value-missing="주소를 입력하세요." data-receiver="{basic.receiver_addr}">
+					</td>
+				</tr>
+				<tr>
+					<td colspan="3">
+						<input type="text" name="receiver_addr_detail" id="receiver_addr_detail" data-post="buildingName" value="{cs.receiver_addr_detail}" class="w-100 validate[required]" data-errormessage-value-missing="상세주소를 입력하세요." data-receiver="{basic.receiver_addr_detail}">
+					</td>
+				</tr>
+				<tr>
+					<th>휴대전화</th>
+					<td>
+						<select name="receiver_mobile[]" id="receiver_mobile" style="width:60px" data-receiver="{cs.receiver_mobile_arr[0]}">
+							{@ _arrMobile}
+							<option value="{.value_}" {? .value_==cs.receiver_mobile_arr[0]}selected{/}>{.value_} </option> {/} </select> - <input type="text" name="receiver_mobile[]" maxlength="4" value="{cs.receiver_mobile_arr[1]}" class="w80 validate[required,minSize[3]]" data-errormessage-value-missing="휴대전화을 입력하세요." data-receiver="{basic.receiver_mobile_arr[1]}"> - <input type="text" name="receiver_mobile[]" maxlength="4" value="{cs.receiver_mobile_arr[2]}" class="w80 validate[required,minSize[3]]" data-errormessage-value-missing="휴대전화을 입력하세요." data-receiver="{basic.receiver_mobile_arr[2]}">
+					</td>
+					<th>전화번호</th>
+					<td>
+						<select name="receiver_tel[]" id="receiver_tel" style="width:60px" data-receiver="{basic.receiver_tel_arr[0]}">
+							<option value="">선택</option>
+							{@ _arrTel}
+							<option value="{.value_}" {? .value_==cs.receiver_tel_arr[0]}selected{/}>{.value_} </option> {/} </select> - <input type="text" name="receiver_tel[]" class="w80" maxlength="4" value="{cs.receiver_tel_arr[1]}" data-receiver="{cs.receiver_tel_arr[1]}"> - <input type="text" name="receiver_tel[]" class="w80" maxlength="4" value="{cs.receiver_tel_arr[2]}" data-receiver="{cs.receiver_tel_arr[2]}">
+					</td>
+				</tr>
+			</table>
+		</div>
+
+		<div class="inc-tit-sub">
+			반품관리 메모
+			<div class="right">
+				<button type="submit" class="btn-basic dark h-xs">반품관리 메모저장</button>
+			</div>
+		</div>
+		<table class="tbl-form m-t-5">
+			<colgroup>
+				<col>
+			</colgroup>
+			<tr>
+				<td>
+					<textarea name="memo" rows="4" class="textarea w-100">{cs.memo}</textarea>
+				</td>
+			</tr>
+		</table>
+
+		<div class="text-center m-t-10">
+			{? cnt.active>0}
+			<!-- <button type="submit" class="btn-point dark">저장</button> -->
+			{/}
+			<button type="button" class="btn-basic" onclick="window.close()">닫기</button>
+
+		</div>
+		</form>
+
+	</div>
+</div>
+
+<!--{* 카드/실시간계좌이체 취소폼:S *}-->
+<form id="FrmCancel">
+	<input type="hidden" name="req_tx" value="mod">
+	<input type="hidden" name="mod_type" value="STPC">
+	<!--부분 취소 : STPC , 전체취소 : STSC  -->
+	<input type="hidden" name="tno" value="{basic.pg_tno}">
+	<input type="hidden" name="mod_mny"  value="0"> <!-- 취소요청금액 -->
+	<input type="hidden" name="rem_mny" value="{basic.pay_pg}"> <!-- 부분취소 이전에 남은금액 -->
+</form>
+<!--{* 카드/실시간계좌이체 취소폼:E *}-->
+
+<!--{* 가상계좌 취소 폼:S *}-->
+<form id="FrmCancelVant" name="FrmCancelVant">
+	<input type="hidden" name="req_tx" value="mod">
+	<input type="hidden" name="mod_type" value="STPD"> <!--부분 환불 :  STPD  , 전체환불 :  STHD   -->
+	<input type="hidden" name="tno" value="{basic.pg_tno}"> <!-- 거래번호 -->
+	<input type="hidden" name="mod_account" value="" data-name="account"> <!--계좌인증 및 환불 받을 계좌번호 -->
+	<input type="hidden" name="mod_depositor" value="" data-name="depositor"> <!-- 환불요청예금주 -->
+	<input type="hidden" name="mod_bankcode" value="" data-name="bankcode"> <!-- 환불요청 은행코드-->
+	<input type="hidden" name="mod_mny"  value=""> <!-- 취소요청금액 -->
+	<input type="hidden" name="rem_mny" value="{basic.pay_pg}"> <!-- 부분취소 이전에 남은금액 -->
+</form>
+<!--{* 가상계좌취소폼:E *}-->
+
+<!--{* 에스크로 구매확인 후 취소:S  *}-->
+<form id="FrmCancelEscrow" name="FrmCancelEscrow">
+	<input type="hidden" name="req_tx" value="mod_escrow">
+	<input type="hidden" name="mod_type" value="{escrow.mod_type}">
+	<input type="hidden" name="tno" value="{basic.pg_tno}"> <!-- 거래번호 -->
+	<input type="hidden" name="a_refund_account" value="" data-name="account"> <!-- 환불받을계좌번호 -->
+	<input type="hidden" name="a_refund_nm" value="" data-name="depositor"> <!-- 환불받은계좌 예금주 -->
+	<input type="hidden" name="a_bank_code" value="" data-name="bankcode"> <!-- 환불받은 은행 -->
+
+	<input type="hidden" name="mod_desc_cd" value="CA06"> <!-- 취소사유에 대한 상세코드 - 변경불가 -->
+	<input type="hidden" name="rem_mny" value="{basic.pay_pg}"> <!-- 부분취소 이전에 남은 금액 -->
+	<input type="hidden" name="mod_mny" value="0"> <!-- 취소요청금액 -->
+	<input type="hidden" name="tax_mny" value="0"> <!-- 과세취소요청금액(복합과세) -->
+	<input type="hidden" name="free_mod_mny" value="0"> <!-- 비과세 취소요청금액(복합과세) -->
+	<input type="hidden" name="add_tax_mny" value="0"> <!-- 부가세 취소 요청금액(복합과세) -->
+
+	<input type="hidden" name="order_num" value="{basic.order_num}"> <!-- 주문번호 -->
+</form>
+<!--{* 에스크로 구매확인 후 취소:E  *}-->
+
+
+
+<script type="text/javascript" src="{C.POST_JS}"></script>
+<script type="text/javascript">
+	var CSReturn = {
+		init: function () {
+			var me = this;
+			UI.toggleCheck();
+			$('[name="checked[]"], #check_toggle').on('click', function() {
+				me.setDisabled();
+			});
+
+			//숫자체크
+			$('[data-filter="numeric"], [data-filter="price"]').on('keydown.row input.row', function (evt) {
+				var v = $(this).val();
+				v = v.replace(/[^0-9]/g, '');
+
+				
+
+				var filter = $(this).data('filter');
+				if (filter == 'price') {
+					v = v.replace(/^0+(?!$)/, '');
+					v = UI.numberFormat(v);
+				}
+				$(this).val(v);
+			});
+
+			var option = $.extend({}, validation_option, {
+				onValidationComplete: function (form, status) {
+					if (status) me.save(form);
+				}
+			});
+			$("#FrmReturn").validationEngine('attach', option);
+
+			var option_product = $.extend({}, validation_option, {
+				onValidationComplete: function (form, status) {
+					if (status) me.status(form);
+				}
+			});
+			$("#FrmReturnProduct").validationEngine('attach', option_product);
+
+			//환불폼
+			var option_refund = $.extend({}, validation_option, {
+				validateNonVisibleFields: false,
+				onValidationComplete: function (form, status) {
+					if (status) me.refund(form);
+				}
+			});
+			$("#FrmRefund").validationEngine('attach', option_refund);
+			
+
+			//총환불금액 재계산
+			$('[data-calc], [data-refund]').on('blur', function() {
+				me.calc();
+			});
+
+			//장바구니쿠폰
+			$('[name="coupon[basket]"]').on('click', function () {
+				var target = $('#discount_basket');
+				if (this.value) target.attr('disabled', true);
+				else target.removeAttr('disabled');
+			});
+
+			//배송비환불
+			$('#check_delivery').on('click', function () {
+
+				if (this.checked) {
+					$('#price_delivery').val(this.value);
+				} else {
+					$('#price_delivery').val(0);
+				}
+				CSReturn.calc();
+			})
+
+
+			$('#cs_status').on("change", function () {
+				var helper = $(this).find('option:selected').data('helper');
+				if (helper) $('#status_helper').text(helper);
+				else $('#status_helper').text('');
+			});
+
+			me.setUI();
+
+			$('[data-toggle="tooltip"]').tooltip();
+		},
+		post: function () {
+			var me = this;
+			new daum.Postcode({
+				oncomplete: function (data) {
+					$.each(data, function (i, e) {
+						$('input[data-post="' + i + '"]').val(e);
+					});
+				}
+			}).open();
+		},
+		withdraw: function () {
+			var checked = UI.getChecked('checked[]');
+			if (checked.length < 1) {
+				UI.error('반품철회할 상품을 선택하세요.');
+				return false;
+			}
+
+			var checked_no = checked.map(function () {
+				if (!this.disabled) return this.value
+			}).get().join();
+			UI.confirm('반품철회 후에는 재반품신청이 불가합니다.<br>반품신청을 철회하시겠습니까?', function () {
+				$.ajax({
+					url: '/admin/proc/cs.proc.php',
+					data: {
+						mode: 'return',
+						act: 'withdraw',
+						order_product_idx: checked_no
+					},
+					dataType: 'json',
+					type: 'POST',
+					success: function (r) {
+						UI.alert(r.msg);
+					}
+				});
+			})
+		},
+		status: function () { //일괄상태변경
+			var checked = UI.getChecked('checked[]');
+			if (checked.length < 1) {
+				UI.error('처리할 상품을 선택하세요.');
+				return false;
+			}
+
+			var checked_no = checked.map(function () {
+				if (!this.disabled) return this.value
+			}).get().join();
+			UI.confirm('일괄적용하시겠습니까?', function () {
+				var formdata = $('#FrmReturnProduct').serialize();
+				$.ajax({
+					url: '/admin/proc/cs.proc.php',
+					data: formdata,
+					dataType: 'json',
+					type: 'POST',
+					success: function (r) {
+						if (r.success) {
+							document.location.reload();
+						} else {
+							UI.alert(r.msg);
+						}
+
+
+					}
+				});
+			});
+		},
+		save: function () {
+			UI.confirm('저장하시겠습니까?', function () {
+				var formdata = $('#FrmReturn').serialize();
+				$.ajax({
+					url: '/admin/proc/cs.proc.php',
+					data: formdata,
+					dataType: 'json',
+					type: 'POST',
+					success: function (r) {
+						UI.alert(r.msg);
+					}
+				});
+			})
+		},
+		validator: function () {
+			var sum = 0;
+			var total = $('#price_total').val();
+			$('[name^="refund["]:visible').each(function (i, e) {
+				var v = UI.toInt(e.value);
+				sum += v;
+			})
+
+			if (total != sum) {
+				UI.error('환불금액 합계가 맞지 않습니다.');
+				return false;
+			}
+			return true;
+		},
+		refund: function() {
+			var valid = CSReturn.validator();
+			if (!valid) {
+				return false;
+			}
+			UI.confirm('환불처리하시겠습니까?', function () {
+				var refund_method = $('#refund_method').val();
+
+				var mod_mny = $('#refund_' + refund_method).val();
+				if (mod_mny < 1) {
+					CSReturn.save();
+					return false;
+				}
+
+				$('[name="mod_mny"]').val(mod_mny);
+			
+				if(refund_method == 'cash') {
+					CSReturn.refundSave();
+				}
+				else {
+					$('[data-vcnt]').each(function (i, e) {
+						var field = $(this).data('vcnt');
+						$('[data-name="' + field + '"]').val(e.value);
+					});
+
+					var escrow_yn = $('#escrow_yn').val();
+					if(escrow_yn == 'Y') {
+						//에스크로 취소처리
+						switch (refund_method) {
+							case 'card': //카드취소
+							case 'acnt': //실시간계좌이체취소
+							case 'vcnt': //가상계좌취소
+								
+								var formdata = $('#FrmCancelEscrow').serialize();
+								$.ajax({
+									url: '/third_party/pg/NHNKCP/hub_escrow.php',
+									data: formdata,
+									dataType: 'json',
+									type: 'POST',
+									success: function (r) {
+										if (r.success) {
+											CSReturn.refundSave();
+										} else {
+											UI.error(r.msg + '<div>' + r.data.res_msg + '</div>');
+										}
+									}
+								});
+
+								break;
+						}
+					}
+					else {
+
+					
+						switch (refund_method) {
+							case 'card': //카드취소
+							case 'acnt': //실시간계좌이체취소
+
+								
+								var formdata = $('#FrmCancel').serialize();
+
+								$.ajax({
+									url: '/third_party/pg/NHNKCP/hub_cancel.php',
+									data: formdata,
+									dataType: 'json',
+									type: 'POST',
+									success: function (r) {
+										if (r.success) {
+											CSReturn.refundSave();
+										} else {
+											UI.error(r.msg + '<div>' + r.data.res_msg + '</div>');
+										}
+									}
+								})
+								break;
+							case 'vcnt': //가상계좌취소
+								var frm = document.FrmCancelVant;
+							
+								var formdata = $('#FrmCancelVant').serialize();
+								$.ajax({
+									url: '/third_party/pg/NHNKCP/hub_cancel_vcnt.php',
+									data: formdata,
+									dataType: 'json',
+									type: 'POST',
+									success: function (r) {
+										if (r.success) {
+											CSReturn.refundSave();
+										} else {
+											UI.error(r.msg + '<div>' + r.data.res_msg + '</div>');
+										}
+									}
+								})
+								break;
+							case 'cash': //현금취소
+							default:
+								CSReturn.refundSave();
+								break;
+						}
+					}
+				}
+
+
+				
+			})
+
+		},
+		refundSave: function() {
+			var formdata = $('#FrmRefund').serialize();
+			$.ajax({
+				url: '/admin/proc/cs.proc.php',
+				data: formdata,
+				dataType: 'json',
+				type: 'POST',
+				success: function (r) {
+					if (r.success) {
+						UI.alert(r.msg, function () {
+							opener.location.reload();
+							window.close();
+
+						})
+					} else {
+						UI.error(r.msg);
+					}
+				}
+			})
+		},
+		setUI: function () {
+			$('[data-cond]').each(function (i, e) {
+				var cond = $(e).data('cond');
+				var child = $(e).data('condChild');
+
+				$('[name="' + cond + '"]').on('click, change', function () {
+					$(e).addClass('hide');
+					$(e).filter('[data-cond-value~="' + this.value + '"]').removeClass('hide');
+
+					if (child) {
+						$('[data-cond="' + child + '"]').addClass('hide');
+
+						var child_el = $('[name="' + child + '"]');
+						if (!child_el.is(':visible')) return false;
+
+						switch (child_el.prop('tagName')) {
+							case 'SELECT':
+								child_el.trigger('change');
+								break;
+							default:
+								child_el.trigger('click')
+								break;
+						}
+					}
+				});
+			});
+			CSReturn.calc();
+		},
+		calc: function() {
+			var sum = 0
+
+			$('[data-calc]').each(function(i,e) {
+				// console.log(e);
+				var calc = $(e).data('calc');
+				var price = UI.toInt(this.value);
+				if(calc == 'plus') {
+					sum+=price;
+				}
+				else {
+					sum-=price;
+				}
+			})
+			$('#price_total').val(sum);
+			$('#price_total_txt').text(UI.numberFormat(sum));
+
+			//설정금액
+			var sum_refund = 0;
+			$('[data-refund]:visible').each(function(i,e) {
+				sum_refund+=UI.toInt(this.value);
+			});
+
+			$('#refund_total_txt').text(UI.numberFormat(sum-sum_refund)); //미환불금액
+
+		},
+		calcRemain: function(e) {
+			var input = $(e).next('input');
+			var remain = UI.toInt($('#refund_total_txt').text());
+			var price = UI.toInt(input.val());
+
+			console.log(remain, price);
+			if(remain+price < 0) remain = 0; 
+			input.val(remain);
+			// this.calc();
+		},
+		log: function (idx) {
+			UI.modal('/admin/order/order_view.log.php', '로그확인', {
+				idxs: idx
+			}, 800);
+		}
+	}
+
+	$(function () {
+		CSReturn.init();
+	})
+</script>

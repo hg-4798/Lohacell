@@ -1,0 +1,88 @@
+ <form id="frm"  name="frm" class="" method="post" >
+        <input type="hidden" name="save_type" id="save_type" value="insert">
+        <input type="hidden" name="board_num" id="board_num" value="">
+        <div class="layer-inner">
+            <h2 class="layer-title" id="photo_edit_title">포토등록</h2>
+            <button class="btn-close" type="button"><span>닫기</span></button>
+            <div class="layer-content pb-40">
+
+                <table class="th-left">
+                    <caption>포토등록 작성하기</caption>
+                    <colgroup>
+                        <col style="width:144px">
+                        <col style="width:auto">
+                    </colgroup>
+                    <tbody>
+                    <tr>
+                        <th scope="row"><label for="photo_name" class="essential">제목</label></th>
+                        <td><input type="text" id="photo_name" class="w100-per"></td>
+                    </tr>
+                    <tr>
+                        <th scope="row"><label for="photo_content" class="essential">내용</label></th>
+                        <td><textarea id="photo_content" name="photo_content" class="w100-per" style="height:192px"></textarea></td>
+                    </tr>
+                    <tr>
+                        <th scope="row"><label class="essential">사진</label></th>
+                        <td>
+                            <div class="box-photoUpload">
+                                <div class="filebox preview-image">
+                                    <div class="upload-display" id="user_img_view1" style="display: none;">
+                                        <div class="upload-thumb-wrap" id="user_img_img1"><img src="" class="upload-thumb"></div>
+                                    </div>
+                                    <input class="upload-nm hide" value="파일선택" disabled="disabled">
+
+                                    <label id="user_img_label1" class="photoBox " for="input_file1"><span><i class="icon-photo-grey"></i></span></label>
+                                    <a class="del" onclick="photo.delimg(1)"></a>
+
+                                    <input type="file" name="user_img1" id="input_file1" class="upload-hidden">
+                                    <input type="hidden" name="delchk1" id="delchk1" value="N">
+                                </div>
+                                <div class="filebox preview-image">
+                                    <div class="upload-display" id="user_img_view2" style="display: none;">
+                                        <div class="upload-thumb-wrap" id="user_img_img2"><img src="" class="upload-thumb"></div>
+                                    </div>
+                                    <input class="upload-nm hide" value="파일선택" disabled="disabled">
+                                    <label id="user_img_label2" class="photoBox" for="input-file2"><span><i class="icon-photo-grey"></i></span></label>
+                                    <a class="del" onclick="photo.delimg(2)"></a>
+                                    <input type="file" name="user_img2" id="input-file2" class="upload-hidden">
+                                    <input type="hidden" name="delchk2" id="delchk2" value="N">
+                                </div>
+                                <div class="filebox preview-image">
+                                    <div class="upload-display" id="user_img_view3" style="display: none;">
+                                        <div class="upload-thumb-wrap" id="user_img_img3"><img src="" class="upload-thumb"></div>
+                                    </div>
+                                    <input class="upload-nm hide" value="파일선택" disabled="disabled">
+                                    <label id="user_img_label3" class="photoBox" for="input-file3"><span><i class="icon-photo-grey"></i></span></label>
+                                    <a class="del" onclick="photo.delimg(3)"></a>
+                                    <input type="file" name="user_img3" id="input-file3" class="upload-hidden">
+                                    <input type="hidden" name="delchk3" id="delchk3" value="N">
+                                </div>
+                                <div class="filebox preview-image">
+                                    <div class="upload-display" id="user_img_view4" style="display: none;">
+                                        <div class="upload-thumb-wrap" id="user_img_img4"><img src="" class="upload-thumb"></div>
+                                    </div>
+                                    <input class="upload-nm hide" value="파일선택" disabled="disabled">
+                                    <label id="user_img_label4" class="photoBox" for="input-file4"><span><i class="icon-photo-grey"></i></span></label>
+                                    <a class="del" onclick="photo.delimg(4)"></a>
+                                    <input type="file" name="user_img4" id="input-file4" class="upload-hidden">
+                                    <input type="hidden" name="delchk4" id="delchk4" value="N">
+                                </div>
+
+
+
+                            </div>
+
+
+                            <p class="pt-5">파일명: 한글, 영문, 숫자 / 파일 크기: 3mb 이하 / 파일 형식: GIF, JPG, JPEG</p>
+                        </td>
+                    </tr>
+                    </tbody>
+                </table>
+                <div class="btnPlace mt-20">
+                    <button class="btn-line h-large" type="button" onclick="$('#photo_edit').hide();"><span>취소</span></button>
+                    <button class="btn-point h-large" type="submit" ><span>등록</span></button>
+                </div>
+
+            </div><!-- //.layer-content -->
+        </div>
+    </form>

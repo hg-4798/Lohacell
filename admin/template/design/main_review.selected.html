@@ -1,0 +1,83 @@
+<div class="table_style01">
+    <form id="FrmReviewRegister" onsubmit="return false" autocomplete=off>
+        <input type="hidden" name="mode" value="review_update">
+        <input type="hidden" name="act" value="register">
+    <table cellspacing="0" cellpadding="0" width="100%" border="0">
+        <colgroup>
+            <col width="80">
+            <col width="200">
+            <col width="100">
+            <col width="">
+            <col width="180">
+            <col width="80">
+        </colgroup>
+        <tbody  id="review_tbody">
+        {@ main_review_list}
+            <tr data-num="{.num}">
+                <td><span><i class="fa fa-sort"></i></span></td>
+                <td align="center"><span>{.name}</span>&nbsp;&nbsp;<span>{.id}</span></td>
+                <td>
+                    <a href="/front/productdetail.php?productcode=001001007000001460" target="_blank">
+                        <img class="b-lazy b-loaded" src="{.tinyimage}" alt="" style="width:70px">
+                    </a>
+                </td>
+                <td class="ta_l">
+                    <span>{.productname}</span>
+                    <ul class="c-list" style="margin-top: 15px;">
+                        <li><span class="label label-xs prtype-1">제목</span>
+                            <a href="JavaScript:ReviewReply('{.date}','{.productcode}')" title="{.subject}"><b>{.subject}</b></a>
+                        </li>
+                    </ul>
+                <td>{=format(.date, 'Y-m-d H:i:s')}</td>
+                </td>
+                <td><button type="button" class="btn btn-sm btn-outline-danger" onclick="MainReview.remove('{.num}')"><i class="fa fa-times"></i> 삭제</button></td>
+            </tr>
+        {:}
+            <tr height="5" bgcolor="#FFFFFF"><td colspan="6" align="center">목록이 없습니다.</td></tr>
+        {/}
+        </tbody>
+
+    </table>
+</div>
+<div class="ta_c mt_20">
+    <button type="button" class="btn-point" onclick="MainReview.save()">설정적용</button>
+</div>
+<script>
+    var ReviewSelected = {
+        init: function() {
+            //상품소터블설정
+            $("#review_tbody").sortable({
+                axis:'y',
+                containment:'parent',
+                helper: function(e, tr) {
+                    $('#review_tbody tr').removeClass('selected');
+                    tr.addClass('selected');
+                    var $originals = tr.children();
+                    var $helper = tr.clone();
+
+                    $helper.children().each(function(index) {
+                        $(this).width($originals.eq(index).width());
+                    });
+                    return $helper;
+                },
+                scroll : false,
+                placeholder: "sortable-placeholder",
+                items:'tr',
+                stop: function() {
+                    ReviewSelected.resetSort();
+                }
+
+            });
+        },
+        resetSort: function() { //정렬번호재설정
+            var tr = ReviewSelected.getProduct();
+
+        },
+        getProduct: function() {//기등록상품목록리턴
+            return $('#review_tbody').find('tr:not(.empty)');
+        },
+    }
+    $(function(){
+        ReviewSelected.init();
+    })
+</script>

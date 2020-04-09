@@ -1,0 +1,12 @@
+{
+    "playlist": [
+        {
+            "url": "http://www.cash-stores.com/static/ngood/11.jpg",
+            "caption": "A bird perching on a twig."
+        }
+       
+    ],
+   "hold_time":2,
+		"loops":2,
+	 "transition_time":1
+}

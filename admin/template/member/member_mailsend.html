@@ -1,0 +1,164 @@
+<!-- 회원목록 -->
+<div class="content-wrap">
+	<div class="title_depth3">개별메일 발송
+		<div class="pull-right">
+		</div>
+	</div>
+
+	<!--{* 검색:S *}-->
+	<form id="FrmMailSend" name="FrmMailSend" method=post enctype="multipart/form-data" target="hiddenframe" onsubmit="return false;">
+		<div class="pt_20">
+			<table cellpadding="0" cellspacing="0" width="100%">
+				<tr><td height="8"></td></tr>
+				<tr>
+					<td>
+						<!-- 페이지 타이틀 -->
+						<div class="title_depth3">개별메일 발송</div>
+						<!-- 소제목 -->
+						<div class="title_depth3_sub"><span>쇼핑몰 회원중 특정회원 한명에게 메일을 발송할 수 있습니다.</span></div>
+					</td>
+				</tr>
+					<input type=hidden name=type>
+					<input type=hidden name=htmlmode value='wysiwyg'>
+					<input type=hidden name=style value="N">
+					<tr>
+						<td>
+							<div class="table_style01">
+								<TABLE cellSpacing=0 cellPadding=0 width="100%" border=0>
+									<TR>
+										<th><span>받는 사람 이메일</span></th>
+										<TD><input name=to size=50 value="{rmail}" class="input vali validate[required]" data-errormessage-value-missing="받는 사람 이메일을 입력하세요." >&nbsp;<span class="font_orange">＊필수입력</span></TD>
+									</TR>
+									<TR>
+										<th><span>보내는 사람 이메일</span></th>
+										<TD><input name=from size=50 value="{shopemail}" class="input validate[required]" data-errormessage-value-missing="보내는 사람 이메일을 입력하세요." >&nbsp;<span class="font_orange">＊필수입력</span></TD>
+									</TR>
+									<TR>
+										<th><span>보내는 사람 이름</span></th>
+										<TD><input name=rname size=50 value="{shopname}" class="input validate[required]" data-errormessage-value-missing="보내는 사람 이름을 입력하세요." ></TD>
+									</TR>
+									<tr>
+										<th><span>제 목</span></th>
+										<TD>
+											<div class="table_none">
+												<table cellpadding="0" cellspacing="0" width="100%">
+													<tr>
+														<td><input name=subject size=80 class="input validate[required]" data-errormessage-value-missing="메일 제목을 입력하세요." ></td>
+														<td><span class="font_orange">＊필수입력</span></td>
+													</tr>
+												</table>
+											</div>
+										</TD>
+									</tr>
+									<!--<tr>
+										<th><span>첨부파일</span></th>
+										<TD class="td_con1">
+											<input type=file name=upfile size=50><br>
+										</TD>
+									</tr>-->
+								</TABLE>
+							</div>
+						</td>
+					</tr>
+					<tr>
+						<td>
+							<table cellpadding="0" cellspacing="0" width="100%">
+								<tr>
+									<td bgcolor="#E0DFE3" style="padding:3"><textarea id="ir1" name="body" rows=20 wrap=off style="width: 100%; height: 300px;" class="validate[minSize[5]]"></textarea></td>
+								</tr>
+							</table>
+						</td>
+					</tr>
+					<tr><td height=10></td></tr>
+					<tr>
+						<td align="center"><button type="submit" class="btn-point">메일보내기</button></td>
+					</tr>
+				<tr><td height=20></td></tr>
+				<tr>
+					<td>
+						<div class="sub_manual_wrap">
+							<div class="title"><p>매뉴얼</p></div>
+							<dl>
+								<dt><span>메일발송시 주의사항</span></dt>
+								<dd>
+									- 메일발송은 받는 메일서버와 네트워크의 상태, 부정확한 메일주소에 따라서 발송이 지연 또는 전달되지 않을 수 있습니다.<br>
+									- 회원가입시 메일수신여부를 선택하지 않은 회원은 전달되지 않으므로 개별발송전 확인해 주세요.
+								</dd>
+
+							</dl>
+						</div>
+					</td>
+				</tr>
+				<tr><td height="50"></td></tr>
+			</table>
+		</div>
+	</form>
+</div>
+<!--
+<script language="javascript">
+editor_generate("body");
+</script>
+-->
+
+<script type="text/javascript" src="lib.js.php"></script>
+<script type="text/javascript" src="/third_party/SE2/js/HuskyEZCreator.js" charset="utf-8"></script>
+<script type="text/javascript" src="/admin/static/js/jquery.form.js"></script>
+<SCRIPT LANGUAGE="JavaScript">
+
+    var MailSend = {
+        act: '',
+        proc_url: '/admin/sendmail_process.php',
+        init: function () {
+            var me = this;
+
+            //에디터
+            this.createEditor('ir1');
+
+            var option = $.extend({}, validation_option, {
+                validateNonVisibleFields: false,
+                onValidationComplete: function (form, status) {
+                    if (status) me.sendMail();
+                    //me.save();
+                }
+            });
+            $("#FrmMailSend").validationEngine('attach', option);
+        },
+        createEditor: function (id) {
+            nhn.husky.EZCreator.createInIFrame($.extend({}, se_option, {
+                elPlaceHolder: id
+            }));
+        },
+        sendMail: function () {
+            //에디터
+            oEditors.getById['ir1'].exec("UPDATE_CONTENTS_FIELD", []);
+
+            if (!$('#ir1').val().trim() || $('#ir1').val().length < 10) {
+                //UI.warning("메일 본문을 입력하세요.");
+                UI.warning("메일 본문을 10자 이상 입력하세요.");
+                return false;
+            }
+
+            var formdata = $('#FrmMailSend').serialize();
+
+            $.ajax({
+                url: MailSend.proc_url,
+                data:formdata,
+                dataType:'json',
+                type:'POST',
+                success: function(r) {
+                    if(r.success) {
+                        UI.alert(r.msg);
+                        document.location.href="/admin/member_mailsend.php";
+                    }
+                    else {
+                        UI.error(r.msg);
+                    }
+                }
+            });
+        }
+    }
+
+    $(function () {
+        MailSend.init();
+    });
+</script>

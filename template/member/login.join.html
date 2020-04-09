@@ -1,0 +1,92 @@
+<section class="join-benefit ">
+	<h4 class="v-hidden">{__SHOPINFO.shopname} 회원시 헤택안내</h4>
+	<dl class="clear">
+		<dt class="title">{__SHOPDATA.shopname} 회원이 누릴 수 있는 혜택!</dt>
+		<dd>- 신규 가입 시 3,000 포인트 지급</dd>
+		<dd>- 매년 생일 축하 할인쿠폰 발급</dd>
+		<dd>- 상품 구매 시 마일리지 적립 및 사용 가능</dd>
+		<dd>- 회원 대상 상시 이벤트 진행 </dd>
+		<dd>- 회원 대상 다양한 쿠폰 발급</dd>
+		<dd>- 등급별 멤버십 운영 및 혜택 제공</dd>
+	</dl>
+	<a href="member_certi.php" class="btn-basic w100-per h-large mt-15">회원가입</a>
+</section>
+
+
+<section class="mt-25">
+	<header><h3 class="title">간편 회원가입</h3></header>
+	<ul class="easy-login mt-15 clear">
+		<!--{* 네이버로그인:S *}-->
+		{? cfg.naver.use == 'nv'}
+		<li>
+			<a href="javascript:;" onclick="SNSLogin.sns('/plugin/sns/sns_access.php?sns={cfg.naver.use}&sns_login=1&ac=front', '{cfg.naver.use}','1');">
+				<i class="icon-snsLogin-naver"></i>네이버</a>
+			</a>
+		</li>
+		{/}
+		<!--{* 네이버로그인:S *}-->
+
+		<!--{* 카카오로그인:S *}-->
+		{? cfg.kakao.use == 'kt'}
+		<li>
+			<a href="javascript:;" onclick="SNSLogin.sns('/plugin/sns/sns_access.php?sns={cfg.kakao.use}&sns_login=1&ac=front', '{cfg.kakao.use}','1')">
+				<i class="icon-snsLogin-katalk"></i>카카오톡</a>
+			</a>
+		</li>
+		{/}
+		<!--{* 카카오로그인:E *}-->
+
+		<!--{* 페이스북로그인:S *}-->
+		{? cfg.facebook.use == 'fb'}
+		<li>
+			<a href="javascript:;" onclick="SNSLogin.sns('/plugin/sns/sns_access.php?sns={cfg.facebook.use}&sns_login=1&ac=front', '{cfg.facebook.use}','1');">
+				<i class="icon-snsLogin-facebook"></i>페이스북</a>
+			</a>
+		</li>
+		{/}
+		<!--{* 페이스북로그인:S *}-->
+
+	</ul>
+	
+	{? page != 'login_guest'}
+	<div class="login-link mt-20">
+		<a href="findid.php">아이디/비밀번호 찾기</a>
+		<a href="login_guest.php">비회원 주문조회</a>
+	</div>
+	{/}
+	<!--{**}-->
+</section>
+
+<!--{* SNS 가입 후 인증:S *}-->
+<form action="/front/member_certi.php" method="POST" name="frmSns">
+	<input type="hidden" name="chUrl" value="">
+	<input type='hidden' name='sns_login' value="">
+	<input type='hidden' name='sns_id' value="">
+	<input type='hidden' name='sns_email' value="">
+	<input type='hidden' name='sns_name' value="">
+	<input type='hidden' name='sns_type' value="">
+	<input type='hidden' name='sns_token' value="">
+	<input type='hidden' name='mode' value="">
+	<input type='hidden' name='act' value="">
+	<input type='hidden' name='chUrl' value="{rtn.url}">
+</form>
+<!--{* SNS 가입 후 인증:E *}-->
+
+
+<script type="text/javascript">
+var SNSLogin = {
+	sns: function(url, sns, sns_login) {
+		document.frmSns.sns_login.value=sns_login;
+		if(sns == 'fb'){
+			var popup= window.open(url, "_facebookPopupWindow", "width=500, height=300");
+		}
+		else if(sns == 'nv'){
+			var popup= window.open(url, "_naverPopupWindow", "width=500, height=500");
+		}
+		else if(sns == 'kt'){
+			var popup= window.open(url, "_kakaoPopupWindow", "width=500, height=500");
+		}
+		popup.focus();
+	}
+}
+</script>

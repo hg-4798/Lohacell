@@ -1,0 +1,114 @@
+<div class="content-wrap">
+
+	<form id="FrmCardInfo" onsubmit="return false">
+		<input type="hidden" name="mode" value="card">
+		<input type="hidden" name="act" value="info">
+		<div class="title_depth3_sub">PC설정</div>
+		<table class="table-view mt_0">
+			<colgroup>
+				<col style="width:180px">
+
+				<col>
+			</colgroup>
+			<tr>
+				<th>
+					<span>노출문구</span>
+				</th>
+				<td><input type="text" name="card_pc[title]" value="{card.pc_title}" class="input_bd_st01 full validate[required]"
+					    data-errormessage-value-missing="노출문구(PC)를 입력하세요."></td>
+			</tr>
+
+			<tr>
+				<th>
+					<span>카드사 혜택안내 (PC)</span>
+				</th>
+				<td><textarea wrap="off" id="ir1" name="card_pc[contents]" style="width:100%;height:300px">{=htmlspecialchars_decode(card.pc_contents)}</textarea></td>
+			</tr>
+		</table>
+
+		<div class="title_depth3_sub">MOBILE 설정</div>
+		<table class="table-view mt_0">
+			<colgroup>
+				<col style="width:180px">
+				<col>
+			</colgroup>
+			<tr>
+				<th>
+					<span>노출문구(MOBILE)</span>
+				</th>
+				<td><input type="text" name="card_mobile[title]" value="{card.mobile_title}" class="full validate[required]"
+					    data-errormessage-value-missing="노출문구(MOBILE)를 입력하세요."></td>
+			</tr>
+			<tr>
+				<th>
+					<span>카드사 혜택안내 (MOBILE)</span>
+				</th>
+				<td><textarea wrap="off" id="ir2" name="card_mobile[contents]" style="width:100%;height:300px" name="content_m">{=htmlspecialchars_decode(card.mobile_contents)}</textarea></td>
+			</tr>
+
+		</table>
+
+		<div class="area-button mb_30">
+			<button type="submit" class="btn-point">적용하기</button>
+		</div>
+	</form>
+
+</div>
+
+
+<script type="text/javascript" src="/third_party/SE2/js/HuskyEZCreator.js" charset="utf-8"></script>
+<script type="text/javascript">
+	var CardInfo = {
+		init: function () {
+			this.createEditor('ir1');
+			this.createEditor('ir2');
+
+			var me = this;
+			var option = $.extend({}, validation_option, {
+				validateNonVisibleFields: false,
+				onValidationComplete: function (form, status) {
+					if (status) me.save();
+				}
+			});
+			$("#FrmCardInfo").validationEngine('attach', option);
+
+
+		},
+
+		createEditor: function (id) {
+			nhn.husky.EZCreator.createInIFrame($.extend({}, se_option, {
+				elPlaceHolder: id
+			}));
+		},
+		save: function () {
+			//에디터
+			oEditors.getById["ir1"].exec("UPDATE_CONTENTS_FIELD", []);
+			oEditors.getById["ir2"].exec("UPDATE_CONTENTS_FIELD", []);
+
+			if (!$('#ir1').val().trim()) {
+				alert("카드사 혜택 내용(PC)를 입력하세요.");
+				return false;
+			}
+
+			if (!$('#ir2').val().trim()) {
+				alert("카드사 혜택 내용(MOBILE)를 입력하세요.");
+				return false;
+			}
+
+			var formdata = $('#FrmCardInfo').serialize();
+			$.ajax({
+				url: '/admin/proc/shop.proc.php',
+				data: formdata,
+				dataType: 'json',
+				type: 'POST',
+				success: function (r) {
+					UI.alert(r.msg);
+				}
+			})
+		}
+	}
+
+	$(function () {
+		CardInfo.init();
+	})
+</script>

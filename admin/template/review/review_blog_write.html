@@ -1,0 +1,169 @@
+<div class="content-wrap">
+	<div class="title_depth3">{__NAV.page_tit}<span></span>
+	</div>
+	<form id="FrmRegister" onsubmit="return false">
+		<input type="hidden" name="mode" value="review_blog" />
+		<input type="hidden" name="idx" value="{row.idx}" />
+
+	<div class=" mt-15">
+		<table class="table-view" cellspacing="0" cellpadding="0" width="100%" border="0">
+			<colgroup>
+				<col width="200">
+				<col width="">
+			</colgroup>
+			<tbody>
+			<tr>
+				<th><span>메인 타이틀</span></th>
+				<td colspan="3">
+					<input type="text" name="blog_title" value="{row.blog_title}" class="input w500 validate[required]"  data-errormessage-value-missing="메인 타이틀을 입력하세요.">
+				</td>
+			</tr>
+			<tr>
+				<th><span>이미지(PC)</span></th>
+				<td colspan="3">
+					<span><img src="{row.blog_img}" id="span_pc_img" style="width: 100px;border:solid 1px #ddd;"></span>
+					<button type="button" class="btn btn-form btn-info" data-file="pc_img" style="vertical-align: top">이미지선택</button>
+					<input type="file" name="pc_img" id="pc_img" data-ext="pc_img" value="{row.blog_img}" class="hide"/>
+				</td>
+			</tr>
+			<tr>
+				<th><span>이미지(MOBILE)</span></th>
+				<td colspan="3">
+					<span><img src="{row.blog_img_m}" id="span_mobile_img" style="width: 100px;border:solid 1px #ddd;"></span>
+					<button type="button" class="btn btn-form btn-info" data-file="mobile_img" style="vertical-align: top">이미지선택</button>
+					<input type="file" name="mobile_img" id="mobile_img" data-ext="mobile_img" value="{row.blog_img_m}" class="hide"/>
+				</td>
+			</tr>
+			<tr>
+				<th><span>이미지 상세이미지(PC)</span></th>
+				<td colspan="3">
+					<textarea name="blog_content" id="blog_content" rows=15 wrap=off class="editor" style="width:100%;">{row.blog_content}</textarea>
+				</td>
+			</tr>
+			<tr>
+				<th><span>이미지 상세이미지(MOBILE)</span></th>
+				<td colspan="3">
+					<textarea name="blog_content_m" id="blog_content_m" rows=15 wrap=off class="editor" style="width:100%;">{row.blog_content_m}</textarea>
+				</td>
+			</tr>
+			<tr>
+				<th><span>노출여부</span></th>
+				<td colspan="3">
+					<label>
+						<input type="radio" name="use_yn" value="Y" class="hj validate[required] minRadio"  data-errormessage-value-missing="사용여부를 선택하세요." {=checked(row.blog_hidden, 'Y')} >
+						<span class="lbl">사용함</span>
+					</label>
+					<label>
+						<input type="radio" name="use_yn" value="N"  class="hj validate[required] minRadio"  data-errormessage-value-missing="사용여부를 선택하세요." {=checked(row.blog_hidden, 'N')}>
+						<span class="lbl">사용안함</span>
+					</label>
+				</td>
+			</tr>
+			</tbody>
+		</table>
+	</div>
+
+	<div class="ta_c mt_20">
+		<button type="submit" class="btn-point">{? dml=='insert'}등록{:}수정{/}</button>
+		<button type="button" class="btn-basic" onclick="BlogRegister.list()">취소</button>
+	</div>
+	</form>
+</div>
+<script type="text/javascript" src="/third_party/SE2/js/HuskyEZCreator.js" charset="utf-8"></script>
+<script type="text/javascript" src="/admin/static/js/jquery.form.js"></script>
+<script type="text/javascript">
+    var BlogRegister = {
+        target: '',
+        mode : '{dml}',
+        editors: [],
+        init: function () {
+            var me = this;
+            me.createEditor('blog_content');
+            me.createEditor('blog_content_m');
+            var option = $.extend({}, validation_option, {
+                validateNonVisibleFields: true,
+                onValidationComplete: function (form, status) {
+                    if (status) me.save();
+                }
+            });
+            $("#FrmRegister").validationEngine('attach', option);
+
+            $('[data-file]').on('click', function() {
+                me.target = $(this).data('file');
+                $('#'+me.target).trigger('click');
+
+            });
+
+            $('input[data-ext="pc_img"]').on('change', me.createAttach);
+            $('input[data-ext="mobile_img"]').on('change', me.createAttach);
+
+
+        },
+        createEditor: function (id) {
+            nhn.husky.EZCreator.createInIFrame($.extend({}, se_option,
+				{
+				    elPlaceHolder: id
+            	}));
+        },
+        createAttach: function () {
+            var input = this;
+            var path = input.value;
+            var accept = (/\.(gif|png|jpg|jpeg)$/i).test(path);
+            if (!accept) {
+                UI.error('이미지 파일만 업로드 가능합니다.');
+                return false;
+            }
+
+            $(input).prev('span').text(this.value);
+
+            var preview_id = $(input).data('preview');
+
+            //preview
+            var isIE = (navigator.appName == "Microsoft Internet Explorer");
+            if (isIE) {
+                $('#span_'+BlogRegister.target).css('background-image','url('+path+')');
+                $('#' + preview_id).attr('src', path);
+            } else {
+                if (input.files[0]) {
+
+                    var reader = new FileReader();
+                    reader.onload = function (e) {
+                        //$('#span_'+CategoryBannerRegister.target).html(e.target.result);
+                        $('#span_'+BlogRegister.target).attr("src",e.target.result);
+                    }
+                    reader.readAsDataURL(input.files[0]);
+                }
+            }
+        },
+        save: function () {
+            //에디터
+			oEditors.getById['blog_content'].exec("UPDATE_CONTENTS_FIELD", []);
+            oEditors.getById['blog_content_m'].exec("UPDATE_CONTENTS_FIELD", []);
+            var option = {
+                type: "POST",
+                url: "{C.DIR_ADMIN}/proc/review.proc.php",
+                dataType: "json",
+                success: function (data) {
+                    UI.alert(data.msg, function() {
+                        if(data.success) {
+                            BlogRegister.list();
+                        };
+                    });
+                },
+                error: function (result) {
+                }
+            }
+
+            $("#FrmRegister").ajaxSubmit(option);
+		},
+        list: function () {
+            document.location.href="{C.DIR_ADMIN}/review/review_blog_list.php";
+        }
+
+    }
+
+
+    $(function () {
+        BlogRegister.init();
+    })
+</script>

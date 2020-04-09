@@ -1,0 +1,129 @@
+<script type="text/javascript">
+	function m_Completepayment( FormOrJson, closeEvent ) {
+	
+		var frm = document.FrmOrderPay; 
+		GetField( frm, FormOrJson ); 
+
+		if( frm.res_cd.value == "0000" ){
+
+			//리턴받은 정보(ordr_chk)와 실제주문정보 일치여부체크
+			var chk = frm.ordr_chk.value;
+			if(chk != frm.ordr_idxx.value+'|'+frm.good_mny.value) {
+				UI.error('주문정보가 올바르지 않아 결제를 중단합니다.');
+			}
+			else frm.submit();
+		}
+		else {
+			UI.alert('결제를 취소하셨습니다.');
+			console.log("[" + frm.res_cd.value + "] " + frm.res_msg.value);
+			closeEvent();
+		}
+	}
+</script>
+
+
+<form name="FrmOrderPay"  id="FrmOrderPay" method="post" action="/third_party/pg/NHNKCP/hub.php" >
+
+	<!--{* 주문정보입력:S *}-->
+<input type="hidden" name="pay_method" value="{pg.pay_method}" /><!--{* 결제수단:신용카드 : 100000000000, 계좌이체 : 010000000000, 가상계좌 : 001000000000 *}-->
+<input type="hidden" name="ordr_idxx" value="{order.order_num}"/> <!--{* 주문번호 *}-->
+<input type="hidden" name="good_name" value="{order.order_title}"/> <!--{* 상품명 *}-->
+<input type="hidden" name="good_mny"  value="{order.pay_pg}" /> <!--{* 결제금액:숫자로만입력, PG사 결제금액(포인트/마일리지/쿠폰할인액 제외한 최종결제금액) *}-->
+<input type="hidden" name="buyr_name" value="{order.buyer_name}" /><!--{* 주문자명(buyr_name) *}-->
+<input type="hidden" name="buyr_mail" value="{order.buyer_email}" /><!--{* 주문자 E-mail(buyr_mail) *}-->
+<input type="hidden" name="buyr_tel1" value="{order.buyer_tel}" /><!--{* 주문자 연락처1(buyr_tel1) *}-->
+<input type="hidden" name="buyr_tel2" value="{order.buyer_mobile}" /><!--{* 휴대폰번호(buyr_tel2) *}-->
+<!--{* 주문정보입력:S *}-->
+
+
+<!--{* 가맹점필수정보설정:S *}-->
+<input type="hidden" name="req_tx" value="pay" /> <!--{* 요청종류:승인(pay)/취소,매입(mod) *}-->
+<input type="hidden" name="site_cd" value="{pg.site_code}" />
+<input type="hidden" name="site_name" value="{pg.site_name}" />
+<input type="hidden" name="quotaopt" value="12"/><!--{* 할부옵션 *}-->
+<input type="hidden" name="currency" value="WON"/><!--{* 필수항목:결제 금액/화폐단위 *}-->
+<!--{* 가맹점필수정보설정:E *}-->
+
+
+<!--{* 표준웹 필수 정보(변경 불가):S *}-->
+<input type="hidden" name="module_type" value="01"/>
+<input type="hidden" name="res_cd" value=""/>
+<input type="hidden" name="res_msg" value=""/>
+<input type="hidden" name="enc_info" value=""/>
+<input type="hidden" name="enc_data" value=""/>
+<input type="hidden" name="ret_pay_method" value=""/>
+<input type="hidden" name="tran_cd" value=""/>
+<input type="hidden" name="use_pay_method" value=""/>
+<input type="hidden" name="ordr_chk" value=""/>
+<input type="hidden" name="cash_yn" value=""/>
+<input type="hidden" name="cash_tr_code" value=""/>
+<input type="hidden" name="cash_id_info" value=""/>
+<input type="hidden" name="good_expr" value="0">
+<!--{* 표준웹 필수 정보(변경 불가):E *}-->
+
+<!--{* 에스크로 관련:S*}-->
+<input type="hidden" name="escw_used" value="Y"/> <!-- 에스크로 사용 여부 : 반드시 Y 로 설정 -->
+<input type="hidden" name="pay_mod" value="O"/> <!-- 에스크로 결제처리 모드 : 에스크로: Y, 일반: N, KCP 설정 조건: O  -->
+<input type="hidden" name="deli_term" value="03"/><!-- 배송 소요일 : 예상 배송 소요일을 입력 -->
+<input type="hidden" name="bask_cntx" value="{escrow.cnt}"/><!-- 장바구니 상품 개수 : 장바구니에 담겨있는 상품의 개수를 입력(good_info의 seq값 참조) -->
+<input type="hidden" name="good_info" value="{escrow.good_info}"/><!-- 장바구니 상품 상세 정보 (자바 스크립트 샘플 create_goodInfo()가 온로드 이벤트시 설정되는 부분입니다.) -->
+<input type="hidden" name="rcvr_name" value="{order.receiver_name}"/><!-- 수취인명(rcvr_name) -->
+<input type="hidden" name="rcvr_tel1" value="{order.receiver_tel}"/><!-- 수취인 연락처1(rcvr_tel1) -->
+<input type="hidden" name="rcvr_tel2" value="{order.receiver_mobile}"/><!-- 수취인 휴대폰번호(rcvr_tel2) -->
+<input type="hidden" name="rcvr_mail" value="{order.buyer_email}"/><!-- 수취인 E-mail(rcvr_mail) -->
+<input type="hidden" name="rcvr_zipx" value="{order.receiver_zipcode}"/><!-- 수취인 우편번호(rcvr_zipx) -->
+<input type="hidden" name="rcvr_add1" value="{order.receiver_addr}"/> <!-- 수취인 주소(rcvr_add1) -->
+<input type="hidden" name="rcvr_add2" value="{order.receiver_addr_detail}"/> <!-- 수취인 상세주소(rcvr_add2) -->
+<!--{* 에스크로 관련:E*}-->
+
+<!--{* 옵션정보:S *}-->
+<input type="hidden" name="used_card_YN" value="N"/> 
+<input type="hidden" name="used_card" value="CCBC:CCKM:CCSS"/> <!--{* 사용카드 설정 파라미터 *}-->
+<input type="hidden" name="used_card_CCXX" value="Y"/> <!--{* 해외카드 구분 파라미터 *}-->
+<input type="hidden" name="save_ocb" value=""/> <!--{* OK캐쉬백 적립 *}-->
+<input type="hidden" name="fix_inst" value=""/> <!--{* 고정 할부 개월 수 *}-->
+<input type="hidden" name="kcp_noint" value=""/> <!--{* 무이자 옵션 *}-->
+<input type="hidden" name="kcp_noint_quota" value=""/> <!--{*무이자 설정 *}-->
+<input type="hidden" name="wish_vbank_list" value=""/> <!--{*가상계좌 은행 *}-->
+<input type="hidden" name="vcnt_expire_term" value="3"/> <!--{*가상계좌 입금 기한 *}-->
+<input type="hidden" name="vcnt_expire_term_time" value="235959"/> <!--{*가상계좌 입금 시간 설정하는 파라미터:기본(23:59:59) *}-->
+<input type="hidden" name="complex_pnt_yn" value="N"/> <!--{*포인트 결제시 복합 결제(신용카드+포인트) *}-->
+<input type="hidden" name="disp_tax_yn" value="Y"/> <!--{*현금영수증 등록 창 *}-->
+<input type="hidden" name="site_logo" value="" /> <!--{*가맹점 사이트의 로고(150 X 50) *}-->
+<input type='hidden' name='eng_flag' value='N'> <!--{* 결제창 영문 표시 파라미터 *}-->
+<input type="hidden" name="tax_flag" value="TG03">  <!--{* 변경불가 *}-->
+<input type="hidden" name="comm_tax_mny" value="" />  <!--{* 과세금액 *}-->
+<input type="hidden" name="comm_vat_mny" value="" />  <!--{* 부가세 *}-->
+<input type="hidden" name="comm_free_mny" value="" />  <!--{* 비과세 금액 *}-->
+<input type='hidden' name='skin_indx' value='7'> <!--{* 스킨(1~7) *}-->
+<input type='hidden' name='good_cd' value=''> <!--{* 상품코드 *}-->
+{? C.MEMID}
+<input type="hidden" name="shop_user_id" value="{order.member_id}"/> <!--{* 가맹점에서 관리하는 고객 아이디(회원) *}-->
+{:}
+<input type="hidden" name="shop_user_id" value="{order.guest_id}"/> <!--{* 가맹점에서 관리하는 고객 아이디(비회원) *}-->
+{/}
+<input type="hidden" name="pt_memcorp_cd" value=""/> <!--{* 복지포인트 결제시 가맹점 할당코드 *}-->
+<!--{* 옵션정보:E *}-->
+
+</form>
+
+<script type="text/javascript">
+var KCP = {
+	init: function() {
+		this.pay();
+	},
+	pay: function() {
+		var form = $('#FrmOrderPay')[0];
+		try {
+			KCP_Pay_Execute( form ); 
+		}
+		catch (e) {
+			/* IE 에서 결제 정상종료시 throw로 스크립트 종료 */ 
+		}
+	}
+}
+
+$(function() {
+	KCP.init();
+})
+</script>

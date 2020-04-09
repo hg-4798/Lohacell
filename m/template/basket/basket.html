@@ -1,0 +1,254 @@
+<div id="page">
+	<!-- 내용 -->
+	<main id="content" class="subpage">
+		<section class="page_local">
+			<h2 class="page_title">
+				<a href="javascript:history.back();" class="prev">이전페이지</a>
+				<span>주문/결제</span>
+			</h2>
+			<div class="page_step">
+				<ul class="clear">
+					<li class="on"><span class="icon_order_step01"></span>장바구니</li>
+					<li><span class="icon_order_step02"></span>주문하기</li>
+					<li><span class="icon_order_step03"></span>주문완료</li>
+				</ul>
+			</div>
+		</section>
+
+
+		<section class="cartpage">
+			<!--{* 탭:S *}-->
+			
+			<div class="event_tab tab_type1" data-ui="TabMenu">
+				{? C.STAFF_YN=='Y'}
+				<div class="tab-menu clear">
+					<a data-content="menu" data-target="normal" class="{=checked(tab_id,'normal','active')}">일반상품(<i id="count_normal">{=number_format(count.normal)}</i>)</a>
+					<a data-content="menu" data-target="staff" class="{=checked(tab_id,'staff','active')}" title="">임직원상품(<i id="count_staff">{=number_format(count.staff)}</i>)</a>
+				</div>
+				{/}
+
+				<div class="cart-item-wrap">
+					
+					<!--{* 일반상품:S *}-->
+					<div id="inner_normal" class="{=checked(tab_id,'normal','active')}" data-content="content">{=include('./basket/basket.normal.php')}</div> 
+					<!--{* 일반상품:E *}-->
+	
+					<!--{* 임직원상품:S *}-->
+					{? C.STAFF_YN=='Y'}
+					<div id="inner_staff" class="{=checked(tab_id,'staff','active')}" data-content="content">{=include('./basket/basket.staff.php')}</div>
+					{/}
+					<!--{* 임직원상품:E *}-->
+				</div>
+
+				
+
+			</div>
+			
+			<!--{* 탭:E *}-->
+			
+		</section>
+	</main>
+</div>
+
+
+<script type="text/javascript">
+	var Basket = {
+		tab:'{tab_id}',
+		inited:false,
+		init: function() {
+			var me = this;
+			// $('.loading_inner').addClass('loaded');
+	
+			$('[data-content="menu"]').on('click.load', function() {
+				var tab = $(this).data('target');
+				me.tab = tab;
+				me.loadTab(tab);
+			});
+	
+			// 장바구니 > 옵션변경 팝업
+			$('.btn_opt_change').click(function () {
+				$('.layer_opt_change').show();
+				$('html,body').css('overflow-y', 'hidden');
+			});
+	
+			
+			
+		},
+		qty:function() {
+			//TODO 재고, 최대, 최소구매수량체크(임시, 주문단계서 최종체크필요)
+			var act = $(this).hasClass("plus")?'plus':'minus';
+			var data = $(this).closest('div.cart-item-opt').data();
+			var qty = $(this).siblings('input').val();
+
+			switch(act) {
+				case 'plus':
+					qty++;
+				break;
+				case 'minus':
+					qty--;
+				break;
+			}
+	
+			//최대구매수량 체크
+			if(data.stockMax < qty) {
+				UI.warning('최대 '+data.stockMax+'개까지 주문 가능합니다.');
+				return false;
+			}
+	
+			//최소구매수량체크
+			if(data.stockMin > qty) {
+				UI.warning('최소 '+data.stockMin+'개이상 주문 가능합니다.');
+				return false;
+			}
+	
+			//수량변경처리
+			$.ajax({
+				url:'/proc/basket.proc.php',
+				data:{
+					mode:'option',
+					act:'qty',
+					no:data.basketNo,
+					qty:qty
+	
+				},
+				dataType:'json',
+				type:'POST',
+				success: function(r) {
+					if(r.success) {
+						Basket.reloadTab();
+					}
+					else {
+						UI.error(r.msg);
+					}
+				}
+			})
+		},
+		changeOption:function(group_no) {
+			UI.popup('/m/basket/option_add.php','옵션추가', {group_no:group_no});
+		},
+		loadTab: function(id, reload) {
+			
+			var id = (typeof id == 'string')?id:Basket.tab;
+			var e = $('#inner_'+id);
+			var checked = UI.getChecked('checked_'+id+'[]');
+		
+			var param = {};
+			if(reload) {
+				if(checked.length > 0) {
+					var no = checked.map(function () {return this.value;}).get();
+					var param = {no:no.join()};
+				}
+				else param = {no:''};
+			}
+	
+			e.load('/m/basket/basket.'+id+'.php',param, function() {
+		
+				PRODUCT.like(); //좋아요링크연결
+				Basket.countTab(); //장바구니 생품개수 리셋
+	
+				//전체상품수
+				/*
+				var count_tab = $('[name="checked_'+id+'[]"]').length;
+				$('#count_tab').text(count_tab);
+				$('#count_'+id).text(count_tab);
+				
+				//선택상품수
+				var count_chekced = UI.getChecked('checked_'+id+'[]');
+				$('#count_checked').text(count_chekced.length);
+	
+				if(count_chekced.length == count_tab) $('#check_all').prop('checked', true);
+				else $('#check_all').prop('checked', false);
+				*/
+			});
+		},
+		reloadTab: function() {
+			Basket.loadTab(Basket.tab, true);
+		},
+		countTab: function() { //장바구니 생품개수 리셋
+			var cnt = $('#inner_'+Basket.tab).find('tr[data-no]').length;
+			if(cnt.toString().length==1) cnt='0'+cnt.toString();
+			$('[data-target="'+Basket.tab+'"]').find('strong').text(cnt);
+	
+			var cnt_total = $('tr[data-no]').length;
+			$('.icon-curation-cart').text(cnt_total);
+		},
+		remove: function(no, act, el){
+			if(act == 'option') {
+				var data = $(el).closest('div.box-sector').data();
+				if(data.countOption<=1 && data.countProduct>0) {
+					UI.confirm('옵션 삭제시 추가구매상품도 함께 삭제됩니다.<br>삭제하시겠습니까?', function() {
+						Basket.removeAct(no, act);
+					});
+				}
+				else {
+					Basket.removeAct(no, act);
+				}
+			}
+			else {
+				Basket.removeAct(no, act);
+			}
+		},
+		removeAct: function(no,act) {
+			$.ajax({
+				url:'/proc/basket.proc.php',
+				data:{
+					mode:'remove',
+					act:act,
+					no:no
+				},
+				dataType:'json',
+				type:'POST',
+				success: function(r) {
+					if(r.success) {
+						Basket.reloadTab();
+					}
+				}
+			})
+		},
+		removeChecked: function() {
+			var checked = UI.getChecked('checked_'+this.tab+'[]');
+			if(checked.length < 1) {
+				UI.error('삭제할 상품을 선택하세요.');
+				return false;
+			}
+	
+			UI.confirm("선택하신 상품을 장바구니에서 삭제하시겠습니까?", function() {
+				var no = checked.map(function () {return this.value;}).get();
+				Basket.removeAct(no, 'group');
+			})
+		},
+		order: function(no) {
+			if(!no) {
+				var checked = UI.getChecked('checked_'+this.tab+'[]');
+				if(checked.length < 1) {
+					UI.error('선택한 상품이 없습니다.');
+					return false;
+				}
+				var no = checked.map(function () {return this.value;}).get();
+			}
+			
+			var pr_type = (this.tab == 'staff')?'3':'1';
+			$.ajax({
+				url:'/proc/basket.proc.php',
+				data:{
+					mode:'order',
+					act:'buy_basket',
+					pr_type:pr_type,
+					no:no
+				},
+				dataType:'json',
+				type:'POST',
+				success: function(r) {
+					if(r.success) document.location.href='/m/'+r.data.url;
+					else UI.warning(r.msg);
+				}
+			})
+		}
+	
+	}
+	
+	$(function(){
+		Basket.init();
+	})
+		
+	</script>

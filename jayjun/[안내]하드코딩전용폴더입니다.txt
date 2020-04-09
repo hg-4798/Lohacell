@@ -1,0 +1,6 @@
+하드코딩 전용 폴더 입니다.
+개발시 페이지 복사해서 사용요망.
+
+전체페이지안내
+웹 : http://test-aja.ajashop.co.kr/sinwon/web/guide/page.html
+모 : http://test-aja.ajashop.co.kr/sinwon/m/guide/page.html

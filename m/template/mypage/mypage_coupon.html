@@ -1,0 +1,82 @@
+
+<div id="page">
+	<!-- 내용 -->
+	<main id="content" class="subpage">
+
+		<section class="page_local is-line">
+			<h2 class="page_title">
+				<a href="javascript:history.back();" class="prev">이전페이지</a>
+				<span>쿠폰</span>
+			</h2>
+		</section><!-- //.page_local -->
+
+		<section class="mypage_coupon">
+			<div class="check_period mt-15 hide">
+				<ul>
+					<li class=""><a href="javascript:;" onClick = "GoSearch('', this)"></a></li><!-- [D] 해당 조회기간일때 .on 클래스 추가 -->
+				</ul>
+			</div><!-- //.check_period -->
+
+			<section class="mt-10" data-ui="TabMenu">
+				<div class="tabs two">
+					<button type="button" data-content="menu" class="active" title="선택됨" data-tab="1"><span>사용가능 쿠폰<em class="count">{total}</em></span></button>
+					<button type="button" data-content="menu" data-tab="2"><span>사용완료 쿠폰<em class="count">{used_total}</em></span></button>
+				</div>
+				<!-- 사용가능 쿠폰 -->
+				<div id="coupon_list"></div>
+
+			</section>
+
+			<div class="attention inner mt-40">
+				<div class="title">유의사항 <a class="show">보기</a></div>
+				<ul>
+					<li>유효기간이 지난 쿠폰은 자동 소멸되며 재발행 되지 않습니다.</li>
+					<li>쿠폰 유효기간 종료 이후 취소, 반품 시 쿠폰은 재발급되지 않습니다.</li>
+					<li>할인 쿠폰의 할인금액이 상품의 판매가를 초과할 경우 사용이 불가능합니다.</li>
+				</ul>
+			</div>
+		</section><!-- //.mypage_coupon -->
+
+	</main>
+	<!-- //내용 -->
+</div>
+
+<script type="text/javascript">
+
+    var CouponList = {
+        page: 1,
+        init: function(){
+            var me = this;
+            me.load(1,1);
+            $('.tabs > button').on('click', function() {
+                var tab_idx = $(this).data('tab');
+                if(tab_idx==1){
+                    CouponList.load(1,tab_idx);
+                }else{
+                    CouponList.load(1,tab_idx);
+                }
+            });
+        },
+        load: function (page,tab) {
+            var p = page || CouponList.page;
+            if(tab==1){
+                $('#coupon_list').load('/m/coupon/couponlist_inner.php', {
+                    page: p
+                });
+            }else{
+                $('#coupon_list').load('/m/coupon/used_couponlist_inner.php', {
+                    page: p
+                });
+            }
+		},
+        loadPage: function (page) {
+            this.load(page);
+        }
+	}
+
+    $(function() {
+        CouponList.init();
+    })
+</script>
+
+

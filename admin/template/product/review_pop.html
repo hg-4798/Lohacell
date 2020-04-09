@@ -1,0 +1,171 @@
+<div class="pop_top_title">
+	<p>
+		{product_info.productname} 리뷰 등록</p>
+</div>
+
+<form name="FrmProductReview" id="FrmProductReview" onsubmit="return false">
+	<input type="hidden" name='mode' value="insert">
+	<input type="hidden" name='productcode' value="{product_info.productcode}">
+
+	<div class="table_style01" style="padding:10px">
+		<table cellSpacing=0 cellPadding=0 width="100%"style="table-layout:fixed">
+			<colgroup>
+				<col style="width:120px">
+				<col>
+			</colgroup>
+			<tr>
+				<th>
+					<span>아이디</span>
+				</th>
+				<td class="td_con1"><input type="text" name="user_id" value="" class="input validate[required]" data-errormessage-value-missing="아이디를 입력하세요."></td>
+			</tr>
+			<tr>
+				<th>
+					<span>이름</span>
+				</th>
+				<td class="td_con1"><input type="text" name="user_name" class="input validate[required]"  data-errormessage-value-missing="이름을 입력하세요."></td>
+			</tr>
+			<tr>
+				<th>
+					<span>등록일</span>
+				</th>
+				<td class="td_con1">
+					<input name="regdt" title="년도를 입력하세요." onclick="Calendar(event)"  type="text" size="12" maxlength="12" placeholder="YYYY-MM-DD"  class="input calendar validate[required, custom[date]]"  data-errormessage-value-missing="등록일을 입력하세요." autocomplete="off">
+				</td>
+			</tr>
+			<tr>
+				<th>
+					<span>별점</span>
+				</th>
+				<td class="td_con1">
+					<div class="rating clear">
+						<input type="radio" class="rating-input" id="rating-size5" name="rate" checked="checked" value="5">
+						<label for="rating-size5" class="rating-star score5"></label>
+						<input type="radio" class="rating-input" id="rating-size4" name="rate" value="4">
+						<label for="rating-size4" class="rating-star score4"></label>
+						<input type="radio" class="rating-input" id="rating-size3" name="rate" value="3">
+						<label for="rating-size3" class="rating-star score3"></label>
+						<input type="radio" class="rating-input" id="rating-size2" name="rate" value="2">
+						<label for="rating-size2" class="rating-star score2"></label>
+						<input type="radio" class="rating-input" id="rating-size1" name="rate" value="1">
+						<label for="rating-size1" class="rating-star score1"></label>
+					</div>
+				</td>
+			</tr>
+			<tr>
+				<th>
+					<span>상품옵션정보</span>
+				</th>
+				<td class="td_con1">
+					<select name="option_code" style="height:32px;vertical-align:middle;" class="select validate[required]"  data-errormessage-value-missing="옵션을 선택하세요.">
+						<option value="">옵션을 선택하세요.</option>
+						{@ product_option}
+						<option value="{.option_num}">{.option_name}</option>
+						{/}
+					</select>
+				</td>
+			</tr>
+			<tr>
+				<th>
+					<span>제목</span>
+				</th>
+				<td class="td_con1">
+					<input type="text" name="subject" style="width:90%" class="input validate[required]"  data-errormessage-value-missing="제목을 입력하세요.">
+				</td>
+			</tr>
+
+			<tr>
+				<th>이미지 첨부</th>
+				<td>
+					<div id="file_area" ondrop="drop(ev);" ondragover="allowDrop(ev);">
+						<img id="blah" src="#" alt="your image" onError="this.src='/admin/images/no_img.gif'" height="80px">
+						<br>
+						<input type='file' name="rfile" id="img_file" onchange="readURL(this);" />
+					</div>
+				</td>
+			</tr>
+			<tr>
+				<th>이미지 첨부</th>
+				<td>
+					<div id="file_area1" ondrop="drop(ev);" ondragover="allowDrop(ev);">
+						<img id="blah1" src="#" alt="your image" onError="this.src='/admin/images/no_img.gif'" height="80px">
+						<br>
+						<input type='file' name="rfile1" id="img_file1" onchange="readURL(this);" />
+					</div>
+				</td>
+			</tr>
+			<tr>
+				<th>
+					<span>내용</span>
+				</th>
+				<td class="td_con1">
+					<textarea name="content" style="width:100%;height:120px;word-break:break-all;padding:5px;box-sizing:border-box;" class="textarea validate[required]"  data-errormessage-value-missing="내용을 입력하세요."></textarea>
+				</td>
+			</tr>
+		</TABLE>
+	</div>
+	<div class="ta-c">
+		<button type="submit" class="btn-point h-small" >등록</button>
+		<button type="button" class="btn-basic dark h-small" onclick="javascript:window.close();">닫기</button>
+	</div>
+</form>
+
+<script type="text/javascript" src="/admin/static/js/calendar.js"></script>
+<script type="text/javascript" src="/admin/static/js/jquery.form.js"></script>
+
+
+<script type="text/javascript">
+function readURL(input) {
+    //console.log($(input).siblings());
+    if (input.files && input.files[0]) {
+		var reader = new FileReader();
+		reader.onload = function (e) {
+            $(input).siblings().attr('src', e.target.result);
+		}
+		reader.readAsDataURL(input.files[0]);
+	}
+}
+
+function allowDrop(ev) {
+	ev.preventdefault();
+}
+
+function drop(ev) {
+	ev.preventdefault();
+}
+
+var ProductReview = {
+	init: function() {
+		var me = this;
+		var option = $.extend({}, validation_option, {
+			validateNonVisibleFields: false,
+			onValidationComplete: function (form, status) {
+				if (status) me.save();
+				//me.save();
+			}
+		});
+		$("#FrmProductReview").validationEngine('attach', option);
+	},
+	save: function() {
+		if(!confirm('리뷰를 등록하시겠습니까?')) return false;
+		var options = {
+			url: '{C.DIR_ADMIN}/proc/review.proc.php',
+			type: 'POST',
+			dataType: 'json',
+			success: function (r) {
+				UI.alert(r.msg);
+				if (r.success) {
+					
+					self.close();
+				}
+			}
+
+		}
+		$('#FrmProductReview').ajaxSubmit(options);
+
+	}
+}
+$(function() {
+	ProductReview.init();
+})
+</script>

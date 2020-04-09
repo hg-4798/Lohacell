@@ -1,0 +1,77 @@
+<div class="table_style02 mt_0">
+	<table width=100% cellpadding=0 cellspacing=0 border=0 style="table-layout:fixed">
+		<colgroup>
+			<col style="width:50px" />
+			<col style="width:100px" /><!-- ERP코드 -->
+			<col style="width:150px" /><!-- 상품코드 -->
+			<col style="width:60px"><!-- 이미지 -->
+			<col ><!-- 상품명 -->
+			<col style="width:100px" /><!-- 정상가 -->
+			<col style="width:100px" /><!-- 정상가 -->
+			<col style="width:100px" /><!-- 판매가 -->
+			<col style="width:80px" /><!-- 할인율 -->
+			<col style="width:80px" /><!-- 재고 -->
+		</colgroup>
+		
+		<tr>
+			<th><input type="checkbox" name="check-all" class="check-all hj" data-all='checked[]'><span class="lbl"></span></th>
+			<th>모델명</th>
+			<th>상품코드</th>
+			<th colspan="2">상품명</th>
+			<th>판매상태</th>
+			<th>정상가</th>
+			<th>판매가</th>
+			<th>할인율</th>
+			<th>재고</th>
+		</tr>
+		<tbody id="choice-tbody">
+		{@ list}
+		<tr data-productcode='{.productcode}'>
+			<td><input type="checkbox" name="checked[]" value="{.idx}" class="hj"><span class="lbl"></span></td>
+			<td data-field="prodcode">{.prodcode}</td>
+			<td data-field="productcode">{.productcode}</td>
+			<td data-field="thumbnail"><img data-src="{=preview(.tinyimage)}" alt="" class="thumbnail b-lazy" src="/admin/images/product/noimg.jpg" ></td>
+			<td data-field="name" class="ta_l">{.productname}</td>
+			<td data-field="soldout">{class.product->trans('soldout',.soldout)}</td>
+			<td data-field="price_consumer">{=number_format(.consumerprice)}</td>
+			<td data-field="price_sell">{=number_format(.sellprice)}</td>
+			<td data-field="sale_rate">{.sellprice_dc_rate}%</td>
+			<td data-field="stock">{=number_format(.quantity)}</td>
+		</tr>
+		{:}
+		<tr height="28">
+			<td colspan="9" align="center">조회된 내용이 없습니다.</td>
+		</tr>
+		{/}
+		</tbody>
+	</table>
+
+
+	<div class="row">
+		<div class="pull-center">
+			{this->xprint('include/pagination.html')}
+		</div>
+		<div class="pull-left mt_10 w200">
+			<button type="button" class="h-small btn-point" onclick="ProductChoice.choice()">상품선택</button>
+			<button type="button" class="h-small btn-point" onclick="ProductChoice.choice('close')">상품선택 후 닫기</button>
+		</div>
+		<div class="pull-right mt_10  w200">
+			<button type="button" class="h-small btn-basic" onclick="UI.modalClose()">닫기</button>
+		</div>
+		
+	</div>
+</div>
+
+
+<script type="text/javascript">
+var ProductChoiceInner = {
+	init: function() {
+		$('.modal #count_total').html('{count.search}');
+		new Blazy();
+	}
+}
+
+$(function() {
+	ProductChoiceInner.init();
+})
+</script>

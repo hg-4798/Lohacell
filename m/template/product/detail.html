@@ -1,0 +1,788 @@
+<!-- Page -->
+<div id="page">
+	<!-- Content -->
+	<main id="content">
+		
+		<div class="goods_info_area">
+			<div class="thumb_box">
+				<div class="big_thumb">
+					<ul class="slider">
+						{@ detail.image_etc}
+						<li><img src="{.value_}" alt="상품 대표 썸네일"></li>
+						{/}
+						
+					</ul>
+				</div>
+				<div class="sm_thumb">
+					<ul class="slider">
+						{@ detail.image_etc}
+						<li><a data-slide-index="{.index_}"><span class="img"><img src="{.value_}" alt="작은 썸네일"></span></a></li>
+						{/}
+					</ul>
+				</div>
+				<div class="share_wrp">
+					<button type="button" class="btn_share"><i class="icon-share-btn">상품 공유하기</i></button>
+				</div>
+			</div><!-- //.thumb_box -->
+
+			<div class="goods_spec">
+				<section class="box_intro">
+					<h2 class="ir-blind">상품명,간략소개</h2>
+					<p class="goods_nm">{detail.productname}</p>
+					<p class="goods_exp">{detail.phrase_ad}</p>
+				</section>
+
+				<section class="box_summary">
+					<h2 class="ir-blind">상품의 금액, 포인트, 배송비 정보</h2>
+					<ul class="goods_summary">
+						<li>
+							<label>판매금액</label>
+							<div class="inner">
+								<div class="price">
+									{? detail.endprice_dc_rate>0}
+									<del><strong>{=number_format(detail.consumerprice)}</strong>원</del>
+									{/}
+									<span class="sell_price"><strong>{=number_format(detail.endprice)}</strong>원</span>
+								</div>
+							</div>
+						</li>
+						{? coupon_list}
+						<li>
+							<label>쿠폰할인혜택</label>
+							<div class="inner">
+								<a href="javascript:;" class="btn_coupon_down">할인쿠폰 다운</a>
+							</div>
+						</li>
+						{/}
+						{? C.MEMID}
+						<li class="bdtop">
+							<label>적립금</label>
+							<div class="inner">{=number_format(member.group_info.group_addreserve)}%</div>
+						</li>
+						{/}
+						<li>
+							<label>배송비 &nbsp;&nbsp;&nbsp;{? cfg.delivery.deli_basefee > 0}<span class="txt-toneC">ⓘ {? detail.pr_type == '3'}{=number_format(cfg.delivery.deli_miniprice_staff)}{:}{=number_format(cfg.delivery.deli_miniprice)}{/}만원이상 무료배송</span>{/}</label>
+							<div class="inner">{?cfg.delivery.deli_basefee==0}무료{:}{=number_format(cfg.delivery.deli_basefee)}원{/}</div>
+						</li>
+					</ul>
+				</section>
+
+				<section class="box_option">
+					<h2 class="ir-blind">상품의 옵션 선택</h2>
+					<!-- 컬러칩+옵션선택 -->
+					<div class="opt_select_wrp">
+						<!-- 컬러칩선택 -->
+						{? detail.option_type=='C' //옵션타입이 컬러칩인경우에만 노출}
+						<div class="opt_colors">
+							{@ detail.option_valid}
+							<input type="radio" name="color_choice" value="{.option_num}" id="colorchip_{.option_num}"  {=checked(.disabled, 'Y','disabled')}  ><label for="colorchip_{.option_num}" {? .colorchip.color_cls=='bright'}class="bright"{/}><img src="{.colorchip.color_img}" alt="{.colorchip.color_name}"></label> 
+							{/}
+						</div>
+						{/}
+						<!-- 옵션선택 -->
+						<div class="opt_select_add">
+
+							<select id="select_option" class="select_line" title="옵션 선택">
+								<option value="">선택</option>
+								{@ detail.option_valid}
+								<option value="{.option_num}" data-price="{detail.endprice}" data-colorchip="{.colorchip.color_code}" {=checked(.disabled, 'Y','disabled')} data-stock="{.option_quantity_max}" data-min="{detail.min_quantity}">{.option_name}{=checked(.disabled, 'Y',' - 품절')}</option>
+								{/}
+							</select>
+							<button type="button" class="btn_add" data-target="option"><span>추가하기</span></button>
+						</div>
+						<!-- 옵션추가내역 -->
+						<div class="added_opt_list">
+							<ul id="ul_option"></ul>
+						</div>
+					</div>
+
+					<!-- 추가구매선택 -->
+					{? detail.add_product_use == 1 && detail.pr_type != 4}
+					<div class="opt_select_wrp">
+						<!-- 추가구매선택 -->
+						<div class="opt_select_add">
+							<select id="select_product" class="select_line" title="추가구매 상품 선택">
+								<option value="">추가구매 상품 선택</option>
+								{@ detail.add_product_info}
+								<option value="{.productcode}" data-price="{.endprice}" data-stock="{.buy_max}"  data-min="{.buy_min}">{.productname}(+{=number_format(.endprice)}원)</option>
+								{/}
+							</select>
+							<button type="button" class="btn_add" data-target="product"><span>추가하기</span></button>
+						</div>
+						
+						<!-- 추가구매내역 -->
+						<div class="added_opt_list">
+							<ul id="ul_product"></ul>
+							<!--{*
+							<ul>
+								<li>
+									<div class="added_opt">
+										<span class="name">립앤아이 리무버</span>
+									</div>
+									<div class="ea-select">
+										<input type="text" value="1" title="수량" readonly="">
+										<button class="plus">수량증가</button>
+										<button class="minus">수량감소</button>
+									</div>
+									<button type="button" class="btn_del"><span>삭제하기</span></button>
+								</li>
+							</ul>
+							*}-->
+						</div>
+					</div>
+					{/}
+
+					<ul class="goods_summary">
+						<li class="total_price">
+							<label>총 상품 금액</label>
+							<div class="inner total"><strong id="price_total">0</strong>원</div>
+						</li>
+					</ul>
+				</section>
+			</div><!-- //.goods_spec -->
+
+			<div class="area_button">
+				<ul>
+					<li class="like btn-like-count"><button type="button" class="btn-line" data-hottcode="{detail.productcode}" data-section="product"><i class="icon_like"></i><span class="like_count">{detail.pr_like_cnt}</span></button></li>
+					{? detail.status == 'soldout'}
+					<li><button type="button" class="btn-basic"><span>품절</span></button></li>
+					{: detail.status == 'soldout_temp' //재고가 0인경우노출}
+					<li><button type="button" class="btn-basic"><span>일시품절</span></button></li>
+					{:}
+					<li class="shoppingbag" id="cartBtn"><button type="button" class="btn-point" onclick="ProductDetail.order('basket');" ><span>SHOPPING BAG</span></button></li>
+					<li id="wishBtn"><button type="button" class="btn-point point2" onclick="ProductDetail.order('buy');" ><span>BUY NOW</span></button></li>
+					{/}
+				</ul>
+			</div>
+		</div><!-- //.goods_info_area -->
+
+		
+		<!--{* 함께쓰면 좋은상품:S *}-->
+		{? choice_list}
+		<div class="related_goods">
+			<h3 class="title">ALSO LIKE</h3>
+			<div class="goods_list">
+				<ul>
+					{@ choice_list}
+					<li>
+						<a href="{C.DIR_M}/productdetail.php?productcode={.productcode}" class="goods-item">
+							<figure>
+								<div class="like-local"><button type="button" data-hottcode="{.productcode}" data-section="product"><i class="icon_like"></i> <span class="like_count">{.pr_like_cnt}</span></button></div>
+								<div class="img"><img src="{.tinyimage}" alt="상품 썸네일"></div>
+								<figcaption>
+									<p class="goods-nm">{.productname}</p>
+									<p class="opt">{.phrase_etc}</p>
+									<p class="price">{=format(.consumerprice, 'price')}<span>원</span></p>
+								</figcaption>
+							</figure>
+						</a>
+					</li>
+					{/}
+				</ul>
+			</div>
+		</div><!-- //.related_goods -->
+		{/}
+		<!--{* 함께쓰면 좋은상품:E *}-->
+
+		<div class="detail_content">
+			<!-- 제품상세정보 -->
+			<div class="articles on">
+				<h2 class="title"><button type="button">DETAIL</button></h2>
+				<div class="content">
+					<div class="editor_area_detail">
+						{=htmlspecialchars_decode(detail.content_m)}
+					</div>
+				</div>
+			</div>
+			<!-- //제품상세정보 -->
+
+			<!--{* 상품정보고시:S *}-->
+			<div class="list_point">
+				<ul>
+					{@ property}
+					<li>
+						<p class="point_name">{.name}</p>
+						<p>{=nl2br(.contents)}</p>
+					</li>
+					{/}
+					
+				</ul>
+			</div>
+			<!--{* 상품정보고시:E *}-->
+
+			<!-- 포토리뷰 -->
+			<div class="articles on" id="photo_review_list"></div>
+			<!-- //포토리뷰 -->
+
+			<!-- 구매후기 -->
+			<div class="articles on" id="normal_review_list"></div>
+			<!-- //구매후기 -->
+
+
+
+			<!-- 구매유의사항 -->
+			<div class="articles on">
+				<h2 class="title"><button type="button">SHOPPING GUIDE</button></h2>
+				<div class="content">
+					{cfg.delivery_desc}
+					<!--{*
+					<div class="purchase_notes">
+						<dl>
+							<dt>배송안내</dt>
+							<dd>상품 발송은 평일(영업일 기준)오전 09시 이전 결제 완료 시 당일 발송 예정입니다.<br> (단, 제주도 및 도서산간지역은 3~5일정도 소요되며, 주문량이 많은 특별 행사기간에는 다소 지연될 수 있습니다.)<br>3만원 이상 주문 시 상품은 무료 배송되며, 3만원 미만 주문 시 기본 배송료 2,500원이 부과됩니다.<br> (단, 제주도 및 도서산간지역은 추가비용이 발생할 수 있습니다.)<br>제이준코스메틱 공식쇼핑몰은 기본적으로 CJ대한통운택배를 이용하여 상품을 배송해 드립니다.<br>배송지가 군부대일 경우 상품은 반송될 수 있으며, 이 때 발생하는 왕복 배송비는 고객님 부담입니다.</dd>
+						</dl>
+						<dl>
+							<dt>교환 및 반품 안내</dt>
+							<dd>단순 변심에 의한 교환 및 반품은 상품을 수령하신 일로부터 7일 이내 미 개봉 상품에 대해, 고객센터(소비자 상담실) 및 질문 답변 게시판을 통해 교환 및 반품에 대한 고객님의 의사를 표하신 경우 가능합니다.<br>(단, 이로 인해 발생하는 왕복 배송비는 고객님의 부담입니다.)<br><br>또한, 수령하신 상품 또는 상품의 내용이 표시광고 내용과 다르거나 계약 내용과 다르게 이행된 때에는 상품을 수령하신 일로부터 3월 이내, 그 사실을 안 날 또는 알 수 있었던 날부터 30일 이내 가능합니다.<br><br>상품 불량 및 오 배송 등으로 인한 교환 및 반품 신청의 경우 배송비는 무료입니다. </dd>
+						</dl>
+						<dl>
+							<dt>교환 및 반품이 불가능한 경우 </dt>
+							<dd>
+								<ul class="dash_list">
+									<li>단순 변심에 의한 교환 및 반품은 상품을 수령하신 일로부터 7일이 경과된 경우</li>
+									<li>고객님의 부주의 및 책임으로 인해 상품(재화) 등이 멸실 또는 훼손된 경우</li>
+									<li>고객님의 상품 사용 또는 일부 소비에 의하여 상품의 가치가 현저히 감소한 경우</li>
+									<li>시간의 경과에 의하여 재판매가 곤란할 정도로 상품 등의 가치가 현저히 감소한 경우</li>
+									<li>사전에 교환 및 반품에 대해 제한되는 사실을 고객이 알 수 있는 곳에 표기한 경우</li>
+								</ul>
+							</dd>
+						</dl>
+						<dl>
+							<dt>고객센터</dt>
+							<dd>
+								<p><strong class="tel">080-881-2001</strong></p>
+								<p><strong>고객센터 운영시간</strong>(평일 : 09:00 ~ 18:00)</p>
+								<p>점심 12:00 ~ 13:00 (통화 불가) / 주말 및 공휴일 휴무</p>
+							</dd>
+						</dl>
+					</div>
+					*}-->
+				</div>
+			</div>
+			<!-- //구매유의사항 -->
+		</div>
+	</main>
+	<!-- //Content -->
+
+	<!-- 공유하기팝업2 -->
+	<div class="pop_layer lyr_share">
+		<div class="links">
+			<a href="javascript:;" onclick="Share.facebook()" title="페이스북">1<i class="icon-share-facebook">페이스북</i></a>
+			<a href="javascript:;" onclick="ProductDetail.kakaolink()"  title="카카오링크"><i class="icon-share-talk">카카오링크</i></a>
+			<a href="javascript:;" onclick="Share.naverblog('{slashes_productname}')"  title="네이버블로그"><i class="icon-share-blog">네이버블로그</i></a>
+			<a href="javascript:;" onclick="Share.urlCopy()" title="링크"><i class="icon-share-url">링크</i></a>
+			<button type="button" class="btn_cls btn_close">닫기</button>
+		</div>
+	</div>
+	<!-- //공유하기팝업 -->
+
+	<!-- 포토리뷰보기팝업 -->
+	<section class="pop_layer layer_ptreview_view">
+		<div class="inner">
+			<h3 class="title">포토리뷰 상세<button type="button" class="btn_close">닫기</button></h3>
+			<div class="ptreview_view">
+				<div class="img">
+					<ul class="slider clear">
+						<li><img src="/jayjun/web/static/img/test/@goods_760_01.jpg" alt="리뷰이미지"></li>
+						<li><img src="/jayjun/m/static/img/test/@goods_110_01.jpg" alt="리뷰이미지"></li>
+						<li><img src="/jayjun/m/static/img/test/@goods_110_02.jpg" alt="리뷰이미지"></li>
+						<li><img src="/jayjun/m/static/img/test/@goods_110_03.jpg" alt="리뷰이미지"></li>
+					</ul>
+				</div>
+				<div class="con">
+					<div class="user clear">
+						<div class="score"><img src="/jayjun/m/static/img/icon/rating_score4.png" alt="5점 만점중 4점"></div>
+						<div class="writer">ilovei*** <span></span> 2018.08.30</div>
+						<div class="function-btn">
+							<button class="btn-point" type="button"><span>수정</span></button>
+							<button class="btn-line" type="button"><span>삭제</span></button>
+						</div>
+					</div>
+					<div class="txt">
+						<strong>리뷰작성 타이틀은 여기에 출력</strong>
+						제품명에서 알 수 있듯이 수분을 가득 피부에 충족시켜주는 워터 에센스 에센셜 토너~무엇보다 성분이 병에 자세히 나와 있어, 신뢰가 갈 뿐만이 아니라 이것을 하나의 제품 디자인으로 승화! 피부가 지성이기는 하나, 수분이 부족하여 트러블이 나는 경우가 잦았었는데,무향 무취의 에센스로 얼굴에 부드럽게 발려 자극이 없음을 느낄수 있었다
+					</div>
+					<div class="review-goods-link">
+						<div class="thumbnail"><img src="../jayjun/web/static/img/test/@goods_380_02.jpg" alt=""></div>
+						<div class="info">
+							<div class="copy-main">아이 니드 글로우 쉬머 베이스</div>
+							<div class="copy-sub">공기처럼 가볍고 코튼처럼 부드럽게 발리는 메이크업 베이스 두줄정도까지 나오면 이렇게 됩니다. 세줄부턴 감춥니다 자동으로</div>
+							<div class="price-link">
+								<div class="price">25,000<span>원</span></div>
+								<a href="" class="btn-point">리뷰상품 보기</a>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+	</section>
+	<!-- //포토리뷰보기팝업 -->
+	
+	<!-- 쿠폰다운로드팝업 -->
+	<section class="pop_layer layer_coupon_down">
+		<div class="inner">
+			<h3 class="title">쿠폰다운로드<button type="button" class="btn_close">닫기</button></h3>
+			<div class="layer-contents">
+				<ul class="coupon_down_list">
+					{@ coupon_list}
+					<li>
+						<div class="coupon_wrp">
+							<a href="{.url}">
+								<div class="discount">
+									<span class="discount-color"><strong>{=format(.sale_price,'price')}{? .sale_type=='K'}원{:}%{/}</strong></span>
+								</div>
+								<div class="info">
+									<p class="tit">{.coupon_name}</p>
+									<p class="date">
+										{? .use_period_type=='U'}
+										제한없음
+										{: .use_period_type=='D'}
+										{=format(.use_period_end, 'Y-m-d H:i')}시 까지
+										{: .use_period_type=='L'}
+										발급일로부터 {.use_period_limit}일까지 사용가능
+										{/}
+									</p>
+								</div>
+								<div class="icon">
+									<i class="icon-download">다운로드</i>
+								</div>
+							</a>
+						</div>
+					</li>
+					{/}
+				</ul>
+				<div class="btn_area" style="margin:10px">
+					<ul>
+						<li><a href="" class="btn-point h-large">확인</a></li>
+					</ul>
+				</div>
+			</div>
+		</div>
+	</section>
+	<!-- //쿠폰다운로드팝업 -->
+</div>
+<!-- //Page -->
+
+
+<!--{* 옵션/추가구매상품템플릿:S *}-->
+<textarea id="tpl_li" class="hide">
+<li data-num="${\num}" data-stock="${\stock}" data-min="${\min}" data-price="${\price}" data-type="${\type}">
+	<div class="added_opt">
+		${\colorchip}<span class="name">${\text}</span>
+	</div>
+	<div class="ea-select">
+		<input type="text" name="option[${\num}][count]" value="${\min}" title="수량" readonly="">
+		<button class="plus">수량증가</button>
+		<button class="minus">수량감소</button>
+	</div>
+	<button type="button" class="btn_del"><span>삭제하기</span></button>
+</li>
+</textarea>
+<!--{* 옵션/추가구매상품템플릿:S *}-->
+
+
+<form id="FrmBasket">
+	<input type="hidden" name="mode" value="order" />
+	<input type="hidden" act="cart">
+	<input type="hidden" name="productcode" value="{detail.productcode}">
+	<input type="hidden" name="pr_type" value="{detail.pr_type}">
+	<input type="hidden" id="basket_option" name="option" />
+</form>
+
+
+<script type="text/javascript" src="{C.DIR_ADMIN}/static/js/template.js"></script>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/Swiper/4.3.5/css/swiper.min.css">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Swiper/4.3.5/js/swiper.js"></script>
+<script type="text/javascript" src="/static/js/blazy.min.js"></script> <!--{* 이미지lazy 처리js *}-->
+<script src="//developers.kakao.com/sdk/js/kakao.min.js"></script>
+
+<script src="/static/js/clipboard.min.js"></script>
+
+<!-- *) 제품상세페이지 분석코드 -->
+<!-- AceCounter Mobile eCommerce (Product_Detail) v7.5 Start -->
+<script language='javascript'>
+    var m_pd ="{slashes_productname}";
+    var m_ct ="{category_name}";
+    var m_amt="{detail.endprice}";
+</script>
+
+
+<!-- Mobon Shop Log Tracker v3.1 start -->
+<script type="text/javascript">
+    function mobRfShop(){
+        var sh = new EN();
+        // [상품상세정보]
+
+        sh.setData("sc", "1ade852261e6960bcf90f366537951dc");
+        sh.setData("userid", "iknowione");
+        sh.setData("pcode","{detail.productcode}");
+        sh.setData("price","{detail.endprice}");
+        sh.setData("pnm", encodeURIComponent(encodeURIComponent("{slashes_productname}")));
+        sh.setData("img",encodeURIComponent("{detail.maximage}"));
+        sh.setData("cate1",encodeURIComponent(encodeURIComponent(sh.getParam(location.href, "{category_name}"))));
+        sh.setSSL(true);
+        sh.sendRfShop();
+
+        // 장바구니 버튼 클릭 시 호출 메소드(사용하지 않는 경우 삭제)
+        document.getElementById("cartBtn").onmouseup = sendCart;
+        function sendCart() {
+            sh.sendCart();
+        }
+        // 찜,Wish 버튼 클릭 시 호출 메소드(사용하지 않는 경우 삭제)
+        document.getElementById("wishBtn").onmouseup = sendWish;
+        function sendWish() {
+            sh.sendWish();
+        }
+    }
+</script>
+<script src="https://cdn.megadata.co.kr/js/enliple_min2.js" defer="defer" onload="mobRfShop()"></script>
+<!-- Mobon Shop Log Tracker v3.1 end  -->
+
+<script type="text/javascript">
+var ProductDetail = {
+	//ul_option:$('#product_option_list'),
+	//ul_add:$('#product_add_list'),
+	price_per:'{detail.endprice}',
+	limit_min:'{detail.min_quantity}',
+	limit_max:'{detail.max_quantity}',
+	productcode:'{cfg.productcode}',
+	normalpage: 1,
+	photopage: 1,
+    total_qty : 0,
+    total_price : 0,
+	init: function() {
+		var me = this;
+
+		me.tpl_li = TrimPath.parseDOMTemplate("tpl_li");
+
+		// 작은 썸네일 slider
+		$('.sm_thumb').each(function(){
+			var thumb = $(this).find('li');
+			if( thumb.length > 4 ){
+				$('.sm_thumb .slider').bxSlider({
+					slideWidth: 60,
+					slideMargin: 3,
+					minSlides: 4,
+					maxSlides: 4,
+					moveSlides: 1,
+					infiniteLoop: false,
+					hideControlOnEnd: true,
+					pager: false
+				});
+			}
+		});
+		// 상품 대표 썸네일 slider
+		$('.big_thumb .slider').bxSlider({
+			mode: 'fade',
+			controls: false,
+			pagerCustom: '.sm_thumb .slider'
+		});
+
+		// 상세정보 > 메뉴 토글 
+		$('.detail_content .articles').each(function(){
+			var ui = $(this);
+			var btn = $(this).find('.title button');
+			btn.click(function(){
+				ui.toggleClass('on');
+			});
+		});
+
+		// 구매후기 toggle
+		$('.review_accordion .btn_more').click(function(){
+			var item = $(this).parents('li'),
+				other = item.siblings('li');
+			if( item.hasClass('active') ){
+				item.removeClass('active').find('.btn_more').attr('title','더보기');
+			}else{
+				other.removeClass('active').find('.btn_more').attr('title','더보기');
+				item.addClass('active').find('.btn_more').attr('title','닫기');
+			}
+		});
+		
+
+		//컬러칩선택
+		$('[name="color_choice"]').on('click', function() {
+			$('#select_option').val(this.value);
+		})
+
+		$('.btn_add').on('click', me.addOption);
+		// $('#btn_add_product').on('click', me.addOption);
+
+		$('#select_option').on('change', function() {
+			if(this.value) $('#colorchip_'+this.value).prop('checked', true); //컬러칩선택
+			else $('[name="color_choice"]').prop('checked',false);
+		})
+        me.reviewLoad(1);
+        me.photoReviewLoad(1);
+	},
+	addOption:function() { //옵션추가
+		var target = $(this).data('target');
+		var word = (target == 'option')?'옵션':'추가상품';
+	
+		var me = ProductDetail;
+
+		var select = $('#select_'+target);
+		var v = select.val(); //선택값
+		var ul = $('#ul_'+target);
+		if(!v) {
+			UI.warning(word+'을 선택하세요.');
+			return false;
+		}
+
+		var opt =  select.find('option:selected');
+
+		//중복선택체크
+		var selected = ul.find('li').map(function() { return $(this).data('num').toString();} ).get();
+		
+		if ($.inArray(v, selected) >-1) {
+			UI.error('이미 추가된 '+word+'입니다.');
+			return false;
+		}else{
+            ProductDetail.total_qty++; //acecount용 수량 증가
+        }
+
+		var colorchip = '';//컬러칩
+		if(target == 'option') colorchip = $('label[for="colorchip_'+v+'"]').html();
+	
+		var stock = opt.data('stock'); //재고
+		var data = {
+			num:v,
+			type:target,
+			text:opt.text(),
+			stock:stock,
+			min:opt.data('min'),
+			price:opt.data('price'),
+			colorchip:colorchip
+		}
+
+		var html = me.tpl_li.process(data);
+		ul.append(html);
+
+		ul.find('li:last-child button').off('click.option').on('click.option', function() {
+			var cls = $(this).attr('class');
+			switch(cls) {
+				case 'plus':
+				case 'minus': //수량
+					me.setCount(this,cls);
+				break;
+				case 'btn_del': //삭제
+					me.remove(this);
+				break;
+			}
+		});
+
+		select.val('');
+		select.trigger('change');
+
+		me.calc();
+	},
+	setCount: function(e, mode) {
+		var input = $(e).siblings('input');
+		var li = $(e).closest('li');
+
+		var cnt = parseInt(input.val());
+	
+		switch(mode){
+			case 'plus':
+				cnt++;
+                ProductDetail.total_qty++; //acecount용 수량 증가
+                break;
+            case 'minus':
+                cnt--;
+                ProductDetail.total_qty--; //acecount용 수량 차감
+			break;
+		}
+
+		if(cnt > li.data('stock')) {
+			UI.error('최대 구매수량은 '+li.data('stock')+'개 입니다.');
+			return false;
+		}
+		
+		if(cnt < li.data('min')) {
+			cnt=li.data('min');
+			UI.error('최소 구매수량은 '+cnt+'개 입니다.');
+		}
+		input.val(cnt);
+
+		this.calc();
+	},
+	
+	remove: function(e){
+		$(e).closest('li').remove();
+		this.calc();
+	},
+	calc: function() { //가격계산
+		var price = qty = price_total = 0;
+		var option = [];
+		var temp = {};
+		var valid = false;
+		$('li[data-num]').each(function(i,e) {
+			var data = $(e).data();
+			if(data.type == 'option' && !valid) valid = true;
+			qty = $(e).find('input').val();
+			price = data.price;//$(e).data('price');
+			price_total+=parseInt(qty)*parseInt(price);
+
+			temp = {type:data.type, num:data.num, price:price, qty:qty};
+			option.push(temp);
+		});
+
+		var v = JSON.stringify(option);
+		$('#basket_option').val(v);
+		$('#price_total').text(UI.numberFormat(price_total));
+        ProductDetail.price_total = price_total;
+
+		return valid;
+	},
+	order: function(act) {
+		var valid = this.calc();
+		if(!valid) {
+			UI.error('옵션을 선택하세요.');
+			return false;
+		}
+
+		//acecounter 함수
+        AM_PRODUCT(ProductDetail.total_qty);
+
+		var formdata = $('#FrmBasket').serializeArray();
+		formdata.push({name:'act', value:act}); //변경항목
+	
+		$.ajax({
+			url:'/proc/basket.proc.php',
+			data:formdata,
+			dataType:'json',
+			type:'POST',
+			success: function(r) {
+				if(act == 'basket') { //장바구니
+					if(r.success) {
+						UI.confirm("상품이 장바구니에 추가되었습니다.<br>장바구니에 이동하시겠습니까?", function() {
+							document.location.href='/m/basket.php';
+						})
+					}
+					else {
+						switch(r.data.error_code) {
+							case 'guest':
+								UI.confirm(r.msg, function() {
+									document.location.href="/front/login.php?chUrl="+r.data.url;
+								});
+								break;
+							case 'basket':
+								UI.confirm(r.msg, function() {
+									document.location.href=r.data.url;
+								});
+								break;
+							case 'bought':
+								UI.confirm(r.msg, function() {
+									document.location.href=r.data.url;
+								});
+								break;
+							default:
+								UI.error(r.msg);
+								break;
+						}
+					}
+				}
+				else {//바로구매
+					if(r.success){
+						document.location.href=r.data.url;
+					}
+					else {
+						switch(r.data.error_code) {
+							case 'guest':
+								UI.confirm(r.msg, function() {
+									document.location.href="/front/login.php?chUrl="+r.data.url;
+								});
+								break;
+							case 'basket':
+								UI.confirm(r.msg, function() {
+									document.location.href=r.data.url;
+								});
+								break;
+							case 'bought':
+								UI.confirm(r.msg, function() {
+									document.location.href=r.data.url;
+								});
+								break;
+							default:
+								UI.error(r.msg);
+								break;
+						}	
+					}
+					
+				}
+			}
+		});
+	},
+    reviewLoad: function (page) {
+        var p = page || ProductDetail.normalpage;
+        $('#normal_review_list').load('/m/review/product_reviewlist.php',{
+            page: p,
+            productcode : ProductDetail.productcode
+        });
+
+    },
+    photoReviewLoad: function (page) {
+        var p = page || ProductDetail.photopage;
+        $('#photo_review_list').load('/m/review/product_photo_reviewlist.php',{
+            page: p,
+            productcode : ProductDetail.productcode
+        },function () {
+            new Blazy(); //이미지 바인딩
+        });
+
+    },
+    reviewLoadPage: function (page) {
+        this.reviewLoad(page);
+    },
+    photoReviewLoadPage: function (page) {
+        this.photoReviewLoad(page);
+    },
+    open: function(productorder_idx,productcode,option_code,order_num) {
+        switch(productorder_idx) {
+            case '2': //미로그인
+            case 2:
+                UI.confirm("로그인 후 이용이 가능합니다.\n로그인 화면으로 이동하시겠습니까?", function() {
+                    document.location.href="/m/login.php?chUrl={_SERVER.REQUEST_URI}";
+                })
+                break;
+            case '3': //권한없음(리뷰기작성)
+            case 3:
+                UI.alert('작성가능한 제품이 없습니다.');
+                break;
+            case '4': //권한없음(주문내역없음)
+            case 4:
+                UI.alert('이미 구매후기를 등록했습니다. (구매확정 후 1회 등록 가능).');
+                break;
+            case '1': //작성창
+            default:
+                UI.popup('/m/review/review_write.php','리뷰작성', {productorder_idx:productorder_idx,productcode:productcode,option_code:option_code,order_num:order_num,type:'M'});
+                break;
+        }
+
+    },
+	kakaolink: function() {
+		Kakao.init('{cfg.kakao}');
+
+		var content = {
+			title: '{slashes_productname}',
+			//description: '#001001011000005436 #',
+			imageUrl: '{detail.tinyimage}',
+			/**/
+			link: {
+				mobileWebUrl: '{C.HOST}/m/productdetail.php?productcode={slashes_productname}',
+				webUrl: '{C.HOST}/front/productdetail.php?productcode={slashes_productname}'
+			},
+			imageWidth:550,
+			imageHeight:770
+		};
+
+		Share.kakaolink(content);
+	},
+
+}
+
+$(function() {
+	ProductDetail.init();
+})
+</script>

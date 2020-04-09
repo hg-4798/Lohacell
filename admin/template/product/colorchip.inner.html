@@ -1,0 +1,87 @@
+<div class="table_style02">
+	<table border="0" cellpadding="0" cellspacing="0" width="100%">
+		<colgroup>
+			<col width="60">
+			<col width="60">
+			<col width="150">
+			<col width="80">
+			<col width="*">
+			<col width="*">
+			<col width="150">
+			<col width="200">
+			<col width="150">
+			<col width="80">
+			<col width="80">
+		</colgroup>
+		<tbody>
+			<tr>
+				<th>
+					<label class="single"><input type="checkbox" class="hj" data-all="checked[]"><span class="lbl"></span></label>
+				</th>
+				<th>No</th>
+				<th>컬러코드</th>
+				<th>컬러칩</th>
+				<th>컬러명칭</th>
+				<th>컬러계열</th>
+				<th>사용여부</th>
+				<th>등록일</th>
+				<th>관리자</th>
+				<th>수정</th>
+				<th>삭제</th>
+			</tr>
+			{@ list}
+			<tr>
+				<td><label class="single"><input type="checkbox" class="hj" name="checked[]" value="{.idx}"><span class="lbl"></span></label></td>
+				<td>{.no}</td>
+				<td>{.color_code}</td>
+				<td><span class="color-chip" style="background-image:url({.color_img})"></span></td>
+				<td class="ta-l">{.color_name}</td>
+				<td>{.color_group}</td>
+				<td>{? .use_yn=='Y'}<span class="badge badge-sm badge-success">사용</span>{:}<span class="badge badge-secondary badge-sm">미사용</span>{/}</td>
+				<td>{=format(.date_update,'Y-m-d H:i')}</td>
+				<td>{.admin_id}</td>
+				<td>
+					<button type="button" class="btn btn-sm btn-outline-info" onclick="ProductColor.modify('{.color_code}')"><i class="fa fa-pencil"></i> 수정</button>
+				</td>
+				<td>
+					<button type="button" class="btn btn-sm btn-outline-danger" onclick="ProductColor.remove('{.idx}')" ><i class="fa fa-times"></i> 삭제</button>
+				</td>
+			</tr>
+			{:}
+
+			<tr height="28">
+				<td colspan="11" align="center">조회된 내용이 없습니다.</td>
+			</tr>
+			{/}
+		</tbody>
+	</table>
+
+	<!--{* 일괄변경:S *}-->
+	<div class="row m-t-10">
+		<div class="pull-left">
+			<button type="button" class="btn btn-danger btn-sm" onclick="ProductColor.toggleUse('Y')">선택사용</button>
+			<button type="button" class="btn btn-secondary btn-sm m-r-5" onclick="ProductColor.toggleUse('N')">선택미사용</button>
+		</div>
+		<div class="pull-right">
+			<button type="button" class="btn btn-primary btn-sm" onclick="UI.href('{C.DIR_ADMIN}/product/colorchip_register.php')">컬러칩등록</button>
+		</div>
+	</div>
+	<!--{* 일괄변경:E *}-->
+
+
+	{this->xprint('include/pagination.html')}
+</div>
+
+
+<script type="text/javascript">
+var ProductColorInner = {
+	init: function() {
+		$('#count_total').html('{count.search}');
+		$('#searched').val('{_POST.search}');
+	}
+}
+
+$(function() {
+	ProductColorInner.init();
+});
+</script>

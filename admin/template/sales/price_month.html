@@ -1,0 +1,97 @@
+<div class="content-wrap">
+	<div class="title_depth3">{__NAV.page_tit}</div>
+
+	<div class="tbl-search m-t-20">
+		<form id="FrmSearch" name="FrmSearch" onsubmit="return false">
+			<input type="hidden" name="limit" value="20">
+			<table cellspacing="0" cellpadding="0" width="100%" border="0">
+				<colgroup>
+					<col width="140">
+					<col width="">
+				</colgroup>
+				<tbody>
+					<tr>
+						<th>
+							<span>년도검색</span>
+						</th>
+						<td>
+							<select name="year">
+								{@ range(date('Y'), 2018)}
+								<option value="{.value_}">{.value_}년</option>
+								{/}
+							</select>
+						</td>
+					</tr>
+				</tbody>
+			</table>
+
+			<div class="area-button">
+				<button type="button" id="btn_register" onclick="PriceMonth.search()" class="btn-point">조회</button>
+				<button type="button" id="btn_cancel" onclick="PriceMonth.searchReset()" class="btn-basic">초기화</button>
+			</div>
+		</form>
+	</div>
+
+	<div class="tools mb_10">
+		<div class="pull-left">
+			<button type="button" class="btn-basic dark h-x-small" onclick="PriceMonth.excel()" style="vertical-align:middle">엑셀 다운로드</button>
+		</div>
+		<div class="pull-right">
+		</div>
+	</div>
+
+	<div id="inner"></div>
+</div>
+
+
+
+<form name="FrmCommentExcel" method="POST" action="/admin/common/excel.download.php">
+	<input type="hidden" name="type" value="sales_price_month">
+	<input type="hidden" name="column" value="*">
+	<input type="hidden" name="search" value="">
+</form>
+
+
+<script type="text/javascript" src="/admin/static/js/moment.js"></script>
+<script type="text/javascript">
+	var PriceMonth = {
+		init: function () {
+			var me = this;
+			$('.datepicker').datepicker();
+			me.load();
+		},
+		load: function () {
+			
+			UI.ing('데이터를 불러오는 중입니다...');
+			var search = $('#FrmSearch').serialize();
+			$('#inner').load('/admin/sales/price_month.inner.php', {
+				search: search
+			}, function () {
+				$("td").filter(function () {
+					return $(this).text() === "0";
+				}).css("color", "#ddd");
+				UI.ing();
+			});
+		},
+		search: function () {
+			this.load();
+		},
+		searchReset: function() {
+			document.FrmSearch.reset();
+			this.load();
+		},
+		setPeriod: function (sub) {
+			var period = UTIL.period('<?=TIMESTAMP?>', sub);
+			document.FrmSearch.date_s.value = period.start;
+			document.FrmSearch.date_e.value = period.end;
+		},
+		excel: function() {
+			document.FrmCommentExcel.search.value = $('#FrmSearch').serialize();
+			document.FrmCommentExcel.submit();
+		}
+	}
+
+	$(function () {
+		PriceMonth.init();
+	})
+</script>

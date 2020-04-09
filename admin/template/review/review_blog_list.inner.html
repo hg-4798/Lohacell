@@ -1,0 +1,88 @@
+<!--{* 목록:S *}-->
+<div class="table_style02">
+	<table width=100% cellpadding=0 cellspacing=0 border=0 style="table-layout:fixed">
+		<colgroup>
+			<col style="width:50px" /><!-- checkbox -->
+			<col style="width:100px" /><!-- 노출순서 -->
+			<col /><!-- 타이틀 -->
+			<col style="width:150px" /><!-- 이미지(PC) -->
+			<col style="width:150px" /><!-- 이미지(MOBILE) -->
+			<col style="width:80px" /><!-- 시용 -->
+			<col style="width:200px" /><!-- 등록일 -->
+			<col style="width:80px"><!-- 수정 -->
+			<col style="width:80px"><!-- 삭제 -->
+
+		</colgroup>
+
+		<tr>
+			<th><input type="checkbox" class="hj" data-all="checked[]"><span class="lbl"></span></th>
+			<th>노출순서</th>
+			<th>타이틀</th>
+			<th>이미지(PC)</th>
+			<th>이미지(MOBILE)</th>
+			<th>사용</th>
+			<th>등록일</th>
+			<th>수정</th>
+			<th>삭제</th>
+		</tr>
+		{@ list}
+		<tr>
+			<td><input type="checkbox" class="hj" name="checked[]" value="{.idx}"><span class="lbl"></span></td>
+			<td>
+				<div class="btn-up-down">
+					<button type="button" class="up" onclick="BlogList.sort('up',this)" data-idx="{.idx}" data-sort="{.sort}">위로이동</button>
+					<button type="button" class="down" onclick="BlogList.sort('down',this)" data-idx="{.idx}" data-sort="{.sort}">아래로이동</button>
+				</div>
+			</td>
+			<td>
+				{.blog_title}
+			</td>
+			<td>
+				<div>
+					{? .blog_img}
+					<img src="{.blog_img}" style="max-width : 70px;">
+					{:}
+					-
+					{/}
+				</div>
+			</td>
+			<td>
+				<div>
+					{? .blog_img_m}
+					<img src="{.blog_img_m}" style="max-width : 70px;">
+					{:}
+					-
+					{/}
+				</div>
+			</td>
+			<td><span class="badge badge-sm {? .blog_hidden=='Y'}badge-success{:}badge-secondary{/}">{? .blog_hidden=='Y'}사용{:}미사용{/}</span></td>
+			<td>
+				{=format(.date_insert,'Y-m-d')}
+			</td>
+
+			<td><button type="button" class="btn btn-sm btn-outline-info" onclick="BlogList.modify('{.idx}')"><i class="fa fa-pencil"></i> 수정</button></td>
+			<td><button type="button" class="btn btn-sm btn-outline-danger" onclick="BlogList.remove('{.idx}')"><i class="fa fa-times"></i> 삭제</button></td>
+		</tr>
+		{:}
+		<tr>
+			<td colspan="9">조회된 데이터가 없습니다.</td>
+		</tr>
+		{/}
+	</table>
+
+	{this->xprint('include/pagination.html')}
+</div>
+
+<script type="text/javascript">
+    var BannerListInner = {
+        total: '{total}',
+        init: function() {
+            var me = this;
+           $('#count_total').html(me.total);
+            UI.toggleCheck();
+        }
+	}
+    $(function() {
+        BannerListInner.init();
+    })
+</script>

@@ -1,0 +1,81 @@
+<!-- 내용 -->
+<main id="page" class="subpage with_bg">
+
+    <section class="page_local">
+        <h2 class="page_title">
+            <a href="javascript:history.back();" class="prev">이전페이지</a>
+            <span>비회원 주문조회</span>
+        </h2>
+    </section><!-- //.page_local -->
+
+    <section class="loginpage sub_bdtop">
+        <form class="login-reg mt-20" method="post" id="FrmLoginGuest" onsubmit="return false;">
+            <input type="hidden" name="mode" value="login">
+            <input type="hidden" name="act" value="guest">
+            <div class="login_area">
+                <input type="text" class="w100-per validate[required]" title="이름 입력자리" placeholder="이름 입력" id="order_name" name="order_name" value="" data-errormessage-value-missing="이름을 정확히 입력해 주세요.">
+                <input type="text" class="w100-per validate[required]" title="주문번호 입력자리" placeholder="주문번호 입력" id="order_code" name="order_code" value="" data-errormessage-value-missing="주문번호를 정확히 입력해 주세요.">
+                <button class="btn-point w100-per h-large" type="submit"><span>비회원 주문조회</span></button>
+
+            </div><!-- //.login_area -->
+        </form>
+
+        <div class="mem_menu">
+            <ul>
+                <li><a href="findid.php">아이디/비밀번호 찾기</a></li>
+                <li><a href="login.php">로그인</a></li>
+            </ul>
+        </div>
+
+        <div class="join_yet">
+            <p class="ment">아직 회원이 아니신가요? <!-- <a href="#">신원몰 멤버쉽 안내</a> --></p>
+            <a href="member_certi.php" class="btn-point point2 w100-per h-input">회원가입</a>
+        </div><!-- //.join_yet -->
+
+        <!-- <div class="join_yet mt-30 pt-20">
+            <p class="tit">통합회원 전환</p>
+            <p class="ment">신원 오프라인 매장의 회원이세요?<br>신원 통합회원으로 전환시 <strong class="point-color">5,000 E포인트</strong>를 즉시 증정합니다.</p>
+            <a href="member_switch.php" class="btn-point w100-per h-input">신원 통합회원 전환하기</a>
+        </div> --><!-- //.join_yet -->
+
+    </section><!-- //.loginpage -->
+
+</main>
+<!-- //내용 -->
+
+<script type="text/javascript">
+    var LoginGuest = {
+        init: function() {
+            var me = this;
+            var option = $.extend({}, validation_option, {
+                validateNonVisibleFields: false,
+                onValidationComplete: function (form, status) {
+                    if (status) me.save();
+                    //me.save();
+                }
+            });
+            $("#FrmLoginGuest").validationEngine('attach', option);
+        },
+        save: function() {
+            var formdata = $('#FrmLoginGuest').serialize();
+            $.ajax({
+                url:'/proc/member.proc.php',
+                data:formdata,
+                dataType:'json',
+                type:'POST',
+                success: function(r) {
+                    if(r.success) {
+                        document.location.href=r.data.url;
+                    }
+                    else {
+                        UI.error(r.msg);
+                    }
+                }
+            })
+        }
+    }
+
+    $(function() {
+        LoginGuest.init();
+    })
+</script>

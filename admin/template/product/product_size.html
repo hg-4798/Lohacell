@@ -1,0 +1,59 @@
+<script type="text/javascript" src="/admin/static/js/jquery.validationEngine.js?{C.VER}"></script>
+<script type="text/javascript" src="/admin/static/js/jquery.validationEngine-kr.js?{C.VER}"></script>
+<script type="text/javascript" src="/admin/static/js/jquery.form.js?{C.VER}"></script>
+<style>
+#icon_pc, #icon_mobile {vertical-align: middle;display:inline-block;}
+#icon_pc > img, #icon_mobile > img{margin-right:10px;}
+</style>
+<div class="admin_linemap"><div class="line"><p>현재위치 : 상품관리 &gt;상품관리 &gt; <span>사이즈 조견표 관리</span></p></div></div>
+<table cellpadding="0" cellspacing="0" width="100%" style="table-layout:fixed">
+	<colgroup>
+		<col width=240 id="menu_width">
+		<col width=10>
+		<col width="*">
+		<col width=20>
+	</colgroup>
+	<tr>
+		<td valign="top">
+			{=include("menu_product.php")}
+		</td>
+		<td></td>
+		<td valign="top">
+			<div class="title_depth3">사이즈 조견표 관리 <span>사이즈 조견표를 등록/수정/삭제할 수 있습니다.</span></div>
+
+			<!--{* 조견표목록:S *}-->
+			<div id="inner"></div>
+			<!--{* 조견표목록:E *}-->
+		</td>
+	</tr>
+</table>
+
+
+
+
+<script type="text/javascript">
+var ProductSize ={
+	page:1,
+	proc_url:'/admin/proc/product_icon.proc.php',
+	init: function(){
+		this.load();
+	},
+	load:function(page) {
+		var p = page || ProductSize.page;
+		var search = $('#FrmProductSearch').serialize();
+
+		$('#inner').load('/admin/product_size.inner.php',{page:p, search:search},
+			function() {
+				ProductSize.page = p;
+			}
+		);
+	},
+	modify: function(idx) {
+		document.location.href='/admin/product_size.register.php?idx='+idx
+	}
+}
+
+$(function() {
+	ProductSize.init();
+})
+</script>

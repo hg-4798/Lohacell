@@ -1,0 +1,56 @@
+<table class="tbl-list m-t-10">
+	<colgroup>
+		<col style="width:50px">
+		<col style="width:100px">
+		<col style="width:100px">
+		<col>
+		<col style="width:120px">
+	</colgroup>
+	<thead>
+		<tr>
+			<th>No</th>
+			<th>지급/차감일</th>
+			<th>마일리지</th>
+			<th>발생사유</th>
+			<th>유효기간</th>
+		</tr>
+	</thead>
+
+	<tbody>
+		{@ list}
+		<tr>
+			<td>{.num}</td>
+			<td>{=format(.date_insert,'Y-m-d')}</td>
+			<td>{=number_format(.mileage)} M</td>
+			<td class="ta-l">
+				{.mileage_reason}
+				{? .mileage_reason_flag == 'admin'}
+				<div class="text-muted">처리자 : {.reg_admin_id}</div>
+				{: .mileage_reason_flag == 'order'}
+				<div class="text-muted">주문번호 : {.order_num}</div>
+				{/}
+			</td>
+
+			<td>{? .mileage>0}{=format(.date_expire,'Y-m-d')}{/}</td>
+		</tr>
+		{:}
+		<tr>
+			<td colspan="5">조회된 마일리지 내역이 없습니다.</td>
+		</tr>
+		{/}
+	</tbody>
+</table>
+
+{this->xprint('include/pagination.html')}
+
+
+<script type="text/javascript">
+var MileageInner = {
+	init: function() {
+		$('#sum_mileage').text(UI.numberFormat({sum}));
+	}
+}
+$(function() {
+	MileageInner.init();
+});
+</script>

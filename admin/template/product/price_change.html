@@ -1,0 +1,238 @@
+<div class="content-wrap">
+	<div class="title_depth3">{? pr_type=='4'}임직원{:}일반{/}상품 판매가 일괄변경</div>
+	<div class="title_depth3_sub">할인율 기본 설정</div>
+	<form id="FrmSale" onsubmit="return false">
+	<input type="hidden" name="pr_type" value="{pr_type}">
+	<input type="hidden" name="mode" value="batch_price" />
+	<table cellspacing="0" cellpadding="0" width="100%" border="0" class="table-view mt_10">
+		<colgroup>
+			<col width="180">
+			<col width="">
+		</colgroup>
+		<tbody>
+			<tr>
+				<th>
+					<span>적용 유형</span>
+				</th>
+				<td style="padding:10px 8px">
+					<label>
+						<input type="radio" name="sale_type"  value="all" class="hj" checked><span class="lbl">전체</span>
+					</label>
+					<label>
+						<input type="radio" name="sale_type"  value="each" class="hj" ><span class="lbl">카테고리&라인별</span>
+					</label>
+				</td>
+			</tr>
+			<tr id="area_all">
+				<th>
+					<span>전체 할인율</span>
+				</th>
+				<td>
+					<input type="text" name="sale_all" class="validate[required, custom[numeric]] w100" value="" data-errormessage-value-missing="할인율을 입력하세요."
+						placeholder="숫자로만 입력" data-filter="numeric" > %
+				</td>
+			</tr>
+		</tbody>
+	</table>
+
+
+
+	<div id="area_each" class="table_style02 m-t-10 hide" style="padding-bottom:0px">
+		<div class="title_depth3_sub">
+			할인율 개별 설정
+			<div class="pull-right">
+				<span>최종 적용일시 : 2018-08-08 05:21 아무개(admin)</span>
+			</div>
+		</div>
+		<table width="100%" cellpadding="0" cellspacing="0" border="0" style="table-layout:fixed;margin-top:10px" >
+			<colgroup>
+				<col style="width:100px">
+				<col>
+				<col>
+				<col style="width:250px">
+			</colgroup>
+			<thead>
+				<tr>
+					<th>추가/삭제</th>
+					<th>카테고리</th>
+					<th>라인</th>
+					<th>할인율</th>
+				</tr>
+			</thead>
+			<tbody id="each_tbody" class="add-row">
+				<tr>
+					<td>
+						<button type="button" class="btn-calc">
+							<span></span>
+						</button>
+					</td>
+					<td>
+						<select name="each[category_1][]" onchange="PriceChange.loadCategory(this);" class="input w-200-px validate[required]" data-errormessage-value-missing="1차카테고리를 선택하세요">
+							<option value="">1차카테고리</option>
+							<option value="all">전체</option>
+							{@ cfg.category}
+							<option value="{.code_all}">{.code_name}</option>
+							{/}
+						</select>
+						<select name="each[category_2][]"  class="input w-200-px validate[required]" data-errormessage-value-missing="2차카테고리를 선택하세요">
+							<option value="">2차카테고리선택</option>
+						</select>
+					</td>
+					<td>
+						<select name="each[line][]" class="input w-200-px validate[required]" data-errormessage-value-missing="라인을 선택하세요.">
+							<option value="">::라인선택::</option>
+							<option value="all">전체</option>
+							{@ cfg.line}
+							<option value="{.line_code}">{.line_name}({.line_code})</option>
+							{/}
+						</select>
+					</td>
+					<td>
+						<input type="text" name="each[rate][]" value="" class="input w-100-px validate[required, min[1], max[99]]" data-errormessage-value-missing="할인율을 입력하세요." data-filter="numeric" placeholder="숫자로만 입력"> %
+					</td>
+				</tr>
+
+			</tbody>
+		</table>
+
+	</div>
+
+	<div class="ta-c m-t-20">
+		<button type="submit" id="btn_register" class="btn-point">할인율 일괄적용</button>
+		<button type="button" class="btn-basic m-l-10">적용로그</button>
+	</div>
+	</form>
+
+	
+	<div class="sub_manual_wrap m-t-40">
+		<div class="title">
+			<p>매뉴얼</p>
+		</div>
+		<ul class="help_list">
+			{? pr_type == '4' //임직원상품}
+			<li>임직원 상품에 적용되는 할인설정입니다.</li>
+			{:}
+			<li>일반 상품에 적용되는 할인설정입니다.</li>
+			{/}
+			<li>개별할인율은 일반할인율보다 우선적용됩니다. </li>
+			<li>설정된 할인율은 정상가에서 할인적용됩니다. </li>
+			<li>선택조건이 구체적일수록 적용 우선순위가 높습니다. </li>
+		</ul>
+	</div>
+</div>
+
+<script type="text/javascript">
+var PriceChange = {
+	init: function() {
+		var me = this;
+		$('[name="sale_type"]').on('click', function() {
+			if(this.value == 'all') {
+				$('#area_all').removeClass('hide');
+				$('#area_each').addClass('hide');
+			}
+			else {
+				$('#area_all').addClass('hide');
+				$('#area_each').removeClass('hide');
+			}
+
+		});
+
+		$('.btn-calc').on('click', me.addRow);
+
+		this.tbody = $('#each_tbody');
+		this.tr = $('.add-row').find('tr:first-child').clone();
+
+		var option = $.extend({}, validation_option, {
+			validateNonVisibleFields: false,
+			onValidationComplete: function (form, status) {
+				if (status) me.save();
+			}
+		});
+		$("#FrmSale").validationEngine('attach', option);
+
+		//숫자체크
+		$('[data-filter="numeric"]').on('keydown input', function (evt) {
+			var v = $(this).val();
+			v = v.replace(/[^0-9]/g, '');
+			v = v.replace(/(^0+)/, '');
+
+			var filter = $(this).data('filter');
+			$(this).val(v);
+		});
+
+	},
+	addRow: function() {
+		var cloned = PriceChange.tr.clone();
+		cloned.find(".btn-calc").on('click', PriceChange.removeRow);
+		PriceChange.tbody.append(cloned);
+	},
+	removeRow: function() {
+		$(this).closest('tr').remove();
+	},
+	loadCategory: function(e) {
+		
+		var child = $(e).next('select');
+		child.find('option:gt(0)').remove();
+
+		if(e.value == 'all') child.addClass('hide');
+		else child.removeClass('hide');
+		
+		$.ajax({
+			url:'{C.DIR_ADMIN}/proc/category.proc.php',
+			data:{
+				mode:"get_children",
+				parent:e.value
+			},
+			dataType:'json',
+			type:'POST',
+			success: function(r){
+				child.append('<option value="all">전체</option');
+				$.each(r.data, function(i,e) {
+					child.append('<option value="'+e.code_all+'">'+e.code_name+'</option>');
+				});
+			}
+		})
+	},
+	save: function() {
+		//선택값 중복체크
+		var sale_type = $('[name="sale_type"]:checked').val();
+		if(sale_type == 'each') {
+			var selected = [];
+			var valid = true;
+			$.each($('#each_tbody  tr'), function(i,e) {
+				var select = $(e).find('select').map(function() { return this.value}).get().join('_');
+				// var select_value = select.join('_');
+				if($.inArray(select, selected)>-1) {
+					valid = false;
+					return false;
+				}
+				else {
+					selected.push(select);
+				}
+			});
+
+			if(!valid) {
+				alert('동일한 카테고리&라인 조건이 설정되어있습니다.');
+				return false;
+			}
+		}
+
+	
+		if(!confirm('할인율을 일괄적용하시겠습니까?')) return false;
+		var formdata = $('#FrmSale').serialize();
+		$.ajax({
+			url:'{C.DIR_ADMIN}/proc/product.proc.php',
+			data:formdata,
+			dataType:'json',
+			type:'POST',
+			success: function(r) {
+
+			}
+		})
+	}
+}
+
+$(function() {
+	PriceChange.init();
+})
+</script>

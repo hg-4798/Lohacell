@@ -1,0 +1,181 @@
+<script type="text/javascript" src="/admin/static/js/jquery.form.js">
+</script>
+<style>
+	#icon_pc,
+	#icon_mobile {
+		vertical-align: middle;
+		display: inline-block;
+	}
+
+	#icon_pc>img,
+	#icon_mobile>img {
+		margin-right: 10px;
+	}
+
+	.icon-preview {
+		max-width: 100px;
+		max-height: 100px;
+	}
+</style>
+<div class="content-wrap">
+	<div class="title_depth3">상품 아이콘 관리</div>
+
+	<!--{* 아이콘등록/수정:S *}-->
+	<div class="title_depth3_sub">상품 아이콘 등록/수정</div>
+
+	<div class="table_style01">
+		<form id="FrmIconInput" onsubmit="return false">
+			<input type="hidden" name="mode" value="register">
+			<input type="hidden" id="icon_idx" name="icon_idx" value="">
+			<input type="hidden" name="is_fix" value="N">
+			<table cellspacing="0" cellpadding="0" width="100%" border="0">
+				<colgroup>
+					<col width="140">
+					<col width="">
+				</colgroup>
+				<tbody>
+					<tr>
+						<th>
+							<span>아이콘 명</span>
+						</th>
+						<td>
+							<input type="text" id="icon_name" name="icon_name" class="validate[required] full input" data-errormessage-value-missing="아이콘명을 입력하세요.">
+						</td>
+					</tr>
+					<tr>
+						<th>
+							<span>아이콘 이미지(PC)</span>
+						</th>
+						<td>
+							<span id="icon_pc"></span>
+							<input type="file" name="icon[pc]" class="" data-errormessage-value-missing="아이콘(PC)을 선택하세요."> </td>
+					</tr>
+					<tr>
+						<th>
+							<span>아이콘 이미지(Mobile)</span>
+						</th>
+						<td>
+							<span id="icon_mobile"></span>
+							<input type="file" name="icon[mobile]" class="" data-errormessage-value-missing="아이콘(Mobile)을 선택하세요."> </td>
+					</tr>
+
+				</tbody>
+			</table>
+
+			<div class="area-button">
+				<button type="submit" id="btn_register" class="btn-point">등록</button>
+				<button type="button" id="btn_cancel" onclick="ProductIcon.cancel()" class="btn-basic hide">취소</button>
+			</div>
+		</form>
+	</div>
+	<!--{* 아이콘등록:E *}-->
+
+	<!--{* 아이콘목록:S*}-->
+	<div class="title_depth3_sub">상품 아이콘 리스트</div>
+
+	<div id="inner"></div>
+	<!--{* 아이콘목록:E *}-->
+</div>
+
+
+
+
+<script type="text/javascript">
+	var ProductIcon = {
+		page: 1,
+		proc_url: '/admin/proc/product_icon.proc.php',
+		init: function () {
+			this.load();
+
+			var me = this;
+			var option = $.extend({}, validation_option, {
+				validateNonVisibleFields: true,
+				onValidationComplete: function (form, status) {
+					if (status) me.save();
+				}
+			});
+			$("#FrmIconInput").validationEngine('attach', option);
+		},
+		load: function (page) {
+			var p = page || ProductIcon.page;
+			$('#inner').load('/admin/product/product_icon.inner.php', {
+					page: p
+				},
+				function () {
+					ProductIcon.page = p;
+				}
+			);
+		},
+		save: function () {
+			var options = {
+				url: this.proc_url,
+				type: 'POST',
+				dataType: 'json',
+				success: function (r) {
+					alert(r.msg);
+					if (r.success) {
+						ProductIcon.load(1);
+						//$("#FrmIconInput")[0].reset();
+						ProductIcon.cancel();
+					}
+				}
+
+			}
+			$('#FrmIconInput').ajaxSubmit(options);
+		},
+		modify: function (icon_idx) {
+			//버튼세팅
+			$('#btn_cancel').removeClass('hide');
+			$('#btn_register').text('수정');
+			var tr = $('tr[data-idx="' + icon_idx + '"]');
+			$.each(tr.find('td'), function (i, v) {
+				var td = $(v);
+				var field = td.data('field');
+				switch (field) {
+					case 'icon_name':
+						$('#icon_name').val(td.html());
+						break;
+					case 'icon_pc':
+					case 'icon_mobile':
+						$('#' + field).html(td.html());
+						break;
+
+				}
+			});
+			$('#icon_idx').val(icon_idx);
+
+		},
+		remove: function (icon_idx, is_fix) {
+			if (is_fix == 'Y') {
+				alert('삭제할 수 없는 아이콘입니다.');
+				return false;
+			}
+			if (!confirm('삭제하시겠습니까?')) return false;
+
+			$.ajax({
+				url: this.proc_url,
+				data: {
+					mode: 'delete',
+					icon_idx: icon_idx
+				},
+				dataType: 'json',
+				type: 'POST',
+				success: function (r) {
+					// alert(r.msg);
+					ProductIcon.load(1);
+				}
+			})
+		},
+		cancel: function () {
+			//버튼세팅
+			$('#btn_cancel').addClass('hide');
+			$('#btn_register').text('등록');
+			$('#icon_pc, #icon_mobile').empty();
+			$("#FrmIconInput")[0].reset();
+		}
+	}
+
+	$(function () {
+		ProductIcon.init();
+	})
+</script>

@@ -1,0 +1,555 @@
+<form id="FrmRefund" onsubmit="return false">
+	<input type="hidden" name="mode" value="refund" />
+	<input type="hidden" name="act" value="each">
+	<input type="hidden" name="product_idx" value='{checked}' />
+	<input type="hidden" name="order_num" value="{basic.order_num}">
+	<!--{* 환불신청폼:S *}-->
+	<div class="inc-tit-sub">취소사유</div>
+	<table class="tbl-form">
+		<colgroup>
+			<col style="width:120px">
+			<col>
+		</colgroup>
+		<tr>
+			<th>취소사유</th>
+			<td>
+				<select name="refund_resaon" id="refund_resaon" class="validate[required]" data-errormessage-value-missing="환불사유를 선택하세요">
+					<option value="">== 취소사유선택 ==</option>
+					<option value="관리자취소">관리자 임의 환불</option>
+					{@ __CONFIG.cancel_reason}
+					<option value="{.value_}">{.value_}</option>
+					{/}
+					<option value="etc">기타</option>
+				</select>
+
+				<input type="text" name="refund_reason_etc" id="refund_reason_etc" class="w500 hide validate[required]" data-errormessage-value-missing="취소사유를 입력하세요." />
+			</td>
+		</tr>
+		<tr>
+			<th>관리메모</th>
+			<td>
+				<textarea name="memo" rows="2" class="textarea w-100"></textarea>
+			</td>
+		</tr>
+	</table>
+	<!--{* 환불신청폼:E *}-->
+
+	<!--{* 환불금액:S *}-->
+	<div class="inc-tit-sub">결제정보</div>
+	<table class="tbl-form">
+		<colgroup>
+			<col style="width:120px">
+			<col>
+			<col style="width:120px">
+			<col>
+		</colgroup>
+		<tr>
+			<th>결제수단</th>
+			<td colspan="3">
+				{basic.pg_paymethod_txt}{? payment.escrow_yn=='Y'}(에스크로){/}
+			</td>
+		</tr>
+		<tr>
+			<th>상품금액</th>
+			<td colspan="3">
+				{=number_format(refund.product)} 원
+				<!-- <input type="hidden" name="refund[product]" value="{refund.total}" /> -->
+			</td>
+		</tr>
+
+		{? basic.use_mileage>0}
+		<tr>
+			<th>사용 마일리지</th>
+			<td colspan="3">
+				{=number_format(basic.use_mileage)} M
+			</td>
+		</tr>
+		{/}
+		{? basic.use_point>0}
+		<tr>
+			<th>사용 포인트</th>
+			<td colspan="3">
+				{=number_format(basic.use_point)} P
+			</td>
+		</tr>
+		{/}
+
+		{@ coupon.product}
+		<tr>
+			{? .index_==0}
+			<th rowspan="{=count(coupon.product)}">상품쿠폰할인</th>
+			{/}
+			<td colspan="3">
+				<span style="width:300px;display:inline-block">
+					-{=number_format(.discount)} 원
+					<span class="text-muted ">({.coupon_name})</span>
+					<input type="hidden" value="{.discount}" data-calc="minus">
+				</span>
+				<label><input type="radio" name="coupon[product][{.key_}]" value="{.ci_no}" class="hj" checked><span class="lbl">복원</span></label>
+				<label><input type="radio" name="coupon[product][{.key_}]" value="" class="hj"><span class="lbl">복원안함</span></label>
+				<!---->
+			</td>
+		</tr>
+		{/}
+
+		{? coupon.basket}
+		<tr>
+			<th rowspan="2">장바구니쿠폰</th>
+			<td colspan="3">
+				<span style="width:300px;display:inline-block">{coupon.basket.info.coupon_name}</span>
+				<label><input type="radio" name="coupon[basket]" value="{coupon.basket.ci_no}" class="hj" checked><span class="lbl">복원</span></label>
+				<label><input type="radio" name="coupon[basket]" value="" class="hj"><span class="lbl">복원안함</span></label>
+			</td>
+		</tr>
+		<tr>
+			<td>
+				-{=number_format(coupon.basket.discount)} 원
+			</td>
+			<th>환불 차감액</th>
+			<td>
+				<input type="text" name="discount[basket]" id="discount_basket" disabled value="{=number_format(coupon.basket.discount)}" data-filter="price" class="w100" data-calc="minus"> 원
+			</td>
+		</tr>
+		{/}
+
+		{? coupon.delivery}
+		<tr>
+			<th>무료배송쿠폰</th>
+			<td colspan="3">
+				<span style="width:300px;display:inline-block">{coupon.delivery.info.coupon_name}</span>
+				<label><input type="radio" name="coupon[delivery]" value="" class="hj" data-discount="{basic.coupon_delivery_discount}" checked><span class="lbl">적용</span></label>
+				<label><input type="radio" name="coupon[delivery]" value="{coupon.delivery.ci_no}" class="hj" data-discount="0"><span class="lbl">적용취소</span></label>
+			</td>
+		</tr>
+		{/}
+		<tr>
+			<th>배송비</th>
+			<td {? basic.pay_delivery_end> 0}colspan="3"{/}>
+				<span style="width:200px;display:inline-block" id="pay_delivery_txt">{=number_format(basic.pay_delivery_end)} 원</span>
+				<input type="hidden" name="pay_delivery" id="pay_delivery" value="{basic.pay_delivery}">
+				<input type="hidden" name="pay_delivery_discount" id="pay_delivery_discount" value="{basic.coupon_delivery_discount}" data-calc="minus">
+				{? basic.pay_delivery_end > 0}
+				<label><input type="checkbox" id="check_delivery" value="{basic.pay_delivery}" class="hj" {? refund.delivery > 0}checked{/}><span class="lbl"> 배송비환불</span></label>
+				{/}
+			</td>
+			{? basic.pay_delivery_end < 1} <th>배송비 재설정</th>
+				<td>
+					<input type="text" name="pay_delivery_add" class="w100" value="0" data-calc="minus" data-filter="price"> 원
+				</td>
+				{/}
+		</tr>
+
+	</table>
+	<table class="tbl-form m-t-5">
+		<colgroup>
+			<col style="width:120px">
+			<col>
+			<col style="width:120px">
+			<col>
+		</colgroup>
+		<tr>
+			<th>총 환불금액</th>
+			<td>
+				<span class="text-danger"><b id="price_total_txt">{=number_format(refund.total)}</b></span> 원
+				<input type="hidden" name="price[total]"  id="price_total" value="{refund.total}">
+				<input type="hidden" name="price[product]" id="price_product" value="{refund.product}" data-calc="plus">
+				<input type="hidden" name="price[delivery]" id="price_delivery" value="{refund.delivery}" data-calc="plus">
+			</td>
+			<th>미 환불액</th>
+			<td>
+				<span class="text-danger"><b id="refund_total_txt">{=number_format(0)}</b></span> 원
+			</td>
+		</tr>
+		{? basic.use_mileage > 0}
+		<tr>
+			<th>환불 마일리지</th>
+			<td colspan="3">
+				<input type="text" name="refund[mileage]" data-refund="mileage" value="{=number_format(refund.mileage)}" class="w100 text-danger validate[max[{refund.mileage}], min[0]]" data-filter="price" data-errormessage-range-overflow="최대 {=number_format(refund.mileage)} M 까지 환불가능합니다."> M <span>(복원가능 마일리지: <b>{=number_format(mileage.restore)}</b> M, 소멸예정마일리지 : <b>{=number_format(mileage.expire)}</b> M)</span>
+				<input type="hidden" name="mileage[restore]" value="{mileage.restore}">
+				<input type="hidden" name="mileage[expire]" value="{mileage.expire}">
+			</td>
+		</tr>
+		{/}
+		{? basic.use_point > 0}
+		<tr>
+			<th>환불 포인트</th>
+			<td colspan="3">
+				<input type="text" name="refund[point]" value="{=number_format(refund.point)}" data-refund="point" class="w100 text-danger validate[max[{refund.point}], min[0]]" data-filter="price" data-errormessage-range-overflow="최대 {=number_format(refund.point)} P 까지 환불가능합니다."> P <span>(복원가능 포인트: <b>{=number_format(point.restore)}</b> P, 소멸예정포인트 : <b>{=number_format(point.expire)}</b> P)</span>
+				<input type="hidden" name="point[restore]" value="{point.restore}">
+				<input type="hidden" name="point[expire]" value="{point.expire}">
+			</td>
+		</tr>
+		{/}
+		<tr>
+			<th>환불수단</th>
+			<td colspan="3">
+				<input type="hidden" name="escrow_yn" id="escrow_yn" value="{payment.escrow_yn}">
+				<select name="refund_method" id="refund_method" class="validate[required]" data-errormessage-value-missing="환불수단을 선택하세요.">
+					<option value="">== 환불수단 선택 ==</option>
+					<option value="cash">현금환불</option>
+					{? basic.pg_paymethod == 'card'}
+					<option value="card">카드취소</option>
+					{/}
+					{? basic.pg_paymethod == 'vcnt'}
+					<option value="vcnt">가상계좌취소</option>
+					{/}
+					{? basic.pg_paymethod == 'acnt'}
+					<option value="acnt">실시간계좌이체취소</option>
+					{/}
+				</select>
+			</td>
+		</tr>
+
+		<tr data-cond="refund_method" data-cond-value="cash" class="hide">
+			<th>현금 환불액</th>
+			<td colspan="3">
+				<input type="text" name="refund[cash]" data-refund="cash" class="w100 text-danger" value="" data-filter="price" data-errormessage-value-missing="현금 환불액을 입력하세요."> 원
+				<span class="text-muted">현금 환불액은 최대 {=number_format(basic.pay_pg)}원을 넘을 수 없습니다.</span>
+			</td>
+		</tr>
+		{? basic.pg_paymethod == 'card'}
+		<tr data-cond="refund_method" data-cond-value="card" class="hide">
+			<th>카드 환불액</th>
+			<td colspan="3">
+				<input type="text" name="refund[card]" data-refund="card" id="refund_card" class="w100 text-danger validate[required, max[{basic.pay_pg}]]" data-errormessage-value-missing="카드 환불액을 입력하세요." value="" data-filter="price"> 원
+				<span class="text-muted">카드 환불액은 최대 {=number_format(basic.pay_pg)}원을 넘을 수 없습니다.</span>
+			</td>
+		</tr>
+		{/}
+		{? basic.pg_paymethod == 'acnt'}
+		<tr data-cond="refund_method" data-cond-value="acnt" class="hide">
+			<th>계좌이체 환불액</th>
+			<td colspan="3">
+				<input type="text" name="refund[acnt]" data-refund="acnt" id="refund_acnt" class="w100 text-danger validate[required, max[{basic.pay_pg}]]" value="" data-errormessage-value-missing="계좌이체 환불액을 입력하세요." data-filter="price"> 원
+				<span class="text-muted">계좌이체 환불액은 최대 {=number_format(basic.pay_pg)}원을 넘을 수 없습니다.</span>
+			</td>
+		</tr>
+		{/}
+		{? basic.pg_paymethod == 'vcnt'}
+		<tr data-cond="refund_method" data-cond-value="vcnt" class="hide">
+			<th>가상계좌 환불액</th>
+			<td colspan="3">
+				<input type="text" name="refund[vcnt]" data-refund="vcnt" id="refund_vcnt" class="w100 text-danger validate[required, max[{basic.pay_pg}]]" value="" data-errormessage-value-missing="가상계좌 환불액을 입력하세요." data-filter="price" data-vcnt="mod_mny"> 원
+				<span class="text-muted">가상계좌 환불액은 최대 {=number_format(basic.pay_pg)}원을 넘을 수 없습니다.</span>
+			</td>
+		</tr>
+
+		{/}
+
+		<tr data-cond="refund_method" data-cond-value="cash vcnt" class="hide">
+			<th>환불계좌</th>
+			<td colspan="3">
+				<select name="bank[code]" class="validate[required]" data-errormessage-value-missing="환불계좌(은행)을 선택하세요." data-vcnt="bankcode">
+					<option value="">== 은행선택 == </option>
+					{@ _kcp_bank_code}
+					<option value="{.key_}" {=checked(bank.bank_code,.key_,'selected')}>{.value_}</option>
+					{/}
+				</select>
+				<input type="text" name="bank[account]" class="w300 validate[required]" data-errormessage-value-missing="환불계좌(계좌번호)를 입력하세요." placeholder="계좌번호(숫자로만 입력)" value="{bank.account}" data-filter="numeric" data-vcnt="account">
+				<input type="text" name="bank[depositor]" class="validate[required]" data-errormessage-value-missing="환불계좌(예금주)를 입력하세요." placeholder="예금주" value="{bank.depositor}" data-vcnt="depositor">
+			</td>
+		</tr>
+
+
+	</table>
+	<!--{* 취소금액:E *}-->
+
+
+	<div class="text-center m-t-20 m-b-50">
+		<button type="submit" class="btn-basic dark">환불신청</button>
+	</div>
+</form>
+
+<!--{* 카드/실시간계좌이체 취소폼:S *}-->
+<form id="FrmCancel">
+	<input type="hidden" name="req_tx" value="mod">
+	<input type="hidden" name="mod_type" value="STPC">
+	<!--부분 취소 : STPC , 전체취소 : STSC  -->
+	<input type="hidden" name="tno" value="{basic.pg_tno}">
+	<input type="hidden" name="mod_mny" id="mod_mny" value="0"> <!-- 취소요청금액 -->
+	<input type="hidden" name="rem_mny" value="{basic.pay_pg}"> <!-- 부분취소 이전에 남은금액 -->
+</form>
+<!--{* 카드/실시간계좌이체 취소폼:E *}-->
+
+<!--{* 가상계좌 취소 폼:S *}-->
+<form id="FrmCancelVant" name="FrmCancelVant">
+	<input type="hidden" name="req_tx" value="mod">
+	<input type="hidden" name="mod_type" value="STPD"><!--부분 환불 :  STPD  , 전체환불 :  STHD   -->
+	<input type="hidden" name="tno" value="{basic.pg_tno}"> <!-- 거래번호 -->
+	<input type="hidden" name="mod_account" value="" data-name="account"><!--계좌인증 및 환불 받을 계좌번호 -->
+	<input type="hidden" name="mod_depositor" value="" data-name="depositor"> <!-- 환불요청예금주 -->
+	<input type="hidden" name="mod_bankcode" value="" data-name="bankcode"> <!-- 환불요청 은행코드-->
+	<input type="hidden" name="mod_mny" id="mod_mny" value=""> <!-- 취소요청금액 -->
+	<input type="hidden" name="rem_mny" value="{basic.pay_pg}"> <!-- 부분취소 이전에 남은금액 -->
+</form>
+<!--{* 가상계좌취소폼:E *}-->
+
+<!--{* 에스크로 배송전취소폼(STE2):S  *}-->
+<form id="FrmCancelEscrow" name="FrmCancelEscrow">
+	<input type="hidden" name="req_tx" value="mod_escrow">
+	<input type="hidden" name="mod_type" value="STE2">
+	<input type="hidden" name="tno" value="{basic.pg_tno}"> <!-- 거래번호 -->
+	<input type="hidden" name="a_refund_account" value="" data-name="account"> <!-- 환불받을계좌번호 -->
+	<input type="hidden" name="a_refund_nm" value="" data-name="depositor"> <!-- 환불받은계좌 예금주 -->
+	<input type="hidden" name="a_bank_code" value="" data-name="bankcode"> <!-- 환불받은 은행 -->
+</form>
+<!--{* 에스크로 배송전취소폼(STE2):E  *}-->
+
+
+<div id="cancel_form"></div>
+
+<script type="text/javascript">
+	var RefundForm = {
+		init: function () {
+			var me = this;
+			var option = $.extend({}, validation_option, {
+				validateNonVisibleFields: false,
+				onValidationComplete: function (form, status) {
+					if (status) me.refund(form);
+				}
+			});
+			$("#FrmRefund").validationEngine('attach', option);
+
+			$('#refund_resaon').on('change', function () {
+				if (this.value == 'etc') $('#refund_reason_etc').removeClass('hide');
+				else $('#refund_reason_etc').addClass('hide');
+			});
+
+			//숫자체크
+			$('[data-filter="numeric"], [data-filter="price"]').on('keydown.row input.row', function (evt) {
+				var v = $(this).val();
+				v = v.replace(/[^0-9]/g, '');
+				v = v.replace(/^0+(?!$)/, '');
+
+				var filter = $(this).data('filter');
+				if (filter == 'price') v = UI.numberFormat(v);
+				$(this).val(v);
+			});
+
+			//무료배송쿠폰
+			$('[name="coupon[delivery]"]').on('click', function () {
+				var discount = $(this).data('discount');
+				var pay_delivery = $('#pay_delivery').val();
+				var p = parseInt(pay_delivery) - parseInt(discount);
+				$('#pay_delivery_discount').val(p);
+				$('#pay_delivery_txt').text(UI.numberFormat(p));
+				me.calc();
+			})
+
+			//장바구니쿠폰
+			$('[name="coupon[basket]"]').on('click', function () {
+				var target = $('#discount_basket');
+				if (this.value) target.attr('disabled', true);
+				else target.removeAttr('disabled');
+			});
+
+
+			//총환불금액 재계산
+			$('[data-calc], [data-refund]').on('blur', function() {
+				me.calc();
+			})
+
+
+			//배송비환불
+			$('#check_delivery').on('click', function () {
+
+				if (this.checked) {
+					$('#price_delivery').val(this.value);
+				} else {
+					$('#price_delivery').val(0);
+				}
+				RefundForm.calc();
+			})
+
+			me.setUI();
+		},
+		calc: function () {
+			var sum = 0
+
+			$('[data-calc]').each(function(i,e) {
+				var calc = $(e).data('calc');
+				var price = UI.toInt(this.value);
+				if(calc == 'plus') {
+					sum+=price;
+				}
+				else {
+					sum-=price;
+				}
+			})
+			$('#price_total').val(sum);
+			$('#price_total_txt').text(UI.numberFormat(sum));
+
+			//설정금액
+			var sum_refund = 0;
+			$('[data-refund]:visible').each(function(i,e) {
+				sum_refund+=UI.toInt(this.value);
+			});
+
+			$('#refund_total_txt').text(UI.numberFormat(sum-sum_refund)); //미환불금액
+
+		},
+		validator: function () {
+			var sum = 0;
+			var total = $('#price_total').val();
+			$('[name^="refund["]:visible').each(function (i, e) {
+				var v = UI.toInt(e.value);
+				sum += v;
+			})
+
+			if (total != sum) {
+				console.log(total, sum);
+				UI.error('환불금액 합계가 맞지 않습니다.');
+				return false;
+			}
+			return true;
+		},
+		refund: function () {
+			var valid = RefundForm.validator();
+			if (!valid) {
+				return false;
+			}
+			UI.confirm('환불신청하시겠습니까?', function () {
+				var refund_method = $('#refund_method').val();
+
+				var mod_mny = $('#refund_' + refund_method).val();
+				if (mod_mny < 1) {
+					RefundForm.save();
+					return false;
+				}
+
+				$('[data-vcnt]').each(function (i, e) {
+					var field = $(this).data('vcnt');
+					$('[data-name="' + field + '"]').val(e.value);
+				});
+
+
+				var escrow_yn = $('#escrow_yn').val();
+				if(escrow_yn == 'Y') {
+					//에스크로 취소처리
+					switch (refund_method) {
+						case 'card': //카드취소
+						case 'acnt': //실시간계좌이체취소
+						case 'vcnt': //가상계좌취소
+							
+							var formdata = $('#FrmCancelEscrow').serialize();
+							$.ajax({
+								url: '/third_party/pg/NHNKCP/hub_escrow.php',
+								data: formdata,
+								dataType: 'json',
+								type: 'POST',
+								success: function (r) {
+									if (r.success) {
+										RefundForm.save();
+									} else {
+										UI.error(r.msg + '<div>' + r.data.res_msg + '</div>');
+									}
+								}
+							});
+
+							break;
+					}
+				}
+				else {
+					switch (refund_method) {
+						case 'card': //카드취소
+						case 'acnt': //실시간계좌이체취소
+
+							$('#mod_mny').val(mod_mny);
+							var formdata = $('#FrmCancel').serialize();
+
+							$.ajax({
+								url: '/third_party/pg/NHNKCP/hub_cancel.php',
+								data: formdata,
+								dataType: 'json',
+								type: 'POST',
+								success: function (r) {
+									if (r.success) {
+										RefundForm.save();
+									} else {
+										UI.error(r.msg + '<div>' + r.data.res_msg + '</div>');
+									}
+								}
+							});
+							break;
+						case 'vcnt': //가상계좌취소
+							var frm = document.FrmCancelVant;
+							
+							var formdata = $('#FrmCancelVant').serialize();
+							$.ajax({
+								url: '/third_party/pg/NHNKCP/hub_cancel_vcnt.php',
+								data: formdata,
+								dataType: 'json',
+								type: 'POST',
+								success: function (r) {
+									if (r.success) {
+										RefundForm.save();
+									} else {
+										UI.error(r.msg + '<div>' + r.data.res_msg + '</div>');
+									}
+								}
+							})
+							break;
+						case 'cash': //현금취소
+						default:
+							RefundForm.save();
+							break;
+					}
+				}
+
+				
+			})
+		},
+		save: function () {
+			var formdata = $('#FrmRefund').serialize();
+			$.ajax({
+				url: '/admin/proc/order.proc.php',
+				data: formdata,
+				dataType: 'json',
+				type: 'POST',
+				success: function (r) {
+					if (r.success) {
+						UI.alert(r.msg, function () {
+							opener.location.reload();
+							window.close();
+
+						})
+					} else {
+						UI.error(r.msg);
+					}
+				}
+			})
+		},
+		setUI: function () {
+			$('[data-cond]').each(function (i, e) {
+				var cond = $(e).data('cond');
+				var child = $(e).data('condChild');
+
+				$('[name="' + cond + '"]').on('click, change', function () {
+					$(e).addClass('hide');
+					$(e).filter('[data-cond-value~="' + this.value + '"]').removeClass('hide');
+
+					if (child) {
+						$('[data-cond="' + child + '"]').addClass('hide');
+
+						var child_el = $('[name="' + child + '"]');
+						if (!child_el.is(':visible')) return false;
+
+						switch (child_el.prop('tagName')) {
+							case 'SELECT':
+								child_el.trigger('change');
+								break;
+							default:
+								child_el.trigger('click')
+								break;
+						}
+					}
+				});
+			});
+			RefundForm.calc();
+		},
+	}
+
+	$(function () {
+		RefundForm.init();
+	})
+</script>

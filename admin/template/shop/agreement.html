@@ -1,0 +1,107 @@
+<!-- 쇼핑몰이용약관 -->
+<div class="content-wrap">
+	<form id="FrmAgreement" onsubmit="return false">
+		<input type="hidden" name="mode" value="agreement">
+		<input type="hidden" name="field" value="basic">
+		<table cellpadding="0" cellspacing="0" width="100%">
+			<tr>
+				<td>
+					<!-- 페이지 타이틀 -->
+					<div class="title_depth3">쇼핑몰 이용약관
+						<span>쇼핑몰 이용약관을 설정합니다.</span>
+					</div>
+				</td>
+			</tr>
+
+			<tr>
+				<td>
+					<table cellpadding="0" cellspacing="0" width="100%" class="m-t-20">
+						<tr>
+							<td>
+								<textarea name="basic" id="basic" wrap="off" class="editor" style="width:100%;">
+									{basic}
+								</textarea>
+							</td>
+						</tr>
+					</table>
+				</td>
+			</tr>
+			
+			<tr>
+				<td align="center" style="padding:10px 0px">
+					<button type="button" class="btn-point" onclick="Agreement.save()">적용하기</button>
+					<button type="button" class="btn-basic m-l-10" onclick="Agreement.standard()">표준약관 불러오기</button>
+				</td>
+			</tr>
+		</table>
+	</form>
+
+	
+	<!-- 메뉴얼 -->
+	<div class="sub_manual_wrap m-t-10">
+		<div class="title">
+			<p>매뉴얼</p>
+		</div>
+		<ul class="help_list">
+			<li>[COMPANY]는 회사명, [SHOP]은 쇼핑몰명이 자동 입력됩니다.</li>
+			<li>공정거래위원회 표준약관을 수정 없이 그대로 사용하시는 것을 권합니다.</li>
+			<li>표준약관은 청약철회, 환불약관에 대해서 구체적으로 명시되어 있습니다.</li>
+			<li>공정거래위원회 약관을 사용하지 않거나 수정한 경우 공정거래위원회의 로고를 표시할 수 없으며, 이를 위반할 경우 공정위로부터 제재를 받을 수 있습니다.</li>
+			<li>
+				<b>등록/수정하시면 하단에 [적용하기]버튼을 누르셔야 쇼핑몰에 적용됩니다.</b>
+			</li>
+		</ul>
+	</div>
+</div>
+<script type="text/javascript" src="/third_party/SE2/js/HuskyEZCreator.js" charset="utf-8"></script>
+
+<script type="text/javascript">
+var Agreement = {
+	init: function() {
+		var me = this;
+		this.createEditor();
+	},
+	createEditor: function() {
+		nhn.husky.EZCreator.createInIFrame($.extend({}, se_option, {
+			elPlaceHolder: 'basic'
+		}));
+	},
+	save: function() { //적용하기
+		if(!confirm('적용하시겠습니까?')) return false;
+
+		oEditors.getById["basic"].exec("UPDATE_CONTENTS_FIELD", []);
+		var formdata = $('#FrmAgreement').serialize();
+
+		$.ajax({
+			url:'{C.DIR_ADMIN}/proc/shop.proc.php',
+			data:formdata,
+			dataType:'json',
+			type:'POST',
+			success: function(r) {
+				alert(r.msg);
+			}
+		})
+
+	},
+	standard: function() { //표준약관불러오기
+		$.ajax({
+			url:'{C.DIR_ADMIN}/proc/shop.proc.php',
+			data:{
+				mode:'agreement',
+				act:'get_standard',
+				field:'basic_standard'
+			},
+			dataType:'text',
+			type:'POST',
+			success: function(r) {
+				oEditors.getById["basic"].exec("SET_IR", [""]);
+				oEditors.getById["basic"].exec("PASTE_HTML", [r]);
+			}
+		})
+	}
+}
+
+$(function() {
+	Agreement.init();
+})
+</script>

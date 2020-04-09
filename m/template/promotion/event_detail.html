@@ -1,0 +1,203 @@
+<div id="page">
+	<div id="content">
+		<section class="page_local is-line">
+			<h2 class="page_title">
+				<a href="javascript:history.back();" class="prev">이전페이지</a>
+				<span>EVENT</span>
+			</h2>
+		</section>
+
+		<section class="photo_type_view">
+			<h4 class="title_area with_brand">
+				<span class="brand">{promoinfo.title}</span>
+				<span class="date">{=format(promoinfo.start_date,'Y-m-d')}~{=format(promoinfo.end_date,'Y-m-d')}</span>
+			</h4>
+
+			<div><!-- [D] 에디터 영역 -->
+				{promoinfo.content_m}
+			</div>
+
+			<div class="btns mt-20">
+				<ul>
+					<li><a href="event.php" class="icon_list">목록</a></li>
+					<li>
+						<button type="button" data-hottcode="{promoinfo.idx}" data-section="event" data-cnt="{promoinfo.promo_like_cnt}">
+							<i class="icon_like"></i>
+						<span class="like_count">{=number_format(promoinfo.promo_like_cnt)}</span>
+						</button>
+					</li><!-- [D] 클릭시 좋아요 숫자+1, 재클릭시 좋아요 숫자-1 -->
+					<li>
+						<div class="wrap_bubble layer_sns_share on">
+							<div class="btn_bubble"><button type="button" class="btn_sns_share">sns 공유</button></div>
+							<div class="pop_bubble">
+								<div class="inner">
+									<button type="button" class="btn_pop_close">닫기</button>
+									<div class="icon_container">
+										<a href="javascript:;" onclick="Share.facebook()" title="페이스북">1<i class="icon-share-facebook">페이스북</i></a>
+										<a href="javascript:;" onclick="EventDetail.kakaolink()"  title="카카오링크"><i class="icon-share-talk">카카오링크</i></a>
+										<a href="javascript:;" onclick="Share.naverblog('{promoinfo.title}')"  title="네이버블로그"><i class="icon-share-blog">네이버블로그</i></a>
+										<a href="javascript:;" onclick="Share.urlCopy()" title="링크"><i class="icon-share-url">링크</i></a>
+									</div>
+								</div>
+							</div>
+						</div>
+					</li>
+				</ul>
+			</div><!-- //.btns -->
+
+			<div class="other_posting">
+				<dl>
+					<dt>PREV</dt>
+					{? prev.idx}
+					<a href="/m/promotion/{? prev.event_type==1}promo{:}event{/}_detail.php?idx={prev.idx}&status={type}">{/}
+					<dd>
+						{? prev.idx}{ prev.title}{:}이전글이 없습니다.{/}
+					</dd>
+					{? prev.idx}</a>{/}
+				</dl>
+				<dl>
+					<dt>NEXT</dt>
+					{? next.idx}<a href="/m/promotion/{? next.event_type==1}promo{:}event{/}_detail.php?idx={next.idx}&status={type}">{/}
+					<dd>
+						{? next.idx}{ next.title}{:}다음글이 없습니다.{/}
+					</dd>
+					{? next.idx}</a>{/}
+				</dl>
+			</div><!-- //.other_posting -->
+
+
+
+			<!--이벤트 댓글/포토-->
+			<div id="event_zone">
+			</div>
+		</section><!-- //.photo_type_view -->
+	</div>
+</div>
+
+<!-- //#contents -->
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/Swiper/4.3.5/css/swiper.min.css">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Swiper/4.3.5/js/swiper.js"></script>
+<script type="text/javascript" src="/static/js/blazy.min.js"></script> <!--{* 이미지lazy 처리js *}-->
+<script src="//developers.kakao.com/sdk/js/kakao.min.js"></script>
+<script src="/static/js/clipboard.min.js"></script>
+<script type="text/javascript">
+    var EventDetail = {
+        page:1,
+        idx:'{promoinfo.idx}',
+        event_type:'{promoinfo.event_type}',
+        init: function() {
+
+            var me = this;
+            this.option = $.extend({}, validation_option, {
+                validateNonVisibleFields: false,
+                onValidationComplete: function (form, status) {
+                    if (status) me.setComment(form);
+                }
+            });
+            $("#FrmComment").validationEngine('attach',this.option);
+
+            //UI.loading('inner');
+            EventDetail.load(EventDetail.event_type,EventDetail.page);
+            //UI.loading('inner');
+        },
+        load: function(event_type, page){
+            PRODUCT.like();
+            $("#comment_textarea").val("");
+            $('#event_zone').load('/m/promotion/event_comment.list.php', {idx: EventDetail.idx, event_type:event_type, page:page}, function(){
+            });
+        },
+        photoReg: function(pidx) {
+            UI.popup('/m/promotion/event_comment_photo_reg.php', '포토댓글등록', {
+                pidx: pidx
+            });
+        },
+        setComment: function(form) { //댓글등록/수정처리
+            var formdata = $(form).serialize();
+            $.ajax({
+                url: '/proc/promotion.proc.php',
+                data: formdata,
+                dataType: 'json',
+                type: 'POST',
+                success: function (r) {
+                    alert(r.msg);
+                    EventDetail.page=1;
+                    EventDetail.load(EventDetail.event_type,EventDetail.page);
+                }
+            });
+        },
+        removeComment: function(num) {
+            if(confirm("삭제하시겠습니까?")) {
+                $.ajax({
+                    url: '/proc/promotion.proc.php',
+                    data: {
+                        comment_num: num,
+                        mode: 'comment',
+                        act: 'delete'
+                    },
+                    dataType: 'json',
+                    type: 'POST',
+                    success: function (r) {
+                        alert(r.msg);
+                        EventDetail.page = 1;
+                        EventDetail.load(EventDetail.event_type, EventDetail.page);
+                    }
+                });
+            }
+        },
+        toggleComment: function(num) { //수정창 보이기/감추기
+            var target = $('#modify_'+num);
+            var target_btn = $('#btn_modify_'+num);
+            var target_form = target.find('form');
+
+            if(target.is(':visible')) {
+                target_form.validationEngine('detach');
+                target.addClass('hide');
+                target_btn.text('수정');
+            }
+            else {
+                target_form.validationEngine('attach',EventDetail.option);
+                target_btn.text('취소');
+                target.removeClass('hide');
+            }
+        },
+        paging: function(page) {
+            EventDetail.page=page;
+            EventDetail.load(EventDetail.event_type, page);
+        },
+        /*글자수제한300자 공통*/
+        lengchk: function(map, countid) {
+
+            if (map.value.length > 300) {
+                alert('글자수 제한 300자');
+                var res = map.value.substr(0, 300);
+                map.value = res;
+            }
+            if (countid) {
+                $('#' + countid).html(map.value.length);
+            }
+        },
+        kakaolink: function() {
+            Kakao.init('{cfg.kakao}');
+
+            var content = {
+                title: '{promoinfo.title}',
+                //description: '#001001011000005436 #',
+                imageUrl: '{promoinfo.thumb_img}',
+                /**/
+                link: {
+                    mobileWebUrl: '{C.HOST}/m/promotion/event_detail.php?idx='+EventDetail.idx+'&status={type}',
+                    webUrl: '{C.HOST}/front/promotion/event_detail.php?idx='+EventDetail.idx+'&status={type}'
+                },
+                imageWidth:550,
+                imageHeight:770
+            };
+
+            Share.kakaolink(content);
+        },
+    }
+
+    $(function () {
+        EventDetail.init();
+    });
+</script>

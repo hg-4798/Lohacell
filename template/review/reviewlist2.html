@@ -1,0 +1,156 @@
+<div id="contents">
+	<div class="review_wrp">
+		<div class="inner_width">
+			<div class="sub_tit_area">
+				<h2 class="title" style="font-weight:800"><!-- {? type=='photo'}PHOTO {/} -->i REVIEW</h2>
+			</div>
+		</div>
+
+		<div class="review-mrk clear">
+			<div class="inner">
+				<div class="area-movie">
+					<h3 class="head">인플루언서 Pick!<span>핫한 그녀들만의 이야기</span></h3>
+					<div class="movie-slide-wrap">
+						<ul class="movie-slide">
+							{@ video_list}
+							<li>
+								{? .banner_url}
+								<iframe width="686" height="386" src="{.banner_url}" frameborder="0" allow="autoplay; encrypted-media" allowfullscreen></iframe>
+								{:}
+								<img src="{.banner_img}" width="686" height="386">
+								{/}
+							</li>
+							{/}
+						</ul>
+					</div>
+					{? review_banner_list}
+					<div class="review-banner-slide-wrap">
+						<ul class="review-banner-slide">
+							{@ review_banner_list}
+							<li><a {? .img_link} href="{.img_link}" {/}><img src="{.banner_img}" alt=""></a></li>
+							{/}
+						</ul>
+					</div>
+					{/}
+					<script type="text/javascript">
+					$(function(){
+						$('.movie-slide').bxSlider({
+							pager:false
+						})
+						$('.review-banner-slide').bxSlider({
+							controls:false
+						})
+					})
+					</script>
+				</div><!-- //.area-movie -->
+				<div class="area-tip">
+					<h3 class="head">Beauty Tip!<span>좀 더 예뻐지는 방법</span></h3>
+					<div id="blog_inner"></div>
+				</div><!-- //.area-tip -->
+			</div>
+		</div>
+
+		<div class="list_area">
+			<div class="inner_width">
+				<div class="board-title is-function">
+					<div class="title"><strong>총 <span id="total"></span>건</strong>의 상품평이 작성되었습니다.</div>
+					<div class="function">
+						<form id="FrmReviewSearch" name="FrmReviewSearch" onsubmit="return false;">
+							<div class="select is-custom">
+								<select title="정렬순서" name="sort" onchange="ReviewList.search('sort',this.value)">
+									<option value="date">최신순</option>
+									<option value="marks">평점순</option>
+								</select>
+							</div>
+							<div class="form-search">
+								<fieldset class="v-hidden">검색</fieldset>
+								<input type="text" title="검색어 입력" name="productname" id="productname" placeholder="상품명을 입력해주세요.">
+								<button type="button" onclick="ReviewList.search()"><i class="icon-sch">검색</i></button>
+							</div>
+						</form>
+					</div>
+				</div>
+
+				<div id="review_list"></div>
+			</div>
+		</div>
+	</div>
+</div>
+
+
+<link rel="stylesheet" href="/static/css/swiper.min.css">
+<script src="/static/js/swiper.min.js"></script>
+<script type="text/javascript" src="/static/js/blazy.min.js"></script> <!--{* 이미지lazy 처리js *}-->
+<script type="text/javascript">
+
+    var ReviewList = {
+        page: 1,
+        type:'{type}',
+        num:'{num}',
+        init: function(){
+            var me = this;
+            me.load(1);
+            me.blogLoad(1);
+            $("#productname").keydown(function (e) {
+
+                if (e.keyCode == 13){
+                    ReviewList.search();//실행할 이벤트
+                }
+            });
+
+            // console.log(me.type, me.num);
+            if(me.num > 0) {
+                setTimeout(function() {
+                    me.detailOpen(me.num);
+                },300);
+            }
+
+
+        },
+        load: function (page) {
+            var p = page || ReviewList.page;
+            var search = $('#FrmReviewSearch').serialize();
+            $('#review_list').load('/front/review/reviewlist_inner.php', {
+                page: p,
+                search:search
+            });
+
+        },
+        loadPage: function (page) {
+            this.load(page);
+        },
+        blogLoad: function (page) {
+            var p = page || ReviewList.page;
+            $('#blog_inner').load('/front/review/review_bloglist_inner.php', {
+                page: p
+			});
+
+        },
+        search: function (field, value) {
+            if (field && value) $('#FrmReviewSearch').find('[name="' + field + '"]').val(value);
+            this.load(1);
+        },
+        detailOpen: function(idx) {
+            UI.modal('/front/review/review_detail.php','리뷰보기', {
+                idx :idx
+            },function () {
+                new Blazy(); //이미지 바인딩
+            });
+        },
+        bolgOpen: function(idx,title) {
+            UI.modal('/front/review/review_blog_detail.php', title , {
+                idx :idx
+            },function () {
+                new Blazy(); //이미지 바인딩
+            });
+        },
+        close: function() {
+           $('.btn-close').trigger('click');
+        }
+
+    }
+
+    $(function() {
+        ReviewList.init();
+    })
+</script>

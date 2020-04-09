@@ -1,0 +1,57 @@
+<table class="tbl-list m-t-10">
+	<colgroup>
+		<col style="width:50px">
+		<col style="width:100px">
+		<col style="width:100px">
+		<col>
+		<col style="width:120px">
+	</colgroup>
+	<thead>
+		<tr>
+			<th>No</th>
+			<th>지급/차감일</th>
+			<th>포인트</th>
+			<th>발생사유</th>
+			<th>유효기간</th>
+		</tr>
+	</thead>
+
+	<tbody>
+		{@ list}
+		<tr>
+			<td>{.num}</td>
+			<td>{=format(.date_insert,'Y-m-d')}</td>
+			<td>{=number_format(.point)} P</td>
+			<td class="ta-l">
+				{.point_reason}
+				{? .point_reason_flag == 'admin'}
+				<div class="text-muted">처리자 : {.reg_admin_id}</div>
+				{: .point_reason_flag == 'order'}
+				<div class="text-muted">주문번호 : {.order_num}</div>
+				{/}
+
+
+			</td>
+			<td>{? .point>0}{=format(.date_expire,'Y-m-d')}{:}-{/}</td>
+		</tr>
+		{:}
+		<tr>
+			<td colspan="5">조회된 포인트 내역이 없습니다.</td>
+		</tr>
+		{/}
+	</tbody>
+</table>
+
+{this->xprint('include/pagination.html')}
+
+
+<script type="text/javascript">
+var PointInner = {
+	init: function() {
+		$('#sum_point').text(UI.numberFormat({sum}));
+	}
+}
+$(function() {
+	PointInner.init();
+});
+</script>

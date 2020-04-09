@@ -1,0 +1,172 @@
+<div id="contents">
+	<div class="mypage-page">
+
+		<h2 class="page-title">멤버십 등급/혜택안내</h2>
+
+		<div class="inner-align page-frm clear">
+
+			{=include("mypage_TEM01_left.php")}
+			<article class="my-content member-grade membership">
+				
+				<!-- <div class="point-info clear">
+					<dl>
+						<dt><img src="/jayjun/web/static/img/icon/icon_my_grade.png" alt="회원등급">회원등급</dt>
+						<dd class="fz-16"><?=$_mdata->name?> 님의 회원등급<br><strong ><?=$mem_grade_text?></strong></dd>
+					</dl>
+					<dl>
+						<dt><img src="/jayjun/web/static/img/icon/icon_my_point_big.png" alt="통합 포인트">통합 포인트</dt>
+						<dd class="fz-16">현재 통합 포인트<br><strong class="fz-22 point-color"><?=number_format($_mdata->reserve) ?>P</strong></dd>
+					</dl>
+					<dl>
+						<dt><img src="/jayjun/web/static/img/icon/icon_my_epoint_big.png" alt="E통합 포인트">현재 E포인트</dt>
+						<dd class="fz-16">현재 E포인트<br><strong class="fz-22 point-color"><?=number_format($_mdata->act_point) ?>P</strong></dd>
+					</dl>
+				</div>
+				<p class="pt-10 fz-13">*통합포인트: 오프라인 매장, <?=$_data->shopname?>몰에서 모두 사용이 가능한 포인트</p>
+				<p class="pt-5 fz-13">*E포인트: <?=$_data->shopname?>몰에서만 사용이 가능한 온라인 전용 포인트</p> -->
+
+				<div class="my-grade-summary clear">
+					<div class="info-grade">
+						<img class="grade-icon" src="/data/shopimages/grade/groupimg_{member.group_code}.png" alt="등급 아이콘" >
+						<span class="fw-bold pr-5 point-color">{member.name}</span>님의 {=date('Y년 m월')} 멤버십 등급
+						<strong>{member.group_name}</strong>
+						<p class="mt-5">구매건수 : 0건</p>
+						<p>구매금액 : 0원</p>
+						<p>집계기간 : {=date('Y.m.01')} ~ {=date('Y.m.t')}</p>
+					</div>
+					<div class="next">
+						<p>다음 등급까지 남은 조건</p>
+						<span>구매누적금액 : <strong>0</strong>원</span>
+					</div>
+				</div>
+
+				<div class="mt-45">
+					<h4 class="fz-20">멤버십 등급 및 혜택</h4>
+				</div>
+				<table class="th-left mt-15 special-benefit">
+					<caption>등급별 혜택안내</caption>
+					<colgroup>
+						<col style="width:20%">
+						<col style="width:35%">
+						<col style="width:15%">
+						<col style="width:15%">
+						<col style="width:15%">
+					</colgroup>
+					<thead>
+						<tr>
+							<th scope="col" rowspan="2">등급</th>
+							<th scope="col" rowspan="2">등급기준</th>
+							<th scope="col" colspan="3">혜택</th>
+						</tr>
+						<tr>
+							<th scope="col">마일리지</th>
+							<th scope="col">쿠폰</th>
+							<th scope="col">포인트</th>
+						</tr>
+					</thead>
+					<tbody>
+						<tr>
+							<td rowspan="2"><img src="/jayjun/web/static/img/icon/icon_grade_vv.png" width="100" alt="VV 등급" ></td>
+							<td class="ta-l" rowspan="2">50만원 이상 구매회원</td>
+							<td rowspan="2">7% 적립</td>
+							<td >무료배송쿠폰</td>
+							<td rowspan="2">-</td>
+						</tr>
+						<tr>
+							<td class="ta-c">생일축하쿠폰 1매<br>[3,000원 할인]</td>
+						</tr>
+						<tr>
+							<td><img src="/jayjun/web/static/img/icon/icon_grade_v.png" width="100" alt="V 등급" ></td>
+							<td class="ta-l">20만원 이상 ~ 50만원 미만 구매 회원</td>
+							<td>5% 적립</td>
+							<td >생일축하쿠폰 1매<br>[3,000원 할인]</td>
+							<td>-</td>
+						</tr>
+						<tr>
+							<td><img src="/jayjun/web/static/img/icon/icon_grade_f.png" width="100" alt="F 등급" ></td>
+							<td class="ta-l">6만원 이상 ~ 20만원 미만 구매 회원</td>
+							<td>3% 적립</td>
+							<td>생일축하쿠폰 1매<br>[3,000원 할인]</td>
+							<td>-</td>
+						</tr>
+						<tr>
+							<td><img src="/jayjun/web/static/img/icon/icon_grade_n.png" width="100" alt="N 등급" ></td>
+							<td class="ta-l">신규가입 즉시 모든 회원</td>
+							<td>2% 적립</td>
+							<td>-</td>
+							<td>3,000원 지급<br>즉시 사용 가능</td>
+						</tr>
+					</tbody>
+				</table>
+				
+				<div class="mt-45">
+					<h4 class="fz-20">멤버십 유의사항</h4>
+				</div>
+				<table class="th-left mt-15 special-benefit">
+					<caption>등급별 혜택안내</caption>
+					<colgroup>
+						<col style="width:50%">
+						<col style="width:50%">
+					</colgroup>
+					<thead>
+						<tr>
+							<th scope="col">공통</th>
+							<th scope="col">쿠폰</th>
+						</tr>
+					</thead>
+					<tbody>
+						<tr>
+							<td class="ta-l">
+								<ul>
+									<li>- 멤버십 등급은 매월 1일 직전 1년의 실제 결제금액을 기준으로 자동 반영됩니다.</li>
+									<li>- 적립금 결제금액 및 쿠폰 할인금액은 등급산정 금액에서 제외됩니다. </li>
+									<li>- 멤버십 혜택은 가입 고객을 대상으로 구매 이력 확인 후 제공되므로 회원 가입 후<br><span style="padding-left:10px"></span>혜택을 받으실 수 있습니다.  </li>
+								</ul>
+							</td>
+							<td class="ta-l">
+								<ul>
+									<li>- 생일축하쿠폰은 해당 월에 생일을 맞이하는 고객님들께 매월 1일 자동 <br><span style="padding-left:10px"></span>발급됩니다. (영업일 기준, 휴무일의 경우 익일 발행)</li>
+									<li>- 생일축하쿠폰은 발행일로부터 한달 이내 사용이 가능합니다. </li>
+									<li>- 공식몰에서 발행된 쿠폰은 공식몰에서만 사용 가능하며, 직영 매장에서의 <br><span style="padding-left:10px"></span>사용이 불가합니다.</li>
+								</ul>
+							</td>
+						</tr>
+					</tbody>
+					<tbody>
+						<tr>
+							<th scope="col">마일리지</th>
+							<th scope="col">고객 정보관리</th>
+						</tr>
+						<tr>
+							<td class="ta-l">
+								<ul>
+									<li>- 구매 적립 마일리지는 등급별 적립률에 따라 지급됩니다. </li>
+									<li>- 구매 적립 마일리지는 배송 완료 7일 이후 가용 적립금으로 전환되어 <br><span style="padding-left:10px"></span>사용 가능합니다.</li>
+								</ul>
+							</td>
+							<td class="ta-l">
+								<ul>
+									<li>- 회원 혜택 및 행사 안내는 SMS 수신 동의 회원에 한해서 발송됩니다.</li>
+									<li>- 2011.09.30 개인정보보호법 발효에 따라 휴대폰 번호가 중복된 경우 </li>
+									<li>- 휴대폰 본인 인증을 통해 가입한 최근 신규 고객님께만 SMS가 발송됩니다. <br><span style="padding-left:10px"></span>휴대폰 번호가 변경된 경우 개인 정보 수정 후 SMS 수신이 가능합니다.</li>
+								</ul>
+							</td>
+						</tr>
+					</tbody>
+				</table>
+
+				<!-- <div class="mt-45">
+					<h4 class="fz-20">멤버십 약관</h4>
+				</div>
+				<div class="membership-terms">
+					<?=$etc_agreement3 ?>
+				</div> -->
+
+			</article><!-- //.my-content -->
+		</div><!-- //.page-frm -->
+
+	</div>
+</div><!-- //#contents -->
+
+
+

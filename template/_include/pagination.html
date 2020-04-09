@@ -1,0 +1,9 @@
+<div class="list-paginate mt-30">
+			<a href="javascript:;" onclick="{paging.href.first.href}" class="prev-all"></a>
+			<a href="javascript:;" onclick="{paging.href.prev.href}" class="prev"></a>
+			{@ paging.block}
+			<a href="javascript:;" onclick="{.href}" class="number {? .equal}on{/}" >{.num}</a>
+			{/}
+			<a href="javascript:;" onclick="{paging.href.next.href}" class="next"></a>
+			<a href="javascript:;" onclick="{paging.href.last.href}" class="next-all"></a>
+</div>

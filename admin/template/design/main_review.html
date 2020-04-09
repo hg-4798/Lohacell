@@ -1,0 +1,199 @@
+<div class="content-wrap">
+	<div class="title_depth3">REVIEW 배너관리</div>
+
+	<div class="title_depth3_sub">선택된 리뷰목록</div>
+	<div id="review_selected"></div>
+	<div class="title_depth3_sub">베스트 리뷰목록</div>
+	<div>
+		<div class="table_style01">
+			<form id="FrmReviewSearch" name="FrmReviewSearch">
+				<table cellspacing="0" cellpadding="0" width="100%" border="0">
+                <tbody><tr>
+                    <th><span>리뷰 타입</span>
+                    </th><td>
+                        <input type="radio" id="review_class1" name="review_class" value="" checked=""> <label style="cursor:hand;"  for="review_class1">전체</label>&nbsp;&nbsp;
+                        <input type="radio" id="review_class2" name="review_class" value="1"> <label style="cursor:hand;"  for="review_class2">텍스트리뷰</label>&nbsp;&nbsp;
+                        <input type="radio" id="review_class3" name="review_class" value="2"> <label style="cursor:hand;"  for="review_class3">포토리뷰</label>&nbsp;&nbsp;
+                    </td>
+                </tr>
+				<tr>
+					<th><span>검색기간 선택</span></th>
+					<td><input class="input calendar" type="text" name="date_start" onclick="Calendar(event)" value="" autocomplete="off"> ~ <input class="input calendar" type="text" name="date_end" onclick="Calendar(event)" value="" autocomplete="off">
+						<a href="javascript:;" onclick="MainReview.setPeriod('today')">
+							<img src="/admin/images/btn_today01.gif" class="middle" />
+						</a>
+						<a href="javascript:;" onclick="MainReview.setPeriod('7_days')">
+							<img src="/admin/images/btn_day07.gif" class="middle" />
+						</a>
+						<a href="javascript:;" onclick="MainReview.setPeriod('14_days')">
+							<img src="/admin/images/btn_day14.gif" class="middle" />
+						</a>
+						<a href="javascript:;" onclick="MainReview.setPeriod('1_months')">
+							<img src="/admin/images/btn_day30.gif" class="middle" />
+						</a>
+						<a href="javascript:;" onclick="MainReview.setPeriod('all')">
+							<img src="/admin/images/btn_day_total.gif" class="middle">
+						</a>
+					</td>
+				</tr>
+				<tr>
+					<th><span>검색조건 선택</span></th>
+					<td>
+                        <input type="radio" name="s_check" value="0"  id="idx_s_check0" checked=""> <label style="cursor: pointer; text-decoration: none;"  for="idx_s_check0">상품명으로 검색</label>&nbsp;&nbsp;
+					    <input type="radio" name="s_check" value="1"  id="idx_s_check1"> <label style="cursor:hand;"  for="idx_s_check1">작성자로 검색</label>&nbsp;&nbsp;
+                    </td>
+				</tr>
+
+				<tr>
+					<th><span>검색어 입력</span></th>
+					<td><input name="search" size="47" value="" class="input">
+						<button type="button" class="btn btn-sm btn-outline-danger" onclick="MainReview.search()"><i class="fa fa-pencil"></i> 조회</button>
+						<button type="button" class="btn btn-sm btn-outline-info" onclick="MainReview.searchReset()"><i class="fa fa-pencil"></i> 초기화</button>
+					</td>
+				</tr>				
+				</tbody></table>
+			</form>
+		</div>
+	</div>
+
+	<div id="review_list"></div>
+</div>
+<script type="text/javascript" src="/admin/static/js/moment.js"></script>
+<script type="text/javascript" src="/admin/static/js/calendar.js"></script>
+<script type="text/javascript">
+var MainReview = {
+    page: 1,
+    tem: 'Y',
+    proc_url: '/admin/proc/design.proc.php',
+    init: function() {
+
+		var me = this;
+		me.loadSelected();
+        me.loadList();
+        //상품소터블설정
+
+	},
+	loadSelected: function() {
+        var tem = MainReview.tem;
+		$('#review_selected').load('{C.DIR_ADMIN}/design/main_review.selected.php',{
+                tmp : tem
+            }
+		);
+	},
+    loadList: function (page) {
+        var p = page || MainReview.page;
+        var search = $('#FrmReviewSearch').serialize();
+
+        $('#review_list').load('{C.DIR_ADMIN}/design/main_review.list.php', {
+                page: p,
+                search: search
+            },
+            function () {
+                MainReview.page = p;
+            }
+        );
+    },
+    loadPage: function (page) {
+        this.loadList(page);
+        var offset = $('#review_list').offset();
+        UI.top(offset.top - 60);
+
+    },
+    search: function (field, value) {
+        if (field && value) $('#FrmReviewSearch').find('[name="' + field + '"]').val(value);
+        this.loadList(1);
+    },
+    setPeriod: function (sub) {
+        var period = UTIL.period('<?=TIMESTAMP?>', sub);
+        document.FrmReviewSearch.date_start.value = period.start;
+        document.FrmReviewSearch.date_end.value = period.end;
+    },
+    choose: function(num) {
+		var cnt = $('.btn-cnt').length;
+        var allData = { "mode": 'review_choose', "num": num };
+        //console.log(formdata);
+        $.ajax({
+            url:this.proc_url,
+            data:allData,
+            dataType:'json',
+            type:'POST',
+            async: false,
+            success: function(r) {
+                if(r.success) {
+                    if(cnt == 1 && MainReview.page != 1){
+						MainReview.page = MainReview.page - 1;
+					}
+                    MainReview.tem = 'T';
+                    MainReview.loadSelected();
+                    MainReview.loadList();
+                }
+            }
+        });
+    },
+    remove: function(num) {
+
+        var tr = ReviewSelected.getProduct();
+
+        if(tr.length < 5) {
+            alert('리뷰배너는 최소4개입니다.');
+            return false;
+        }
+
+        var allData = { "mode": 'review_remove', "num": num };
+        //console.log(formdata);
+        $.ajax({
+            url:this.proc_url,
+            data:allData,
+            dataType:'json',
+            type:'POST',
+            async: false,
+            success: function(r) {
+                if(r.success) {
+                    MainReview.tem = 'T';
+                    MainReview.loadSelected();
+                    MainReview.loadList();
+                }
+            }
+        });
+    },
+
+    save: function() {
+        //메인리뷰배너등록
+        var tr = ReviewSelected.getProduct();
+
+        if(tr.length > 4) {
+            alert('리뷰배너 등록은 4개까지만 가능합니다.');
+            return false;
+        }
+
+        if(!confirm('적용하시겠습니까?')) return false;
+
+        var formdata = $('#FrmReviewRegister').serializeArray();
+        var num = tr.map(function () {return $(this).attr('data-num');}).get();
+        formdata.push({name:'num', value:num});
+        //console.log(formdata);
+        //return;
+        $.ajax({
+            url:this.proc_url,
+            type:'POST',
+            data:formdata,
+            dataType:'json',
+            success : function(r) {
+                alert(r.msg);
+                if(r.success) {
+                    MainReview.tem = 'T';
+                    MainReview.loadSelected();
+                }
+            }
+        });
+	},
+    searchReset: function() {
+        $('#FrmReviewSearch')[0].reset();
+        this.loadList(1);
+    }
+}
+
+$(function(){
+	MainReview.init();
+})
+</script>

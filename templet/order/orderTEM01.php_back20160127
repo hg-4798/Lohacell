@@ -1,0 +1,926 @@
+
+<!-- 메인 컨텐츠 -->
+<form name=form1 action="<?=$Dir.FrontDir?>ordersend.php" method=post>
+<input type="hidden" name="addorder_msg" value="">
+<input type="hidden" name="chk_product_staff" value="<?=$chkStaff?>">
+<input type="hidden" name="staff_price_total" value="<?=$staff_price_total?>">
+<input type="hidden" id="direct_deli" name="direct_deli" value="N">
+
+<div class="">
+
+	<!-- 리뷰작성팝업 -->
+	<div class="layer-dimm-wrap coupon-use-layer">
+		<div class="dimm-bg"></div>
+		<div class="layer-inner order-coupon-list"> <!-- layer-class 부분은 width,height, - margin 값으로 구성되며 클래스명은 자유 -->
+			<h3 class="layer-title"></h3>
+			<button type="button" class="btn-close">창 닫기 버튼</button>
+			<div class="layer-content">
+				<p class="title">상품 쿠폰 선택</p>
+				<div class="goods-coupon">
+					<div class="inner">
+						<p class="pic"><img src="../static/img/test/@goods_thumb87.jpg" alt="70사이즈 이미지"></p>
+						<p class="info">
+							<span>업체명 NILBY P</span>
+							<span>상품명 LONG HANDMADE COAT</span>
+							<span>MELANGE GREY</span>
+						</p>
+					</div>
+					<ul class="coupon-choice">
+						<li><input type="radio" class="radio-def" name="g1" id="choce-a1" ><label for="choce-a1">상품 쿠폰명1</label></li>
+						<li><input type="radio" class="radio-def" name="g1" id="choce-a2" ><label for="choce-a2">상품 쿠폰명2</label></li>
+						<li><input type="radio" class="radio-def" name="g1" id="choce-a3" ><label for="choce-a3">선택안함</label></li>
+					</ul>
+				</div>
+				<div class="goods-coupon">
+					<div class="inner">
+						<p class="pic"><img src="../static/img/test/@goods_thumb87.jpg" alt="70사이즈 이미지"></p>
+						<p class="info">
+							<span>업체명 NILBY P</span>
+							<span>상품명 LONG HANDMADE COAT</span>
+							<span>MELANGE GREY</span>
+						</p>
+					</div>
+					<ul class="coupon-choice">
+						<li><input type="radio" class="radio-def" name="g2" id="choce-b1" ><label for="choce-b1">상품 쿠폰명1</label></li>
+						<li><input type="radio" class="radio-def" name="g2" id="choce-b2" ><label for="choce-b2">상품 쿠폰명2</label></li>
+						<li><input type="radio" class="radio-def" name="g2" id="choce-b3" ><label for="choce-b3">선택안함</label></li>
+					</ul>
+				</div>
+				<dl class="coupon-result">
+					<dt>[NILBY P] LONG HANDMADE COAT - MELANGE GREY</dt>
+					<dd>상품금액 100,000 + 배송비 0</dd>
+					<dd>상품할인-10,000</dd>
+					<dt>[NILBY P] LONG HANDMADE COAT - MELANGE GREY</dt>
+					<dd>상품금액 100,000 + 배송비 0</dd>
+					<dd>상품할인-10,000</dd>
+					<dd class="total">할인 후 구매금액 180,000</dd>
+				</dl>
+				<div class="btn-place"><button class="btn-dib-function"><span>OK</span></button></div>
+			</div><!-- //.layer-content -->
+		</div>
+	</div><!-- //리뷰작성팝업 -->
+
+	<div class="containerBody sub-page">
+
+		<div class="breadcrumb">
+			<ul>
+				<li><a href="/">HOME</a></li>
+				<li class="on"><a>주문결제</a></li>
+			</ul>
+		</div>
+
+		<div class="cart-wrap">
+			<div class="cart-my-benefit">
+				<div class="inner-flow"><img src="../static/img/common/order_flow02.gif" alt="주문결제"></div>
+				<div class="inner-benefit ">
+					<p><strong><?=$_ShopInfo->memname?></strong>님의 혜택정보</p>
+					<p>마일리지 <strong><?=number_format($reserve)?>M</strong> l 할인쿠폰 <strong><?=number_format($cnt_coupon)?>장</strong></p>
+					<p class="hide">비회원 구매시 할인/쿠폰과 이벤트 등의<br>혜택을 받으실 수 없습니다.</p>
+				</div>
+				<div class="inner-benefit hide"><!-- 비회원일 경우 출력 -->
+					<p class="no-member">비회원 구매시 할인/쿠폰과 이벤트 <br>등의 혜택을 받으실 수 없습니다.</p>
+				</div>
+			</div>
+
+			<!-- 주문 상품 -->
+			<h4 class="table-title">주문상품 정보</h4>
+			<table class="th-top util order-tb-margin" summary="담은 상품의 정보, 판매가, 수량, 할인금액, 결제 예정가, 적립금을 확인할 수 있습니다.">
+				<caption>01. 주문 상품</caption>
+				<colgroup>
+					<col style="width:100px" >
+					<col style="width:auto" >
+					<col style="width:130px" >
+					<col style="width:130px" >
+					<col style="width:110px" >
+					<col style="width:110px" >
+					<col style="width:105px" >
+				</colgroup>
+				<thead>
+					<tr>
+						<th scope="col" colspan="2"><strong>업체 배송 상품 [NILBY P.]</strong></th>
+						<th scope="col">수량</th>
+						<th scope="col">색상</th>
+						<th scope="col">사이즈</th>
+						<th scope="col">적립 마일리지</th>
+						<th scope="col">상품금액</th>
+					</tr>
+				</thead>
+				<tbody>
+<?php
+	$cnt=0;
+	$sumprice = 0;
+	$deli_price = 0;
+	$reserve = 0;
+	$row_sellprice = 0;
+	#옵션가 total
+	$row_optionPrice = 0;
+	$total_price_ = 0; // 상품 최종금액
+foreach( $vData as $vKey=>$vVal ) {	 //벤더
+		$vender_sumprice = 0;
+		$vender_delisumprice = 0;//해당 입점업체의 기본배송비 총 구매액
+		$vender_deliprice = 0;
+		$deli_productprice=0;
+		$deli_init = false;
+	foreach( $bData[$vKey] as $bKey=>$bVal ){ // 상품
+		$_option_price = 0;
+		$product_quantity = 0;
+		$optText = '';
+		//상품 옵션 및 수량
+		foreach( $pData[$bVal['productcode']] as $pKey=>$pVal  ){
+			// 상품 + 필수옵션 
+			if( $pVal['op_type'] == '0' && strlen( trim( $pVal['optionarr'] ) ) > 0 ){
+				$optStr = '';
+				$tmpOpt1Name = explode( ',', $bVal['option1'] );
+				$tmpOpt2Name = explode( ',', $bVal['option2'] );		
+				$optStr = "옵션 : ".$tmpOpt1Name[0]." ".$pVal['opt1_idx'];
+				if( $pVal['opt2_idx'] != ''  ){
+					$optStr.= " , ".$tmpOpt2Name[0]." ".$pVal['opt2_idx'];
+				}
+				$optText.= "<span class=\"option\">".$optStr."</span>&nbsp;";
+				$optText.= "<span class=\"option\"> ( ".$pVal['quantityarr']."개&nbsp;".number_format( $pVal['option_price'] * $pVal['quantityarr'] )."원 ) </span><br>";
+				unset( $tmpOpt1Name );
+				unset( $tmpOpt2Name );
+				$_option_price += $pVal['option_price'] * $pVal['quantityarr'];
+				$product_quantity += $pVal['quantityarr'];
+			// 추가 옵션이 존재하는 경우
+			} else if( $pVal['op_type'] == '1' && strlen( trim( $pVal['optionarr'] ) ) > 0 ) {
+				$tmpsupply = explode( chr(30) , $pVal['optionarr']);
+				$optText.= "<span class=\"option\">".$tmpsupply[0]." : ".$tmpsupply[1]."</span>&nbsp;";
+				$optText.= "<span class=\"option\"> ( ".$pVal['quantityarr']."개&nbsp;".number_format( $pVal['option_price'] * $pVal['quantityarr'] )."원 ) </span><br>";
+				$_option_price += $pVal['option_price'] * $pVal['quantityarr'];
+				unset($tmpsupply);
+			//상품만 있는 경우
+			} else {
+				$product_quantity =  $pVal['quantity'];
+			}
+		}
+		//상품가
+		$total_price_ = $bVal['sellprice'] * $product_quantity;
+
+		//적립금
+		$tempreserve = getReserveConversion($bVal['reserve'], $$bVal['reservetype'], $bVal['sellprice'] ,"N");
+		$reserve += $tempreserve * $product_quantity;
+
+		# 배송비 html 설정
+		$deli_str = "";
+		if ( ( $bVal['deli']=="Y" || $bVal['deli']=="N" ) && $bVal['deli_price'] > 0 ) {
+			if( $bVal['deli']=="Y" ) {
+				$deli_productprice += $bVal['deli_price'] * $product_quantity;
+				$deli_str = "&nbsp;<font color=a00000>- 배송비<font color=#FF3C00>(구매수 대비 증가:".number_format( $pVal['deli_price'] * $product_quantity )."원)</font></font>";
+			} else {
+				$deli_productprice += $bVal['deli_price'];
+				$deli_str = "&nbsp;<font color=a00000>- 배송비<font color=#FF3C00>(".number_format( $bVal['deli_price'] )."원)</font></font>";
+			}
+		} else if( $bVal['deli']=="F" || $bVal['deli']=="G" ) {
+			$deli_productprice += 0;
+			if( $bVal['deli']=="F" ) {
+				$deli_str = "&nbsp;<font color=a00000>- 배송비<font color=#0000FF>(무료)</font></font>";
+			} else {
+				$deli_str = "&nbsp;<font color=a00000>- 배송비<font color=#38A422>(착불)</font></font>";
+			}
+		} else if( $bVal['deli']=="Z" && $bVal['deli_price'] > 0 ) { // 수량별 배송비 증가
+			# 수량별 배송비 증가 2015 12 04 유동혁
+			$tempDeilPrice_Z = 0;
+			$tempDeilQty_1 = $product_quantity % $bVal['deli_qty'];
+			$tempDeliQty_2 = floor( $product_quantity / $bVal['deli_qty'] );
+			$tempDeilPrice_Z = $bVal['deli_price'] * ( $tempDeilQty_1 + $tempDeliQty_2 );
+			$deli_productprice += $tempDeilPrice_Z;
+			//$deli_productprice += $bVal['deli_price'] * $product_quantity;
+			$deli_str = "&nbsp;<font color=a00000>- 배송비<font color=#38A422>( 상품 ".$bVal['deli_qty']." 개별 배송비 증가)</font></font>";
+		} else {
+			$deli_init=true;
+			$vender_delisumprice += $total_price_ + $_option_price;
+		}
+
+		// 현금결제 상품 html
+		$bankonly_html = "";
+		if( $pVal['bankonly'] == 'Y' ){
+			$bankonly_html = " <img src=".$Dir."images/common/bankonly.gif border=0 align=absmiddle> ";
+		}
+		//무이자 상품 html
+		$setquota_html = "";
+		if( $pVal['setquota'] == 'Y' ){
+			if ($_data->card_splittype=="O" && $price>=$_data->card_splitprice) {
+				$setquotacnt++;
+				$setquota_html = " <img src=".$Dir."images/common/setquota.gif border=0 align=absmiddle>";
+				$setquota_html.= "</b><font color=black size=1>(";
+				$setquota_html.="3~";
+				$setquota_html.= $_data->card_splitmonth.")</font>";
+			}
+		}
+		
+?>
+					<tr>
+						<td class="order-item-tr">
+							<a href="<?=$Dir.FrontDir?>productdetail.php?productcode=<?=$bVal['productcode']?>">
+<?php
+		if(strlen($bVal['minimage'])!=0 && file_exists($Dir.DataDir."shopimages/product/".$bVal['minimage'])){
+?>
+									<img src="<?=$Dir.DataDir?>shopimages/product/<?=$bVal['minimage']?>" width='70' height='70'>
+<?php
+		}else{
+?>
+									<img src="<?=$Dir?>images/no_img.gif" width="70">
+<?php
+		}
+?>
+							</a>
+						</td>
+						<td class="ta-l">
+							<span class="name">
+							<a href="<?=$Dir.FrontDir?>productdetail.php?productcode=<?=$bVal?>">
+								<?=viewproductname($bVal['productname'],$bVal['etctype'],$bVal['selfcode'],$bVal['addcode']) ?>
+								<?=$bankonly_html?>
+								<?=$setquota_html?>
+								<?=$deli_str?>
+							</a>
+							<br>
+								<?=$optText?>
+							</span>
+						</td>
+						<td><?=$product_quantity;?></td>
+						<td>[개발]</td>
+						<td>[개발]</td>
+						<!-- <td><?=number_format($bVal['sellprice'])?></td> -->
+						<td class="point"><?=number_format($tempreserve*$row->quantity)?> M</td>
+						<td><strong><?=number_format($total_price_ + $_option_price)?></strong></td>
+					</tr>
+<?php
+		$sumprice += $total_price_ + $_option_price;
+		$vender_sumprice += $sumprice;
+
+	}
+	$vender_deliprice=$deli_productprice;
+	
+	if( $vKey > 0 ){	//벤더 배송료	
+		if($vVal->deli_price>0) {
+			if($vVal->deli_pricetype=="Y") {
+				$vender_delisumprice = $vender_sumprice;
+			}
+			if ($vender_delisumprice<$vVal->deli_mini && $deli_init) {
+				$vender_deliprice+=$vVal->deli_price;
+			}
+		} else if(ord($vVal->deli_limit)>0) {
+			if($vVal->deli_pricetype=="Y") {
+				$vender_delisumprice = $vender_sumprice;
+			}
+			if($deli_init) {
+				$delilmitprice = setDeliLimit($vender_delisumprice,$vVal->deli_limit,"Y");
+				$delilmitprice_exp = explode("", $delilmitprice);
+				$vender_deliprice+=$delilmitprice_exp[0];
+			}
+		}
+	} else {	//일반 배송료
+		if($_data->deli_basefee>0) {
+			if($_data->deli_basefeetype=="Y") {
+				# 상품가 + 옵션가
+				$vender_delisumprice = $vender_sumprice;
+			}
+			if ($vender_delisumprice<$_data->deli_miniprice && $deli_init) {
+				$vender_deliprice+=$_data->deli_basefee;
+			}
+		} else if(strlen($_data->deli_limit)>0) {
+			if($_data->deli_basefeetype=="Y") {
+				$vender_delisumprice = $vender_sumprice;
+			}
+			if($deli_init) {
+				$delilmitprice = setDeliLimit($vender_delisumprice,$_data->deli_limit);
+				$vender_deliprice+=$delilmitprice;
+			}
+		}
+	}
+	$deli_price+=$vender_deliprice;
+}
+?>
+				</tbody>
+				<tfoot>
+					<tr>
+						<td colspan="7" bgcolor="#fafafa">
+							합계 <?=number_format($sumprice)?>
+							<span>+</span>
+							총 배송비 <?=number_format($deli_price)?>
+							<span>=</span>
+							총 결제 금액 <strong><?=number_format($sumprice+$deli_price)?></strong>
+							<span class="delivery-ment">[NILBY P.] 제품으로만 500,000 이상 구매시 무료배송됩니다.</span>
+						</td>
+					</tr>
+				</tfoot>
+			</table>
+			
+			<!-- // 주문 상품 -->
+			<!-- 장바구니 존재 안함
+			<div class="button_area">
+				<a href="../front/basket.php" target="_self"><img src="../img/button/cart_order_move_btn.gif" alt="장바구니로 이동" ></a>
+			</div>
+			-->
+			<div class="order-float-cover">
+				<!-- 고객정보 -->
+				<div class="orderer_area">
+					<h4 class="table-title">주문고객 정보</h4>
+					<table class="th-left-util" summary="주문자명, 주소, 휴대폰 번호, 이메일을 작성할 수 있습니다.">
+						<caption>02. 고객정보</caption>
+						<colgroup>
+							<col style="width:106px" >
+							<col style="width:auto" >
+						</colgroup>
+						<tbody>
+							<tr <? if( $overseas_type === false ) { echo "style='display:none; '"; } ?> >
+								<th scope="row">통관번호 입력</th>
+								<td class="name">
+									<input type='text' name='overseas_code' value='' >
+								</td>
+							</tr>
+							<tr>
+								<th scope="row">주문자</th>
+								<td class="name">
+									<?
+										if(strlen($_ShopInfo->getMemid())>0) {
+									?>
+										<!-- 요청에 의해 readonly를 뺌 2015 12 09 유동혁 -->
+										<input class="input-def" type=text  name="sender_name" value="<?=$userName?>" style="font-weight:bold" style='border:0' required msgR="주문하시는분의 이름을 적어주세요">
+									<?
+										} else {
+									?>
+										<input type=text  name="sender_name" value="" style="font-weight:bold" style='border:0' required msgR="주문하시는분의 이름을 적어주세요">
+									<?
+										}
+									?>
+								</td>
+							</tr>
+							<tr>
+								<th scope="row"><label for="user-email">이메일</label></th>
+								<td>
+									<div class="email-cover">
+										<input type="text" id="user-email" class="input-def w240" title="이메일 입력자리">
+										<ul class="domain-list">
+											<li><a href="#">@naver.com</a></li>
+											<li><a href="#">@gmail.com</a></li>
+											<li><a href="#">@nate.com</a></li>
+											<li><a href="#">@daum.net</a></li>
+											<li><a href="#">@yahoo.com</a></li>
+										</ul>
+									</div>
+								</td>
+							</tr>
+							<tr>
+								<th scope="row"><label for="user-phone">휴대전화</label></th>
+								<td>
+									<div class="select w70 small">
+										<span class="ctrl"><span class="arrow"></span></span>
+										<button type="button" class="my_value">010</button>
+										<ul class="a_list">
+											<li><a href="#1">011</a></li>
+											<li><a href="#2">016</a></li>
+										</ul>
+									</div>
+									<span class="txt-lh">-</span>
+									<input type="text" id="user-phone" class="input-def w70" title="휴대전화 가운데 입력자리">
+									<span class="txt-lh">-</span>
+									<input type="text" class="input-def w70" title="휴대전화 마지막 입력자리">
+								</td>
+							</tr>
+							<tr>
+								<th scope="row"><label for="user-tel">전화번호(선택)</label></th>
+								<td>
+									<div class="select w70 small">
+										<span class="ctrl"><span class="arrow"></span></span>
+										<button type="button" class="my_value">02</button>
+										<ul class="a_list">
+											<li><a href="#1">031</a></li>
+											<li><a href="#2">033</a></li>
+										</ul>
+									</div>
+									<span class="txt-lh">-</span>
+									<input type="text" id="user-tel" class="input-def w70" title="집전화 가운데 입력자리">
+									<span class="txt-lh">-</span>
+									<input type="text" class="input-def w70" title="집전화 마지막 입력자리">
+								</td>
+							</tr>
+							<tr class="hide">
+								<th scope="row">휴대폰번호</th>
+								<td class="phone">
+									<input class="input-def" type=text name="sender_tel1" value="<?=$mobile[0] ?>" size=3 maxlength=3 required onKeyUp="strnumkeyup(this)" msgR="휴대폰 번호 앞 자리를 입력하세요.">
+									<span>-</span>
+									<input class="input-def" type=text name="sender_tel2" value="<?=$mobile[1] ?>" size=4 maxlength=4 required onKeyUp="strnumkeyup(this)" msgR="휴대폰 번호 가운데 자리를 입력하세요.">
+									<span>-</span>
+									<input class="input-def" type=text name="sender_tel3" value="<?=$mobile[2] ?>" size=4 maxlength=4 required onKeyUp="strnumkeyup(this)" msgR="휴대폰 번호 가운데 자리를 입력하세요.">
+								</td>
+							</tr>
+							<tr class="hide">
+								<th scope="row">이메일</th>
+								<td class="email">
+									<?
+										$emailArray = explode("@", $email);
+										$selected['sel_email_tail'][$emailArray[1]] = "selected";
+									?>
+									<input type='hidden' name="sender_email" class = 'CLS_email_addr' value="<?=$email?>" required>
+									<input class="input-def" type="text" class = 'CLS_email_head' value = '<?=$emailArray[0]?>' required title="이메일 아이디를 입력하세요." >
+									<span>@</span>
+									<input class="input-def" type="text" class = 'CLS_email_tail' value = '<?=$emailArray[1]?>' required title="이메일 도메인을 입력하세요." style = 'width:100px;' readonly>
+									<select name="sel_email_tail" id="ID_sel_email_tail" style="width:100px;height:27px;margin-left:10px;">
+										<option value="">도메인 선택</option>
+										<option value="naver.com" <?=$selected['sel_email_tail']['naver.com']?>>naver.com</option>
+										<option value="hanmail.net" <?=$selected['sel_email_tail']['hanmail.net']?>>hanmail.net</option>
+										<option value="daum.net" <?=$selected['sel_email_tail']['daum.net']?>>daum.net</option>
+										<option value="nate.com" <?=$selected['sel_email_tail']['nate.com']?>>nate.com</option>
+										<option value="gmail.com" <?=$selected['sel_email_tail']['gmail.com']?>>gmail.com</option>
+										<option value="hotmail.com" <?=$selected['sel_email_tail']['hotmail.com']?>>hotmail.com</option>
+										<option value="lycos.co.kr" <?=$selected['sel_email_tail']['lycos.co.kr']?>>lycos.co.kr</option>
+										<option value="empal.com" <?=$selected['sel_email_tail']['empal.com']?>>empal.com</option>
+										<option value="cyworld.com" <?=$selected['sel_email_tail']['cyworld.com']?>>cyworld.com</option>
+										<option value="yahoo.co.kr" <?=$selected['sel_email_tail']['yahoo.co.kr']?>>yahoo.co.kr</option>
+										<option value="paran.com" <?=$selected['sel_email_tail']['paran.com']?>>paran.com</option>
+										<option value="dreamwiz.com" <?=$selected['sel_email_tail']['dreamwiz.com']?>>dreamwiz.com</option>
+										<option value="-">직접 입력</option>
+									<select>
+									<!--a href="#" target="_self"><img src="../img/button/cart_order_email_btn.gif" alt="직접입력" ></a-->
+								</td>
+							</tr>
+						</tbody>
+					</table>
+				</div>
+				<!-- // 고객정보 -->
+
+				<!-- 배송지정보 -->
+				<div class="address_area">
+					<h4 class="table-title">배송지 정보</h4>
+					<table class="th-left-util" summary="수령자명, 주소, 전화번호, 휴대폰번호, 이메일, 배송 메시지를 작성할 수 있습니다.">
+						<caption>03. 배송지 정보 <span class="same_box"><input type='checkbox' name="same" value="Y" onclick="SameCheck(this.checked)" id="dev_orderer"><label for="dev_orderer">주문고객과 동일한 주소 사용</label></span></caption>
+						<colgroup>
+							<col style="width:106px" >
+							<col style="width:auto" >
+						</colgroup>
+						<tbody>
+							<tr>
+								<th scope="row">받는 사람</th>
+								<td class="name">
+									<input class="input-def" type="text" name = 'receiver_name' required msgR="주문하시는 분 이름을 입력하세요." >
+									<!-- <a href="javascript:addrchoice();" target="_self"><img src="../img/button/cart_order_address_list_btn.gif" alt="배송지 목록" ></a> -->
+								</td>
+							</tr>
+							<tr class="hide">
+								<th scope="row">주소</th>
+								<td class="address">
+									<div class="post_box">
+										<input class="input-def"  type="text" name = 'rpost1' id = 'rpost1' readonly required msgR="우편번호 앞 자리를 입력하세요." >
+										<span>-</span>
+										<input class="input-def"  type="text" name = 'rpost2' id = 'rpost2' readonly required msgR="우편번호 뒷 자리를 입력하세요." >
+										<a href="javascript:openDaumPostcode();" target="_self"><img src="../img/button/cart_order_post_btn.gif" alt="우편번호검색" ></a>
+									</div>
+									<input class="input-def" name = 'raddr1' id = 'raddr1' type="text" readonly required msgR="상세주소를 입력하세요." >
+									<input class="input-def"  type="text" name = 'raddr2' id = 'raddr2' required msgR="상세주소 나머지를 입력하세요." >
+								</td>
+							</tr>
+							<tr>
+								<th scope="row"><label for="user-phone">휴대전화</label></th>
+								<td>
+									<div class="select w70 small">
+										<span class="ctrl"><span class="arrow"></span></span>
+										<button type="button" class="my_value">010</button>
+										<ul class="a_list">
+											<li><a href="#1">011</a></li>
+											<li><a href="#2">016</a></li>
+										</ul>
+									</div>
+									<span class="txt-lh">-</span>
+									<input type="text" id="user-phone" class="input-def w70" title="휴대전화 가운데 입력자리">
+									<span class="txt-lh">-</span>
+									<input type="text" class="input-def w70" title="휴대전화 마지막 입력자리">
+								</td>
+							</tr>
+							<tr>
+								<th scope="row"><label for="user-tel">전화번호(선택)</label></th>
+								<td>
+									<div class="select w70 small">
+										<span class="ctrl"><span class="arrow"></span></span>
+										<button type="button" class="my_value">02</button>
+										<ul class="a_list">
+											<li><a href="#1">031</a></li>
+											<li><a href="#2">033</a></li>
+										</ul>
+									</div>
+									<span class="txt-lh">-</span>
+									<input type="text" id="user-tel" class="input-def w70" title="집전화 가운데 입력자리">
+									<span class="txt-lh">-</span>
+									<input type="text" class="input-def w70" title="집전화 마지막 입력자리">
+								</td>
+							</tr>
+							<tr class="line-duble">
+								<th scope="row" valign="top"><label for="post-code">주소</label></th>
+								<td>
+									<ul>
+										<li>
+											<input type="text" id="post-code" class="input-def w70" title="우편번호 앞 입력자리">
+											<span class="txt-lh">-</span>
+											<input type="text" class="input-def w70" title="우편번호 뒤 입력자리">
+											<a href="#" class="btn-dib-line round">우편번호</a>
+										</li>
+										<li>
+											<input type="text" class="input-def w300" title="기본 주소 입력자리">
+											<input type="text" class="input-def w250" title="상세 주소 입력자리">
+										</li>
+									</ul>
+								</td>
+							</tr>
+							<tr class="line-duble">
+								<th scope="row" valign="top"><label for="delivery-needs">배송 요청사항</label></th>
+								<td>
+									<ul>
+										<li>
+											<div class="select w300 small">
+												<span class="ctrl"><span class="arrow"></span></span>
+												<button type="button" class="my_value">직접입력</button>
+												<ul class="a_list">
+													<li><a href="#1">경비실에 맡겨 주세요</a></li>
+													<li><a href="#2">꼭 전화주세요</a></li>
+												</ul>
+											</div>
+										</li>
+										<li>
+											<input type="text" class="input-def w300" id="delivery-needs" title="배송요청 입력자리">
+										</li>
+									</ul>
+								</td>
+							</tr>
+							<tr class="hide">
+								<th scope="row">전화번호</th>
+								<td class="phone">
+									<input class="input-def"  type="text" name="receiver_tel11" maxlength='4' onKeyUp="strnumkeyup(this)" required msgR="전화번호 앞 자리를 입력하세요." >
+									<span>-</span>
+									<input class="input-def"  type="text" name="receiver_tel12" maxlength='4' onKeyUp="strnumkeyup(this)" required msgR="전화번호 가운데 자리를 입력하세요." >
+									<span>-</span>
+									<input class="input-def"  type="text" name="receiver_tel13" maxlength='4' onKeyUp="strnumkeyup(this)" required msgR="전화번호 뒷 자리를 입력하세요." >
+								</td>
+							</tr>
+							<tr class="hide">
+								<th scope="row">휴대폰번호</th>
+								<td class="phone">
+									<input class="input-def"  type="text" name="receiver_tel21" maxlength='3' onKeyUp="strnumkeyup(this)" required msgR="휴대폰 번호 앞 자리를 입력하세요." >
+									<span>-</span>
+									<input class="input-def"  type="text" name="receiver_tel22" maxlength='4' onKeyUp="strnumkeyup(this)" required msgR="휴대폰 번호 가운데 자리를 입력하세요." >
+									<span>-</span>
+									<input class="input-def"  type="text" name="receiver_tel23" maxlength='4' onKeyUp="strnumkeyup(this)" required msgR="휴대폰 번호 뒷 자리를 입력하세요." >
+								</td>
+							</tr>
+							<!--tr>
+								<th scope="row">이메일</th>
+								<td class="email">
+									<input type="text" title="이메일 아이디를 입력하세요." ><span>@</span>
+									<input type="text" title="이메일 도메인을 입력하세요." >
+									<a href="#" target="_self"><img src="../img/button/cart_order_email_btn.gif" alt="직접입력" ></a>
+								</td>
+							</tr-->
+							<tr class="hide">
+								<th scope="row">배송 메시지</th>
+								<td class="message">
+									<div class="pos_r">
+										<!--
+										<?if(count($arr_prlist)>1){?>
+										<?}else{?>
+											<input type="hidden" name="msg_type" value="2">&nbsp;
+										<?}?>
+										-->
+										<input type="hidden" name="msg_type" value="1">
+										<input name = 'order_prmsg' type="text" title="배송 메시지를 입력하세요." >
+
+										<div class="delivery_message">
+											<ul class="delivery_message_list">
+												<li><a href="javascript:;" class = 'CLS_deliMsg'>부재시 경비실에 맡겨주세요.</a></li>
+												<li><a href="javascript:;" class = 'CLS_deliMsg'>빠른 배송 부탁합니다.</a></li>
+												<li><a href="javascript:;" class = 'CLS_deliMsg'>배송전 연락 바랍니다.</a></li>
+											</ul>
+										</div>
+										<script type="text/javascript">
+										$(function(){
+											$('div.cart_order_wrap table.info_table td.message input').mouseenter(function(){
+												$('div.delivery_message').css('display' , 'block');
+											});
+											$('div.delivery_message').mouseleave(function(){
+												$('div.delivery_message').css('display' , 'none');
+											});
+										});
+										</script>
+
+									</div>
+								</td>
+							</tr>
+							<? if($_SERVER['REMOTE_ADDR'] == "218.234.32.111" || $_SERVER['REMOTE_ADDR'] == "106.240.162.98" || $_SERVER['REMOTE_ADDR'] == "218.234.32.11" ){ ?>
+							<tr>
+								<th>배송비 결제</th>
+								<td>
+									<input type=radio name=deli_type class="deli_type" value="0" checked > 선불
+									<input type=radio name=deli_type class="deli_type" id="deli_type1" value="1" > 착불
+								</td>
+							</tr>
+							<? }else{ ?>
+								<input type="hidden" id='deli_type' name=deli_type value="0" >
+							<? } ?>
+							
+						</tbody>
+					</table>
+				</div>
+				<!-- // 배송지정보 -->
+
+				<!-- 할인정보 -->
+				<?if ((strlen($_ShopInfo->getMemid())>0 && $_data->reserve_maxuse>=0 && $user_reserve!=0) || (strlen($_ShopInfo->getMemid())>0 && $_data->coupon_ok=="Y")) {?>
+				
+				<div class="dc_area" style=''>
+					<h4 class="table-title">할인정보</h4>
+					<table class="th-left-util" summary="할인받을 쿠폰 및 적립금을 입력할 수 있습니다.">
+						<caption>04. 할인정보</caption>
+						<colgroup>
+							<col style="width:106px" >
+							<col style="width:auto" >
+						</colgroup>
+						<?
+							if($okreserve<0){
+								$okreserve=(int)($sumprice*abs($okreserve)/100);
+								if($reserve_maxprice>$sumprice) {
+									$okreserve=$user_reserve;
+									$remainreserve=0;
+								} else if($okreserve>$user_reserve) {
+									$okreserve=$user_reserve;
+									$remainreserve=0;
+								} else {
+									$remainreserve=$user_reserve-$okreserve;
+								}
+							}
+						?>
+
+
+						<?if(strlen($_ShopInfo->getMemid())>0 && $_data->coupon_ok=="Y") {?>
+						<tr>
+							<th scope="row">상품쿠폰</th>
+							<td>
+								<div class="select w300 small">
+									<span class="ctrl"><span class="arrow"></span></span>
+									<button type="button" class="my_value">쿠폰선택</button>
+									<ul class="a_list">
+										<li><a href="#1">장바구니쿠폰 2,000원</a></li>
+										<li><a href="#2">회원가입쿠폰 2,000원</a></li>
+									</ul>
+								</div>
+							</td>
+						</tr>
+						<tr>
+							<th scope="row">상품쿠폰</th>
+							<td><button class="btn-dib-line round coupon-use" type="button">쿠폰사용</button></td>
+						</tr>
+						<tr>
+							<th scope="row"><label for="mileage-use">마일리지</label></th>
+							<td>
+								<input type="text" name="" id="mileage-use" class="input-def" title="마일리지 금액 자리">
+								<span>(보유 마일리지 : 350M)</span>
+							</td>
+						</tr>
+						<tr class="hide">
+							<th scope="row">상품쿠폰</th>
+							<td class="coupon">
+								<div id = "ID_coupon_code_layer"></div>
+								<input type = "hidden" name = "coupon_code">
+								<input type=hidden name="bank_only" value="N">
+								<span>할인</span>
+								<input type="text" name='coupon_dc' id='coupon_dc' value='0' readonly title="쿠폰으로 할인받은 금액" ><span>원</span>
+								<input type="hidden" name='coupon_reserve' value = '0'  >
+								<a href="javascript:coupon_check('<?=$okreserve?>');" target="_self" class = 'CLS_useCoupon' >
+									<img src="../img/button/cart_order_coupon_btn.gif" alt="쿠폰조회 및 적용" >
+								</a>
+							</td>
+						</tr>
+
+						
+						<!--
+						<tr>
+							<td class="coupon">
+								<span>적립</span>
+								<input type="text" name='coupon_reserve' value = '0' readonly title="쿠폰으로 적립받은 금액" ><span>원</span>
+							</td>
+						</tr>
+						-->
+						<?}?>
+
+						<?if (strlen($_ShopInfo->getMemid())>0 && $_data->reserve_maxuse>=0 && $user_reserve!=0){?>
+						<tr class="hide">
+							<th scope="row">적립금</th>
+							<td class="point">
+								<?if($reserve_maxprice>$sumprice) {?>
+									<span>구매금액이 <?=number_format($reserve_maxprice)?>원 이상이면 사용가능합니다.</span>
+									<input type="hidden" name="usereserve" id="usereserve" value=0>
+									<input type="hidden" name="okreserve" value=0>
+								<?}else if($user_reserve>=$_data->reserve_maxuse){?>
+									<span>보유적립금 : <?=number_format($remainreserve+$okreserve)?>원 | 사용가능적립금 : <?=number_format($okreserve)?>원</span>
+									<input type="text" name="usereserve" id="usereserve" value='0' title="사용할 적립금을 입력하세요." ><span>원</span>
+									<input type="hidden" name="okreserve" value="<?=$okreserve?>">
+									<?if($user_reserve>$reserve_limit){?><input type='hidden' name="remainreserve" value="<?=$remainreserve?>" ><?}?>
+									<a href="javascript:reserve_check('<?=$okreserve?>');" target="_self"><img src="../img/button/cart_order_use_btn.gif" alt="사용" class = 'CLS_useReserve' ></a>
+								<?	}else{?>
+									<span><?=number_format($_data->reserve_maxuse)?>원 이상이면 사용가능합니다.(총 적립금 <?=number_format($remainreserve+$okreserve)?>원)</span>
+									<input type="hidden"  name="usereserve" id="usereserve" value=0>
+									<input type="hidden" name="okreserve" value=0>
+								<?}?>
+							</td>
+						</tr>
+						<?} else {?>
+							<input type="hidden" name="usereserve" id="usereserve" value=0>
+							<input type="hidden" name="okreserve" value="<?=$okreserve?>">
+							<input type='hidden' name="remainreserve" value="<?=$remainreserve?>" >
+						<?} ?>
+					</table>
+				</div>
+				<?}?>
+				<!-- // 할인정보 -->
+
+				<!-- 결제수단 -->
+				<div class="means_area">
+					<h4 class="table-title">결제하기</h4>
+					<ul class="means CLS_paymentArea pay-type">
+						<?if($escrow_info["onlycard"]!="Y" && strstr("YN", $_data->payment_type)) {?>
+							<li><input id="dev_payment1" class="dev_payment radio-def" name="dev_payment" type="radio" value="B" onclick="sel_paymethod(this);" ><label for="dev_payment1">무통장입금</label></li>
+						<?}?>
+
+
+						<?if(strstr("YC", $_data->payment_type) && ord($_data->card_id)) {?>
+							<li><input id="dev_payment2" class="dev_payment radio-def" name="dev_payment" type="radio" value="C" onclick="sel_paymethod(this);" ><label for="dev_payment2">신용카드</label></li>
+						<?}?>
+
+
+						<?if($escrow_info["onlycard"]!="Y" && !strstr($_SERVER["HTTP_USER_AGENT"],'Mobile') && !strstr($_SERVER[HTTP_USER_AGENT],"Android") && ord($_data->trans_id)){?>
+							<li><input id="dev_payment3" class="dev_payment radio-def" name="dev_payment" type="radio" value="V" onclick="sel_paymethod(this);" ><label for="dev_payment3">계좌이체</label></li>
+						<?}?>
+
+
+						<?if($escrow_info["onlycard"]!="Y" && ord($_data->virtual_id)){?>
+							<li><input id="dev_payment4" class="dev_payment radio-def" name="dev_payment" type="radio" value="O" onclick="sel_paymethod(this);" ><label for="dev_payment4">가상계좌</label></li>
+						<?}?>
+
+
+						<?if(($escrow_info["escrowcash"]=="A" || ($escrow_info["escrowcash"]=="Y" && (int)($sumprice+$deli_price)>=$escrow_info["escrow_limit"])) && ord($_data->escrow_id) && false ){?>
+						<? //YTN 에스크로가 존재하지 않음
+							$pgid_info="";
+							$pg_type="";
+							$pgid_info=GetEscrowType($_data->escrow_id);
+							$pg_type=trim($pgid_info["PG"]);
+						?>
+							<?if(strstr("ABCD",$pg_type)){?>
+								<li><input id="dev_payment5" class="dev_payment radio-def" name="dev_payment" type="radio" value="Q" onclick="sel_paymethod(this);" ><label for="dev_payment5">에스크로</label></li>
+							<?}?>
+						<?}?>
+						<!-- 휴대폰 결제시 신용카드 결제창 호출로 임시 주석 처리 수정해야함	outhor 정욱  2014-12-30-->
+						<!-- 
+						<?if(ord($_data->mobile_id)){?>
+							<li><input id="dev_payment6" class="dev_payment" name="dev_payment" type="radio" value="M" onclick="sel_paymethod(this);" ><label for="dev_means6">휴대폰</label></li>
+						<?}?>
+						-->
+					</ul>
+
+					<div class="pay-type-card" id="card_type" style="display:none">
+						<table border=0 cellpadding=0 cellspacing=0 width="100%" summary="임금계좌를 선택">
+							<colgroup>
+								<?if($etcmessage[2]=="Y") {?><col width="20%" ><?}?>
+								<col >
+							</colgroup>
+							<?if($etcmessage[2]=="Y") {?>
+							<tr>
+								<th>입금자명</th>
+								<td>
+									<input type="text" name="bank_sender" value="" >
+								</td>
+							</tr>
+							<?}?>
+							<tr>
+								<th>입금계좌</th>
+								<td>
+									<select name="pay_data_sel" id="pay_data_sel" onchange="sel_account(this)" style="width:350px;">
+										<option value='' >입금 계좌번호 선택 (반드시 주문자 성함으로 입금)</option>
+										<?foreach($bank_payinfo as $k => $v){?>
+										<option value="<?=$v?>" ><?=$v?></option>															
+										<?}?>
+									</select>
+								</td>
+							</tr>
+						</table>
+					</div>
+
+					<ul class="pay-type-attention">
+						<li>신용카드/ 실시간 이체는 결제 후, 무통장입금은 입금확인 후 배송이 이루어집니다.</li>
+						<li>은행 설정 시 주문번호마다 별도의 고객님만의 가상계좌가 생성됩니다. (주문완료 후 7일 이내 미입금 시 자동취소)</li>
+						<li>일부 자동화 기기(CD/ATM)는 현금, 통장 입금이 제한될 수 있으며 입금오류 방지를 위해 정확한 금액을 입금 바랍니다.</li>
+					</ul>
+					
+				</div>
+				<!-- // 결제수단 -->
+
+				<!-- 결제하기 -->
+				<div class="payment-area">
+					<div class="no-member-agree hide"><!-- 비회원일경우 출력됩니다. -->
+						<input type="checkbox" id="no-member-check" class="checkbox-def">
+						<label for="no-member-check">이용약관 및 개인정보 취급방침에 동의합니다.</label>
+						<textarea name="" id="" cols="30" rows="10">이용약관 나옴다! 'ㅁ'!</textarea>
+					</div>
+
+					<div class="content">
+						<?//$p_price=$sumprice+$deli_price+$sumpricevat;?>
+						<?$p_price=$sumprice+$deli_price+$sumpricevat;?>
+						<input type="hidden" name="total_sum" value="<?=$p_price?>">
+						<p class="title">결제 금액</p>
+						<ul>
+							<li>
+								<span class="txt"><strong>전체상품금액</strong></span>
+								<span class="price">
+									<strong id="paper_goodsprice" ><?=number_format($sumprice)?></strong>
+								</span>
+							</li>
+							<li>
+								<span class="txt">배송료</span>
+								<span class="price order_price_style02">
+									<font id='delivery_price'><?=number_format($deli_price)?></font>
+								</span>
+							</li>
+							<li>
+								<span class="txt">마일리지 사용</span>
+								<span class="price CLS_saleMil">0</span>
+							</li>
+							<li>
+								<span class="txt">할인쿠폰</span>
+								<span class="price">0</span>
+							</li>
+							<li>
+								<span class="txt">상품쿠폰</span>
+								<span class="price CLS_saleCoupon">0</span>
+							</li>
+							<li class="last-price">
+								<span class="txt">총 결제금액</span>
+								<span class="price"><strong id="price_sum"><?=number_format($sumprice+$deli_price)?></strong></span>
+							</li>
+						</ul>
+					</div>
+					<div class="payment-agree">
+						<div class="agree-box"><input id="dev_agree" type="checkbox" class="checkbox-def"><label for="dev_agree">동의합니다.(전자상거래법 제 8조 제 2항)</label></div>
+						<p>주문하실 상품, 가격, 배송정보, 할인내역 등을 <br>최종 확인하였으며,구매에 동의하시겠습니까?</p>
+					</div>
+					
+					<div class="btn-place pay">
+						<div id="paybuttonlayer" name="paybuttonlayer" style="display:block;">
+							<a href="javascript:CheckForm()" onmouseover="window.status='결제';return true;" target="_self" class="btn-dib-function" ><span>CHECK OUT</span></a>
+
+							<!-- <a href="javascript:ordercancel('cancel')" onmouseover="window.status='취소';return true;" target="_self" class="btn_B" style="width:144px">취소하기</a> -->
+						</div>
+						<div id="payinglayer" name="payinglayer" style="display:none;">
+							<img src="<?=$Dir?>img/common/paying_wait.gif" border=0>
+						</div>
+					</div>
+				</div>
+				<!-- // 결제하기 -->
+
+			</div>
+		</div>
+
+	</div>
+
+
+</div><!-- //메인 컨텐츠 -->
+
+<!-- 배송방법 선택을 위해 추가한 스크립트 150824원재-->
+<input type="hidden" name="delivery" value="1" >
+<script>
+//콤마찍기
+/*
+function numberFormat(num) {//콤마찍는 함수
+	var pattern = /(-?[0-9]+)([0-9]{3})/;
+	while(pattern.test(num)) {
+		num = num.replace(pattern,"$1,$2");
+	}
+	return num;
+}
+
+$(document).ready(function(){
+	var price = numberFormat('<?=$sumprice?>');
+	var deli_price = numberFormat('<?=$deli_price?>');
+	var total_price = Number('<?=sumprice?>')+Number('<?=$deli_price?>');
+	total_price = numberFormat(String(total_price));
+	//alert(total_price);
+	$('input:radio[name=delivery]').change(function(){
+		if($(this).val() == "1"){
+			$("#direct_deli").val('N');
+			$("#deli_type").val('0');
+			$("#delivery_price").html(deli_price);
+			$("#delivery_price2").html(deli_price+'원');
+			$("#price_sum").html(total_price);
+			$("#price_sum2").html(total_price+'원');
+			//direct_popup.close();
+		}	
+		if($(this).val() == "2"){
+			$("#direct_deli").val('Y');
+			$("#delivery_price").html('0');
+			$("#delivery_price2").html('0원');
+			$("#price_sum").html(price);
+			$("#price_sum2").html(price+'원');
+			$("#deli_type").val('2');
+			//direct_popup.close();
+			window.open("../front/direct_popup.php","direct_popup","width=400,height=210,scrollbars=no,resizable=no, status=no,");
+
+		}
+	});
+});
+*/
+</script>

@@ -1,0 +1,128 @@
+<div id="page">
+	<section class="page_local">
+		<h2 class="page_title">
+			<a href="javascript:history.back();" class="prev">이전페이지</a>
+			<span>Store</span>
+		</h2>
+	</section>
+
+	<div class="">
+		<form name="FrmStoreSearch" id="FrmStoreSearch" onsubmit="return false;">
+		<div class="find-box">
+			<div class="sec-a clear with-input">
+				<!--
+				<div class="select-cover">
+					<select title="매장타입 선택" name="category" id="category" onchange="StoreList.search()">
+						<option value="">전체</option>
+						{@ store_category}
+						<option value="{.key_}">{.value_}</option>
+						{/}
+					</select>
+				</div>
+				-->
+				<div class="select-cover">
+					<select title="시/도 선택" name="area_code" id="area_code" onchange="StoreList.search()">
+						<option value="">시/도</option>
+						{@ store_area}
+						<option value="{.key_}">{.value_}</option>
+						{/}
+					</select>
+				</div>
+				<div class="input-cover">
+					<input type="search" name="store" id="store" title="검색어 입력" placeholder="직접입력 (EX: 역삼동)">
+					<button type="button">검색</button>
+				</div>
+
+			</div>
+			<!-- <div class="sec-b">
+				<div class="input-cover">
+					<input type="search" name="store" id="store" title="검색어 입력" placeholder="직접입력 (EX: 역삼동)">
+					<button type="button">검색</button>
+				</div>
+			</div> -->
+			<input type="hidden" name="sort" id="sort" value="date" >
+		</div>
+
+		<div class="search-result clear">
+			<div class="search-detail">
+				<div class="top clear">
+					<p class="total">총 <span id="total"></span> 건</p>
+					<ul class="sort clear" id="sort_ul">
+						<li class="active" data-sort="date">최근순</li>
+						<li data-sort="name">가나다순</li>
+
+					</ul>
+				</div>
+
+				<ul class="store-list" id="store-list"></ul>
+			</div>
+			
+		</div>
+		</form>
+	</div>
+	
+</div>
+
+
+<section class="pop_layer layer_btn_local_show">
+	<div class="inner">
+		<h3 class="title">Store<button type="button" class="btn_close">닫기</button></h3>
+		<div class="store_map"id="map" style="width: 100%"></div>
+		<div class="search-detail">
+			<ul class="store-list">
+				<li>
+					<div class="info">
+						<h3 class="name" id="info_name">제이준코스메틱 명동점 <span>직영점</span></h3>
+						<p class="address" id="info_address">서울 중구 명동8길 33</p>
+						<p class="phone" id="info_phone">041-221-0909</p>
+					</div>
+				</li>
+			</ul>
+		</div>
+	</div>
+</section>
+
+<!--<script src="http://dmaps.daum.net/map_js_init/postcode.v2.js"></script>-->
+<script src="https://spi.maps.daum.net/imap/map_js_init/postcode.v2.js"></script>
+<script src="//dapi.kakao.com/v2/maps/sdk.js?appkey=052ced9432ff069991ac27a825f7dc9b&libraries=services"></script>
+<script type="text/javascript">
+
+    var StoreList = {
+
+        init: function(){
+            var me = this;
+            me.load();
+            $('#sort_ul > li').on("click", function(){
+                var sort = $(this).data('sort');
+                $('#sort').val(sort);
+                $(this).addClass("active").siblings().removeClass("active");
+                me.search();
+            });
+            $("#store").keydown(function (e) {
+                if (e.keyCode == 13){
+                    StoreList.search();//실행할 이벤트
+                }
+            });
+
+
+        },
+        load: function () {
+            var search = $('#FrmStoreSearch').serialize();
+            $('#store-list').load('/m/brand/store_inner.php', {
+                search:search
+            });
+        },
+        search: function () {
+            this.load();
+        }
+    }
+
+    $(function() {
+        StoreList.init();
+    })
+</script>
+<script type="text/javascript">
+$(function(){
+
+})
+</script>

@@ -1,0 +1,117 @@
+<div class="title_depth3_sub">
+    <b id="code_name">{=implode(' &gt; ', array_column(nav,'name'))}</b>
+</div>
+
+    <div class="table_style02">
+        <table border="0" cellpadding="0" cellspacing="0" width="100%">
+            <colgroup>
+                <col width="60">
+                <col width="100">
+                <col width="150">
+                <col width="*">
+                <col width="150">
+                <col width="150">
+                <col width="150">
+                <col width="80">
+                <col width="150">
+                <col width="100">
+                <col width="80">
+                <col width="80">
+            </colgroup>
+            <tbody>
+            <tr>
+                <th>
+                    <label class="single"><input type="checkbox" class="hj" data-all="checked[]"><span class="lbl"></span></label>
+                </th>
+                <th>노출순서</th>
+                <th>상품이미지</th>
+                <th>상품명</th>
+                <th>상품코드</th>
+                <th>PC 배너</th>
+                <th>MOBILE 배너</th>
+                <th>사용여부</th>
+                <th>등록일</th>
+                <th>관리자</th>
+                <th>수정</th>
+                <th>삭제</th>
+            </tr>
+            {@ list}
+            <tr >
+                <td><label class="single"><input type="checkbox" class="hj" name="checked[]" value="{.idx}"><span class="lbl"></span></label></td>
+                <td>
+                    <div class="btn-up-down">
+                    <button type="button" class="up" onclick="CategoryList.sort('up',this)" data-idx="{.idx}" data-sort="{.sort}">위로이동</button>
+                    <button type="button" class="down" onclick="CategoryList.sort('down',this)" data-idx="{.idx}" data-sort="{.sort}">아래로이동</button>
+                    </div>
+                <td><img src="{.product.tinyimage}" style="max-width : 70px;"></td>
+                <td class="ta-l">{.product.productname}</td>
+                <td>{.productcode}</td>
+                <td><img src="{.pc_img}" style="max-width : 70px;"></td>
+                <td><img src="{.mobile_img}" style="max-width : 70px;"></td>
+                <td>{? .use_yn=='Y'}<span class="badge badge-sm badge-success">사용</span>{:}<span class="badge badge-secondary badge-sm">미사용</span>{/}</td>
+                <td>{.date_insert}</td>
+                <td>{.admin_id}</td>
+                <td>
+                    <button type="button" class="btn btn-sm btn-outline-info" onclick="CategoryList.modify('{.idx}')"><i class="fa fa-pencil"></i> 수정</button>
+                </td>
+                <td>
+                    <button type="button" class="btn btn-sm btn-outline-danger" onclick="CategoryList.remove('{.idx}')"><i class="fa fa-times"></i> 삭제</button>
+                </td>
+            </tr>
+            {:}
+            <tr height="28" class="empty ">
+                <td colspan="12" align="center">등록된 배너가 없습니다.</td>
+            </tr>
+            {/}
+            </tbody>
+        </table>
+
+        <div class="row m-t-10">
+            <div class="pull-left">
+                <button type="button" class="btn btn-danger btn-sm" onclick="CategoryList.toggleUse('Y')">선택사용</button>
+                <button type="button" class="btn btn-secondary btn-sm" onclick="CategoryList.toggleUse('N')">선택미사용</button>
+            </div>
+            <div class="pull-right">
+                <button type="button" class="btn btn-primary btn-sm" onclick="CategoryBannerInner.register()">배너등록</button>
+            </div>
+        </div>
+    </div>
+    <div class="sub_manual_wrap">
+        <div class="title">
+            <p>매뉴얼</p>
+        </div>
+        <dl>
+            <dt>
+                <span>검색된 회원목록 클릭시 정보</span>
+            </dt>
+            <dd>
+                -
+                <b>아이디</b> :
+                <span style="letter-spacing:-0.5pt;">이메일, 휴대폰, 주소 등 회원기본정보를 확인할 수 있습니다.</span>
+                <br> -
+                <b>비번</b> :
+                <span style="letter-spacing:-0.5pt;">운영자라고 하여도 회원의 비밀번호 자체는 변경하지 못하며 대신 임시비밀번호는 발급가능합니다.</span>
+                <br> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                <span style="letter-spacing:-0.5pt;">(임시비밀번호는 회원가입시 등록한 이메일로 발송됩니다. 이메일이 없을경우 발송되지 않습니다.)</span>
+
+            </dd>
+        </dl>
+    </div>
+    <form id="FrmCategory" name="FrmCategory" action="{C.DIR_ADMIN}/design/category_banner_register.php" method="POST">
+            <input type="hidden" name="categorycode" value="{categorycode}">
+    </form>
+    <script type="text/javascript">
+        var CategoryBannerInner = {
+            init: function() {
+                $('#count_total').html('{count.search}');
+                $('#searched').val('{_POST.search}');
+            },
+            register: function () {
+                $("#FrmCategory").submit()
+            }
+        }
+
+        $(function() {
+            CategoryBannerInner.init();
+        });
+    </script>

@@ -1,0 +1,1063 @@
+<style>
+.delivery-check .th-left { border-top:none;}
+.delivery-check .th-left td, .delivery-check .th-left th{ border-bottom:none}
+button:disabled {opacity: .5;}
+</style>
+
+<div id="page">
+<!-- 내용 -->
+	<main id="content" class="subpage">
+		<form id="FrmOrder" name="FrmOrder" onsubmit="return false">
+		<input type="hidden" name="mode" value="order" />
+		<input type="hidden" name="act" value="temp" />
+		<input type="hidden" name="pg_paymethod" id="pay_method" value="card">
+		
+		<input type="hidden" name="order_num_temp" value="{toid}"><!--{* 임시주문번호 *}-->
+		<input type="hidden" name="order_title" value="{order_title}">
+		
+		<input type="hidden" name="sum_consumer" value="{total.price_consumer}" /> <!--{* 상품정상가합계 *}-->
+		<input type="hidden" name="sum_end" value="{(total.price_end)}" /> <!--{* 상품최종판매가 합계 *}-->
+		<input type="hidden" name="sum_discount" value="{total.price_sale}" /> <!--{* 상품할인금액 *}-->
+		<input type="hidden" name="sum_mileage" value="{total.price_mileage}" /> <!--{* 상품구매 지급마일리지 합계 *}-->
+		
+		<input type="hidden" name="pay_total" id="pay_total" value="{total.price_total}" /> <!--{* 총결제금액 = 상품구매금액+배송비 *}-->
+		<input type="hidden" name="pay_delivery" id="pay_delivery"  value="{total.price_delivery}" /><!--{* 배송비 *}-->
+		<input type="hidden" id="pay_delivery_origin"  value="{total.price_delivery}" /><!--{* 배송비(기본)  *}-->
+
+		
+		<input type="hidden" name="coupon_basket" value="" /><!--{* 장바구니쿠폰 *}-->
+		<input type="hidden" name="coupon_basket_discount" value="0" /><!--{* 장바구니쿠폰할인금액 *}-->
+		
+		<input type="hidden" name="coupon_delivery" value="" /><!--{* 무료배송쿠폰 *}-->
+		<input type="hidden" name="coupon_delivery_discount" value="0" /><!--{* 무료배송쿠폰할인금액 *}-->
+		
+		<input type="hidden" name="coupon_product_discount" value="0" /><!--{* 상품쿠폰할인금액 *}-->
+
+		<input type="hidden" name="pr_type" value="{_GET.pr_type}">
+		
+		
+		
+		<section class="page_local">
+			<h2 class="page_title">
+				<a href="javascript:history.back();" class="prev">이전페이지</a>
+				<span>주문/결제</span>
+			</h2>
+			<div class="page_step">
+				<ul class="clear">
+					<li><span class="icon_order_step01"></span>장바구니</li>
+					<li class="on"><span class="icon_order_step02"></span>주문하기</li>
+					<li><span class="icon_order_step03"></span>주문완료</li>
+				</ul>
+			</div>
+		</section><!-- //.page_local -->
+
+		<section class="orderpage">
+			{? !C.MEMID}
+			<div class="guest-buy-agree">
+				<h4>비회원 주문 약관 동의</h4>
+				<div class="check">
+					<div class="option-box dir-flow"><label><input type="checkbox" class="check_def validate[required]" name="agree_guest" value="Y" data-errormessage-value-missing="비회원 약관에 동의해주세요."><span>비회원구매 개인정보수집 및 이용동의 (필수)</span></label></div>
+					<a href="javascript:;" class="btn_guest_terms">약관보기</a>
+				</div>
+				<div class="comment">
+					<p>회원으로 주문하시면 신규회원 가입 축하 쿠폰 등 더 큰 혜택을 이용하실 수 있습니다.</p>
+					<a href="/m/member_certi.php" class="btn-point">회원가입</a>
+				</div>
+			</div><!-- //.guest-buy-agree -->
+			{/}
+
+			<div class="cart-item-wrap">
+				<div class="title-section with-border">
+					<h4 class="tit">주문상품 ({=number_format(count.total)})</h4>
+				</div>
+
+				<!--{* 주문상품목록:S *}-->
+				{@ list}
+				<div class="box-sector">
+					<div class="sector-inner">
+						{@ .children}
+						{? ..index_ ==0}
+						<div class="goods-item is-mygoods">
+							<figure>
+								<div class="img"><a href="{C.DIR_FRONT}/productdetail.php?productcode={.productcode}"><img src="{.tinyimage}" alt="상품 썸네일"></a></div>
+								<figcaption>
+									<p class="code">{.prodcode}</p>
+									<p class="goods-nm">{.productname}</p>
+								</figcaption>
+							</figure>
+						</div>
+						{/}
+
+						<div class="cart-item-opt">
+							<div class="opt-wrp">
+								
+								<p class="opt">
+									{? ..option_type == 'option'}
+									<span class="point-color">[옵션]</span> {..option_info.option_name}
+									{:}
+									<span class="txt-toneA">[추가]</span> {..option_info.productname}
+									{/}
+									
+									<span class="quantity">
+										{? ..option_info.status == 'normal'}
+										{..qty}개
+										{/}
+									</span>
+								</p>
+								
+								<div class="price">
+									{? ..option_info.status == 'normal'}
+									<strong>{=number_format(.endprice)}</strong>{? .endprice_dc_rate>0}<del>{=number_format(.consumerprice)}</del><span class="discount-color">[{.endprice_dc_rate}%]</span>{/}
+									{/}
+								</div>
+							</div>
+							<div class="cart-item-price clear">
+								<label>주문금액</label>
+								<div class="price"><strong>{=number_format(..option_info.endprice*..qty)}</strong><span class="mileage">{=number_format(..option_info.mileage)}M</span></div>
+							</div>
+						</div>
+						{/}
+					</div>
+				</div>
+				{/}
+				<!--{* 주문상품목록:E *}-->
+				
+				
+				<div class="box-sector">
+					<div class="sector-inner">
+						<div class="price-sum-total">
+							<dl>
+								<dt>총 상품금액</dt>
+								<dd><strong class="txt-toneA">{=number_format(total.price_consumer)}</strong> <span>원</span></dd>
+							</dl>
+							<dl>
+								<dt>총 할인금액</dt>
+								<dd>- {=number_format(total.price_sale)} <span>원</span></dd>
+							</dl>
+							<dl>
+								<dt>배송비
+									<div class="tooltip">
+										<i class="btn_help" title="배송비설명">?</i>
+										<div class="cover" style="width:300px">
+											<div class="box">
+												<ul class="comment-list is-dash">
+													<p>- {=number_format(cfg.delivery.miniprice)}원 이상 구매시 무료배송됩니다.</p>
+													<p>- {=number_format(cfg.delivery.miniprice)}원 미만 구매시 배송비 {=number_format(cfg.delivery.basefee)}원이 부과됩니다.</p>
+													<p>- 도서산간 지역은 배송비가 추가될 수 있습니다.</p>
+												</ul>
+											</div>
+											<button class="btn-close is-large" type="button">닫기</button>
+										</div>
+									</div>
+								</dt>
+								<dd>+ {=number_format(total.price_delivery)} <span>원</span></dd>
+							</dl>
+							<dl class="total">
+								<dt>총 주문금액</dt>
+								<dd><strong class="point-color">{=number_format(total.price_total)}</strong> <span>원</span><p class="mileage">(적립 마일리지 <b>{=number_format(total.price_mileage)}M</b>)</p></dd>
+							</dl>
+						</div>
+					</div>
+				</div>
+				<!-- //.box-sector -->
+
+				<!--{* 사은혜택:S *}-->
+				{? gift}
+				<div class="box-sector">
+					<div class="sector-inner">
+						<dl class="freebie check">
+							<dt>사은혜택({=number_format(count(gift))})</dt>
+							{@ gift}
+							<dd>{.giftname} {.gift_comment}</dd>
+							{/}
+						</dl>
+					</div>
+				</div>
+				{/}
+				<!--{* 사은혜택:E *}-->
+
+				<!--{* 할인적용(회원&일반상품):S *}-->
+				{? C.MEMID && _GET.pr_type==1}
+				<div class="box-sector">
+					<div class="sector-inner">
+						<div class="title-section">
+							<h4 class="tit">할인 적용</h4>
+						</div>
+						<table class="th-left discount_apply">
+							<caption>할인 적용</caption>
+							<colgroup>
+								<col style="width:90px">
+								<col style="width:auto">
+								<col style="width:76px">
+							</colgroup>
+							<tbody>
+								<tr>
+									<th scope="row"><label>상품 쿠폰</label></th>
+									<td>
+										<span class="mr-10"><strong class="discount-color">- <i data-match="coupon_product_discount">0</i></strong> 원</span>
+										<div class="board-attention">적용 가능 : <strong>{=number_format(count.coupon.product)}</strong>장</div>
+									</td>
+									<td><button type="button" id="btn_coupon_product" onclick="Order.openCoupon(this)" class="btn-basic" {? count.coupon.product<1}disabled{/} data-disabled="{? count.coupon.product<1}Y{/}" >쿠폰적용</a></td>
+								</tr>
+								<tr>
+									<th scope="row"><label>장바구니 쿠폰</label></th>
+									<td>
+										<span class="mr-10"><strong class="discount-color">- <i data-match="coupon_basket_discount">0</i></strong> 원</span>
+										<div class="board-attention">적용 가능 : <strong>{=number_format(count.coupon.basket)}</strong>장</div>
+									</td>
+									<td><button type="button" class="btn-basic" id="btn_coupon_basket" data-count="{count.coupon.basket}" onclick="Order.openCoupon(this)" data-disabled="{? count.coupon.basket<1}Y{/}" {? count.coupon.basket < 1}disabled{/}>쿠폰적용</a></td>
+								</tr>
+								{? total.price_delivery>0 //배송비가 있는경우에만 무료배송쿠폰 선택}
+								<tr>
+									<th scope="row"><label>무료배송 쿠폰</label></th>
+									<td>
+										<span class="mr-10"><strong class="discount-color">- <i data-match="coupon_delivery_discount">0</i></strong> 원</span>
+										<div class="board-attention">적용 가능 : <strong>{=number_format(count.coupon.delivery)}</strong>장</div>
+									</td>
+									<td><button type="button" class="btn-basic" id="btn_coupon_delivery" class="btn-basic" onclick="Order.openCoupon(this)" data-disabled="{? count.coupon.delivery<1}Y{/}" {? count.coupon.delivery<1 }disabled{/}>쿠폰적용</a></td>
+								</tr>
+								{/}
+
+								{? cfg.mileage.is_use=='Y'}
+								<tr>
+									<th scope="row"><label>마일리지</label></th>
+									<td colspan="2">
+
+										<input type="text" title="" name="use_mileage" value="0" class="ta-r validate[max[{member.reserve}]]" cfg_pointdata-errormessage-range-overflow="보유한 마일리지를 초과하였습니다." data-filter="price" data-maximum="{cfg.mileage.payable_max}" {=checked(cfg.mileage.payable,'N','disabled')} data-with-coupon="{cfg.mileage.with_coupon}" data-cut="{cfg.mileage.use_unit}" data-rate="{cfg.mileage.usable_max}"> <span class="mr-5">M</span>
+										<div class="tooltip mr-10">
+											<i class="btn_help" title="마일리지설명">?</i>
+											<div class="cover" style="width: 300px; display: none;">
+												<div class="box">
+													<ul class="comment-list is-dash">
+														<li>최소 {=number_format(cfg.mileage.usable_min_accrue)}M이상 부터, {=number_format(cfg.mileage.use_unit)}M 단위로 사용 가능합니다. (1M = 1원)</li>
+														<li>구매 금액의 최대 {cfg.mileage.usable_max}%까지 사용 가능합니다. </li>
+														<li>적립 마일리지 유효기간은 적립일 기준 {cfg.mileage.expire_year} 년이며, 소멸된 미사용 마일리지는 보원 또는 보상하지 않습니다.</li>
+														{? cfg.mileage.with_coupon == 'N'}
+														<li>쿠폰/포인트와 동시에 사용할 수 없습니다.</li>
+														{/}
+													</ul>
+												</div>
+												<button class="btn-close is-large" type="button">닫기</button>
+											</div>
+										</div>
+										<div class="board-attention">보유 : <strong>{=number_format(member.reserve)}</strong> M</div>
+									</td>
+								</tr>
+								{/}
+
+								{? cfg.point.is_use=='Y'}
+								<tr>
+									<th scope="row"><label>포인트</label></th>
+									<td colspan="2">
+										<input type="text" title="" name="use_point" value="0" class="ta-r validate[max[{member.act_point}]]"  data-errormessage-range-overflow="보유한 포인트를 초과하였습니다." data-filter="price" data-widthcoupon="{cfg.point.with_coupon}" data-maximum="{cfg.point.payable_max}" {=checked(cfg.point.payable,'N','disabled')} data-with-coupon="{cfg.point.with_coupon}" data-cut="{cfg.point.use_unit}" data-rate="{cfg.point.usable_max}"/> <span class="mr-5">P</span>
+										<div class="tooltip mr-10">
+											<i class="btn_help" title="포인트설명">?</i>
+											<div class="cover" style="width: 300px; display: none;">
+												<div class="box">
+													<ul class="comment-list is-dash">
+														<li>포인트는 주문금액 {=number_format(cfg.point.usable_min_buy)}원 이상 결제시 사용 가능합니다.</li>
+														<li>최소 {=number_format(cfg.point.usable_min_accrue)}P이상 부터, {=number_format(cfg.point.use_unit)}P 단위로 사용 가능합니다. (1P = 1원)</li>
+														<li>구매 금액의 최대 {cfg.point.usable_max}%까지 사용 가능합니다. </li>
+														<li>적립 포인트 유효기간은 적립일 기준 {cfg.point.expire_year} 년이며, 소멸된 미사용 포인트는 보원 또는 보상하지 않습니다.</li>
+														{? cfg.point.with_coupon == 'N'}
+														<li>쿠폰/마일리지와 동시에 사용할 수 없습니다.</li>
+														{/}
+													</ul>
+												</div>
+												<button class="btn-close is-large" type="button">닫기</button>
+											</div>
+										</div>
+										<div class="board-attention">보유 : <strong>{=number_format(member.act_point)}</strong> P</div>
+									</td>
+								</tr>
+								{/}
+							</tbody>
+						</table>
+					</div>
+				</div>
+				{/}
+				<!--{* 할인적용(회원&일반상품):E *}-->
+
+				
+				<div class="delivery-check">
+					<div class="title-section is-function with-border">
+						<h4 class="tit">주문고객</h4>
+						
+					</div>
+					<div class="inner">
+						{? C.MEMID}
+						<!--{* 주문고객(회원):S *}-->
+						<div class="delivery-name"><strong>{member.name}</strong></div>
+						<ul>
+							<li>{member.mobile} {? member.home_tel}<span class="txt-toneC" style="padding:0 10px">/</span> {member.home_tel}{/}</li>
+							<li>{member.email}</li>
+						</ul>
+
+						<input type="hidden" name="buyer_name" value="{member.name}" ><!--{* 주문자명 *}-->
+						<input type="hidden" name="buyer_email" value="{member.email}" ><!--{* 주문자이메일 *}-->
+						<input type="hidden" name="buyer_mobile" value="{member.mobile}" ><!--{* 주문자휴대전화번호 *}-->
+						<input type="hidden" name="buyer_tel" value="{member.home_tel}" ><!--{* 주문자명 *}-->
+		
+						<!--{* 주문고객(회원):E *}-->
+						{:}
+						<table class="th-left">
+							<caption>주문고객 정보 변경</caption>
+							<colgroup>
+								<col style="width:80px">
+								<col style="width:auto">
+							</colgroup>
+							<tbody>
+								<tr>
+									<th scope="row"><label class="required" for="pop_buyer_name">주문자명</label></th>
+									<td>
+										<input type="text" id="pop_buyer_name" data-match="receiver_name"  title="주문자명 입력자리" placeholder="이름을 입력하세요." name="buyer_name" class="validate[required] w100-per" data-errormessage-value-missing="주문자명을 입력해주세요.">
+									</td>
+								</tr>
+								<tr>
+									<th scope="row" class="va-top"><label class="required" for="pop_buyer_email">이메일</label></th>
+									<td>
+										<div class="email-cover">
+											<div><input type="text" name="buyer_email[id]" title="이메일 아이디 입력" id="pop_buyer_email" class="validate[required,custom[email_id]]"
+												data-errormessage-value-missing="이메일을 입력해주세요."></div>
+											<div><input type="text"  name="buyer_email[etc]" title="이메일 도메인 직접입력" class="validate[required,custom[domain]]]"
+												data-errormessage-value-missing="이메일을 입력해주세요." id="buyer_email_domain"></div>
+										</div>
+										<div style="margin-top:3px">
+
+											<select title="이메일 도메인 선택" id="buyer_email_domain_list" class="select_line w100-per">
+												<option value="etc">직접입력</option>
+												{@ _email_domain_arr}
+												<option value="{.value_}">{.value_}</option>
+												{/}
+											</select>
+
+
+										</div>
+									</td>
+								</tr>
+								<tr>
+									<th scope="row" class="va-top"><label class="required" for="pop_buyer_tel1">휴대전화</label></th>
+									<td>
+										<div class="tel-cover">
+											<div>
+												<select title="휴대전화 앞자리 선택" name="buyer_mobile[]" id="pop_buyer_tel1" class="select_line validate[required]"
+												data-errormessage-value-missing="휴대전화번호를 선택해주세요." data-match="receiver_mobile_1">
+													<option value="">선택</option>
+													{@ _arrMobile}
+													<option value="{.value_}">{.value_}</option>
+													{/}
+												</select>
+											</div>
+											<div><input type="tel" title="휴대전화 번호 가운데 입력자리"  maxlength=4 name="buyer_mobile[]"
+												data-filter="numeric" class="validate[required, minSize[4], maxSize[4]]" data-errormessage-value-missing="휴대전화번호를 입력해주세요."
+												data-match="receiver_mobile_2"></div>
+											<div><input type="tel" title="휴대전화 번호 마지막 입력자리"  maxlength=4 name="buyer_mobile[]"
+												data-filter="numeric" class="validate[required, minSize[4], maxSize[4]]" data-errormessage-value-missing="휴대전화번호를 입력해주세요."
+												data-match="receiver_mobile_3"></div>
+
+										</div>
+									</td>
+								</tr>
+								<tr>
+									<th scope="row"><label for="pop_buyer_tel2">전화번호</label></th>
+									<td>
+										<div class="tel-cover">
+											<div>
+												<select title="전화번호 앞자리 선택" id="pop_buyer_tel2" class="select_line" value="buyer_tel[]" data-match="receiver_tel_1">
+													<option value="">선택</option>
+													{@ _arrTel}
+													<option value="{.value_}">{.value_}</option>
+													{/}
+												</select>
+											</div>
+											<div><input type="text" title="전화번호 가운데 입력자리" maxlength=4 name="buyer_tel[]"
+												data-filter="numeric" data-match="receiver_tel_2"></div>
+											<div><input type="text" title="전화번호 마지막 입력자리" maxlength=4 name="buyer_tel[]"
+												data-filter="numeric" data-match="receiver_tel_3"></div>
+										</div>
+									</td>
+								</tr>
+							</tbody>
+						</table>
+						{/}
+					</div>
+				</div>
+				
+				
+				<!-- 배송지정보(회원) -->
+				<div class="delivery-check">
+					<div class="title-section is-function with-border">
+						<h4 class="tit">배송지 정보</h4>
+						{? C.MEMID}
+						{:}
+						<div class="option-box dir-flow"><label><input type="checkbox" class="check_def" name="delivery_choice" value="copy" title="주문고객 정보와 동일"><span>주문고객 정보와 동일</span></label></div>
+						{/}
+						<div class="function-area">
+							{? C.MEMID}
+							<button type="button" onclick="OrderAddress.open()" class="btn-basic">배송지목록</button>
+							{/}
+						</div>
+
+					</div>
+					<div class="inner">
+					<table class="th-left" style="border-top:none">
+						<caption>배송지 정보 변경</caption>
+						<colgroup>
+							<col style="width:80px">
+							<col style="width:auto">
+						</colgroup>
+						<tbody>
+							<tr>
+								<th scope="row"><label class="required" for="receiver_name">받는분</label></th>
+								<td>
+									<input type="text" class="w100-per validate[required]" title="주문자명 입력자리" value="{member.name}" name="receiver_name" id="receiver_name" placeholder="이름을 입력하세요." data-errormessage-value-missing="받는분 이름을 입력해주세요.">
+								</td>
+							</tr>
+							<tr>
+								<th scope="row" class="va-top"><label class="required" for="pop_delivery_adress">주소</label></th>
+								<td>
+									<div class="form-multi">
+										<input type="text" id="pop_delivery_adress" title="우편번호 출력자리" class="validate[required]" value="{member.home_post}" style="width:145px" data-errormessage-value-missing="주소를 입력해주세요." name="receiver_zipcode" data-post="zonecode" readonly  onclick="OrderAddress.post()">
+										<button type="button" onclick="OrderAddress.post()" class="btn-basic h-input" style="padding:0 6px">우편번호찾기</button>
+									</div>
+									<div class="form-multi"><input type="text" name="receiver_addr" class="validate[required] w100-per" data-errormessage-value-missing="주소를 입력해주세요." title="주소 입력자리" value="{member.home_addr}" data-post="address"  onclick="OrderAddress.post()" readonly></div>
+									<div class="form-multi"><input type="text" name="receiver_addr_detail" class="w100-per validate[required]" title="상세 주소 입력" placeholder="상세 주소를 입력하세요." data-post="buildingName" value="{member.home_addr_detail}"></div>
+								</td>
+							</tr>
+							<tr>
+								<th scope="row" class="va-top"><label class="required" for="receiver_mobile_1">휴대전화</label></th>
+								<td>
+									<div class="tel-cover">
+										<div>
+											<select name="receiver_mobile[0]" title="휴대전화 첫번째 번호" id="receiver_mobile_1" class="select_line">
+												<option value="">선택</option>
+												{@ _arrMobile}
+												<option value="{.value_}" {=checked(member.mobile_arr[0],.value_,'selected')}>{.value_}</option>
+												{/}
+											</select>
+										</div>
+										<div><input type="tel" name="receiver_mobile[1]" value="{member.mobile_arr[1]}" title="휴대전화 번호 가운데 입력자리" id="receiver_mobile_2" data-filter="numeric" class="validate[required, minSize[4], maxSize[4]]" data-errormessage-value-missing="휴대전화번호를 입력해주세요." maxlength="4"></div>
+										<div><input type="tel" name="receiver_mobile[2]" value="{member.mobile_arr[2]}" title="휴대전화 번호 마지막 입력자리" id="receiver_mobile_3" data-filter="numeric" class="validate[required, minSize[4], maxSize[4]]" data-errormessage-value-missing="휴대전화번호를 입력해주세요." maxlength="4"></div>
+									</div>
+								</td>
+							</tr>
+							<tr>
+								<th scope="row"><label for="receiver_tel_1">전화번호</label></th>
+								<td>
+									<div class="tel-cover">
+										<div>
+											<select name="receiver_tel[0]" title="전화번호 첫번째 번호" id="receiver_tel_1" class="select_line">
+												<option value="">선택</option>
+												{@ _arrTel}
+												<option value="{.value_}" {=checked(member.home_tel_arr[0],.value_,'selected')}>{.value_}</option>
+												{/}
+											</select>
+											
+										</div>
+										<div><input type="text" name="receiver_tel[1]" value="{member.home_tel_arr[1]}" title="전화번호 중간 번호"  id="receiver_tel_2" data-filter="numeric"  maxlength="4" ></div>
+										<div><input type="text" name="receiver_tel[2]" value="{member.home_tel_arr[2]}" title="전화번호 마지막 번호" id="receiver_tel_3" data-filter="numeric"  maxlength="4"></div>
+									</div>
+								</td>
+							</tr>
+							<tr>
+								<th scope="row"><label for="pop_delivery_message">배송메모</label></th>
+								<td>
+									<div class="form-multi" style="font-size:1.1rem">
+										<select name="receiver_memo" title="배송메모 선택" id="pop_delivery_message" class="select_line w100-per">
+											<option value="">배송시 요청사항을 선택해주세요.</option>
+											{@ cfg.receiver_memo}
+											<option value="{.value_}">{.value_}</option>
+											{/}
+											<option value="etc">직접입력</option>
+										</select>
+									</div>
+									<div class="form-multi hide" data-cond="receiver_memo" data-cond-value="etc">
+										<input type="text" class="w100-per" placeholder="기타 내용을 직접 입력해주세요. (한글 20자 이내)" title="배송메모 입력자리" name="receiver_memo_etc">
+									</div>
+
+								</td>
+							</tr>
+						</tbody>
+					</table>
+				</div>
+
+				</div>
+				<!-- //배송지정보(회원) -->
+				
+				<!-- 결제금액 -->
+				<div class="price-sum-total with-bg">
+					<h4 class="title">결제금액</h4>
+					<div class="inner">
+						<dl>
+							<dt>총 상품금액</dt>
+							<dd><strong>{=number_format(total.price_consumer)}</strong> 원</dd>
+						</dl>
+						<dl>
+							<dt>할인</dt>
+							<dd class="discount-color">- {=number_format(total.price_sale)} 원</dd>
+						</dl>
+						<dl>
+							<dt>쿠폰할인</dt>
+							<dd class="discount-color">- <i id="sub_discount">0</i> 원</dd>
+						</dl>
+						{? cfg.mileage.is_use == 'Y'}
+						<dl>
+							<dt>마일리지 사용</dt>
+							<dd class="discount-color">- <i id="use_mileage">0</i> 원</dd>
+						</dl>
+						{/}
+						{? cfg.point.is_use == 'Y'}
+						<dl>
+							<dt>포인트 사용</dt>
+							<dd class="discount-color">- <i id="use_point">0</i></span> 원</dd>
+						</dl>
+						{/}
+						<dl>
+							<dt>배송비</dt>
+							<dd>+ <i id="add_delivery">{=number_format(total.price_delivery)}</i> 원</dd>
+						</dl>
+						<dl class="total">
+							<dt>총 결제금액</dt>
+							<dd><strong class="point-color" id="pay_pg">{=number_format(total.price_total)}</strong> 원</dd>
+						</dl>
+					</div>
+				</div>
+				<!-- //결제금액 -->
+				
+				<div class="payment-type">
+					<!-- 결제수단 -->
+					<div class="title-section with-border"><h4 class="tit">결제수단</h4></div>
+					<div class="inner">
+						<div class="payment-tab" data-ui="TabMenu">
+							<div class="divide-box-wrap three">
+								<ul class="tabs-menu divide-box">
+									<li><button type="button" data-content="menu" data-paymethod="card" class="active" title="선택됨"><span><i class="icon-pay-credit"></i>신용카드</span></button></li>
+									<li><button type="button" data-content="menu" data-paymethod="acnt" class=""><span><i class="icon-pay-bank"></i>실시간 계좌이체</span></button></li>
+									<li><button type="button" data-content="menu" data-paymethod="vcnt"  class=""><span><i class="icon-pay-account"></i>무통장입금 (가상계좌)</span></button></li>
+								</ul>
+							</div>
+							<div class="tabs-content">
+								<div class="active" data-content="content">
+									<ul class="dash-list">
+										<li>신용카드 결제시 '카드사혜택' 버튼을 클릭하시면 무이자할부/청구할인/즉시할인에 대한 정보를 보실 수 있습니다.</li>
+										<li>체크카드, 법인카드의 경우 무이자 할부행사에서 제외됩니다.</li>
+										<li>신용카드로 결제하시는 최종 결제 금액이 기준금액 미만이거나, 그 외 무이자 할부가 되지 않는 기타 신용카드를 사용하시는 <br>경우는 유이자 할부로 결제되오니 반드시 참고하시기 바랍니다.</li>
+									</ul>
+									<!--<a href="javascript:;" onclick="Order.openBenefit()" class="btn-point mt-10">카드사 혜택</a>-->
+								</div>
+								<div data-content="content" class="">
+									<ul class="dash-list">
+										<li>결제와 동시에 즉시 이체되며, 전체 주문 취소 시 당일 입금되며, 부분취소 시 익일 입금됩니다.</li>
+										<li>계좌이체 수수료는 별도로 부과되지 않습니다.</li>
+										<li>결제 시 입력한 본인의 계좌에서 즉시 이체 처리되며, 처리 과정에서 문제 발생 시 취소 처리와 함께 입력한 계좌로 즉시 재입금 처리 됩니다.</li>
+										<li>은행 사정에 따라 서비스 가능 시간이 있으니, 23시 이후에는 은행 별 이용 가능시간을 미리 확인하신 후 결제를 진행해 주세요.</li>
+									</ul>
+								</div>
+								<div data-content="content" class="">
+									<ul class="dash-list">
+										<li>주문자명과 입금자명이 다르더라도 발급된 가상계좌번호로 정확한 금액을 입금하시면 정상 입금확인이 가능합니다.</li>
+										<li>무통장주문 후 3일이 지날 때까지 입금이 안되면 주문은 자동 취소되니, 입금일을 꼭 확인해주세요.</li>
+									</ul>
+								</div>
+							</div>
+
+							{? !C.MEMID}
+							<div class="refund_account tabs-content hide" id="bank_div">
+								<table class="th-left mt-15">
+									<caption>환불계좌 등록</caption>
+									<colgroup>
+										<col style="width:90px">
+										<col style="width:auto">
+									</colgroup>
+									<tbody>
+									<tr>
+										<th scope="row"><label for="bank_code">환불은행</label></th>
+										<td>
+											<div class="select refund_account">
+												<select id="bank_code" class="select_line w100-per" title="은행 선택">
+													<option value="">은행을 선택해주세요.</option>
+													{@ _kcp_bank_code}
+													<option value="{.key_}">{.value_}</option>
+													{/}
+												</select>
+											</div>
+										</td>
+									</tr>
+									<tr>
+										<th scope="row"><label>환불계좌번호</label></th>
+										<td>
+											<input type="text" class="refund_account w100-per" title="계좌번호 입력자리" id="account_num" name="account_num" placeholder="'-'없이 입력해주세요." >
+										</td>
+									</tr>
+									<tr>
+										<th scope="row"><label>예금주</label></th>
+										<td>
+											<div class="input_addr">
+												<input type="text" class="refund_account" title="예금주명 입력자리" id="depositor" name="depositor" placeholder="예금주명" >
+												<div class="btn_addr">
+													<button type="button" class="btn-basic h-input refund_account" id="confirm_account" onclick="Account.acnt_chk()">계좌확인</button>
+													<button type="button" class="btn-basic h-input hide" id="re_auth" onclick="Account.acnt_del()">재인증</button>
+												</div>
+											</div>
+										</td>
+									</tr>
+									<input type="hidden" id="bank_checked" value="0">
+									<input type="hidden" id="bank_code_val" class="refund_account" name="bank_code" value="0">
+									</tbody>
+								</table>
+							</div>
+							{/}
+						</div>
+					</div>
+					<!-- //결제수단 -->
+					<!-- 주문동의 -->
+					<div class="inner">
+						<div class="agree">
+							<div class="title-section is-function">
+								<h5 class="tit">주문동의</h5>
+								<div class="function-area">
+									<div class="option-box dir-flow"><label><input type="checkbox" title="주문동의"  name="agree" value="Y" class="check_def validate[required]" data-errormessage-value-missing="구매에 동의해주세요." ><span>동의합니다</span></label></div>
+								</div>
+							</div>
+							<p>주문할 상품의 상품명, 상품가격, 배송정보를 확인하였으며, 구매에 동의 하시겠습니까? (전자상거래법 제8조 제2항)</p>
+						</div>
+					</div>
+					<!-- //주문동의 -->
+				</div>
+				
+				<div class="box-sector no-line">
+					<div class="sector-inner">
+						<div class="btn_area no-margin">
+							<ul class="ea2">
+								<li><a href="{C.DIR_M}/basket.php" class="btn-line h-large">장바구니</a></li>
+								<li><button type="submit" class="btn-point h-large">결제하기</button></li>
+							</ul>
+						</div>
+					</div>
+				</div>
+				
+				<div class="attention">
+					<div class="title">주문 전 확인사항 <a class="show">보기</a></div>
+					<ul>
+						<li>쿠폰적용할인/마일리지 및 포인트 사용은 회원만 이용하실 수 있습니다.</li>
+						<li>비회원 및 임직원 상품 구매시는 쿠폰적용할인/마일리지 및 포인트 사용이 불가합니다.</li>
+						<li>상품구매시 마일리지는 iKNOWiONE 회원만 적립 가능합니다.</li>
+					</ul>
+				</div>
+			</div><!-- //.cart-item-wrap -->
+			
+		</section><!-- //.orderpage -->
+		
+		<!-- 비회원구매이용약관팝업 -->
+		<section class="pop_layer layer_guest_terms">
+			<div class="inner">
+				<h3 class="title">비회원구매 개인정보수집 및 이용약관<button type="button" class="btn_close">닫기</button></h3>
+				<div class="layer-contents">
+					<div class="guest-terms">
+						<div class="editor-area">
+							{privacy_buy}
+						</div>
+						<div class="btn_area mt-20">
+							<ul>
+								<li><button type="button" class="btn-point h-large btn_close">확인</button></li>
+							</ul>
+						</div>
+					</div>
+				</div>
+			</div>
+		</section>
+		<!-- //비회원구매이용약관팝업 -->
+			
+		</form>
+	</main>
+	<!-- //내용 -->
+
+</div>
+
+
+<!--{* 주문서폼:S *}-->
+<div id="order_form"></div>
+<!--{* 주문서폼:E *}-->
+
+
+
+
+<script type="text/javascript" src="{C.POST_JS}"></script>
+<script type="text/javascript" src="/m/template/order/order_address.js"></script>
+
+<!--{* 우편번호 스크립트 *}-->
+
+
+<!--계좌인증스크립트-->
+<script src="/static/js/account.js"></script>
+
+<script type="text/javascript">
+	OrderAddress.callback = function() {
+		Order.calcDelivery();
+	};
+	var Order = {
+		init: function () {
+			var me = this;
+
+			//주문서
+			var option = $.extend({}, validation_option, {
+				validateNonVisibleFields: true,
+				onValidationComplete: function (form, status) {
+					if (status) me.pay();
+				}
+			});
+			$("#FrmOrder").validationEngine('attach', option);
+
+			//주문자
+			var option_buyer = $.extend({}, validation_option, {
+				validateNonVisibleFields: false,
+				onValidationComplete: function (form, status) {
+					if (status) me.setBuyer();
+				}
+			});
+			$('#FrmDeliveryBuyer').validationEngine('attach',option_buyer);
+
+			//배송지정보
+			var option_receiver = $.extend({}, validation_option, {
+				validateNonVisibleFields: false,
+				onValidationComplete: function (form, status) {
+					if (status) me.setReceiver();
+				}
+			});
+			$('#FrmDeliveryReceiver').validationEngine('attach',option_receiver);
+
+
+
+			me.setUI();
+
+			$('[data-paymethod]').on('click', function () {
+				var paymethod = $(this).data("paymethod");
+				$('#pay_method').val(paymethod);
+				if (paymethod == 'card') $('#bank_div').addClass('hide');
+				else $('#bank_div').removeClass('hide');
+			});
+
+			//숫자체크
+			$('[data-filter="numeric"], [data-filter="price"]').on('keydown.row input.row', function (evt) {
+				var v = $(this).val();
+				v = v.replace(/[^0-9]/g, '');
+
+				var filter = $(this).data('filter');
+				if (filter == 'price') {
+					v = v.replace(/^0+(?!$)/, ''); //전화번호 입력 부분에서 0으로 시작하게 입력하면 사라지기때문에 가격에서만 처리되게 분기 안으로 옮김 20100114 bshan
+					v = UI.numberFormat(v);
+				}
+				$(this).val(v);
+			});
+
+			//배송지정보
+			$('[name="delivery_choice"]').on('click', function(e) {
+				switch(this.value) {
+					case 'reset': //새로입력
+					default:
+						$('#section_receiver').find('input, select').each(function() {
+							if(/receiver_memo|receiver_memo_etc/.exec(this.name)) { //리셋제외
+								return true;
+							}
+							$(this).val('');
+						});
+						break;
+					case 'copy': //주문고객과 동일
+						$('[data-match]').each(function() {
+							var field_id = $(this).data('match');
+							$('#'+field_id).val(this.value);
+						});
+						break;
+					case 'member': //회원정보와 동일
+					case 'lastest': //최근배송지
+						OrderAddress.getAddress({mode:'address',act:this.value}, function() {
+							me.calcDelivery();
+						});
+						break;
+				}
+			});
+
+			$('#buyer_email_domain_list').on('change', function() {
+				$('#buyer_email_domain').val(this.value);
+			});
+
+			$('[name="use_point"], [name="use_mileage"]').on('blur', function() {
+				
+				var maximum = $(this).data('maximum');
+				var cut = $(this).data('cut');
+				var with_coupon = $(this).data('with-coupon'); //쿠폰동시사용여부
+
+				var v = parseInt(this.value.replace(/,/g,""));
+				if(v > maximum) v = maximum;
+
+				//절삭
+				var v = Math.floor(v/cut)*cut;
+				$(this).val(UI.numberFormat(v));
+
+
+				if(this.name == 'use_point') {
+					if(v > 0) $('[name="use_mileage"]').val('0').attr('disabled', true);
+					else $('[name="use_mileage"]').removeAttr('disabled');
+				}
+				else {
+					if(v > 0) $('[name="use_point"]').val('0').attr('disabled', true);
+					else $('[name="use_point"]').removeAttr('disabled');
+				}
+
+				if(v > 0 && with_coupon == 'N') {
+					$('button[id^="btn_coupon"]').attr('disabled',true);
+				}
+				else {
+					$('button[id^="btn_coupon"][data-disabled!="Y"]').removeAttr('disabled');
+				}
+
+				me.calc();
+			});
+		}, 
+		calcDelivery: function() {
+			//지역배송비체크
+			$.ajax({
+				url:'/proc/order.proc.php',
+				dataType:'json',
+				type:'POST',
+				data:{
+					mode:'address',
+					act:'fee',
+					zipcode:$('#pop_delivery_adress').val()
+				},
+				success: function(r) {
+					if(r.success) {
+						var mag = "지역별 추가 배송비 부과지역입니다.";
+						var frm = document.FrmOrder;
+						if(frm.coupon_delivery_discount.value > 0) {
+							mag+="<br>무료배송쿠폰이 초기화됩니다.";
+						}
+						UI.alert(mag, function() {
+							$('#pay_delivery').val(r.data.fee);
+							if(frm.coupon_delivery.value > 0) $('#btn_coupon_delivery').trigger('click');
+							$('#btn_coupon_delivery').attr('disabled',true);
+							Order.calc();
+						});
+					}
+					else {
+						var fee = document.FrmOrder.pay_delivery_origin.value;
+
+						$('#pay_delivery').val(fee);
+						$('#btn_coupon_delivery').removeAttr('disabled');
+						Order.calc();
+					}
+				
+				}
+			});
+		},
+		calc: function() { //결제금액계산
+			var frm = document.FrmOrder;
+
+			//총상품금액
+			var total =  UI.toInt(frm.sum_end.value);
+			var total_end = UI.toInt(frm.pay_total.value); //배송비포함금액
+
+			//- 상품쿠폰할인금액
+			var sub_coupon_product =  UI.toInt(frm.coupon_product_discount.value);
+			$('[data-match="coupon_product_discount"]').text(UI.numberFormat(sub_coupon_product));
+			if(sub_coupon_product>0) {
+				$('#btn_coupon_product').removeClass('btn-basic').addClass('btn-line').text('적용취소');
+				$('#btn_coupon_basket').attr("disabled", true);
+			}
+
+			// - 장바구니쿠폰 할인금액
+			var sub_coupon_basket =  UI.toInt(frm.coupon_basket_discount.value);
+			$('[data-match="coupon_basket_discount"]').text(UI.numberFormat(sub_coupon_basket));
+			if(sub_coupon_basket>0) {
+				$('#btn_coupon_basket').removeClass('btn-basic').addClass('btn-line').text('적용취소');
+				$('#btn_coupon_product').attr("disabled", true);
+			}
+
+
+			var sub_coupon = parseInt(sub_coupon_product)+parseInt(sub_coupon_basket);
+			$('#sub_discount').text(UI.numberFormat(sub_coupon));
+
+			//전체쿠폰사용액
+			var sub_coupon_all = sub_coupon+UI.toInt(frm.coupon_delivery_discount.value);
+
+			var after_coupon = total - sub_coupon; //쿠폰사용후 결제액 
+			
+			//- 마일리지사용금액
+			var sub_mileage = 0;
+			if(typeof frm.use_mileage != 'undefined') {
+				var cfg_mileage = $(frm.use_mileage).data();
+				if(cfg_mileage.withCoupon == 'N' && sub_coupon_all > 0) { //쿠폰동시사용 불가이며 쿠폰이 적용되어있는경우
+					frm.use_mileage.value = 0;
+					frm.use_mileage.disabled = true;
+				}
+
+				sub_mileage =  UI.toInt(frm.use_mileage.value);
+				if(sub_mileage > 0) { //마일리지 사용하는경우
+					after_coupon = after_coupon*cfg_mileage.rate*0.01;
+					if(sub_mileage > after_coupon) sub_mileage = after_coupon;
+					sub_mileage = Math.floor(sub_mileage/cfg_mileage.cut)*cfg_mileage.cut;//절사
+					frm.use_mileage.value = UI.numberFormat(sub_mileage);
+				}
+				
+				$('#use_mileage').text(UI.numberFormat(sub_mileage)); //사용마일리지 표시
+			}
+			
+			//- 포인트사용금액
+			var sub_point = 0;
+			if(typeof frm.use_point != 'undefined') {
+				var cfg_point = $(frm.use_point).data();
+				
+				if(cfg_point.withCoupon == 'N' && sub_coupon_all > 0) {
+					frm.use_point.value = 0;
+					frm.use_point.disabled = true;
+				}
+
+				sub_point =  UI.toInt(frm.use_point.value);
+				if(sub_point > 0) {
+					after_coupon = after_coupon*cfg_point.rate*0.01;
+					if(sub_point > after_coupon) sub_point = after_coupon;
+					sub_point = Math.floor(sub_point/cfg_point.cut)*cfg_point.cut;//절사
+					frm.use_point.value = UI.numberFormat(sub_point);
+				}
+				
+				$('#use_point').text(UI.numberFormat(sub_point)); //사용포인트 표시
+			}
+
+			//+배송비
+			var add_delivery =  UI.toInt(frm.pay_delivery.value);
+			//-배송비쿠폰 할인금액
+			var sub_delivery = UI.toInt(frm.coupon_delivery_discount.value);
+			$('[data-match="coupon_delivery_discount"]').text(UI.numberFormat(sub_delivery));
+		
+			if(sub_delivery>0) {
+				$('#btn_coupon_delivery').removeClass('btn-basic').addClass('btn-line').text('적용취소');
+				add_delivery-=sub_delivery;
+			}
+			$('#add_delivery').text(UI.numberFormat(add_delivery))
+
+
+			//= 총결제금액
+			var pay_pg = total-sub_coupon-sub_mileage-sub_point+add_delivery;
+			$('#pay_pg').text(UI.numberFormat(pay_pg));
+			$('#pay_total').val(pay_pg);
+		},
+
+		setUI: function () {
+			$('[data-cond]').each(function (i, e) {
+				var cond = $(e).data('cond');
+				$('[name="' + cond + '"]').on('click, change', function () {
+					$(e).addClass('hide');
+					$(e).filter('[data-cond-value~="' + this.value + '"]').removeClass('hide');
+				});
+			})
+		},
+		openCoupon: function (e) {
+			var frm = document.FrmOrder;
+			
+			if($(e).hasClass('btn-line')) {
+				switch (e.id) {
+					case 'btn_coupon_product': //상품쿠폰 리셋
+						$.ajax({
+							url:'/proc/order.proc.php',
+							data:{
+								mode:'coupon',
+								act:'reset',
+								toid: '{_GET.toid}'
+							},
+							dataType:'json',
+							type:'POST',
+							success: function(r) {
+								if(r.success) {
+									frm.coupon_product_discount.value = 0;
+									$(e).removeClass("btn-line").addClass("btn-basic").text('쿠폰적용');
+									$('#btn_coupon_basket[data-count!="0"]').removeAttr("disabled");
+									Order.calc();
+								}
+							}
+						})
+						break;
+					case 'btn_coupon_basket': //장바구니 쿠폰 리셋
+						
+						frm.coupon_basket_discount.value = 0;
+						frm.coupon_basket.value = '';
+						
+						$(e).removeClass("btn-line").addClass("btn-basic").text('쿠폰적용');
+						$('#btn_coupon_product').removeAttr("disabled");
+						Order.calc();
+						/**/
+						break;
+					case 'btn_coupon_delivery': //무료배송쿠폰 리셋
+						frm.coupon_delivery_discount.value = 0;
+						frm.coupon_delivery.value = '';
+						$(e).removeClass("btn-line").addClass("btn-basic").text('쿠폰적용');
+						Order.calc();
+						break;
+				}
+				frm.use_mileage.disabled = false;
+				frm.use_point.disabled = false;
+			}
+			else {
+				UI.popup('/m/order/order.coupon.php', '쿠폰적용', {
+					toid: '{_GET.toid}',
+					id:e.id
+				});
+			}
+		},
+		
+		setBuyer: function() {
+			$('#FrmDeliveryBuyer [data-match]').each(function(i,e) {
+				var match_id = $(this).data('match');
+
+				if(match_id == 'buyer_name') {
+					$('#FrmOrder [name="'+match_id+'"]').val(this.value);
+				}
+				else {
+					var value = $('[name="'+match_id+'"][value!=""]').map(function(){ return this.value}).get();
+					if(Array.isArray(value)) {
+						value = value.filter(value=>value.length>0);
+						var glue = $(this).data('matchGlue');
+						value = value.join(glue);
+					}
+					$('#FrmOrder [name="'+match_id+'"]').val(value);
+				}
+			});
+			$('.btn_close').trigger('click');
+
+
+		},
+		openBenefit: function() { //카드사혜택
+			UI.popup('/m/order/order.benefit.php', '카드사 혜택');
+		},
+		pay: function () {
+			if ($('#pay_method').val() !='card' && $('#bank_checked').val()<1) {
+				UI.warning('환불계좌를 등록해주세요.');
+				return false;
+			}
+
+			var formdata = $('#FrmOrder').serialize();
+			$.ajax({
+				url: '/proc/order.proc.php',
+				data: formdata,
+				dataType: 'json',
+				type: 'POST',
+				success: function (r) {
+					if (r.success) {
+						//document.location.href=r.data.return_url;
+
+						$('#order_form').load(r.data.return_url, {
+							order_num: r.data.order_num,
+							refer:'{_SERVER.REQUEST_URI}'
+						});
+					} else {
+						UI.error(r.msg);
+					}
+
+				}
+			})
+		},
+	};
+
+	$(function () {
+		Order.init();
+	})
+</script>

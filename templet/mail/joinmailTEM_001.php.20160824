@@ -1,0 +1,95 @@
+
+<!DOCTYPE html PUBtdC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:fb="http://ogp.me/ns/fb#">
+<head>
+<meta http-equiv="X-UA-Compatible" content="IE=8;IE=EDGE">
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+</head>
+<body style="margin:0;padding:0; font-size:12px; font-family:dotum; color:#838383">
+<table width="700" cellpadding=0 border=0 cellspacing=0 summary="회원가입 메일">
+    <tr>
+        <td style="padding:17px 0 11px 0; border-bottom:3px solid #4b4b4b; text-align:center">
+            <a href="http://[URL]" target="_blank"><img border="0"  src="http://[URL]static/img/mail/logo.gif" alt="[SHOP]"></a>
+        </td>
+    </tr>
+    <tr>
+        <td align="center" style="padding:30px 0 22px 0"><img border="0"  src="http://[URL]static/img/mail/title_join.gif" alt="회원가입"></td>
+    </tr>
+    <tr>
+        <td align="center" style="padding:30px 0 22px 0"><img border="0"  src="http://[URL]static/img/mail/join_welcome.jpg" alt="회원가입을 진심으로 환영합니다."></td>
+    </tr>
+    <tr>
+        <td style="padding-left:20px; padding-bottom:40px">
+        <!-- 본문 시작 -->
+            
+            <!-- 기본 안내 멘트 -->
+            <table width="660" cellpadding=0 border=0 cellspacing=0 >
+                <tr>
+                    <td bgcolor="#f3f3f3" style=" padding:10px 20px;border-top:1px solid #ccc; border-bottom:1px solid #ccc;">
+                        
+                        <table width="400" cellpadding=0 border=0 cellspacing=0 >
+                            <colgroup><col style="width:100px;"><col style="width:300px;"></colgroup>
+                            <tr height="30">
+                                <th style="font-size:12px; color:#838383; font-family:dotum; font-weight:normal; text-align:left">이메일</th>
+                                <td><strong style="font-size:12px; color:#4b4b4b; font-family:dotum;">[EMAIL]</strong></td>
+                            </tr>
+                            <tr height="30">
+                                <th style="font-size:12px; color:#838383; font-family:dotum; font-weight:normal; text-align:left">아이디</th>
+                                <td><strong style="font-size:12px; color:#4b4b4b; font-family:dotum;">[ID]</strong></td>
+                            </tr>
+                        </table>
+
+                    </td>
+                </tr>
+            </table>
+            <!-- //기본 안내 멘트 -->
+            
+            <div style="padding:30px 0 55px 0; text-align:center"><img src="http://[URL]static/img/mail/coupon_welcome.gif" alt="회원가입 쿠폰"></div>
+
+            <div style="padding-top:20px; text-align:left; color:#4b4b4b; font-size:13px; font-family:dotum;font-weight:bold">회원가입시 혜택</div>
+            <table width="660" cellpadding=0 border=0 cellspacing=0>
+                <tr>
+                    <td style="font-size:12px; color:#838383; font-family:dotum;">회원가입시 10% 쿠폰, 모바일 첫 구매시 10% 쿠폰발행</td>
+                </tr>
+                <tr>
+                    <td style="font-size:12px; color:#838383; font-family:dotum;">생일시 3,000원 할인 쿠폰 발행</td>
+                </tr>
+                <tr>
+                    <td style="font-size:12px; color:#838383; font-family:dotum;">출석체크이벤트 참여시 매일 100M 적립, 주말 5% 쿠폰, 한달만근 시 10,000원 할인쿠폰 발행</td>
+                </tr>
+                <tr>
+                    <td style="font-size:12px; color:#838383; font-family:dotum;">리뷰 글쓰기 참여시 500M, 포토후기 1,000M 적립</td>
+                </tr>
+            </table>
+            
+        <!-- //본문 끝 -->
+        </td>
+    </tr>
+    <tr>
+        <td style="border-top:1px solid #838383; border-bottom:1px solid #4b4b4b; padding:15px 0">
+        <!-- footer -->
+
+            <table width="700" cellpadding=0 border=0 cellspacing=0 summary="[SHOP] 메일 전송 정보">
+                <tr>
+                    <td width="120" align="center" valign="top"><a href="http://[URL]" target="_blank"><img border="0"  src="http://[URL]static/img/mail/logo_footer.gif" alt="[SHOP]" width="73" height="27"></a></td>
+                    <td>
+                        <div style="font-size:11px; color:#aaa;font-family:dotum;">
+                            본 메일은 2016-03-03 10:31:23기준, 회원님의 수신동의여부를 확인한 결과 수신동의를 하셨기에 발송되었습니다. <br>
+                            수신을 원치 않으시면 <a href="http://[URL]front/login.php?chUrl=/front/mypage.php" target="_blank" style="color:#4b4b4b;"><strong>이곳</strong></a>에 로그인 후 수신거부를 해주시기 바랍니다. <br>
+                            If you dont't want this type of information or e-mail, please <a href="http://[URL]front/login.php?chUrl=/front/mypage.php" target="_blank"  style="color:#4b4b4b;"><strong>click here.</strong></a><br>
+                            본 메일은 발신 전용으로 회신되지 않으며, <span  style="color:#4b4b4b;">관련문의는 <a href="http://[URL]front/mypage_personal.php?mode=write" target="_blank" style="color:#4b4b4b; text-decoration:none">Cs center</a></span>을 이용해주시기 바랍니다.
+                        </div>
+                        <div style="padding-top:15px"><img src="http://[URL]static/img/mail/copyright.gif" alt="COPYRIGHT"></div>
+                    </td>
+                </tr>
+            </table>
+
+        <!-- //footer -->
+        </td>
+    </tr>
+</table>
+
+
+</body>
+</html>
+

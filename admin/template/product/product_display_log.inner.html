@@ -1,0 +1,37 @@
+<div class="table_style02 mt_0">
+	<table width="100%" cellpadding="0" cellspacing="0" border="0" style="table-layout:fixed">
+		<colgroup>
+			<col style="width:50px">
+			<col>
+			<col>
+			<col>
+		</colgroup>
+		<tbody>
+			<tr>
+				<th>No</th>
+				<th>승인자</th>
+				<th>승인상태</th>
+				<th>승인일</th>
+			</tr>
+		</tbody>
+		<tbody id="choice-tbody">
+			{@ list}
+			<tr>
+				<td>{.no}</td>
+				<td>{.admin_name}({.admin_id})</td>
+				<td>{class.product->trans('display',.status_after)}{? .status_before=='batch'}(일괄변경){/}</td>
+				<td>{.date_insert}</td>
+			</tr>
+			{:}
+			<tr>
+				<td colspan="4">승인 히스토리가 없습니다.</td>
+			</tr>
+			{/}
+		</tbody>
+	</table>
+</div>
+
+<div>
+	{this->xprint('include/pagination.html')}
+</div>
+

@@ -1,0 +1,36 @@
+<div class="table_style02">
+	<table width=100% cellpadding=0 cellspacing=0 border=0 style="table-layout:fixed">
+		<colgroup>
+			<col style="width:200px" /><!-- 날짜 -->
+			<col ><!-- 상품명 -->
+			<col style="width:150px" /><!-- 수량 -->
+			<col style="width:150px" /><!-- 가격 -->
+			<col style="width:150px" /><!-- 상품보기 -->
+		</colgroup>
+		
+		<tr>
+			<th>날짜</th>
+			<th>상품명</th>
+			<th>수량</th>
+			<th>가격</th>
+			<th>상품보기</th>
+		</tr>
+		{@ list}
+		<tr>
+			<td>{.date_insert}</td>
+			<td class="ta_l">{.productname}</td>
+			<td>{=number_format(.qty)}개</td>
+			<td>{=number_format(.endprice)}원</td>
+			<td>
+				<button type="button" class="btn-basic h-xs" onclick="UI.open('/front/productdetail.php?productcode={.productcode}');" ><i class="fa fa-search"></i> 상품보기</button>
+			</td>
+		</tr>
+		{:}
+		<tr>
+			<td colspan="5">장바구니에 담긴 상품이 없습니다.</td>
+		</tr>
+		{/}
+	</table>
+
+	{this->xprint('include/pagination.html')}
+</div>

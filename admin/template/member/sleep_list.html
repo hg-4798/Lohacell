@@ -1,0 +1,200 @@
+<!-- 회원목록 -->
+<div class="content-wrap">
+	<div class="title_depth3">휴면회원목록
+		<div class="pull-right">
+		</div>
+	</div>
+
+	<!--{* 검색:S *}-->
+	<form id="FrmMemberSearch" name="FrmMemberSearch">
+		<div class="pt_20">
+
+			<table cellpadding=0 cellspacing=0 class="tbl-search">
+				<colgroup>
+					<col style="width:120px">
+					<col>
+					<col style="width:120px">
+					<col>
+				</colgroup>
+				<tr>
+					<th>
+						<span>검색어입력</span>
+					</th>
+					<td colspan="3">
+						<select name="sf" >
+							<option value='all'>통합검색</option>
+							<option value='id'>아이디</option>
+							<option value='name'>회원명</option>
+						</select>
+						<input name="sw" value="" class="input w-500">
+					</td>
+				</tr>
+				<tr>
+					<th>가입일</th>
+					<td>
+						<input type="text" name="date_start" OnClick="Calendar(event)" value="" class="input calendar" autocomplete="off" /> ~
+						<input type="text" name="date_end" OnClick="Calendar(event)" value="" class="calendar input" autocomplete="off"/>
+					</td>
+					<th>최종로그인</th>
+					<td>
+						<input type="text" name="logindate_start" OnClick="Calendar(event)" value="" class="input calendar" autocomplete="off" /> ~
+						<input type="text" name="logindate_end" OnClick="Calendar(event)" value="" class="calendar input" autocomplete="off"/>
+					</td>
+				</tr>
+			</table>
+		</div>
+
+		<div class="ta_c mt_20">
+			<button type="button" class="btn-point" onclick="MemberSleepList.search()">조회</button>
+			<button type="button" class="btn-basic" onclick="MemberSleepList.searchReset()">초기화</button>
+		</div>
+
+		<!--{* 상단툴:S *}-->
+		<div class="tools m-b-10">
+			<div class="pull-right">
+				<select name="sort" onchange="MemberSleepList.search()">
+					<option value="date_desc">가입일 내림차순</option>
+					<option value="date_asc">가입일 오름차순</option>
+				</select>
+				<select name="limit" onchange="MemberSleepList.search()">
+					{@ __CONFIG.limit}
+					<option value="{.value_}">{.value_}개씩 보기</option>
+					{/}
+				</select>
+			</div>
+		</div>
+		<!--{* 상단툴:E *}-->
+
+	</form>
+	<div id="inner"></div>
+
+	<!--	<div class="area-bottom ta_c">
+            <button type="button" class="ml_10" onclick="MemberSleepList.out()">선택회원 탈퇴처리</button>
+        </div>-->
+
+
+</div>
+
+<textarea id="searched" style="display:none">{searched}</textarea>
+<script type="text/javascript" src="/admin/static/js/calendar.js"></script>
+<script type="text/javascript">
+    var MemberSleepList = {
+        page: 1,
+        proc_url: '/admin/proc/member.proc.php',
+        init: function () {
+            var me = this;
+            this.load();
+
+            //숫자만입력
+            $('[data-filter="numeric"]').on('keydown input', function (evt) {
+                var v = $(this).val();
+                $(this).val(v.replace(/[^0-9]/g, ''));
+            });
+        },
+        load: function (page) {
+            UI.ing('데이터를 불러오는 중입니다...');
+            var p = page || MemberSleepList.page;
+            var search = $('#FrmMemberSearch').serialize();
+
+            $('#inner').load('/admin/member/sleeplist.inner.php', {
+                    page: p,
+                    search: search
+                },
+                function () {
+	                MemberSleepList.page = p;
+                    UI.toggleCheck();
+                    UI.ing();
+                    $('[data-toggle="tooltip"]').tooltip();
+                }
+            );
+        },
+        point: function(e) {
+            var data = $(e).closest('tr').data();
+            var tit = data.name+"("+data.id+")의 포인트 내역";
+            UI.modal('/admin/member/point.php',tit,{mem_id:data.id},1000);
+        },
+        mileage: function(e) {
+            var data = $(e).closest('tr').data();
+            var tit = data.name+"("+data.id+")의 마일리지 내역";
+            UI.modal('/admin/member/mileage.php',tit,{mem_id:data.id},1000);
+        },
+        crm:function(e) {
+            var data = $(e).closest('tr').data();
+            ADMIN.crm(data.id);
+        },
+        changePwd: function(e) {
+            swal({
+                type: 'question',
+                title: '임시비밀번호 발급',
+                width:600,
+                showCancelButton:true,
+                confirmButtonColor:'#E83428',
+                confirmButtonText:'임시비밀번호 발급',
+                html: "회원비밀번호는<br><b>정보통신부의 개인정보 보호 권고사항</b>에 의해 노출되지 않습니다!<br><br>회원이 비밀번호를 잊어 문의하신 경우,<br>임시비밀번호를 발급해 주시기 바랍니다.<br><br>임시비밀번호 : 회원아이디+날짜4자리(월일)"
+            }).then(function(result) {
+                if(result.value) {
+                    var data = $(e).closest('tr').data();
+                    $.ajax({
+                        url:'/admin/proc/member.proc.php',
+                        data:{
+                            mode:'password',
+                            mem_id:data.id
+                        },
+                        dataType:'json',
+                        type:'POST',
+                        success: function(r) {
+                            if(r.success) {
+                                UI.alert(r.msg);
+                            }
+                        }
+                    });
+                }
+            });
+        },
+        showPhoneNum: function (phonenum) {
+            if(phonenum.length < 7){
+                phonenum = '저장된 번호가 없습니다.';
+            }
+            UI.alert('휴대전화 : '+phonenum);
+        },
+        crm_memo:function(e) {
+            var data = $(e).closest('tr').data();
+            ADMIN.crm_memo(data.id);
+        },
+        search: function () {
+            UI.ing('데이터를 불러오는 중입니다...');
+            var p = 1;
+            var search = $('#FrmMemberSearch').serialize();
+
+            $('#inner').load('/admin/member/sleeplist.inner.php', {
+                    page: p,
+                    search: search
+                },
+                function () {
+	                MemberSleepList.page = p;
+                    UI.toggleCheck();
+                    UI.ing();
+                    $('[data-toggle="tooltip"]').tooltip();
+                }
+            );
+        },
+        searchReset: function () {
+            $('#FrmMemberSearch')[0].reset();
+            this.load(1);
+        },
+	    excel: function () {
+		    var search = $('#searched').val();
+		    UI.modal('/admin/common/excel.php', '엑셀다운로드', {
+			    type:'membersleep',
+			    search: search
+		    }, 800);
+	    }
+
+    }
+
+    $(function() {
+	    MemberSleepList.init();
+    })
+</script>
+
+

@@ -1,0 +1,585 @@
+<style>
+	.helper {
+		color: red !important;
+	}
+	
+	ul.selection {
+		margin-top:4px;
+	}
+
+	ul.selection:after {
+		content:"";
+		clear:both;
+		display:block;
+	}
+
+	ul.selection li {
+		display: block;
+		float: left;
+		background-color:#999;
+		padding: 3px 30px 3px 10px;
+		cursor: default;
+		color: #fff;
+		border-radius: 2px;
+		font-weight: 400;
+		margin: 4px 8px 0 0;
+		height:23px;
+		box-sizing: border-box;
+		position:relative;
+
+	}
+
+	ul.selection li > span {
+		position:absolute;
+		width: 20px;
+		top:0px;
+		right:-1px;
+		height:23px;
+		box-sizing: border-box;
+		line-height: 20px;
+		cursor: pointer;
+		text-align: center;
+		font-size: 12px;
+		font-weight: 400;
+		color:#000;
+		border-radius: 0px 2px 2px 0px;
+		background-color:#EAC05E;
+	}
+
+	ul.selection li.empty {
+		background-color:#Fff;
+		color:#000;
+		padding-left:0px;
+	}
+</style>
+<div class="content-wrap">
+	<div class="title_depth3">쿠폰등록</div>
+
+	<form id="FrmCouponRegister" onsubmit="return false">
+		<input type="hidden" name="mode" value="register">
+		<div class="title_depth4 m-t-30">
+			<i class="fa fa-chevron-circle-right"></i> 쿠폰기본정보</div>
+		<table class="table-view m-t-10">
+			<colgroup>
+				<col style="width:150px">
+				<col>
+			</colgroup>
+			<tr>
+				<th>쿠폰명</th>
+				<td>
+					<input type="text" name="coupon_name" value="" class="req validate[required] w-100"
+					    data-errormessage-value-missing="쿠폰명을 입력하세요.">
+				</td>
+			</tr>
+			<tr>
+				<th>쿠폰설명</th>
+				<td>
+					<input type="text" name="coupon_desc" value="" class="w-100">
+				</td>
+			</tr>
+			<!--{*
+			<tr>
+				<th>쿠폰이미지</th>
+				<td>
+					<button type="button" class="btn btn-form btn-theme btn-sm">이미지 찾기</button>
+					<span>이미지를 선택하세요.</span>
+				</td>
+			</tr>
+			*}-->
+			<tr>
+				<th>쿠폰 혜택</th>
+				<td>
+					<label>
+						<input type="radio" name="type_use" value="P" class="hj" checked data-group="type_use">
+						<span class="lbl">상품별쿠폰</span>
+					</label>
+					<label>
+						<input type="radio" name="type_use" value="B" class="hj" data-group="type_use">
+						<span class="lbl">장바구니쿠폰</span>
+					</label>
+					<label>
+						<input type="radio" name="type_use" value="D" class="hj" data-group="type_use">
+						<span class="lbl">무료배송쿠폰</span>
+					</label>
+				</td>
+			</tr>
+			<tr>
+				<th>쿠폰 발급방식</th>
+				<td>
+					<label>
+						<input type="radio" name="type_publish" value="D" class="hj" checked data-group="type_publish">
+						<span class="lbl">회원다운로드</span>
+					</label>
+					<label>
+						<input type="radio" name="type_publish" value="A" class="hj" data-group="type_publish">
+						<span class="lbl">조건부자동발급</span>
+					</label>
+					<label>
+						<input type="radio" name="type_publish" value="I" class="hj" data-group="type_publish">
+						<span class="lbl">수동발급</span>
+					</label>
+				</td>
+			</tr>
+			<tr data-cond="type_publish" data-cond-value="A" class="hide">
+				<th>자동발급 이벤트</th>
+				<td>
+					<select name="type_publish_kind">
+						<option value="join">회원가입시 자동발급(마케팅동의)</option>
+						<!-- <option value="join_add">회원가입시 자동발급(마케팅비동의)</option> -->
+						<option value="birthday">생일축하쿠폰</option>
+						<option value="buyfirst">첫구매 완료시 자동발급</option>
+						<!-- <option value="change_grade">회원등급 변경시 자동발급</option> -->
+					</select>
+					<span data-cond="type_publish_kind" data-cond-value="birthday" class="hide">
+						<select name="change_grade">
+							{@ cfg.grade}
+							<option value="{.key_}">{.value_}</option>
+							{/}
+						</select>
+					</span>
+				</td>
+			</tr>
+			<tr data-cond="type_publish" data-cond-value="D" >
+				<th>발급 대상</th>
+				<td>
+					<select name="download_target">
+						<option value="all">전체</option>
+						<option value="grade">등급별</option>
+					</select>
+					<span data-cond="download_target" data-cond-value="grade" class="hide">
+						<select name="type_publish_change_grade">
+							{@ cfg.grade}
+							<option value="{.key_}">{.value_}</option>
+							{/}
+						</select>
+					</span>
+				</td>
+			</tr>
+
+			<tr>
+				<th>쿠폰 사용위치</th>
+				<td>
+					<label>
+						<input type="radio" name="use_device" value="A" class="hj" checked>
+						<span class="lbl">전체</span>
+					</label>
+					<label>
+						<input type="radio" name="use_device" value="P" class="hj">
+						<span class="lbl">PC</span>
+					</label>
+					<label>
+						<input type="radio" name="use_device" value="M" class="hj">
+						<span class="lbl">모바일</span>
+					</label>
+				</td>
+			</tr>
+			<tr data-cond="type_publish" data-cond-value="D A">
+				<th>발급기간</th>
+				<td>
+					<select name="publish_period_type" id="">
+						<option value="U" selected>무제한</option>
+						<option value="D">기간지정</option>
+					</select>
+					<span class="hide" data-cond="publish_period_type" data-cond-value="D">
+						<input type="text" name="publish_during_start" value="" class="calendar" readonly> ~
+						<input type="text" name="publish_during_end" value="" class="calendar" readonly>
+					</span>
+				</td>
+			</tr>
+			<tr>
+				<th>사용기간</th>
+				<td>
+					<select name="use_period_type" id="" class="">
+						<option value="U">무제한</option>
+						<option value="D">기간지정</option>
+						<option value="I">발급일로부터</option>
+					</select>
+					<span class="hide" data-cond="use_period_type" data-cond-value="I">
+						<input type="text" name="use_period_limit" value="" class="wx-50"> 일까지 사용가능
+					</span>
+					<span class="hide" data-cond="use_period_type" data-cond-value="D">
+						<input type="text" name="use_during_start" value="" class="calendar" readonly> ~
+						<input type="text" name="use_during_end" value="" class="calendar" readonly>
+					</span>
+				</td>
+			</tr>
+			<tr data-cond="type_use" data-cond-value="P B">
+				<th>할인금액(율)</th>
+				<td>
+					<input type="text" name="sale_value" value="" class="wx-100">
+					<select name="sale_unit">
+						<option value="R">%</option>
+						<option value="K">원</option>
+					</select>
+					<span data-cond="sale_unit" data-cond-value="R">
+						<label class="single m-l-10"><input type="checkbox" class="hj"><span class="lbl" style="padding-right:0px"></span></label>최대
+						<input type="text" name="sale_max" value="" class="wx-100"> 원까지 할인 가능합니다.
+					</span>
+
+				</td>
+			</tr>
+
+		</table>
+
+
+		<div class="title_depth4 m-t-30">
+			<i class="fa fa-chevron-circle-right"></i> 제한조건</div>
+		<table class="table-view m-t-10">
+			<colgroup>
+				<col style="width:150px">
+				<col>
+			</colgroup>
+			<tr data-cond="type_use" data-cond-child="target" data-cond-value="P">
+				<th>사용 대상</th>
+				<td>
+					<select name="target" id="use_part" onchange="CouponRegister.change();">
+						<option value="A">전체상품</option>
+						<option value="C">특정카테고리</option>
+						<option value="L">특정라인</option>
+						<option value="P">특정상품</option>
+					</select>
+				</td>
+			</tr>
+			<tr data-cond="target" data-cond-value="C" class="hide">
+				<th>사용 카테고리 선택</th>
+				<td id="category_select">
+					<select name="category" id="category" onchange="CouponRegister.loadCategory(this)">
+						<option value="">1차 카테고리</option>
+						{@ category.c2}
+						<option value="{.code_all}">{.code_name}</option>
+						{/}
+					</select>
+					<select name="category1" id="category1" onchange="CouponRegister.loadCategory(this)">
+						<option value="">2차 카테고리</option>
+					</select>
+					<button type="button" class="btn-add add" onclick="CouponRegister.categoryAdd()"><span></span></button>
+					<ul class="selection" id="category_inner">
+						<li class="empty" style="width:100%;">선택된 카테고리가 없습니다.</li>
+					</ul>
+				</td>
+			</tr>
+			<tr data-cond="target" data-cond-value="L" class="hide">
+				<th>사용 라인 선택</th>
+				<td>
+					<select name="line" id="line">
+						{@ cfg.line}
+						<option value="{.line_code}">{.line_name}</option>
+						{/}
+					</select>
+					<button type="button" class="btn-add add" onclick="CouponRegister.lineAdd();"><span></span></button>
+					<ul class="selection" id="line_inner">
+						<li class="empty" style="width:100%;">선택된 라인이 없습니다.</li>
+					</ul>
+				</td>
+			</tr>
+			<tr data-cond="target" data-cond-value="P" class="hide">
+				<th rowspan="2">사용 상품 선택</th>
+				<td>
+					<button type="button" class="btn btn-sm" onclick="CouponRegister.open()">상품 선택</button>
+					
+				</td>
+			</tr>
+			<tr data-cond="target" data-cond-value="P" class="hide">
+				<td style="padding:0px">
+					<ul class="product_inner ui-sortable" id="product_inner" data-idx="34">
+						<li class="empty">선택된 상품이 없습니다.</li>
+					</ul>
+				</td>
+			</tr>
+				
+			<tr>
+				<th>최소 사용가능 금액 <i class="fa fa-question-circle" data-toggle="tooltip" title="지정한 금액 이상 구매한 경우에만 해당 쿠폰 사용이 가능합니다."></i></th>
+				<td>
+					<select name="type_buy_min">
+						<option value="U">무제한</option>
+						<option value="I">제한</option>
+					</select>
+					<span data-cond="type_buy_min" data-cond-value="I" class="hide">
+						<input type="text" name="sale_min_price" value="" > 원 이상 결제시 사용가능
+					</span>
+				</td>
+			</tr>
+			<tr data-cond="type_publish" data-cond-value="D A">
+				<th>다운로드 제한</th>
+				<td>
+					<select name="download_count">
+						<option value="P">1인당</option>
+						<option value="U">무제한</option>
+						
+					</select>
+					<span data-cond="download_count" data-cond-value="P">
+						최대 <input type="text" name="download_per" value="1" class="wx-50"> 장 발급가능
+					</span>
+				</td>
+			</tr>
+		</table>
+
+		<div class="ta-c m-t-20 m-b-20">
+			<button type="submit" class="btn-point">쿠폰등록</button>
+			<button type="button" class="btn-basic">쿠폰목록</button>
+		</div>
+	</form>
+
+</div>
+
+
+
+
+<textarea id="tpl_li" style="display: none;">
+	<li data-part_detail="${\productcode}">
+		<span>${\productcode}</span>
+		<span>${\name}</span>
+		<span>${\price_consumer}</span>
+		<span><i class="fa fa-times" onclick="CouponRegister.removeTarget('product_inner',this)"></i></span>
+	</li>
+</textarea>
+<script type="text/javascript" src="/admin/static/js/template.js"></script><!--{* 상품목록 템플릿:E *}-->
+
+<script type="text/javascript" src="/admin/static/js/calendar.js"></script>
+<script type="text/javascript">
+	var CouponRegister = {
+        proc_url : '/admin/proc/coupon.proc.php',
+		type: '',
+		init: function () {
+
+			var me = this;
+			var option = $.extend({}, validation_option, {
+				validateNonVisibleFields: false,
+				onValidationComplete: function (form, status) {
+					if (status) me.save();
+				}
+			});
+			$("#FrmCouponRegister").validationEngine('attach', option);
+
+			$('.calendar').on('click', function () {
+				Calendar();
+			});
+
+			me.setUI();
+			
+			//숫자체크
+			$('[data-filter="numeric"], [data-filter="price"]').on('keydown.row input.row', function (evt) {
+				var v = $(this).val();
+				v = v.replace(/[^0-9]/g, '');
+				v = v.replace(/^0+(?!$)/, '');
+
+				var filter = $(this).data('filter');
+				if (filter == 'price') v = UI.numberFormat(v);
+				$(this).val(v);
+			});
+
+			$('[data-toggle="tooltip"]').tooltip();
+		},
+		setUI: function () {
+			$('[data-cond]').each(function (i, e) {
+				var cond = $(e).data('cond');
+				var child = $(e).data('condChild');
+
+				$('[name="' + cond + '"]').on('click, change', function () {
+					$(e).addClass('hide');
+					$(e).filter('[data-cond-value~="' + this.value + '"]').removeClass('hide');
+
+					if(child) {
+						$('[data-cond="'+child+'"]').addClass('hide');
+						
+						var child_el = $('[name="'+child+'"]');
+						if(!child_el.is(':visible')) return false;
+
+						switch(child_el.prop('tagName')) {
+							case 'SELECT':
+								child_el.trigger('change');
+								break;
+							default:
+								child_el.trigger('click')
+								break;
+						}
+					}
+				});
+			})
+		},
+		save: function () {
+			UI.confirm('쿠폰을 발급하시겠습니까?', function () {
+                var li = CouponRegister.getProduct(CouponRegister.type);
+                var formdata = $('#FrmCouponRegister').serializeArray();
+                var part_detail = li.map(function () {return $(this).attr('data-part_detail');}).get();
+                formdata.push({name:'part_detail', value:part_detail});
+                $.ajax({
+                    url:CouponRegister.proc_url,
+                    type:'POST',
+                    data:formdata,
+                    dataType:'json',
+                    success : function(r) {
+                        UI.alert(r.msg, function() {
+                            if(r.success) {
+                                CouponRegister.goList();
+                            }
+                        });
+
+                    }
+                });
+			})
+		},
+		removeTarget: function(type,e) {
+
+			$(e).closest('li').remove();
+			var li = CouponRegister.getProduct(type);
+			var cnt = li.length;
+			if(cnt == 0) {
+				$('#'+type).find('li.empty').removeClass('hide');
+			}
+		},
+        open: function () { //상품추가모달열기
+			UI.modal('/admin/product_choice.php', '상품추가', {}, 1100);
+        },
+        getProduct: function(type) {//기등록상품목록리턴
+            return $('#'+type).find('li:not(.empty)');
+        },
+        lineAdd: function() {//라인추가
+            var target = $('#line_inner');
+            var line_code = $("#line option:selected").val();
+            var line_name = $("#line option:selected").text();
+
+
+
+            var li = CouponRegister.getProduct('line_inner');
+            target.find('li.empty').addClass('hide');
+            var line_li = '<li data-part_detail="'+line_code+'"><span><i class="fa fa-times" onclick="CouponRegister.removeTarget(\'line_inner\',this);"></i></span>'+line_name+'</li>';
+
+            var exist = li.map(function () {
+                return $(this).attr('data-part_detail');
+            }).get();
+            if ($.inArray(line_code, exist) != -1){
+                UI.error('이미 등록된 라인입니다.');
+			}else{
+                target.append(line_li);
+                CouponRegister.type = 'line_inner';
+			}
+		},
+        change: function() {
+			$('.empty').siblings().remove();
+            $('.empty').removeClass('hide');
+            CouponRegister.type = '';
+        },
+        loadCategory: function (ele) {
+            var el = $(ele);
+            var parent_code = el.val();
+            var target = el.next('select');
+            el.nextAll('select').find('option[value!=""]').remove();
+
+            //target.empty();
+
+            $.ajax({
+                url: '/admin/proc/product.proc.php',
+                data: {
+                    mode: 'category',
+                    act: 'get_children',
+                    parent_code: parent_code
+                },
+                dataType: 'json',
+                type: 'POST',
+                success: function (r) {
+                    if (r.success) {
+                        $.each(r.data, function (i, e) {
+                            var opt = $('<option value="' + e.code_all + '">' + e.code_name + '</option>');
+                            target.append(opt);
+                        })
+                    }
+
+                }
+            })
+        },
+        categoryAdd: function() {
+        	var c1 = $('#category');
+        	var c2 = $('#category1');
+			if(!c1.val()) {
+        		UI.error('1차카테고리를 선택해주세요.');
+        		return false;
+        	}
+
+        	var target = $('#category_inner');
+        	var selected_val = (c2.val())?c2.val():c1.val();
+        	var selected_parent = selected_val.substr(0,6)+'000000';
+
+			//기등록체크
+        	var valid = true;
+        	$('#category_inner li:not(.empty)').each(function() {
+        		var code = $(this).attr('data-part_detail');
+        		if(code == selected_parent || code == selected_val) {
+        			valid = false;
+        			return false;
+        		}
+				target.find('li[data-parent="'+selected_val+'"]').remove();
+        	});
+
+        	if(!valid)  {
+        		UI.error('중복된 카테고리거나 상위카테고리가 있습니다.');
+        		return false;
+        	}
+
+			var selected_text_arr = [];
+        	$('#category_select option:selected').each(function(i,e) {
+        		if($(e).val()) selected_text_arr.push($(e).text());
+        	});
+
+        	var selected_text = selected_text_arr.join(' > ');
+
+        	target.find('li.empty').addClass('hide');
+
+            var category_li = '<li data-parent="'+selected_parent+'" data-part_detail="'+selected_val+'"><span><i class="fa fa-times" onclick="CouponRegister.removeTarget(\'category_inner\',this);"></i></span>'+selected_text+'</li>';
+            target.append(category_li);
+            CouponRegister.type = 'category_inner';
+
+		},
+		goList: function() {
+            document.location.href="/admin/coupon_lists.php";
+        }
+
+	}
+
+    //상품선택 콜백
+    var ChoiceCallback = function (tr_new) {
+        //console.log(tr_new);
+        var tmpObj = TrimPath.parseDOMTemplate("tpl_li");
+        var target = $('#product_inner');
+        var li = CouponRegister.getProduct('product_inner');
+        //console.log(tr_new);
+        //기등록상품수
+        var cnt = li.length;
+
+        //기등록상품 리스트
+        var exist = li.map(function () {
+            return $(this).attr('data-part_detail');
+        }).get();
+
+        var idx = cnt;
+        $.each(tr_new, function (i, e) {
+            //console.log(i,e);
+            var prcode = $(e).attr('data-productcode');
+            if ($.inArray(prcode, exist) != -1) return true;
+
+			idx++;
+            target.find('li.empty').addClass('hide');
+            var data = {
+                ul_idx:CouponRegister.idx,
+                idx: idx
+            };
+
+            $.each($(e).find('td'), function (ii, ee) {
+                var field = $(ee).data('field');
+                if (typeof field == 'undefined') return true;
+                data[field] = $(ee).html();
+            });
+
+            //console.log(data);
+
+            var html = tmpObj.process(data);
+            target.prepend(html);
+            CouponRegister.type = 'product_inner';
+
+        });
+	}
+
+	$(function () {
+		CouponRegister.init();
+	})
+</script>

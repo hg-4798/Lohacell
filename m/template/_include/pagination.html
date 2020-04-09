@@ -1,0 +1,36 @@
+<div class="list-paginate mt-15">
+	<a href="javascript:;" onclick="{paging.href.first.href}" class="prev-all">처음</a>
+	<a href="javascript:;" onclick="{paging.href.prev.href}" class="prev">이전</a>
+	{@ paging.block}
+	<a href="javascript:;" onclick="{.href}" class="number {? .equal}on{/}" >{.num}</a>
+	{/}
+	<a href="javascript:;" onclick="{paging.href.next.href}" class="next">다음</a>
+	<a href="javascript:;" onclick="{paging.href.last.href}" class="next-all">끝</a>
+</div>
+
+<!--
+
+<div class="list-paginate mt-20">
+			<a href="javascript:;" onclick="{paging.href.first.href}" class="prev-all"></a>
+			<a href="javascript:;" onclick="{paging.href.prev.href}" class="prev"></a>
+			{@ paging.block}
+			<a href="javascript:;" onclick="{.href}" class="number {? .equal}on{/}" >{.num}</a>
+			{/}
+			<a href="javascript:;" onclick="{paging.href.next.href}" class="next"></a>
+			<a href="javascript:;" onclick="{paging.href.last.href}" class="next-all"></a>
+</div>
+
+
+
+<div class="list-paginate mt-15">
+	<a href="#" class="prev-all disabled">처음</a>&lt;!&ndash; [D] 버튼 비활성인 경우 .disabled 클래스 추가 &ndash;&gt;
+	<a href="#" class="prev disabled">이전</a>
+	<a href="#" class="on">1</a>
+	<a href="#">2</a>
+	<a href="#">3</a>
+	<a href="#">4</a>
+	<a href="#">5</a>
+	<a href="#">6</a>
+	<a href="#" class="next">다음</a>
+	<a href="#" class="next-all">끝</a>
+</div>-->

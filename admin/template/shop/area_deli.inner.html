@@ -1,0 +1,63 @@
+<div>
+	<div class="pull-left mb_10">
+		전체 <span id="count_total">{count.total}</span>건 <span class="bar"></span>
+		검색 <span id="count_search">{count.search}</span>건
+	</div>
+	<div class="pull-right">
+		<button type="button" class="btn btn-sm btn-dark" onclick="AreaDeli.excel()" style="vertical-align:middle">엑셀 다운로드</button>
+		<button type="button" class="btn btn-sm btn-primary" onclick="AreaDeli.popup()">등록</button>
+	</div>
+</div>
+<div class="table_style02">
+	<table width="100%" cellpadding=0 cellspacing=0 style="table-layout:fixed" class="tbl-hover tbl-stripe">
+		<colgroup>
+			<col style="width:50px" />
+			<col style="width:50px" />
+			<col /><!-- 아이디 -->
+			<col style="width:300px" /><!-- 이름 -->
+			<col style="width:150px"><!-- 구분 -->
+			<col style="width:100px"><!-- 그룹 -->
+		</colgroup>
+
+		<tr>
+			<th><label class="single"><input type="checkbox" class="hj" data-all="checked[]"><span class="lbl"></span></label></th>
+			<th>No</th>
+			<th>특수지역명</th>
+			<th>우편번호 범위</th>
+			<th>배송비</th>
+			<th>삭제</th>
+		</tr>
+		{@ list}
+		<tr data-id="{.id}" data-name="{.name}">
+			<td><input type="checkbox" class="hj" name="checked[]" value="{.no}"><span class="lbl"></span></td>
+			<td>{.num}</td>
+			<td class="text-left">{.area_name}</td>
+			<td>[{.st_zipcode}] 부터 [{.en_zipcode}] 까지</td>
+			<td>{=number_format(.deli_price)}원</td>
+			<td>
+				<button type="button" onclick="AreaDeli.remove('{.no}')" class="btn btn-xs btn-outline-danger"><i class="fa fa-times"></i></button>
+
+			</td>
+		</tr>
+		{:}
+		<tr>
+			<td colspan="6">조회된 데이터가 없습니다.</td>
+		</tr>
+		{/}
+	</table>
+
+	{this->xprint('include/pagination.html')}
+</div>
+
+<script type="text/javascript">
+	var AreaDeliInner = {
+		init: function () {
+			$('[data-toggle="tooltip"]').tooltip();
+			$('#searched').val('{_POST.search}');
+		}
+	}
+
+	$(function () {
+		AreaDeliInner.init();
+	})
+</script>

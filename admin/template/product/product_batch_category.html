@@ -1,0 +1,283 @@
+<style>
+
+</style>
+<div class="admin_linemap"><div class="line"><p>현재위치 : 상품관리 &gt; 상품 일괄 관리 &gt; <span>상품 일괄 카테고리 수정</span></p></div></div>
+<table cellpadding="0" cellspacing="0" width="100%" style="table-layout:fixed">
+	<colgroup>
+		<col width=240 id="menu_width">
+		<col width=10>
+		<col width="*">
+		<col width=20>
+	</colgroup>
+	<tr>
+		<td valign="top">
+			{=include("menu_product.php")}
+		</td>
+		<td></td>
+		<td valign="top">
+			<div class="title_depth3">상품 일괄 카테고리 수정</div>
+
+			<!--{* 검색:S *}-->
+			<form id="FrmProductSearch" name="FrmProductSearch">
+			<input type="hidden" name="sort" value="reg_desc" /> <!-- 정렬기준 -->
+			<input type="hidden" name="limit" value="20" /><!-- 페이지당노출개수 -->
+			<div class="table_style01 pt_20">
+				
+				<table cellpadding=0 cellspacing=0 border=0 width="100%">
+					<tr>
+						<th><span>상품검색</span></th>
+						<td>
+							<label><input type="radio" name="sf" value="productname" class="hj" checked><span class="lbl">쇼핑몰상품명</span></label>
+							<label><input type="radio" name="sf" value="prodcode" class="hj"><span class="lbl">상품코드</span></label>
+							<label><input type="radio" name="sf" value="productcode" class="hj"><span class="lbl">관리코드</span></label>
+							<textarea rows="2" cols="10" class="w200" name="sv" id="s_keyword" style="resize:none;vertical-align:middle;"></textarea>
+						</td>
+					</tr>
+					<tr>
+						<th><span>카테고리검색</span></th>
+						<td>
+							<select name="category[]" style="width:200px;" onchange="ProductBatchCategory.loadCategory(this)">
+								<option value="">〓〓 1차 카테고리 〓〓</option>
+								{@ category.c2}
+								<option value="{.code_all}">{.code_name}</option>
+								{/}
+							</select>
+
+							<select name="category[]" style="width:200px;" onchange="ProductBatchCategory.loadCategory(this)">
+								<option value="">〓〓 2차 카테고리 〓〓</option>
+							</select>
+
+							<select name="category[]" style="width:200px;">
+								<option value="">〓〓 3차 카테고리 〓〓</option>
+							</select>
+						</td>
+					</tr>
+					<tr>
+						<th><span>기간검색</span></th>
+						<td>
+							<select name="date_sf">
+								<option value="regdate">등록일</option>
+								<option value="selldate">승인일</option>
+								<option value="modifydate">업데이트일</option>
+							</select>
+							<input type="text" name="date_start" OnClick="Calendar(event)" value="" class="input_bd_st01 calendar" /> ~ <input type="text" name="date_end" OnClick="Calendar(event)" value="" class="calendar input_bd_st01" />
+							<a href="javascript:;" onclick="ProductBatchCategory.setPeriod('today')"><img src="images/btn_today01.gif" class="middle" /></a>
+							<a href="javascript:;" onclick="ProductBatchCategory.setPeriod('7_days')"><img src="images/btn_day07.gif" class="middle" /></a>
+							<a href="javascript:;" onclick="ProductBatchCategory.setPeriod('14_days')"><img src="images/btn_day14.gif" class="middle" /></a>
+							<a href="javascript:;" onclick="ProductBatchCategory.setPeriod('1_months')"><img src="images/btn_day30.gif" class="middle" /></a>
+							<a href="javascript:;" onclick="ProductBatchCategory.setPeriod('all')"><img src="images/btn_day_total.gif" class="middle" ></a>
+						</td>
+					</tr>
+					<tr>
+						<th><span>상품금액별 검색</span></th>
+						<td><input class="input_bd_st01" type="text" name="sellprice_min" value=""  data-filter="numeric" placeholder="숫자로만 검색" /> 원 ~ <input class="input_bd_st01" type="text" name="sellprice_max" value=""  data-filter="numeric"/> 원</td>
+					</tr>
+					<tr>
+						<th><span>재고</span></th>
+						<td>
+							<input class="input_bd_st01" type="text" name="quantity_min" value=""  data-filter="numeric" placeholder="숫자로만 검색"/> ~ <input class="input_bd_st01" type="text" name="quantity_max" value="" data-filter="numeric"/>
+						</td>
+					</tr>
+					<tr>
+						<th><span>승인상태</span></th>
+						<td>
+							<label><input type="radio" name="display" value="" class="hj" checked><span class="lbl">전체</span></label>
+							<label><input type="radio" name="display" value="R" class="hj"><span class="lbl">대기</span></label>
+							<label><input type="radio" name="display" value="N" class="hj"><span class="lbl">승인보류</span></label>
+							<label><input type="radio" name="display" value="Y" class="hj"><span class="lbl">승인완료</span></label>
+						</td>
+					</tr>
+					<tr>
+						<th><span>판매상태</span></th>
+						<td>
+							<label><input type="radio" name="soldout" value="" class="hj" checked><span class="lbl">전체</span></label>
+							<label><input type="radio" name="soldout" value="N" class="hj"><span class="lbl">판매중</span></label>
+							<label><input type="radio" name="soldout" value="S" class="hj"><span class="lbl">판매중지</span></label>
+							<label><input type="radio" name="soldout" value="Y" class="hj"><span class="lbl">품절</span></label>
+						</td>
+					</tr>
+				</table>
+
+				<div class="ta_c mt_20">
+					<button type="button" class="btn-point" onclick="ProductBatchCategory.search()">조회</button>
+					<button type="button" class="btn-basic" onclick="ProductBatchCategory.searchReset()">초기화</button>
+				</div>
+			</div>
+			</form>
+			<!--{* 검색:E *}-->
+
+
+			<!--{* 상단툴:S *}-->
+			<div class="row mb_10">
+				<div class="pull-left">
+					<img src="images/icon_8a.gif" border="0"> 전체 <span id="count_total"></span>건 조회
+				</div>
+				<div class="pull-right">
+					<select name="sort" onchange="ProductBatchCategory.search('sort',this.value)">
+						<option value="reg_desc">최근 등록일순으로 보기</option>
+						<option value="sale_desc">할인율 높은순으로 보기</option>
+						<option value="sale_asc">할인율 낮은순으로 보기</option>
+					</select>
+					<select name="listnum_select" onchange="ProductBatchCategory.search('limit',this.value)">
+						{@ cfg.limit}
+						<option value="{.value_}">{.value_}개씩 보기</option>
+						{/}
+						<option value="100000">전체</option>
+					</select>
+				</div>
+			</div>
+			<!--{* 상단툴:E *}-->
+
+			<form id="FrmProductBatchCategory">
+			<input type="hidden" name="mode" value="batch" />
+			<input type="hidden" name="act" value="category" />
+			<!--{* 목록:S *}-->
+			<div id="inner"></div>
+			<!--{* 목록:E *}-->
+
+			<!--{* 일괄변경:S *}-->
+			<div class="area-bottom ta_c">
+				
+				<select name="category[]" id="batch_category" style="width:200px;" onchange="ProductBatchCategory.loadCategory(this)">
+					<option value="">〓〓 1차 카테고리 〓〓</option>
+					{@ category.c2}
+					<option value="{.code_all}">{.code_name}</option>
+					{/}
+				</select>
+
+				<select name="category[]" style="width:200px;" onchange="ProductBatchCategory.loadCategory(this)">
+					<option value="">〓〓 2차 카테고리 〓〓</option>
+				</select>
+
+				<select name="category[]" style="width:200px;"">
+					<option value="">〓〓 3차 카테고리 〓〓</option>
+				</select>
+
+				<button type="button" onclick="ProductBatchCategory.batch('add')">상품복사</button><!--{* @desc 기본카테고리에 카테고리추가 *}-->
+				<button type="button" onclick="ProductBatchCategory.batch('reset')">상품이동</button><!--{* @desc 기존카테고리를 모두 삭제후 선택한 카테고리만 등록 *}-->
+			</div>
+			<!--{* 일괄변경:E *}-->
+			</form>
+		</td>
+	</tr>
+</table>
+
+<script type="text/javascript" src="/static/js/blazy.min.js"></script>
+<script type="text/javascript" src="/admin/static/js/moment.js"></script>
+<script type="text/javascript" src="calendar.js"></script>
+<script type="text/javascript">
+var ProductBatchCategory ={
+	page:1,
+	proc_url:'/admin/proc/product.proc.php',
+	init: function(){
+		this.load();
+		
+		//숫자만입력
+		$('[data-filter="numeric"]').on('keydown input', function(evt) {
+			var v = $(this).val();
+			$(this).val(v.replace(/[^0-9]/g,''));
+		});
+	},
+	load:function(page) {
+		UI.ing('데이터를 불러오는 중입니다...');
+		var p = page || ProductBatchCategory.page;
+		var search = $('#FrmProductSearch').serialize();
+
+		$('#inner').load('/admin/product_batch_category.inner.php',{page:p, search:search},
+			function() {
+				UI.ing();
+				ProductBatchCategory.page = p;
+				UI.toggleCheck();
+				new Blazy();
+			}
+		);
+	},
+	loadPage: function(page) {
+		this.load(page);
+		var offset = $('#inner').offset();
+		UI.top(offset.top-60);
+		
+	},
+	loadCategory: function(ele) {
+		var el = $(ele);
+		var parent_code = el.val();
+		var target = el.next('select');
+		el.nextAll('select').find('option[value!=""]').remove();
+
+		//target.empty();
+
+		$.ajax({
+			url:'/admin/proc/product.proc.php',
+			data:{
+				mode:'category',
+				act:'get_children',
+				parent_code:parent_code
+			},
+			dataType:'json',
+			type:'POST',
+			success: function(r) {
+				if(r.success){
+					$.each(r.data, function(i,e){
+						var opt = $('<option value="'+e.code_all+'">'+e.code_name+'</option>');
+						target.append(opt);
+					})
+				}
+
+			}
+		})
+	},
+	search: function(field, value) {
+		if(field && value) $('#FrmProductSearch').find('[name="'+field+'"]').val(value);
+		this.load(1);
+	},
+	searchReset: function() {
+		$('#FrmProductSearch')[0].reset();
+		this.load(1);
+	},
+	setPeriod: function(sub) {
+		var period = UTIL.period('<?=TIMESTAMP?>',sub);
+		document.FrmProductSearch.date_start.value = period.start;
+		document.FrmProductSearch.date_end.value = period.end;
+	},
+	input:function(prcode) {
+		window.open("/admin/product_input.php?prcode="+prcode+"&callback=ProductBatchCategory.load","register","width=1500,height=700,scrollbars=yes,status=no");
+	},
+	batch: function(cmd) {
+		//상품선택체크
+		var checked = UI.getChecked('checked[]');
+		if(checked.length <1) {
+			alert('적용할 상품을 선택하세요.');
+			return false;
+		}
+
+		//카테고리 선택여부체크
+		var category = $('#batch_category').val();
+		if(!category) {
+			alert('카테고리를 선택하세요.');
+			return false;
+		}
+		console.log(category);
+		if(!confirm(checked.length+"개의 상품의 카테고리를 변경하시겠습니까?")) return false;
+
+		var formdata = $('#FrmProductBatchCategory').serializeArray();
+		formdata.push({name:'cmd', value:cmd});
+		$.ajax({
+			url:this.proc_url,
+			data:formdata,
+			dataType:'json',
+			type:'POST',
+			success: function(r) {
+				alert(r.msg);
+				if(r.success) {
+					ProductBatchCategory.load();
+					$('#FrmProductBatchCategory')[0].reset();
+				}
+			}
+		})
+	}
+}
+
+$(function() {
+	ProductBatchCategory.init();
+})
+</script>

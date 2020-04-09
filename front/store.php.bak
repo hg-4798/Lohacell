@@ -1,0 +1,665 @@
+<?php
+$Dir="../";
+include_once($Dir."lib/init.php");
+include_once($Dir."lib/lib.php");
+include_once($Dir."lib/shopdata.php");
+
+// =========================================================
+// 변수 셋팅
+// =========================================================
+
+/*
+$page_num	= $_POST["page_num"];
+if(!$list_num) $list_num = '1000';
+if(!$page_num) $page_num = '1';
+*/
+
+$list_num       = 1;
+$page_num       = $_GET["gotopage"] ?: 0;
+$vendor_code    = $_GET["vendor_code"]; // 벤더 idx
+$area_code      = $_GET["area_code"];   // 지역 코드
+$category_code  = $_GET["cate_code"];   // 구분 코드
+$search_word    = $_GET["searchVal"];   // 검색어
+
+// =========================================================
+// 페이징 만들기
+// =========================================================
+
+$where  = "";
+
+$arrWhere = array();
+if ( $search_word != '' ) {
+    array_push($arrWhere, "name LIKE '%".$search_word."%'");
+}
+if ( !empty($vendor_code) ) {
+    array_push($arrWhere, "vendor = {$vendor_code}");
+}
+if ( !empty($area_code) ) {
+    array_push($arrWhere, "area_code = {$area_code}");
+}
+if ( !empty($category_code) ) { 
+    array_push($arrWhere, "category = '{$category_code}'");
+}
+
+if ( count($arrWhere) >= 1 ) {
+    $where = " WHERE " . implode(" AND ", $arrWhere);
+}   
+
+$sql  = "SELECT tblResult.*, ";
+$sql .= "(SELECT com_name FROM tblvenderinfo WHERE vender = tblResult.vendor) as com_name ";
+$sql .= "FROM (SELECT * FROM tblstore " . $where . " ORDER BY sno desc ) AS tblResult ";
+
+$paging = new New_Templet_paging($sql, 10, $list_num, 'GoPage', true);
+$t_count = $paging->t_count;
+$gotopage = $paging->gotopage;
+
+// =========================================================
+// BRAND리스트 만들기
+// =========================================================
+$sql  = "SELECT a.vendor, b.com_name ";
+$sql .= "FROM tblstore a LEFT JOIN tblvenderinfo b ON a.vendor = b.vender ";
+$sql .= "ORDER BY a.vendor asc";
+$result = pmysql_query($sql);
+
+$arrBrandList = array();
+while ($row = pmysql_fetch_object($result)) {
+    $arrBrandList[$row->vendor] = $row->com_name;
+}
+pmysql_free_result($result);
+
+$brandSelectListTitle = "BRAND";
+if ( isset($arrBrandList[$vendor_code]) ) {
+    $brandSelectListTitle = $arrBrandList[$vendor_code];
+}
+
+$areaSelectListTitle = "지역";
+if ( isset($store_area[$area_code]) ) {
+    $areaSelectListTitle = $store_area[$area_code];
+}
+
+$categorySelectListTitle = "구분";
+if ( isset($store_category[$category_code]) ) {
+    $categorySelectListTitle = $store_category[$category_code];
+}
+
+$where	= "";
+if($search_w != ''){
+	$where .= "name LIKE '%".$search_w."%' ";
+}
+
+$sql_t="select count(*) as cnt FROM tblstore ";
+if ( !empty($where) ) {
+    $sql_t .= "WHERE ".$where;
+}
+
+$result_t = pmysql_query($sql_t,get_db_conn());
+$row_t = pmysql_fetch_object($result_t);
+$total = $row_t->cnt;
+$total_page	= ceil($total/ $list_num);
+
+?>
+<?include ($Dir.MainDir.$_data->menu_type.".php");?>
+
+	<div class="containerBody sub-page">
+		<div class="breadcrumb">
+			<ul>
+				<li><a href="/">HOME</a></li>
+				<li class="on"><a>SEARCH STORE</a></li>
+			</ul>
+		</div>
+
+			<div class="map-local">
+				<script type="text/javascript" src="//maps.googleapis.com/maps/api/js?sensor=true&libraries=places"></script>
+  <script>
+	  var map, places, iw, search_now;
+	  var beaches = [];
+	  var markers = [];
+	  var markersArray = [];
+
+	var endCnt	= 0;
+	var page_num	= <?=$page_num?>;
+	var list_num	= <?=$list_num?>;
+
+	var size_x = 30;
+	var size_y = 30;
+	var icon_x = 20;
+	var icon_y = 30;
+
+	var icon_store = new google.maps.MarkerImage('./images/google_ico.png', new google.maps.Size(size_x, size_y), new google.maps.Point(0,0), new google.maps.Point(icon_x,icon_y), new google.maps.Size(size_x, size_y));
+
+	var icon_me = new google.maps.MarkerImage('./images/maps_icon_pin.png', new google.maps.Size(size_x, size_y), new google.maps.Point(0,0), new google.maps.Point(icon_x,icon_y), new google.maps.Size(size_x, size_y));
+
+    function myLocation() {
+		if(navigator.geolocation){
+			navigator.geolocation.getCurrentPosition(successHandler, errorHandler);
+		}
+	}
+
+	function successHandler(position) {
+		var geo_x = position.coords.latitude;
+		var geo_y = position.coords.longitude;
+
+		initialize(geo_x, geo_y);
+	}
+
+	function errorHandler(error) {
+		var errorCode = error.code;
+		var errorMessage = error.message;
+
+		initialize('','');
+	}
+
+	function initialize(geo_x, geo_y) {
+        
+
+		if(geo_x == ""){
+			geo_x = 37.53881;
+		}
+
+		if(geo_y == ""){
+			geo_y = 127.124369;
+		}
+
+		/*var beaches = [
+			['my', geo_x, geo_y,  0, 0, 0, 0, 0, 0],
+			['현대 천호', 0, 0, 1, '02-2225-7945', '서울시 강동구 천호동 455-8'],
+			['현대 충청', 0, 0, 2, '043-909-4585', '충청북도 청주시 흥덕구 복대동 3380번지'],
+			['현대 킨텍스', 0, 0, 3, '031-822-3569', '경기도 고양시 일산서구 대화동 2602'],
+			['롯데아울렛 김해', 0, 0, 4, '080-807-0012', '경남 김해시 장유면 신문리 김해관광유통단지 1B4L번지'],
+			['롯데아울렛 수완', 0, 0, 5, '062-616-2345', '광주 광산구 장덕동 1678'],
+			['W몰 구로', 0, 0, 6, '02-2081-0656', '서울시 금천구 가산동 60-27번지'],
+			['롯데아울렛 청주', 0, 0, 7, '043-717-2585', '충청북도 청주시 흥덕구 비하동 332-1번지'],
+			['롯데 대구', 0, 0, 8, '053-660-3587', '대구 북구 칠성2가 302-155'],
+			['롯데 대전', 0, 0, 9, '042-601-2680', '대전 서 괴정 423-1'],
+			['롯데 동래', 0, 0, 10, '051-668-4617', '부산 동래 온천 502-3'],
+			['롯데 미아', 0, 0, 11, '02-944-2713', '서울시 강북구 미아동 70-6']
+		];*/
+
+		beaches.push(['my', geo_x, geo_y, 0, 0, 0, 0]);
+		var mapOptions = {
+			center: new google.maps.LatLng(geo_x,geo_y),
+			zoom: 10,
+			mapTypeId: google.maps.MapTypeId.ROADMAP
+		};
+
+		map = new google.maps.Map(document.getElementById("map-canvas"), mapOptions);
+
+		setMarkers(map, beaches);
+	}
+		/*var marker = new google.maps.Marker({
+			map:map,
+			draggable:false,
+			animation: google.maps.Animation.DROP
+		});
+
+		google.maps.event.addListener(marker, 'click', function() {
+			infowindow.open(map,marker);
+		});*/
+
+	function setMarkers(map, locations) {
+        for (var i = markersArray.length; i < locations.length; i++) {
+            var beach = locations[i];
+
+            addrMarkerListener(i, beach);
+
+            if (beach[0] != 'my') {
+                addResult(i, beach);
+            }
+        }
+	}
+
+	function addrMarkerListener(i, beach){
+		var displayicon = "";
+
+		var myLatLng = new google.maps.LatLng(beach[1], beach[2]);
+		if (beach[0] == 'my') {
+			displayicon = icon_me;
+		} else {
+			displayicon = icon_store;
+		}
+
+		markers[i] = new google.maps.Marker({
+			position: myLatLng,
+			animation: google.maps.Animation.DROP,
+			map: map,
+			icon: displayicon,
+			title: beach[0],
+			phone: beach[4],
+			addr: beach[5],
+			zIndex: beach[3]
+		});
+
+		if (beach[0] != 'my') {
+			markerListener(map, markers[i]);
+			markersArray.push(markers[i]);
+		}
+
+	}
+
+
+	function deleteOverlays() {
+	  if (markersArray) {
+		for (i in markersArray) {
+		  //markersArray[i].setMap(null);
+		  google.maps.event.addListener(markersArray[i], 'click', function() {
+		    this.setMap(null);
+		  });
+		}
+		markersArray.length = 0;
+	  }
+	}
+
+	/*function old_addrMarkerListener(i, beach){
+		var displayicon = "";
+		var geocoder = new google.maps.Geocoder();
+		//alert(beach[0]);		var lat="";
+		var lng="";
+
+		geocoder.geocode({'address':addr},
+
+			function(results, status){
+
+				if(results!=""){
+
+					var location=results[0].geometry.location;
+
+					lat=location.lat();
+					lng=location.lng();
+
+					var myLatLng = new google.maps.LatLng(lat, lng);
+					displayicon = icon_store;
+
+					markers[i] = new google.maps.Marker({
+						position: myLatLng,
+						map: map,
+						icon: displayicon,
+						title: beach[0],
+						phone: beach[4],
+						addr: beach[5],
+						zIndex: beach[3]
+					});
+
+					markerListener(map, markers[i]);
+				}
+			}
+		);
+	}*/
+
+	function markerListener(map, localmarker){
+		google.maps.event.addListener(localmarker, 'click', function(){
+			iwOpen(map, localmarker);
+		});
+	}
+
+
+	function iwOpen(map, localmarker){
+		var contentString =	'<dl style="padding:0 8px 10px 9px;line-height:1.1;"><div style="height:6px;"></div>'+
+								'<dt style="padding-bottom:3px;color:#0f8bff;font-weight:bold">'+localmarker.title+'</dt>'+
+								'<dd>전화번호 : <a href="tel:'+localmarker.phone+'" target="_self" style="font-weight:bold">'+localmarker.phone+'</a></dd>'+
+								'<dd>매장주소 : '+localmarker.addr+'</dd>'+
+							'</dl>';
+
+		 if (iw) {
+			iw.close();
+			iw = null;
+		  }
+
+		iw = new google.maps.InfoWindow({
+			content: contentString
+		});
+
+		iw.open(map, localmarker);
+	}
+
+	function addResult(i, beach) {
+		var dir     = '<?=$Dir?>';
+		var results = document.getElementById('store_result');
+
+/*
+		var dl      = document.createElement('dl');
+		dl.onclick = function() {
+			google.maps.event.trigger(markers[i], 'click');
+			$('body, html').animate({scrollTop:0}, 100);
+			myLatLng2 = new google.maps.LatLng(beach[1], beach[2]);
+			map.setCenter(myLatLng2);
+			map.setZoom(16);
+		};
+*/
+
+		var addr_arr	= beach[5].split(" / ");
+		//alert(addr_arr.length);
+
+/*
+		var contentString =	'<p><img src="'+dir+'/data/shopimages/board/offlinestore/'+beach[6]+'" ></p>';
+		contentString +='<dt>'+beach[0]+'</dt>';
+		if (addr_arr.length > 1)
+		{
+			contentString		+=	'<dd>'+addr_arr[0]+'</dd>';
+			contentString		+=	'<dd>'+addr_arr[1]+'</dd>';
+		} else {
+			contentString		+=	'<dd>'+beach[5]+'</dd>';
+		}
+
+		contentString		+=	'<dd class="tel"><a href="tel:'+beach[4]+'">'+'전화번호:'+beach[4]+'</a></dd>';
+
+		dl.innerHTML	= contentString;
+		results.appendChild(dl);
+*/
+
+		var tr  = document.createElement('tr');
+		tr.onclick = function() {
+			google.maps.event.trigger(markers[i], 'click');
+			$('body, html').animate({scrollTop:0}, 100);
+			myLatLng2 = new google.maps.LatLng(beach[1], beach[2]);
+			map.setCenter(myLatLng2);
+            map.setZoom(16);
+		};
+
+        var contentString = "<td>" + beach[9] + "</td>";
+        contentString += "<td>" + beach[10] + "</td>";
+        contentString += "<td>" + beach[8] + "</td>";
+        contentString += "<td class=\"address\"><strong>" + beach[0] + "</strong>" + beach[5] + "</td>";
+        contentString += "<td>" + beach[4] + "</td>";
+        contentString += "<td>" + beach[7] + "</td>";
+
+        tr.innerHTML = contentString;
+        results.appendChild(tr);
+	}
+
+
+
+	function list_more(searchType,pageType) {
+		//alert(page_num+"/"+endCnt);
+		/*
+		if (searchType == 'search') {
+			var search_w	= search_now;
+		}
+		*/
+		page_num = pageType;
+		$.post('store.exe.php',{search_w:search_now,list_num:list_num,page_num:page_num},function(data){
+			if(data == 'noRecord'){
+				if (searchType == 'search') {
+					alert("검색한 매장이 없습니다.");
+					location.href= "store.php";
+				}
+			} else {
+				if (searchType == 'search' && page_num == 1) {
+					beaches = [];
+				}
+				var data_num	=0;
+				markersArray = [];
+				beaches = [];
+				$.each(data,function(entryIndex,entry)
+				{
+					_number			    = entry.number;
+					_storeName		    = entry.storeName;
+					_storeAddress	    = entry.storeAddress;
+					_storeTel			= entry.storeTel;
+					_storeXY			= entry.storeXY;
+
+					_storeXY_arr	    = _storeXY.split("|");
+					_filename           = entry.filename;
+                    _storeOfficeHour    = entry.storeOfficeHour;
+                    _storeCategory      = entry.storeCategory;
+                    _storeVendorName    = entry.storeVendorName;
+                    _storeAreaCode      = entry.storeAreaCode;
+
+					beaches.push([_storeName, _storeXY_arr[0], _storeXY_arr[1], data_num, _storeTel, _storeAddress,_filename,_storeOfficeHour,_storeCategory,_storeVendorName,_storeAreaCode]);
+					//alert(_storeName);
+					data_num++;
+					endCnt	= _number;
+					if (endCnt == 1)
+					{
+						//$("#list_more").hide();
+					}
+				});
+				//page_num	= page_num+1;
+				$("#store_result").html("");
+				/*
+				$("#page_more").find("a").removeClass("on").each(function(){
+					if($(this).attr("alt")==page_num){
+						$(this).addClass("on");
+					}
+				});
+				*/
+				setMarkers(map, beaches);
+			}
+		});
+	}
+
+	function searchStore() {
+		search_now	= $("#searchVal").val();
+
+		deleteOverlays();
+		page_num	= 1;
+		//$("#list_more").show();
+		$("#store_result").html("");
+		//$("#store_result").hide();
+		list_more('search');
+		/*
+		if ((search_now == "Enter Local or Store")||(search_now == "")) {
+			alert('지명 또는 매장명을 입력하십시오.');
+			$("#searchVal").focus();
+			return false;
+		} else {
+			deleteOverlays();
+			page_num	= 1;
+			//$("#list_more").show();
+	        $("#store_result").html("");
+			//$("#store_result").hide();
+			list_more('search');
+		}*/
+	}
+
+
+	$(document).ready(function(){
+		$("#searchVal").keyup(function(e){
+			if (e.keyCode == 13) {
+				searchStore();
+			}
+		});
+
+        var params = {
+            search_w        : "<?=$search_word?>",
+            vendor_code     : "<?=$vendor_code?>",
+            area_code       : "<?=$area_code?>",
+            category_code   : "<?=$category_code?>",
+            list_num        : list_num,
+            page_num        : page_num
+        };
+
+		$.post('store.exe.php', params,function(data){
+			if(data == 'noRecord'){
+				alert("검색한 매장이 없습니다.");
+				location.href= "store.php";
+			} else {
+				var data_num	=0;
+				$.each(data,function(entryIndex,entry)
+				{
+					_number			    = entry.number;
+					_storeName		    = entry.storeName;
+					_storeAddress   	= entry.storeAddress;
+					_storeTel			= entry.storeTel;
+					_storeXY			= entry.storeXY;
+					_storeXY_arr	    = _storeXY.split("|");
+					_filename           = entry.filename;
+                    _storeOfficeHour    = entry.storeOfficeHour;
+                    _storeCategory      = entry.storeCategory;
+                    _storeVendorName    = entry.storeVendorName;
+                    _storeAreaCode      = entry.storeAreaCode;
+
+					beaches.push([_storeName, _storeXY_arr[0], _storeXY_arr[1], data_num, _storeTel, _storeAddress,_filename,_storeOfficeHour,_storeCategory,_storeVendorName,_storeAreaCode]);
+					data_num++;
+					endCnt	= _number;
+					if (endCnt == 1)
+					{
+						//alert(endCnt);
+						$("#list_more").hide();
+					}
+				});
+				page_num	= page_num+1;
+				myLocation();
+			}
+		});
+
+        $(".SELECT_LIST").on("click", function() {
+            $(this).parent().parent().parent().find("input").val($(this).attr("ids"));
+        });
+
+        $(".btn-dib-function").on("click", function() {
+            $("#frm").submit();
+        });
+	});
+
+    function GoPage(block,gotopage) {
+        document.frm.block.value=block;
+        document.frm.gotopage.value=gotopage;
+        document.frm.submit();
+    }
+
+</script>
+				<div id="map-canvas" style="min-height:432px;width: 100%"></div>
+			</div>
+
+			<div class="store-search">
+                <form method="GET" name="frm" id="frm">
+                <input type="hidden" name="block" value="<?=$block?>" >
+                <input type="hidden" name="gotopage" value="<?=$gotopage?>" >
+				<div class="select small">
+					<span class="ctrl"><span class="arrow"></span></span>
+					<button type="button" class="my_value"><?=$brandSelectListTitle?></button>
+					<ul class="a_list">
+                        <?
+                            if ( $brandSelectListTitle != "BRAND" ) {
+						        echo "<li><a href=\"javascript:;\" ids=\"\" class=\"SELECT_LIST\">ALL</a></li>";
+                            }
+                            foreach ( $arrBrandList as $key => $val ) {
+						        echo "<li><a href=\"javascript:;\" ids=\"{$key}\" class=\"SELECT_LIST\">{$val}</a></li>";
+                            }
+                        ?>
+
+						<!--li><a href="#1">C.A.S.H</a></li>
+						<li><a href="#2">뀨잉</a></li-->
+					</ul>
+                    <input type="hidden" name="vendor_code" id="vendor_code" value="<?=$vendor_code?>"/>
+				</div>
+				<div class="select small">
+					<span class="ctrl"><span class="arrow"></span></span>
+					<button type="button" class="my_value"><?=$areaSelectListTitle?></button>
+					<ul class="a_list">
+                        <? 
+						    echo "<li><a href=\"javascript:;\" ids=\"\" class=\"SELECT_LIST\">전국</a></li>";
+                            foreach ( $store_area as $key => $val ) {
+						        echo "<li><a href=\"javascript:;\" ids=\"{$key}\" class=\"SELECT_LIST\">{$val}</a></li>";
+                            }
+                        ?>
+						<!--li><a href="#1">전국</a></li>
+						<li><a href="#2">서울특별시</a></li-->
+					</ul>
+                    <input type="hidden" name="area_code" id="area_code" value="<?=$area_code?>"/>
+				</div>
+				<div class="select small">
+					<span class="ctrl"><span class="arrow"></span></span>
+					<button type="button" class="my_value"><?=$categorySelectListTitle?></button>
+					<ul class="a_list">
+                        <? 
+                            if ( $categorySelectListTitle != "구분" ) { 
+                                echo "<li><a href=\"javascript:;\" ids=\"\" class=\"SELECT_LIST\">ALL</a></li>";
+                            }
+
+                            foreach ( $store_category as $key => $val ) {
+						        echo "<li><a href=\"javascript:;\" ids=\"{$key}\" class=\"SELECT_LIST\">{$val}</a></li>";
+                            }
+                        ?>
+
+						<!--li><a href="#1">백화점</a></li>
+						<li><a href="#2">대리점</a></li-->
+					</ul>
+                    <input type="hidden" name="cate_code" id="cate_code" value="<?=$category_code?>"/>
+				</div>
+				<input class="input-def" type="text" name="searchVal" id="searchVal" onclick="this.value='';" value="<?=$search_word?>" title="직접입력 자리">
+				<!--a href="javascript: searchStore();" class="btn-dib-function"><span>SEARCH</span></a-->
+				<a href="javascript:;" class="btn-dib-function"><span>SEARCH</span></a>
+                </form>
+			</div>
+
+			<div class="store-list">
+				<table class="th-top util ">
+					<caption>데코앤이 브랜드 매장 리스트 입니다</caption>
+					<colgroup><col style="width:86px"><col style="width:100px"><col style="width:80px"><col style="width:auto"><col style="width:120px"><col style="width:140px"></colgroup>
+					<thead>
+						<tr>
+							<th scope="col">BRAND</th>
+							<th scope="col">지역</th>
+							<th scope="col">구분</th>
+							<th scope="col">주소</th>
+							<th scope="col">전화번호</th>
+							<th scope="col">영업시간</th>
+						</tr>
+					</thead>
+					<tbody id="store_result">
+						<!--tr>
+							<td>C.A.S.H</td>
+							<td>서울특별시</td>
+							<td>백화점</td>
+							<td class="address"><strong>롯대 본점 비트윈</strong>서울특별시 중구 소공동 1롯데백화점 2F</td>
+							<td>02-1234-5678</td>
+							<td>am10:30 ~ pm08:30</td>
+						</tr>
+						<tr>
+							<td>C.A.S.H</td>
+							<td>서울특별시</td>
+							<td>백화점</td>
+							<td class="address"><strong>롯대 본점 비트윈</strong>서울특별시 중구 소공동 1롯데백화점 2F</td>
+							<td>02-1234-5678</td>
+							<td>am10:30 ~ pm08:30</td>
+						</tr>
+						<tr>
+							<td>C.A.S.H</td>
+							<td>서울특별시</td>
+							<td>백화점</td>
+							<td class="address"><strong>롯대 본점 비트윈</strong>서울특별시 중구 소공동 1롯데백화점 2F</td>
+							<td>02-1234-5678</td>
+							<td>am10:30 ~ pm08:30</td>
+						</tr-->
+					</tbody>
+				</table>
+
+                <?php if($paging->t_count >= 1 ) { ?>
+                <div class="list-paginate-wrap">
+                    <div class="list-paginate">
+                        <?=$a_div_prev_page.$paging->a_prev_page.$paging->print_page.$paging->a_next_page.$a_div_next_page?>
+                    </div>
+                </div>
+                <?php } ?>
+
+
+
+				<!--div class="paging"><a href="#">1</a></div-->
+			</div>
+
+			<!-- 검색하면 아래 부분 출력 -->
+			<!--section class="store_result" id="store_result">
+
+			</section-->
+            <!-- //검색하면 아래 부분 출력 -->
+
+				<!--<a href="javascript: list_more('more')" class="more" id="list_more">더보기</a>-->
+				<!--페이징 기능 삭제. 매장리스트 전체 출력
+				<div class="paging goods_list" id="page_more">
+				<?if($total_page>0){?>
+				<? for($i=1;$i<=$total_page;$i++){ ?>
+				<?  if($i==1){ ?>
+					<a class="on" href="javascript:list_more('more',<?=$i?>)" alt="<?=$i?>"><?=$i?></a>
+				<?  }else{ ?>
+					<a href="javascript:list_more('more',<?=$i?>)" alt="<?=$i?>"><?=$i?></a>
+				<?  } ?>
+				<? } ?>
+				<?}?>
+				</div>-->
+
+	</div>
+
+<?php
+include ($Dir."lib/bottom.php");
+?>

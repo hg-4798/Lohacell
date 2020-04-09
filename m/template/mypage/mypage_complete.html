@@ -1,0 +1,44 @@
+<div id="page">
+	<!-- 내용 -->
+	<main id="content" class="subpage">
+
+		<section class="page_local is-line">
+			<h2 class="page_title">
+				<a href="javascript:history.back();" class="prev">이전페이지</a>
+				<span>주문{? order_status=='cancel'}취소{: order_status=='refund'}반품{:}교환{/} 완료</span>
+			</h2>
+		</section><!-- //.page_local -->
+
+		<div class="orderpage">
+			<div class="result_msg">
+				<p class="fz-14">
+					{? order_status == 'exchange'}
+					교환신청이 정상적으로 접수되었습니다.
+					{: order_status == 'return'}
+					반품신청이 정상적으로 접수되었습니다.
+					{:}
+					주문 취소가 정상적으로 완료되었습니다.
+					{/}
+				</p>
+				<p class="mt-10">항상 i KNOW iONE 을 이용해 주셔서 감사합니다.</p>
+				<p class="point-color mt-15">주문번호 : {order_num}</p>
+			</div>
+			<div class="btn_area">
+				<ul class="dib_type">
+					<li><a href="/m/mypage_cs.php" class="btn-point h-input">목록으로</a></li>
+				</ul>
+			</div>
+
+			<div class="attention inner mt-40">
+				<div class="title">유의사항 <a class="show">보기</a></div>
+				<ul>
+					<li>유효기간이 지난 쿠폰은 자동 소멸되며 재발행 되지 않습니다.</li>
+					<li>쿠폰 유효기간 종료 이후 취소, 반품 시 쿠폰은 재발급되지 않습니다.</li>
+					<li>할인 쿠폰의 할인금액이 상품의 판매가를 초과할 경우 사용이 불가능합니다.</li>
+				</ul>
+			</div>
+		</div><!-- //.mypage_coupon -->
+
+	</main>
+	<!-- //내용 -->
+</div>

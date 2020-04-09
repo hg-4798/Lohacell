@@ -1,0 +1,151 @@
+<div class="content-wrap">
+	<div class="title_depth3">카테고리 배너</div>
+
+	<div class="title_depth3_sub">카테고리</div>
+	<div class="table_style01 mt_10">
+		<form id="FrmCategorySearch" name="FrmCategorySearch" onsubmit="return false">
+			<input type="hidden" name="mode" value="categorylist">
+			<input type="hidden" name="act" value="save">
+			<input type="hidden" name="sort" value="reg_desc">
+			<!-- 정렬기준 -->
+			<input type="hidden" name="limit" value="20">
+			<!-- 페이지당노출개수 -->
+
+
+			<table cellspacing="0" cellpadding="0" width="100%" border="0" class="table-view">
+				<colgroup>
+					<col width="140">
+					<col width="">
+				</colgroup>
+				<tbody>
+				<tr>
+					<th>카테고리선택</th>
+					<td>
+						<select name="category_d2" id="category_d2" class="w200" onchange="CategoryList.loadCategory(this)">
+							{@ category.c2}
+							<option value="{.code_all}" {=selected(.code_all, categorycode) }>{.code_name}</option>
+							{:}
+							<option value="">등록된 카테고리가 없습니다.</option>
+							{/}
+						</select>
+
+					</td>
+				</tr>
+
+				</tbody>
+			</table>
+
+			<div class="ta_c mt_20">
+				<button type="button" id="btn_register" class="btn-point" onclick="CategoryList.load()">조회</button>
+			</div>
+
+		</form>
+	</div>
+	<div id="list_inner"></div>
+</div>
+<script type="text/javascript" src="/admin/static/js/moment.js"></script>
+<script type="text/javascript" src="/admin/static/js/calendar.js"></script>
+<script type="text/javascript">
+var CategoryList = {
+    page: 1,
+    proc_url: '/admin/proc/design.proc.php',
+    categorycode: '',
+    init: function() {
+		var me = this;
+		me.categorycode = $("#category_d2 option:selected").val();
+        me.load(me.categorycode);
+
+
+	},
+	load: function(categorycode) {
+       $('#list_inner').load('{C.DIR_ADMIN}/design/category_inner.php', {
+           categorycode: categorycode
+       	},
+       function () {
+           UI.toggleCheck();
+       }
+	   );
+	},
+    modify: function(idx) {
+        var search = $('#FrmSearch').serialize();
+        search+='&page='+this.page;
+        document.location.href="{C.DIR_ADMIN}/design/category_banner_register.php?idx="+idx+"&argu="+encodeURIComponent(search);
+    },
+    remove: function(idx) {
+        UI.confirm('삭제하시겠습니까?', function() {
+            $.ajax({
+                url:CategoryList.proc_url,
+                data:{
+                    mode:"list",
+                    act:'remove',
+                    idx:idx
+                },
+                dataType:'json',
+                type:'POST',
+                success: function(r) {
+                    UI.alert(r.msg, function() {
+                        CategoryList.load(CategoryList.categorycode);
+                    })
+                }
+            })
+        })
+    },
+    loadCategory: function (ele) {
+        var el = $(ele);
+        var parent_code = el.val();
+        CategoryList.categorycode = parent_code;
+        CategoryList.load(parent_code);
+    },
+    toggleUse: function(use_yn) {
+        var checked = UI.getChecked('checked[]');
+        if (checked.length < 1) {
+            UI.warning('적용할 배너를 선택하세요.');
+            return false;
+        }
+
+        UI.confirm(checked.length + "개의 배너 사용정보를 일괄변경하시겠습니까?", function() {
+            var idx = checked.map(function() {return this.value}).get();
+            $.ajax({
+                url:CategoryList.proc_url,
+                data:{
+                    mode:'list',
+                    act:'batch_use',
+                    use_yn:use_yn,
+                    idx:idx.join()
+                },
+                dataType:'json',
+                type:'POST',
+                success: function(r) {
+                    UI.alert(r.msg, function() {
+                        CategoryList.load(CategoryList.categorycode);
+                    })
+                }
+            })
+        });
+	},
+    sort: function(type,ee) {
+		var idx = $(ee).data('idx');
+        var sort = $(ee).data('sort');
+        $.ajax({
+            url:CategoryList.proc_url,
+            data:{
+                mode:'list',
+                act:'sort',
+                type:type,
+                idx:idx,
+				sort:sort,
+				categorycode:CategoryList.categorycode
+            },
+            dataType:'json',
+            type:'POST',
+            success: function(r) {
+                CategoryList.load(CategoryList.categorycode);
+            }
+        })
+    }
+}
+
+$(function(){
+    CategoryList.init();
+})
+</script>

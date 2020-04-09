@@ -1,0 +1,50 @@
+<style>
+.selected td {font-weight:bold;color:#DC3545;}
+</style>
+<div class="p_20">
+	<table class="table-list">
+		<colgroup>
+			<col style="width:100px">
+			<col>
+		</colgroup>
+		<tbody>
+			<tr>
+				<th>주문수량</th>
+				<td class="ta-l">{=number_format(order.quantity)}개</td>
+			</tr>
+		</tbody>
+	</table>
+
+	<table class="table-list mt-10">
+		<colgroup>
+			<col>
+			<col style="width:200px">
+		</colgroup>
+		<thead>
+			<tr>
+				<th>재고구분</th>
+				<th>수량</th>
+			</tr>
+		</thead>
+		<tbody>
+			<tr class="{=checked(order.delivery_type,'erp','selected')}">
+				<td>일반재고</td>
+				<td>{=number_format(stock.erp)}개</td>
+			</tr>
+			<tr class="{=checked(order.delivery_type,'o2o','selected')}">
+				<td>당일배송재고</td>
+				<td>{=number_format(stock.o2o)}개</td>
+			</tr>
+			<tr class="{=checked(order.delivery_type,'reserve','selected')}">
+				<td>예약재고</td>
+				<td>{=number_format(stock.reserve)}개</td>
+			</tr>
+		</tbody>
+	</table>
+
+	<div class="ta_r mt_10">
+		<button type="button" class="btn-basic h-small" onclick="UI.modalClose();">닫기</button>
+	</div>
+
+</div>
+

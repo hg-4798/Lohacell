@@ -1,0 +1,93 @@
+<div class="table_style02">
+	<table width=100% cellpadding=0 cellspacing=0 border=0 style="table-layout:fixed">
+		<colgroup>
+			<col style="width:50px" />
+			<col style="width:50px" />
+			<col style="width:80px" /><!-- 이미지 -->
+			<col style="width:250px"><!-- 상품명 -->
+			<col style="width:150px" /><!-- 상품코드 -->
+			<col style="width:80px" /><!-- 승인상태 -->
+			<col style="width:80px" /><!-- 판매상태 -->
+			<col style="width:80px" /><!-- 정상가 -->
+			<col style="width:80px" /><!-- 판매가 -->
+			<col style="width:80px" /><!-- 할인율 -->
+			<col style="width:60px" /><!-- 재고 -->
+			<col style="width:80px" /><!-- 퀵배송 -->
+			<col style="width:80px" /><!-- 임직원할인 -->
+			<col style="width:80px" /><!-- 지식쇼핑 -->
+			<col style="width:80px" /><!-- 등록일 -->
+			<col style="width:80px" /><!-- 승인일 -->
+			<col style="width:80px" /><!-- 업데이트일 -->
+		</colgroup>
+		
+		<tr>
+			<th><input type="checkbox" class="hj" data-all="checked[]"><span class="lbl"></span></th>
+			<th>No</th>
+			<th>이미지</th>
+			<th>상품명</th>
+			<th>상품코드</th>
+			<th>승인상태</th>
+			<th>판매상태</th>
+			<th>정상가</th>
+			<th>판매가</th>
+			<th>할인율</th>
+			<th>재고</th>
+			<th>당일퀵배송<br/>가능여부</th>
+			<th>임직원할인율<br />적용여부</th>
+			<th>네이버<br/>지식쇼핑</th>
+			<th>등록일</th>
+			<th>승인일</th>
+			<th>업데이트일</th>
+		</tr>
+		{@ list}
+		<tr>
+			<td><input type="checkbox" name="checked[]" value="{.productcode}" class="hj"><span class="lbl"></span></td>
+			<td>{.no}</td>
+			<td><a href="{link.view}?productcode={.productcode}" target="_blank"><img data-src="{=preview(.tinyimage, 'list')}" src="/admin/static/img/common/img_default_list.gif" alt="" class="b-lazy" style="width:70px"></a></td>
+			<td class="ta_l"><a href="javascript:;" onclick="ProductBatchUpdate.input('{.productcode}');">{.productname}</a></td>
+			<td>
+				{.prodcode}
+				<div class="fc-null">({.productcode})</div>
+			</td>
+			<td>{class.product->trans('display',.display)}</td><!-- 승인상태 -->
+			<td>
+				{class.product->trans('soldout',.soldout)}
+				{? .soldout == 'N' && .quantity==0}<div class="fc-red fs-11">(일시품절)</div>{/}
+			</td><!-- 판매상태 -->
+			<td><img src="/admin/images/won_icon.gif" class="middle" style="margin-right:2px;"><span class="font_orange">{=number_format(.consumerprice)}</span></td>
+			<td><img src="/admin/images/won_icon.gif" class="middle" style="margin-right:2px;"><span class="font_orange">{=number_format(.sellprice)}</span></td>
+			<td>{.sellprice_dc_rate}%</td>
+			<td>{=number_format(.quantity)}</td>
+			<td>{.o2o_yn}</td><!-- 퀵배송 -->
+			<td>{.staff_dc_yn}</td><!-- 임직원할인율적용여부 -->
+			<td>{.naver_display}</td><!-- 네이버지식쇼핑 -->
+			<td>{=format(.regdate,'Y-m-d H:i:s')}</td><!-- 등록일 -->
+			<td>{=format(.selldate,'Y-m-d H:i:s')}</td><!-- 승인일 -->
+			<td>{=format(.modifydate, 'Y-m-d H:i:s')}</td>
+		</tr>
+		{:}
+		<tr height="28">
+			<td colspan="17" align="center">조회된 내용이 없습니다.</td>
+		</tr>
+		{/}
+	</table>
+
+	{this->xprint('include/pagination.html')}
+</div>
+
+
+<script type="text/javascript">
+var ProductBatchUpdateInner = {
+	init: function() {
+		$('#count_total').html('{count.search}');
+		$('#searched').val('{_POST.search}');
+		setTimeout(function(){ new Blazy(); }, 100);
+		// $('#count_search').html('{count.search}');
+		
+	}
+}
+
+$(function() {
+	ProductBatchUpdateInner.init();
+})
+</script>

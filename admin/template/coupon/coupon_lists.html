@@ -1,0 +1,155 @@
+<div class="content-wrap">
+	<div class="title_depth3">쿠폰목록</div>
+
+
+	<form id="FrmCouponSearch" name="FrmCouponSearch">
+		<input type="hidden" name="sort" value="reg_desc">
+		<!-- 정렬기준 -->
+		<input type="hidden" name="limit" value="20">
+		<!-- 페이지당노출개수 -->
+		<div class="table_style01 pt_20">
+
+			<table cellpadding="0" cellspacing="0" border="0" width="100%">
+				<tbody>
+					<tr>
+						<th>
+							<span>쿠폰명</span>
+						</th>
+						<td>
+							
+							<input type="text" name="coupon_name" id="coupon_name" class="input w-100" value="">
+						</td>
+					</tr>
+					<tr>
+						<th>
+							<span>쿠폰혜택</span>
+						</th>
+						<td>
+							<label><input type="radio" name="type_use" value="" class="hj" checked><span class="lbl">전체</span></label>
+							<label><input type="radio" name="type_use" value="P" class="hj"><span class="lbl">상품쿠폰</span></label>
+							<label><input type="radio" name="type_use" value="B" class="hj"><span class="lbl">장바구니쿠폰</span></label>
+							<label><input type="radio" name="type_use" value="D" class="hj"><span class="lbl">무료배송쿠폰</span></label>
+						</td>
+					</tr>
+					<tr>
+						<th>
+							<span>발급방식</span>
+						</th>
+						<td>
+							<label><input type="radio" name="type_publish" value="" class="hj" checked><span class="lbl">전체</span></label>
+							<label><input type="radio" name="type_publish" value="D" class="hj"><span class="lbl">회원다운로드</span></label>
+							<label><input type="radio" name="type_publish" value="A" class="hj"><span class="lbl">조건부자동발급</span></label>
+							<label><input type="radio" name="type_publish" value="I" class="hj"><span class="lbl">지정즉시발급</span></label>
+						</td>
+					</tr>
+					
+				</tbody>
+			</table>
+
+			<div class="ta_c mt_20">
+				<button type="button" class="btn-point" onclick="CouponList.search()">조회</button>
+				<button type="button" class="btn-basic" onclick="CouponList.searchReset()">초기화</button>
+			</div>
+		</div>
+	</form>
+
+	<!--{* 상단툴:S *}-->
+	<div class="row mb_10">
+		<div class="pull-left">
+			<img src="/admin/images/icon_8a.gif" border="0"> 전체
+			<span id="count_total">0</span>건 조회
+			<!-- <button type="button" class="btn-basic dark h-x-small" onclick="ProductList.excel()" style="vertical-align:middle">엑셀 다운로드</button> -->
+		</div>
+		<div class="pull-right">
+			
+		</div>
+	</div>
+	<!--{* 상단툴:E *}-->
+	
+	<div id="inner"></div>
+
+
+</div>
+<script src="/static/js/clipboard.min.js"></script>
+<script type="text/javascript">
+	var CouponList = {
+		page: 1,
+		proc_url: '/admin/proc/coupon.proc.php',
+		init: function () {
+			var me = this;
+			me.load(1);
+		},
+		load: function (page) {
+			UI.ing('데이터를 불러오는 중입니다...');
+			var p = page || CouponList.page;
+			var search = $('#FrmCouponSearch').serialize();
+
+			$('#inner').load('/admin/coupon/coupon_lists.inner.php', {
+					page: p,
+					search: search
+				},
+				function () {
+					CouponList.page = p;
+					// UI.toggleCheck();
+					UI.ing();
+					$('[data-toggle="tooltip"]').tooltip();
+				}
+			);
+		},
+        loadPage: function (page) {
+            CouponList.load(page);
+        },
+        change:function (type,idx) {
+		    var text = (type=='Y')?'중지':'발급 재개';
+            UI.confirm('쿠폰을 '+text+'하시겠습니까?', function () {
+                formdata = {
+                    mode:'issue_status',
+					type:type,
+                    idx:idx
+                };
+                 $.ajax({
+                    url:CouponList.proc_url,
+                    type:'POST',
+                    data:formdata,
+                    dataType:'json',
+                    success : function(r) {
+                        if(r.success) {
+							CouponList.load(CouponList.page);
+						}
+					}
+                });
+            })
+
+        },
+        partDetail: function(use_part,idx) { //할인적용상품보기
+            if(use_part=='A'){
+                UI.error('전체 발급입니다.');
+                return false;
+            }
+            UI.modal('/admin/coupon_part_detail.php','사용대상 목록', {use_part:use_part,idx:idx}, 500);
+        },
+        search: function (field, value) {
+            if (field && value) $('#FrmCouponSearch').find('[name="' + field + '"]').val(value);
+            this.load(1);
+        },
+        searchReset: function () {
+            $('#FrmCouponSearch')[0].reset();
+            this.load(1);
+        },
+        detail: function (idx){
+			document.location.href="/admin/coupon/coupon_detail.php?idx="+idx;
+        },
+        urlCopy: function() {
+            var clipboard = new ClipboardJS('.coupon_btn');
+
+            UI.alert('공유할 주소가 복사되었습니다.');
+        },
+        issue: function (idx){
+            document.location.href="/admin/coupon/coupon_manual_issued.php?idx="+idx;
+        },
+	}
+
+	$(function () {
+		CouponList.init();
+	})
+</script>

@@ -1,0 +1,84 @@
+<style>
+	.table_style02 table {
+		border-collapse: collapse;
+	}
+
+	.table_style02 td,
+	.table_style02 th {
+
+		border-collapse: collapse;
+		border: solid 1px #ddd;
+	}
+
+	.table_style02 tfoot td {
+		background-color: #EFEFEF;
+	}
+
+	.th-sub {
+		background-color: #616161 !important;
+	}
+</style>
+<div class="table_style02 table-hover">
+	<table width=100% cellpadding=0 cellspacing=0 border=0 style="table-layout:fixed">
+		<colgroup>
+			<col style="width:90px" />
+			<col  style="width:150px">
+			<col>
+			<col style="width:250px">
+		</colgroup>
+		<thead>
+			<tr>
+				<th rowspan="2">순위</th>
+				<th rowspan="2">카테고리코드</th>
+				<th rowspan="2">카테고리명</th>
+				<th rowspan="2">카테고리위치</th>
+				<th colspan="2">구매</th>
+				<th colspan="2">환불</th>
+				<th colspan="2">순매출</th>
+			</tr>
+			<tr>
+				<th class="th-sub">결제수량</th>
+				<th class="th-sub">결제금액</th>
+
+				<th class="th-sub">환불수량</th>
+				<th class="th-sub">환불금액</th>
+
+				<th class="th-sub">판매수량</th>
+				<th class="th-sub">판매금액</th>
+			</tr>
+		</thead>
+		<tbody>
+			{@ list}
+			<tr>
+				<td>{.index_+1}</td>
+				<td>{.category_code}</td>
+				<td>{.category_name}</td>
+				<td>{.category_nav}</td>
+				<td>{=number_format(.buy_count)}</td>
+				<td>{=number_format(.buy_price)}</td>
+				<td>{=number_format(.refund_count)}</td>
+				<td>{=number_format(.refund_price)}</td>
+				<td>{=number_format(.sales_count)}</td>
+				<td>{=number_format(.sales_price)}</td>
+			</tr>
+			{:}
+			<tr>
+				<td colspan="10">검색결과가 없습니다.</td>
+			</tr>
+			{/}
+		</tbody>
+		{? list}
+		<tfoot>
+			<tr>
+				<td colspan="4">합계</td>
+				<td>{=number_format(total.buy.count)}</td>
+				<td>{=number_format(total.buy.price)}</td>
+				<td>{=number_format(total.refund.count)}</td>
+				<td>{=number_format(total.refund.price)}</td>
+				<td>{=number_format(total.sales.count)}</td>
+				<td>{=number_format(total.sales.price)}</td>
+			</tr>
+		</tfoot>
+		{/}
+	</table>
+</div>

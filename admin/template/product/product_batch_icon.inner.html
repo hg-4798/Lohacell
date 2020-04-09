@@ -1,0 +1,92 @@
+<div class="table_style02">
+	<table width=100% cellpadding=0 cellspacing=0 border=0 style="table-layout:fixed">
+		<colgroup>
+			<col style="width:50px" />
+			<col style="width:50px" />
+			<col style="width:80px" /><!-- 이미지 -->
+			<col style="width:200px" ><!-- 상품명 -->
+			<col style="width:150px" /><!-- 상품코드 -->
+			<col style="width:80px" /><!-- 승인상태 -->
+			<col style="width:80px" /><!-- 판매상태 -->
+			<col style="width:80px" /><!-- 정상가 -->
+			<col style="width:80px" /><!-- 판매가 -->
+			<col style="width:80px" /><!-- 할인율 -->
+			<col style="width:60px" /><!-- 재고 -->
+			{@ cfg.icon}
+			<col style="width:80px" /><!-- 퀵배송 -->
+			{/}
+			<col style="width:80px" /><!-- 등록일 -->
+			<col style="width:80px" /><!-- 승인일 -->
+			<col style="width:80px" /><!-- 업데이트일 -->
+		</colgroup>
+		
+		<tr>
+			<th><input type="checkbox" class="hj" data-all="checked[]"><span class="lbl"></span></th>
+			<th>No</th>
+			<th>이미지</th>
+			<th>상품명</th>
+			<th>상품코드</th>
+			<th>승인상태</th>
+			<th>판매상태</th>
+			<th>정상가</th>
+			<th>판매가</th>
+			<th>할인율</th>
+			<th>재고</th>
+			{@ cfg.icon}
+			<th class="strong">{.icon_name}</th>
+			{/}
+			<th>등록일</th>
+			<th>승인일</th>
+			<th>업데이트일</th>
+		</tr>
+		{@ list}
+		<tr>
+			<td><input type="checkbox" name="checked[]" value="{.productcode}" class="hj"><span class="lbl"></span></td>
+			<td>{.no}</td>
+			<td><a href="{link.view}?productcode={.productcode}" target="_blank"><img data-src="{=preview(.tinyimage,'list')}" class="b-lazy" src="/static/img/common/img_default_list.gif" style="width:70px"></a></td>
+			<td class="ta_l"><a href="javascript:;" onclick="ProductBatchIcon.input('{.productcode}');">{.productname}</a></td>
+			<td>
+				{.prodcode}
+				<div class="fc-null">({.productcode})</div>
+			</td>
+			<td>{class.product->trans('display',.display)}</td><!-- 승인상태 -->
+			<td>
+				{class.product->trans('soldout',.soldout)}
+				{? .soldout == 'N' && .quantity==0}<div class="fc-red fs-11">(일시품절)</div>{/}
+			</td><!-- 판매상태 -->
+			<td><img src="/admin/images/won_icon.gif" class="middle" style="margin-right:2px;"><span class="font_orange">{=number_format(.consumerprice)}</span></td>
+			<td><img src="/admin/images/won_icon.gif" class="middle" style="margin-right:2px;"><span class="font_orange">{=number_format(.sellprice)}</span></td>
+			<td>{.sellprice_dc_rate}%</td>
+			<td>{=number_format(.quantity)}</td>
+			{@ cfg.icon}
+			<td>{? in_array(..idx, explode(',',.icon))}Y{:}N{/}</th>
+			{/}
+			<td>{=format(.regdate,'Y-m-d H:i:s')}</td><!-- 등록일 -->
+			<td>{=format(.selldate,'Y-m-d H:i:s')}</td><!-- 승인일 -->
+			<td>{=format(.modifydate, 'Y-m-d H:i:s')}</td>
+		</tr>
+		{:}
+		<tr height="28">
+			<td colspan="{=count(cfg.icon)+14}" align="center">조회된 내용이 없습니다.</td>
+		</tr>
+		{/}
+	</table>
+
+	{this->xprint('include/pagination.html')}
+</div>
+
+
+<script type="text/javascript">
+var ProductBatchIconInner = {
+	init: function() {
+		$('#count_total').html('{count.search}');
+		// $('#count_search').html('{count.search}');
+		setTimeout(function(){ new Blazy(); }, 100);
+		
+	}
+}
+
+$(function() {
+	ProductBatchIconInner.init();
+})
+</script>

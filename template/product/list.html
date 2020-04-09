@@ -1,0 +1,204 @@
+<style>
+.thumb-img  .already.b-lazy {
+    opacity: 0;
+    -webkit-transition: opacity 500ms ease-in-out 100ms;
+    -moz-transition: opacity 500ms ease-in-out 100ms;
+    -o-transition: opacity 500ms ease-in-out 100ms;
+    transition: opacity 500ms ease-in-out 100ms;
+}
+
+.thumb-img .already.b-lazy.b-loaded, .thumb-img  .already.b-lazy.b-error {
+	opacity: 1;
+	width: auto;
+}
+</style>
+
+<!-- contents -->
+<div id="contents">
+	<div class="inner_align">
+		<ul class="breadcrumb">
+			<li>
+				<a href="/">HOME</a>
+			</li>
+			<li>
+				<a href="{C.DIR_FRONT}/productlist.php?code={gnb[0].code_all}">SHOPPING</a>
+			</li>
+			{@ nav}
+			<li class="{=checked(.code, code,'now')}">
+				<a href="{url.list}?code={.code}">{.name}</a>
+			</li>
+			{/}
+		</ul>
+		<div class="goods_cate_tit">
+			<h2>{cate.info.code_b.code_name}</h2>
+		</div>
+		
+		<div class="goods_cate_sort">
+			<ul class="clear">
+				<li class="{=checked(cate.info.code_b.code_all, code, 'active')}"><a href="{url.list}?code={cate.info.code_b.code_all}">ALL</a></li>
+				{@ cate.siblings.code_c}
+				<li class="{=checked(.code_all, code, 'active')}">
+					<a href="{url.list}?code={.code_all}">{.code_name}</a>
+				</li>
+				{/}
+			</ul>
+		</div>
+
+		<!--{* 베스트상품 및 배너:S *}-->
+		{? category_banner_list}
+		<div class="list_visual with-direction">
+			<ul class="slider">
+				
+				{@ category_banner_list}
+				<li>
+					<div class="item">
+						<div class="img_area">
+							<div class="img" style="background-image:url('{=preview(.pc_img)}')"></div>
+						</div>
+						<div class="info_area">
+							<p class="ment">{.product.phrase_ad}</p>
+							<div class="price-box">
+								<div class="goods-nm">{.product.productname}</div>
+								<div class="opt">{.product.phrase_etc}</div>
+								<div class="price">{=format(.product.consumerprice,'price')}
+									<span>원</span>
+								</div>
+								{? .product.option_type=='C'}
+								<div class="color-chip">
+									{@.product.option_valid}
+										{? ..colorchip.color_img}
+										<span>
+											<img src="{..colorchip.color_img}" alt="{..colorchip.color_name}">
+										</span>
+										{/}
+									{/}
+								</div>
+								{/}
+								<a href="{url.view}?productcode={.product.productcode}" class="btn-point h-large">자세히 보기</a>
+							</div>
+							<button type="button" class="btn-like-count" data-hottcode="{.product.productcode}" data-section="product">
+								<span>
+									<i class="icon-like {? .product.is_liked}on{/}">좋아요</i>
+								</span>
+								<span>{.product.pr_like_cnt}</span>
+							</button>
+						</div>
+					</div>
+				</li>
+				{/}
+
+			</ul>
+		</div>
+		{/}
+		<!--{* 베스트상품 및 배너:S *}-->
+
+		<div class="goods_list_wrp">
+			<div class="select_area">
+				<div class="select is-custom">
+					<select title="sort by" id="sort">
+						<option value="recent">신상품순</option>
+						<option value="hit">인기순</option>
+						<option value="review">상품평순</option>
+						<option value="like">좋아요순</option>
+						<option value="price_asc">낮은가격순</option>
+						<option value="price_desc">높은가격순</option>
+					</select>
+				</div>
+			</div>
+			<ul class="goods_list loading-inner" id="goodslist">
+				{=this->xprint('/product/list.inner.html')}
+			</ul>
+		</div>
+	</div>
+</div>
+<!-- //contents -->
+
+<script type="text/javascript" src="/static/js/blazy.min.js"></script> <!--{* 이미지lazy 처리js *}-->
+<script type="text/javascript">
+$('html,body').scrollTop(0);
+var ProductList = {
+	page:1,
+	page_last:'{list.page.last}',
+	lock:false,
+	sort:'recent',
+	init: function(){
+		var me = this;
+
+		// list visual slider
+		$('.list_visual .slider').bxSlider({
+			mode: 'fade',
+			pagerType: 'short'
+		});
+
+
+		$('.filter-open').on('click',function(){
+			$(this).closest('.list-head').find('.filter-wrap').toggleClass('active');
+			$(this).toggleClass('active');
+		});
+
+
+		$('.best-slide').slick({
+			infinite:true,
+			slidesToShow:5,
+			slidesToScroll:1
+		});
+
+		//정렬
+		$('#sort').on('change', function() {
+			me.sort = this.value;
+			me.load(1);
+		})
+
+
+		$(window).scroll(function() {
+			ProductList.scroll();
+		});
+
+		new Blazy();
+	},
+	scroll: function() {
+		var me = ProductList;
+		var scrollHeight= $(window).scrollTop() + $(window).height();
+		var documentHeight = $(document).height()-400;
+		if(scrollHeight > documentHeight && !me.lock) {
+			me.lock = true;
+			if(me.page_last <= me.page) return false;
+
+			var p = me.page+1;
+			me.load(p);
+		}
+	},
+	load:function(page) {
+		var me = ProductList;
+		var p = page || me.page;
+
+		$.ajax({
+			url:'/front/productlist.inner.php',
+			data:{page:p, sort:me.sort,code:'{code}'},
+			dataType:'json',
+			type:'GET',
+			success: function(r) {
+				me.page = p;
+				me.page_last = r.data.page.last;
+				if(p == 1) {
+					$("#goodslist").html(r.data.html);
+					new Blazy();
+				}
+				else {
+					$(r.data.html).hide().appendTo("#goodslist").delay(100).fadeIn(500, function() {
+						new Blazy();
+					});
+				}
+				PRODUCT.like(); //좋아요바인딩
+
+				me.lock = false;
+			}
+
+		});
+	}
+}
+
+$(function() {
+	ProductList.init();
+})
+</script>

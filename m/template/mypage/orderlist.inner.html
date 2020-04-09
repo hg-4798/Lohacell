@@ -1,0 +1,41 @@
+<!-- 주문별 반복 -->
+{@ list}
+<div>
+	<h3 class="order_title">
+		<span>주문번호: {.children[0].order_num}</span>
+		<a href="{C.DIR_M}/mypage_orderlist_view.php?oid={.children[0].oid}">상세보기</a>
+	</h3>
+	<ul class="cart_goods">
+		{@ .children}
+		<li>
+			<div class="cart_wrap">
+				<div class="clear">
+					<div class="goods_area">
+						<div class="img"><a href="{C.DIR_M}/mypage_orderlist_view.php?oid={.children[0].oid}"><img src="{=preview(..product_info.tinyimage,'default')}" alt="상품 이미지"></a></div>
+						<div class="info">
+							<p class="date">{=format(..date_insert,'Y-m-d')}</p>
+							<p class="brand">{? ..option_type == 'product'}<span class="point-color fw-normal">[추가] </span>{/}{..product_info.productname}</p>
+							<p class="name">{? ..option_info.option_name} {..option_info.option_name} / {/}{=number_format(..cnt)}개</p>
+							<p class="point-color fw-bold">{=number_format(..price_end*..cnt)}원</p>
+							<span class="status_tag btn-point h-small"  data-step="{..order_status}{..cs_type}{..cs_status}">{..status_info.msg}</span>
+						</div>
+					</div>
+				</div>
+			</div><!-- //.cart_wrap -->
+		</li>
+		{/}
+	</ul><!-- //.cart_goods -->
+
+</div>
+<!-- //주문별 반복 -->
+{:}
+<div class="with_deli_info">
+	<ul>
+		<li class="no-content">내역이 없습니다.</li>
+	</ul>
+</div>
+{/}
+
+<div class="list-paginate mt-15">
+	{this->xprint('_include/pagination.html')}
+</div>

@@ -1,0 +1,167 @@
+<div class="p_20">
+	<form id="FrmChoiceSearch">
+	<input type="hidden" name="pr_type" value="{search.pr_type}" />
+	<table cellspacing="0" cellpadding="0" width="100%" border="0" class="table-view">
+		<colgroup>
+			<col width="140">
+			<col width="">
+		</colgroup>
+		<tbody>
+			{? mode == 'recommend'}
+			<tr>
+				<th><span>구분</span></th>
+				<td>
+					<label><input type="radio" name="type" value="" class="hj" checked><span class="lbl">전체</span></label>
+					<label><input type="radio" name="type" value="new" class="hj"><span class="lbl">신상품</span></label>
+					<label><input type="radio" name="type" value="hit" class="hj"><span class="lbl">인기상품</span></label>
+				</td>
+			</tr>
+			{/}
+
+			<tr>
+				<th><span>상품검색</span></th>
+				<td>
+					<label><input type="radio" name="sf" value="productname" class="hj" checked><span class="lbl">상품명</span></label>
+					{? mode == 'addprd_choice'}
+					<input type="hidden" name="mode" value="{mode}" >
+					{:}
+					<label><input type="radio" name="sf" value="prodcode" class="hj"><span class="lbl">ERP코드</span></label>
+					<label><input type="radio" name="sf" value="productcode" class="hj"><span class="lbl">상품코드</span></label>
+					{/}
+					<div class="mt_10">
+						<textarea  name="sv" class="w400 full" placeholder="검색어를 입력하세요."></textarea>
+					</div>
+				</td>
+
+			</tr>
+			{? search.pr_type != '4'}
+			<tr>
+				<th><span>카테고리검색</span></th>
+				<td>
+					{? search.category_fix}
+					<input type="hidden" name="category_fix" value="{search.category_fix}" />
+					{=implode(' &gt; ', array_column(nav, 'name'))}
+					{:}
+						<select name="category[]" id="category_1" style="width:200px;" onchange="ProductChoice.loadCategory(this)">
+							{? !search.category_d2}
+							<option value="">〓〓 1차 카테고리 〓〓</option>
+							{/}
+							{@ category.c2}
+							<option value="{.code_all}" {? search.category_d2 && search.category_d2 != .code_all}disabled{/} {?search.category_d2 == .code_all}selected{/}>{.code_name}</option>
+							{/}
+						</select>
+						<select name="category[]" style="width:200px;" onchange="ProductChoice.loadCategory(this)">
+							<option value="">〓〓 2차 카테고리 〓〓</option>
+						</select>
+					{/}
+
+				</td>
+			</tr>
+		{/}
+
+		</tbody>
+	</table>
+
+	<div class="mt_10 mb_10 ta_c">
+		<button type="button" class="btn-basic dark h-small" onclick="ProductChoice.search()">조회</button>
+		<button type="button" class="btn-basic h-small" onclick="ProductChoice.searchReset()">초기화</button>
+	</div>
+
+	<div class="row">
+		<div class="pull-left"><img src="/admin/images/icon_8a.gif" border="0"> 전체 <span id="count_total"></span>건 조회</div>
+		<div class="pull-right">
+			<select name="limit" onchange="ProductChoice.search('limit',this.value)">
+				<option value="5">5개씩 보기</option>
+				<option value="10">10개씩 보기</option>
+				{@ cfg.limit}
+				<option value="{.value_}" {=checked(.value_, 20, 'selected')}>{.value_}개씩 보기</option>
+				{/}
+			</select>
+		</div>
+		<div style="clear:both;height:10px"></div>
+	</div>
+
+	</form>
+
+
+	<!--{* 상품목록:S *}-->
+	<div id="choice_inner"></div>
+</div>
+
+
+<script src="/static/js/blazy.min.js"></script>
+<script>
+var ProductChoice = {
+	page:1,
+	init: function() {
+		this.load();
+		ProductChoice.loadCategory($('#category_1'));
+	},
+	load:function(page) {
+		UI.loading('choice_inner');
+		var p = page || ProductChoice.page;
+		var search = $('#FrmChoiceSearch').serialize();
+
+		$('#choice_inner').load('/admin/product_choice.inner.php',{page:p, search:search},
+			function() {
+				UI.modalCenter();
+				UI.toggleCheck();
+				UI.loading('choice_inner');
+				ProductChoice.page = p;
+			}
+		);
+	},
+	search: function(field, value) {
+		if(field && value) $('#FrmChoiceSearch').find('[name="'+field+'"]').val(value);
+		this.load(1);
+	},
+	searchReset: function() {
+		$('#FrmChoiceSearch')[0].reset();
+		this.load(1);
+	},
+	choice: function(mode) {
+		var tr = $('[name="checked[]"]:checked').closest('tr');
+		if(tr.length<1) {
+			alert('추가할 상품을 선택하세요.');
+			return false;
+		}
+		ChoiceCallback(tr);
+
+		if(mode == 'close') {
+			UI.modalClose();
+		}
+	},
+	loadCategory: function(ele) {
+		var el = $(ele);
+		var parent_code = el.val();
+		var target = el.next('select');
+		el.nextAll('select').find('option[value!=""]').remove();
+
+		//target.empty();
+
+		$.ajax({
+			url:'/admin/proc/product.proc.php',
+			data:{
+				mode:'category',
+				act:'get_children',
+				parent_code:parent_code
+			},
+			dataType:'json',
+			type:'POST',
+			success: function(r) {
+				if(r.success){
+					$.each(r.data, function(i,e){
+						var opt = $('<option value="'+e.code_all+'">'+e.code_name+'</option>');
+						target.append(opt);
+					})
+				}
+
+			}
+		})
+	},
+}
+
+$(function() {
+	ProductChoice.init();
+})
+</script>

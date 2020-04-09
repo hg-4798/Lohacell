@@ -1,0 +1,197 @@
+<div id="page">
+	<section class="page_local">
+		<h2 class="page_title">
+			<a href="javascript:history.back();" class="prev">이전페이지</a>
+			<span>EVENT</span>
+		</h2>
+	</section>
+
+	<section class="photo_type_view">
+		<h4 class="title_area with_brand">
+			<span class="brand">{promoinfo.title}</span>
+			<span class="date">{=format(promoinfo.start_date,'Y-m-d')}~{=format(promoinfo.end_date,'Y-m-d')}</span>
+		</h4>
+
+		<div><!-- [D] 에디터 영역 -->
+			{promoinfo.content_m}
+		</div>
+
+		<div class="btns mt-20">
+			<ul>
+				<li><a href="event.php" class="icon_list">목록</a></li>
+				<li>
+					<button type="button" data-hottcode="{promoinfo.idx}" data-section="event" data-cnt="{promoinfo.promo_like_cnt}">
+						<i class="icon_like"></i>
+						<span class="like_count">{=number_format(promoinfo.promo_like_cnt)}</span>
+					</button>
+				</li><!-- [D] 클릭시 좋아요 숫자+1, 재클릭시 좋아요 숫자-1 -->
+				<li>
+					<div class="wrap_bubble layer_sns_share on">
+						<div class="btn_bubble"><button type="button" class="btn_sns_share">sns 공유</button></div>
+						<div class="pop_bubble">
+							<div class="inner">
+								<button type="button" class="btn_pop_close">닫기</button>
+								<div class="icon_container">
+									<a href="javascript:;" onclick="Share.facebook()" title="페이스북">1<i class="icon-share-facebook">페이스북</i></a>
+									<a href="javascript:;" onclick="PromoDetail.kakaolink()"  title="카카오링크"><i class="icon-share-talk">카카오링크</i></a>
+									<a href="javascript:;" onclick="Share.naverblog('{promoinfo.title}')"  title="네이버블로그"><i class="icon-share-blog">네이버블로그</i></a>
+									<a href="javascript:;" onclick="Share.urlCopy()" title="링크"><i class="icon-share-url">링크</i></a>
+								</div>
+							</div>
+						</div>
+					</div>
+				</li>
+			</ul>
+		</div><!-- //.btns -->
+
+		
+		<div class="other_posting">
+			{? executives == 'N'}
+			<dl>
+				<dt>PREV</dt>
+				{? prev.idx}
+				<a href="/m/promotion/{? prev.event_type==1}promo{:}event{/}_detail.php?idx={prev.idx}&status={type}">{/}
+					<dd>
+						{? prev.idx}{ prev.title}{:}이전글이 없습니다.{/}
+					</dd>
+					{? prev.idx}</a>{/}
+			</dl>
+			<dl>
+				<dt>NEXT</dt>
+				{? next.idx}<a href="/m/promotion/{? next.event_type==1}promo{:}event{/}_detail.php?idx={next.idx}&status={type}">{/}
+				<dd>
+					{? next.idx}{ next.title}{:}다음글이 없습니다.{/}
+				</dd>
+				{? next.idx}</a>{/}
+			</dl>
+			{/}
+		</div><!-- //.other_posting -->
+		
+
+		<div class="divide-box-wrap two mt-80 tab_group">
+			<ul class="divide-box ta-c" id="tab_group">
+				{@ promotioninfo}
+				<li>
+					<a class="ellipsis" href="#{.title}">{.title}</a>
+				</li>
+				{/}
+			</ul>
+		</div>
+
+		<!--기획전 탭type -->
+		<div id="tab_group_type" >
+			{@ promotioninfo}
+				{? .display_tem == 4 || .display_tem == 5}
+				<!--세로형, 슬라이드 형-->
+				<div id="{.title}" class="wrap_prgoods">
+					{? .display_tem == 5}<h5><span>{.title}</span></h5>{/}
+					<div class="prgoods {? .display_tem == 5}with-btn{/}" >
+						<ul class="prgoods_detail {? .display_tem == 5}slider clear{/}">
+							{@ .product}
+							<li class="goods-item">
+								<div class="like-local"><button type="button" data-hottcode="{..productcode}" data-section="product"><i class="icon_like"></i> <span class="like_count">{..pr_like_cnt}</span></button></div>
+								<a href="/m/productdetail.php?productcode={..productcode}">
+									<div class="img"><img class="already b-lazy" data-src="{=preview(..tinyimage)}" src="/admin/images/product/noimg.jpg" ></div>
+									<div class="goods_info">
+										<p class="goods-nm">{..productname}</p>
+										<p class="opt">{..phrase_etc}</p>
+										<p class="price">
+											<strong>{=number_format(..sellprice)}<span>원</span></strong><del>{=number_format(..consumerprice)}<span>원</span></del>
+											<span class="tag_discount"><strong>{..sellprice_dc_rate}</strong>% <i class="icon-dc-arrow">할인</i></span>
+										</p>
+										<div class="color-chip">
+											{@..option_valid}
+											{? ...colorchip.color_img}
+											<span>
+											<img src="{...colorchip.color_img}" alt="{...colorchip.color_name}">
+										</span>
+											{/}
+											{/}
+										</div>
+										<p class="text">{..phrase_ad}</p>
+									</div>
+								</a>
+							</li>
+							{/}
+						</ul><!-- //.goodslist -->
+					</div><!-- //.prgoods -->
+				</div><!-- //.wrap_prgoods -->
+				{:}
+				<div id="{.title}" class="wrap_prgoods">
+					<h5><span>{.title}</span></h5>
+					<div class="prgoods">
+						<ul class="goodslist {? .display_tem == 2 || .display_tem == 3}col1{/}" >
+							{@ .product}
+							<li class="goods-item">
+								<figure>
+									<div class="like-local"><button type="button" data-hottcode="{..productcode}" data-section="product"><i class="icon_like"></i> <span class="like_count">{..pr_like_cnt}</span></button></div>
+									<a href="/m/productdetail.php?productcode={..productcode}">
+									<div class="img___"><img class="already b-lazy" data-src="{=preview(..tinyimage)}" src="/admin/images/product/noimg.jpg" ></div>
+									<figcaption>
+										<p class="goods-nm">{..productname}</p>
+										<p class="opt">{..phrase_etc}</p>
+										<p class="price">{=number_format(..sellprice)}<span>원</span></p>
+										<div class="color-chip">
+											{@..option_valid}
+											{? ...colorchip.color_img}
+											<span>
+											<img src="{...colorchip.color_img}" alt="{...colorchip.color_name}">
+										</span>
+											{/}
+											{/}
+										</div>
+									</figcaption>
+									</a>
+								</figure>
+							</li>
+								{? .display_tem == 2 && ..index_==0}
+								</ul>test<!-- //.goodslist -->
+								<ul class="goodslist mt-20">
+								{/}
+							{/}
+						</ul><!-- //.goodslist -->
+					</div><!-- //.prgoods -->
+				</div><!-- //.wrap_prgoods -->
+				{/}
+			{/}
+		</div>
+
+		<!-- <div style="height:100px;background-color:#AAAAAA">dddd</div> -->
+	</section><!-- //.photo_type_view -->
+</div>
+
+<script type="text/javascript" src="/static/js/blazy.min.js"></script>
+<script src="//developers.kakao.com/sdk/js/kakao.min.js"></script>
+<script src="/static/js/clipboard.min.js"></script>
+<script type="text/javascript">
+    var PromoDetail = {
+        init: function() {
+            new Blazy(); //이미지 바인딩
+			PRODUCT.like(); //좋아요 바인딩
+
+			
+        },
+        kakaolink: function() {
+            Kakao.init('{cfg.kakao}');
+
+            var content = {
+                title: '{promoinfo.title}',
+                //description: '#001001011000005436 #',
+                imageUrl: '{promoinfo.thumb_img}',
+                /**/
+                link: {
+                    mobileWebUrl: '{C.HOST}/m/promotion/event_detail.php?idx={promoinfo.idx}&status={type}',
+                    webUrl: '{C.HOST}/front/promotion/event_detail.php?idx={promoinfo.idx}&status={type}'
+                },
+                imageWidth:550,
+                imageHeight:770
+            };
+
+            Share.kakaolink(content);
+        },
+    };
+
+    $(function () {
+        PromoDetail.init();
+    });
+</script>

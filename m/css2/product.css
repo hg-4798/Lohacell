@@ -1,0 +1,261 @@
+@charset "utf-8";
+
+/* 브레드크럼 */
+#header .breadcrumb{height:35px;border-bottom:1px solid #071232;background:#fff}
+#header .breadcrumb > ul{position:relative;height:100%}
+#header .breadcrumb > ul > li{float:left;width:33.33%;height:100%}
+#header .breadcrumb > ul.solo > li{width:100%}
+#header .breadcrumb > ul.duo > li:last-child{width:66.67%}
+
+#header .breadcrumb .onebox{position:relative;height:100%}
+#header .breadcrumb .onebox:before{position:absolute;width:100%;height:100%;left:-11px;top:0;background:url("../images/header_breadcrumb_direction.png") no-repeat 0 0;background-size:contain;content:"";display:block}
+#header .breadcrumb li:first-child .onebox:before{display:none}
+#header .breadcrumb .onebox a,
+#header .breadcrumb .onebox span{z-index:1;position:relative;height:100%;color:#3e3e3e;font-size:13px;font-weight:bold;text-align:center;line-height:36px;overflow:hidden;display:block}
+#header .breadcrumb .onebox a .arrow{width:9px;height:8px;margin-top:13px;background:url("../images/header_breadcrumb_arrow.png") no-repeat 0 0;background-size:9px 16px;display:inline-block}
+
+#header .breadcrumb .twobox{position:absolute;width:100%;border-top:1px solid #aaa;border-bottom:1px solid #2e2e2e;left:0;top:36px;background:#898989;box-shadow:0 2px 3px 0 rgba(0,0,0,0.3);display:none}
+#header .breadcrumb .twobox ul{margin:-1px 0}
+#header .breadcrumb .twobox ul:after{clear:both;content:"";display:block}
+#header .breadcrumb .twobox li{float:left;width:100%;border-top:1px solid #aaa;border-bottom:1px solid #2e2e2e}
+#header .breadcrumb .twobox li a{padding-left:10px;height:30px;color:#fff;font-size:14px;font-weight:bold;line-height:30px;overflow:hidden;display:block}
+
+#header .breadcrumb .twobox ul.half{}
+#header .breadcrumb .twobox ul.half li{width:50%}
+#header .breadcrumb .twobox ul.half li:nth-of-type(odd) a{border-right:1px solid #2e2e2e}
+#header .breadcrumb .twobox ul.half li:nth-of-type(even) a{border-left:1px solid #aaa}
+
+#header .breadcrumb li.on .onebox a{color:#ff4e08}
+#header .breadcrumb li.on .onebox a .arrow{background-position:0 100%}
+#header .breadcrumb li.on .twobox{display:block}
+
+/* 정렬 */
+.rangewrap{position:relative;height:28px;padding:10px;background:#eee}
+.rangewrap .selectbox{position:absolute;left:10px;right:83px;top:10px}
+.rangewrap .viewbox{float:right}
+.rangewrap .viewbox:after{clear:both;content:"";display:block}
+.rangewrap .viewbox a{float:left;height:26px;border:1px solid #adadad;margin-left:-1px;overflow:hidden}
+.rangewrap .viewbox a:first-child{margin-left:0}
+.rangewrap .viewbox a img{width:auto;height:200%}
+.rangewrap .viewbox a.on img{margin-top:-26px}
+
+/* 상품 리스트 */
+.productpage{}
+.productpage .paginate{margin:25px 0}
+
+/* 상품 정렬 - 리스트 형 */
+.productwrap{}
+.productwrap > ul{}
+.productwrap > ul > li{height:120px;border-bottom:1px solid #d6d6d6}
+.productwrap > ul > li > input[type="checkbox"] {float:left; margin:0px 5px; margin-top:50px}
+.productwrap > ul > li > a{position:relative;height:100%;display:block}
+.productwrap img.item{float:left;width:auto;height:100%;margin-right:9px}
+.productwrap .infobox{padding-right:10px;overflow:hidden}
+.productwrap .infobox .tagbox{height:17px;margin:8px 0 3px 1px}
+.productwrap .infobox .tagbox img{float:left;width:auto;height:100%;margin-right:2px}
+.productwrap .infobox span.name{height:32px;color:#242424;line-height:1.2;overflow:hidden;display:block}
+.productwrap .infobox span.name strong{font-weight:normal}
+.productwrap .infobox span.code{margin-top:1px;color:#272727;font-size:13px;display:block}
+.productwrap .infobox .pricebox{margin-top:5px;font-size:16px}
+.productwrap .infobox .pricebox:after{clear:both;content:"";display:block}
+.productwrap .infobox .pricebox del{float:left;margin-right:8px;color:#8a8989}
+.productwrap .infobox .pricebox strong{float:left;color:#ff4e08}
+
+/* 상품 정렬 - 썸네일 형 */
+.productwrap.thumb{}
+.productwrap.thumb > ul:after{clear:both;content:"";display:block}
+.productwrap.thumb > ul > li{float:left;width:50%;height:auto;border:0}
+.productwrap.thumb > ul > li > a{height:auto;margin:0 1px}
+.productwrap.thumb img.item{float:none;width:100%;height:auto;margin:0}
+.productwrap.thumb .infobox{padding:6px 5px 17px}
+.productwrap.thumb .infobox .tagbox{position:absolute;margin:0;left:5px;top:5px}
+
+/* 상품 상세 - 상단 */
+#header .detailtop{padding:10px 10px 9px;border-bottom:1px solid #071232;background:#fff}
+#header .detailtop .tagbox{height:17px;margin-bottom:4px}
+#header .detailtop .tagbox img{float:left;width:auto;height:100%;margin-right:2px}
+#header .detailtop h2{color:#3b3b3b}
+
+/* 상품 상세 - 하단 */
+#bottom.detailoption{height:40px}
+#bottom.detailoption .optionwrap{position:absolute;width:100%;height:40px;left:0;bottom:0;background:linear-gradient(#e8e8e8,#d9d9d9);background:-webkit-linear-gradient(#e8e8e8,#d9d9d9);box-shadow:0 -1px 2px rgba(0,0,0,0.1)}
+#bottom.detailoption .optionwrap:before{position:absolute;width:100%;border-top:1px solid #fff;left:0;top:1px;content:"";display:block}
+#bottom.detailoption .optionwrap a.btn_arrow{position:absolute;width:70px;height:17px;margin-left:-35px;left:50%;top:-17px;overflow:hidden}
+
+#bottom.detailoption .optionwrap.on{height:108px}
+#bottom.detailoption .optionwrap.on a.btn_arrow img{margin-top:-17px}
+#bottom.detailoption .optionwrap.on .closebox{display:none}
+#bottom.detailoption .optionwrap.on .openbox{display:block}
+
+#bottom.detailoption .optionwrap .closebox{position:absolute;height:40px;left:20px;right:20px}
+#bottom.detailoption .optionwrap .closebox .buttonbox{margin-top:7px}
+#bottom.detailoption .optionwrap .closebox .buttonbox .box{width:20%}
+#bottom.detailoption .optionwrap .closebox .buttonbox .box:first-child{width:80%}
+#bottom.detailoption .optionwrap .closebox .buttonbox .box a.btn_buy{left:0;right:5px}
+#bottom.detailoption .optionwrap .closebox .buttonbox .box a.btn_share{left:5px;right:0}
+#bottom.detailoption .optionwrap .closebox .buttonbox .box a.btn_share img{width:auto;height:15px;margin-top:6px}
+
+#bottom.detailoption .optionwrap .openbox{position:absolute;height:108px;left:20px;right:20px;bottom:0;display:none}
+#bottom.detailoption .optionwrap .openbox select{margin-top:5px}
+#bottom.detailoption .optionwrap .openbox select:first-child{margin-top:7px}
+#bottom.detailoption .optionwrap .openbox .buttonbox{margin-top:7px}
+#bottom.detailoption .optionwrap .openbox .buttonbox .box{width:50%}
+#bottom.detailoption .optionwrap .openbox .buttonbox .box a.btn_buy{left:0;right:5px}
+#bottom.detailoption .optionwrap .openbox .buttonbox .box a.btn_cart{border-color:#464646;left:5px;right:0;background:linear-gradient(#7a7a7a,#545454);background:-webkit-linear-gradient(#7a7a7a,#545454)}
+
+#bottom.detailoption .optionwrap .buttonbox{height:28px}
+#bottom.detailoption .optionwrap .buttonbox .box{float:left;position:relative;height:100%}
+#bottom.detailoption .optionwrap .buttonbox a{position:absolute;height:27px;border-bottom:1px solid #d73e02;border-radius:2px;top:0;color:#fff;font-size:13px;font-weight:bold;text-align:center;line-height:28px;background:linear-gradient(#ff733c,#ff4e09);background:-webkit-linear-gradient(#ff733c,#ff4e09);overflow:hidden;display:block}
+
+/* 상품 상세 */
+.detailpage{}
+
+.detailpage .rollingwrap{position:relative;padding:10px 0}
+.detailpage .rollingwrap a.arrow{z-index:1;position:absolute;width:15px;height:39px;margin-top:-19px;top:50%;overflow:hidden}
+.detailpage .rollingwrap a.arrow.prev{left:0}
+.detailpage .rollingwrap a.arrow.next{right:0}
+.detailpage .rollingwrap a.arrow:focus img,
+.detailpage .rollingwrap a.arrow:hover img{margin-top:-39px}
+
+.detailpage .rollingwrap .container{min-height:229px;overflow:hidden}
+.detailpage .rollingwrap .container ul{position:absolute;width:100%;height:100%;left:0;top:0}
+.detailpage .rollingwrap .container li{position:absolute;width:100%;left:0;top:0;text-align:center;background:#fff;overflow:hidden}
+.detailpage .rollingwrap .container li img{width:71.56%}
+
+.detailpage nav.share{padding:8px 0;border-top:1px solid #bcbcbc;border-bottom:1px solid #bcbcbc;text-align:center;background:#f5f5f5}
+.detailpage nav.share ul{display:inline-block}
+.detailpage nav.share li{float:left;margin-left:5px}
+.detailpage nav.share li:first-child{margin-left:0}
+.detailpage nav.share li a{width:26px;display:block}
+
+.detailpage .infowrap{padding:6px 0 17px}
+.detailpage .infowrap section{padding:8px 0;line-height:16px}
+.detailpage .infowrap section h3{float:left;padding-left:14px;width:74px;color:#363636;font-weight:normal}
+.detailpage .infowrap section .content{padding-left:88px}
+.detailpage .infowrap section .content.pricebox del{margin-right:8px;color:#9a9a9a;display:inline-block}
+.detailpage .infowrap section .content.pricebox strong{color:#ff4e08}
+.detailpage .infowrap section .content.mileagebox span.icon{width:15px;height:15px;border-radius:2px;margin-right:5px;color:#fff;font-size:11px;text-align:center;line-height:16px;background:#071232;overflow:hidden;display:inline-block}
+.detailpage .infowrap section .content.mileagebox strong{color:#474747;font-weight:normal}
+.detailpage .infowrap section .content.codebox span{color:#474747}
+.detailpage .infowrap section .content.colorbox{}
+.detailpage .infowrap section .content.colorbox ul{margin-top:-7px;overflow:hidden}
+.detailpage .infowrap section .content.colorbox li{float:left;width:49px;border:1px solid #d2d2d2;margin:5px 5px 0 0}
+.detailpage .infowrap section .content.colorbox li a{display:block}
+
+.detailpage nav.detailtab{position:relative;height:30px}
+.detailpage nav.detailtab ul{z-index:1;position:relative;width:100%;height:30px}
+.detailpage nav.detailtab li{float:left;width:33.33%;height:100%}
+.detailpage nav.detailtab li a{height:100%;border-left:1px solid #fff;color:#424242;font-size:13px;text-align:center;line-height:30px;background:#e8e8e8;display:block}
+.detailpage nav.detailtab li:first-child a{border-left:0}
+.detailpage nav.detailtab li.on a{color:#fff;background:#071232}
+
+/* 상품 상세 - 상품설명 */
+.detailpage section.manual{padding:5px}
+.detailpage section.manual .imgbox{position:relative}
+.detailpage section.manual .imgbox a.btn_origin{position:absolute;width:58px;height:24px;border:1px solid #c1c1c1;right:5px;top:5px;color:#666;font-size:13px;font-weight:bold;text-align:center;line-height:24px;background:linear-gradient(#f4f4f4,#dadada);background:-webkit-linear-gradient(#f4f4f4,#dadada);overflow:hidden;display:block}
+
+.detailpage section.manual .sizebox{margin-top:5px}
+.detailpage section.manual .sizebox table{border:1px solid #ccc;color:#868686;font-size:11px}
+.detailpage section.manual .sizebox table caption{padding-bottom:10px}
+.detailpage section.manual .sizebox table thead{background:#f9f9f9}
+.detailpage section.manual .sizebox table thead th{padding:4px 0}
+.detailpage section.manual .sizebox table th[scope="row"]{font-weight:normal}
+.detailpage section.manual .sizebox table th,
+.detailpage section.manual .sizebox table td{padding:2px 0;border:1px solid #ccc}
+.detailpage section.manual .sizebox p{margin-top:4px;color:#363636;font-size:12px;line-height:1.3}
+
+.detailpage section.manual .infobox{padding:10px 0 2px}
+.detailpage section.manual .infobox section{margin-top:10px;font-size:12px;line-height:1.4}
+.detailpage section.manual .infobox section h4{float:left;width:85px;color:#ff4e08;font-weight:normal}
+.detailpage section.manual .infobox section .content{padding-left:85px}
+.detailpage section.manual .infobox section .content ul.symbol{height:30px;margin-bottom:5px}
+.detailpage section.manual .infobox section .content ul.symbol li{float:left;height:100%;margin-right:3px}
+.detailpage section.manual .infobox section .content ul.symbol li img{width:auto;height:100%}
+
+/* 상품 상세 - 상품후기 */
+.detailpage section.review{padding:15px 0 25px;display:none}
+.detailpage section.review .topbox{padding:0 10px 5px 10px}
+.detailpage section.review .topbox:after{clear:both;content:"";display:block}
+.detailpage section.review .topbox span{float:left;color:#424242;font-size:13px;line-height:26px}
+.detailpage section.review .topbox span strong{color:#ff4e08;font-weight:normal}
+.detailpage section.review .topbox a.btn_write{float:right;width:70px;height:24px;border:1px solid #c1c1c1;color:#666;font-size:12px;font-weight:bold;text-align:center;line-height:24px;background:linear-gradient(#f4f4f4,#dadada);background:-webkit-linear-gradient(#f4f4f4,#dadada);overflow:hidden;display:block}
+
+.detailpage section.review ul.review{border-top:1px solid #9396a0;margin-bottom:20px}
+.detailpage section.review ul.review > li{border-bottom:1px solid #d1d3d9;line-height:1.4}
+.detailpage section.review ul.review > li.on .content{display:block}
+
+.detailpage section.review ul.review a.title{padding:10px 10px 6px;display:block}
+.detailpage section.review ul.review a.title .starbox{float:left}
+.detailpage section.review ul.review a.title span{color:#999;font-size:13px;line-height:16px;display:block}
+.detailpage section.review ul.review a.title span.id{float:left;margin-left:9px}
+.detailpage section.review ul.review a.title span.date{float:right}
+.detailpage section.review ul.review a.title p{clear:both;padding-top:6px;color:#363636;font-weight:bold}
+
+.detailpage section.review ul.review .content{padding:4px 10px 10px;display:none}
+.detailpage section.review ul.review .content > p{color:#5b5b5b}
+.detailpage section.review ul.review .commentbox{padding:7px;margin-top:6px;background:#f0f0f0}
+.detailpage section.review ul.review .commentbox .writebox{position:relative;padding-left:10px;background:url("../images/detail_review_comment_bullet.png") no-repeat 0 9px;background-size:6px 6px}
+.detailpage section.review ul.review .commentbox .writebox:after{clear:both;content:"";display:block}
+.detailpage section.review ul.review .commentbox .writebox .inputbox{position:absolute;left:10px;right:64px}
+.detailpage section.review ul.review .commentbox .writebox .inputbox input[type="text"]{width:100%;height:24px;padding:0 5px;border:1px solid #c1c1c1;color:#666;font-size:12px}
+.detailpage section.review ul.review .commentbox .writebox a{float:right;width:45px;height:24px;border:1px solid #c1c1c1;color:#666;font-size:12px;font-weight:bold;text-align:center;line-height:24px;background:linear-gradient(#f4f4f4,#dadada);background:-webkit-linear-gradient(#f4f4f4,#dadada);overflow:hidden;display:block}
+.detailpage section.review ul.review .commentbox ul.comment{margin:2px 0 -1px}
+.detailpage section.review ul.review .commentbox ul.comment li{padding:4px 0 0 10px;background:url("../images/detail_review_comment_bullet.png") no-repeat 0 10px;background-size:6px 6px}
+.detailpage section.review ul.review .commentbox ul.comment li span.id{float:left;color:#ff4e08;font-size:13px}
+.detailpage section.review ul.review .commentbox ul.comment li p{padding-left:70px;color:#5b5b5b;font-size:13px}
+.detailpage section.review ul.review .commentbox ul.comment li p a.btn_delete{width:30px;height:17px;border:1px solid #c1c1c1;margin:-2px 0 -3px;color:#666;font-size:11px;font-weight:bold;text-align:center;line-height:18px;background:linear-gradient(#f4f4f4,#dadada);background:-webkit-linear-gradient(#f4f4f4,#dadada);overflow:hidden;display:inline-block}
+
+.starbox{width:80px;height:14px;text-align:left;background:url("../images/starscore.png") no-repeat 0 0;background-size:80px 28px;display:inline-block}
+.starbox span{width:100%;height:100%;font-size:0;text-indent:-999px;background:url("../images/starscore.png") no-repeat 0 100%;background-size:80px 28px;overflow:hidden;display:block}
+
+/* 상품 상세 - 쇼핑안내 */
+.detailpage section.guide{padding-bottom:25px;display:none}
+.detailpage section.guide article{margin-top:15px}
+.detailpage section.guide article h4{height:30px;padding:0 9px;border-top:1px solid #9396a0;border-bottom:1px solid #ecedef;color:#ff4e08;line-height:30px;background:#f8f8f8}
+.detailpage section.guide article dl{padding:0 9px}
+.detailpage section.guide article dt{margin-top:15px;color:#424242;font-size:13px;font-weight:bold}
+.detailpage section.guide article dd{margin:8px 0 -3px;color:#595959;font-size:12px;line-height:1.3}
+
+/* 스타일 */
+.stylepage{}
+.stylepage .paginate{margin:20px 0 25px}
+
+/* 스타일 - 썸네일 */
+.stylepage .productwrap.thumb{margin-bottom:-11px}
+.stylepage .productwrap.thumb li .infobox{padding-bottom:12px}
+.stylepage .productwrap.thumb li .infobox span.name{height:19px}
+.stylepage .productwrap.thumb li .infobox span.date{color:#7c7c7c;font-size:12px}
+
+/* 스타일 - 리스트 */
+.stylepage ul.stylelist{border-bottom:1px solid #6e6e6e}
+.stylepage ul.stylelist > li{border-top:1px solid #d6d6d6}
+
+/* 스타일 - 상세 */
+.stylepage article.detail{padding-bottom:25px}
+.stylepage article.detail .titlebox{position:relative;padding:8px 10px;border-bottom:1px solid #d6d6d6;background:#eee}
+.stylepage article.detail .titlebox h2{padding-right:100px;color:#242424;line-height:1.3}
+.stylepage article.detail .titlebox span.date{position:absolute;margin-top:-6px;right:10px;top:50%;color:#7c7c7c;font-size:12px}
+
+.stylepage article.detail nav.share{padding:10px;text-align:right}
+.stylepage article.detail nav.share ul{display:inline-block}
+.stylepage article.detail nav.share li{float:left;margin-left:5px}
+.stylepage article.detail nav.share li:first-child{margin-left:0}
+.stylepage article.detail nav.share li a{width:26px;display:block}
+
+.stylepage article.detail .contentbox{padding:0 10px}
+.stylepage article.detail .contentbox p{margin:24px 0 22px;color:#242424;font-size:12px;line-height:1.3;text-align:center}
+
+.stylepage article.detail section.related{padding:25px 10px 0}
+.stylepage article.detail section.related h3{margin-bottom:3px;color:#242424}
+.stylepage article.detail section.related ul:after{clear:both;content:"";display:block}
+.stylepage article.detail section.related li{float:left;position:relative;width:25%;margin-top:1px}
+.stylepage article.detail section.related li a{margin-right:1px;display:block}
+
+.stylepage nav.button{padding:20px 0 25px;border-top:1px solid #6e6e6e}
+.stylepage nav.button ul{margin:0 3px}
+.stylepage nav.button ul:after{clear:both;content:"";display:block}
+.stylepage nav.button li{float:left;width:33.33%}
+.stylepage nav.button li a{margin:0 3px;color:#fff;font-size:12px;font-weight:bold;text-align:center;background:#555;display:block}
+.stylepage nav.button li a .box{padding:1px}
+.stylepage nav.button li a span{height:30px;border:1px solid #898989;line-height:30px;overflow:hidden;display:block}
+

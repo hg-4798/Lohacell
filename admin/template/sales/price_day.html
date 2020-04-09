@@ -1,0 +1,120 @@
+<div class="content-wrap">
+	<div class="title_depth3">{__NAV.page_tit}</div>
+
+	<div class="tbl-search m-t-20">
+		<form id="FrmSearch" name="FrmSearch" onsubmit="return false">
+			<input type="hidden" name="limit" value="20">
+			<table cellspacing="0" cellpadding="0" width="100%" border="0">
+				<colgroup>
+					<col width="140">
+					<col width="">
+				</colgroup>
+				<tbody>
+					<tr>
+						<th>
+							<span>기간검색</span>
+						</th>
+						<td>
+							<input type="text" name="date_s" id="date_s" class="input calendar datepicker" readonly="" value="{search.date_s}"> ~
+							<input type="text" name="date_e" id="date_e" class="input calendar datepicker" readonly="" value="{search.date_e}">
+							<a href="javascript:;" onclick="PriceDay.setPeriod('today')">
+								<img src="/admin/images/btn_today01.gif" class="middle" />
+							</a>
+							<a href="javascript:;" onclick="PriceDay.setPeriod('7_days')">
+								<img src="/admin/images/btn_day07.gif" class="middle" />
+							</a>
+							<a href="javascript:;" onclick="PriceDay.setPeriod('14_days')">
+								<img src="/admin/images/btn_day14.gif" class="middle" />
+							</a>
+							<a href="javascript:;" onclick="PriceDay.setPeriod('1_months')">
+								<img src="/admin/images/btn_day30.gif" class="middle" />
+							</a>
+						</td>
+					</tr>
+				</tbody>
+			</table>
+
+			<div class="area-button">
+				<button type="button" id="btn_register" onclick="PriceDay.search()" class="btn-point">조회</button>
+				<button type="button" id="btn_cancel" onclick="PriceDay.searchReset()" class="btn-basic">초기화</button>
+			</div>
+		</form>
+	</div>
+
+	<div class="tools mb_10">
+		<div class="pull-left">
+			<button type="button" class="btn-basic dark h-x-small" onclick="PriceDay.excel()" style="vertical-align:middle">엑셀 다운로드</button>
+		</div>
+		<div class="pull-right">
+		</div>
+	</div>
+	
+	<div id="inner"></div>
+
+	<div class="sub_manual_wrap">
+		<div class="title">
+			<p>매뉴얼</p>
+		</div>
+		<ul class="help_list">
+			<li>검색 가능한 기간은 최대 90일입니다 .</li>
+		</ul>
+	</div>
+</div>
+
+<form name="FrmCommentExcel" method="POST" action="/admin/common/excel.download.php">
+	<input type="hidden" name="type" value="sales_price_day">
+	<input type="hidden" name="column" value="*">
+	<input type="hidden" name="search" value="">
+</form>
+
+
+<script type="text/javascript" src="/admin/static/js/moment.js"></script>
+<script type="text/javascript">
+	var PriceDay = {
+		init: function () {
+			var me = this;
+			$('.datepicker').datepicker();
+			me.load();
+		},
+		load: function () {
+			//검색기간체크(최대 90일)
+			var s = moment($('#date_s').val(),'YYYY-MM-DD');
+			var e = moment($('#date_e').val(),'YYYY-MM-DD');
+			if(e.diff(s, "days") > 90) {
+				UI.error('검색가능한 기간은 최대 90일입니다.');
+				return false;
+			}
+
+			UI.ing('데이터를 불러오는 중입니다...');
+			var search = $('#FrmSearch').serialize();
+			$('#inner').load('/admin/sales/price_day.inner.php', {
+				search: search
+			}, function () {
+				$("td").filter(function () {
+					return $(this).text() === "0";
+				}).css("color", "#ddd");
+				UI.ing();
+			});
+		},
+		search: function () {
+			this.load();
+		},
+		searchReset: function() {
+			document.FrmSearch.reset();
+			this.load();
+		},
+		setPeriod: function (sub) {
+			var period = UTIL.period('<?=TIMESTAMP?>', sub);
+			document.FrmSearch.date_s.value = period.start;
+			document.FrmSearch.date_e.value = period.end;
+		},
+		excel: function() {
+			document.FrmCommentExcel.search.value = $('#FrmSearch').serialize();
+			document.FrmCommentExcel.submit();
+		}
+	}
+
+	$(function () {
+		PriceDay.init();
+	})
+</script>

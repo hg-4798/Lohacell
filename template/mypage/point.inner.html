@@ -1,0 +1,59 @@
+<table class="th-top">
+	<caption>포인트 목록</caption>
+	<colgroup>
+		<col style="width:100px">
+		<col style="width:auto">
+		<col style="width:125px">
+		<col style="width:125px">
+	</colgroup>
+	<thead>
+		<tr>
+			<th scope="col">날짜</th>
+			<th scope="col">상세내역</th>
+			<th scope="col">적립포인트</th>
+			<th scope="col">사용포인트</th>
+		</tr>
+	</thead>
+	<tbody>
+		{@ list}
+		<tr>
+			<td class="txt-toneB">{=format(.date_insert,'Y-m-d')}</td>
+			<td class="txt-toneA subject">
+				{.point_reason}
+				{? .point > 0}
+				<div class="txt-toneC mt-5">유효기간 : {=format(.date_expire,'Y-m-d')}</div>
+				{/}
+				{? .point_reason_flag == 'order'}
+				<div class="txt-toneC mt-5">주문번호 : {.order_num}</div>
+				{/}
+			</td>
+			<td class="txt-toneA">{? .point > 0}+{=number_format(.point)}{/}</td>
+			<td class="txt-toneB">{? .point < 0}{=number_format(.point)}{/}</td>
+		</tr>
+		{:}
+
+		<tr>
+			<td colspan="4">내역이 없습니다.</td>
+		</tr>
+		{/}
+
+	</tbody>
+</table>
+<div class="list-paginate mt-20">
+	{this->xprint('_include/pagination.html')}
+</div>
+
+<script type="text/javascript">
+
+    var PointInner = {
+        total:'{total}',
+        init: function(){
+            var me = this;
+            $('.p_count').html(me.total);
+        },
+    }
+
+    $(function() {
+        PointInner.init();
+    })
+</script>

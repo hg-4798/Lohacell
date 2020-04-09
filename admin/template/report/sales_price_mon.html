@@ -1,0 +1,103 @@
+<div class="content-wrap">
+	<div class="title_depth3">{__NAV.page_tit} <span></span></div>
+
+	<div class="m-t-20">
+		<form name="FrmSearchReport" id="FrmSearchReport" onsubmit="return false" autocomplete="off">
+			<input type="hidden" name="sort" value="reg_desc">
+			<input type="hidden" name="limit" value="20">
+			<table class="tbl-search">
+				<colgroup>
+					<col style="width:150px">
+					<col>
+					<col style="width:150px">
+					<col>
+				</colgroup>
+				<tr>
+					<th>기간</th>
+					<td colspan="3">
+						<select name="date_field" class="select" hidden>
+							<option value="op.date_order_2">결제완료일</option>
+						</select>
+						<input type="text" name="date_s" class="input calendar datepicker" readonly> ~ <input type="text" name="date_e" class="input calendar datepicker" readonly>
+					</td>
+				</tr>
+			</table>
+
+			<div class="ta_c mt_20">
+				<button type="button" class="btn-point" onclick="Sales_Month.search()">조회</button>
+				<button type="button" class="btn-basic" onclick="Sales_Month.searchReset()">초기화</button>
+			</div>
+
+		</form>
+	</div>
+
+
+	<!--{* 상단툴:S *}-->
+	<div class="tools mb_10">
+		<div class="pull-left">
+			<img src="/admin/images/icon_8a.gif" border="0"> 전체
+			<span id="count_total">{=number_format(count)}</span>건 조회
+			<button type="button" class="btn-basic dark h-x-small" onclick="Sales_Month.excel()" style="vertical-align:middle">엑셀 다운로드</button>
+		</div>
+		<div class="pull-right">
+			<select name="listnum_select" onchange="Sales_Month.search('limit',this.value)">
+				{@ __CONFIG.limit}
+				<option value="{.value_}">{.value_}개씩 보기</option>
+				{/}
+			</select>
+		</div>
+	</div>
+	<!--{* 상단툴:E *}-->
+
+
+	<!--{* 목록:S *}-->
+	<div id="inner"></div>
+	<!--{* 목록:E *}-->
+
+</div>
+<script type="text/javascript">
+	var Sales_Month = {
+		init: function() {
+			var me = this;
+			$('.datepicker').datepicker();
+			me.load(1);
+			UI.reverseCheck();
+		},
+		search: function (field, value) {
+			if (field && value) $('#FrmSearchReport').find('[name="' + field + '"]').val(value);
+			this.load(1);
+		},
+		searchReset: function () {
+			$('#FrmSearchReport')[0].reset();
+			this.load(1);
+		},
+		load: function(page) {
+			UI.ing('데이터를 불러오는 중입니다...');
+			var p = page || Sales_Month.page;
+			var search = $('#FrmSearchReport').serialize();
+
+			$('#inner').load('/admin/report/sales_price_mon.inner.php', {
+					page: p,
+					search: search
+				},
+				function () {
+					Sales_Month.page = p;
+					UI.toggleCheck();
+					UI.ing();
+					$('[data-toggle="tooltip"]').tooltip();
+				}
+			);
+		},
+		excel: function () {
+			document.FrmSearchReport.action = "sales_price_mon_excel.php";
+			document.FrmSearchReport.method = "POST";
+			//document.form1.target="_blank";
+			document.FrmSearchReport.submit();
+			document.FrmSearchReport.action = "";
+		}
+	}
+
+	$(function() {
+		Sales_Month.init();
+	})
+</script>

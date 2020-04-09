@@ -1,0 +1,212 @@
+<div class="content-wrap">
+	<div class="title_depth3">{__NAV.page_tit} <span></span></div>
+
+	<div class="m-t-20">
+		<form id="FrmSearchStep1" onsubmit="return false" autocomplete="off">
+			<input type="hidden" name="sort" value="reg_desc">
+			<input type="hidden" name="limit" value="20">
+			<table class="tbl-search">
+				<colgroup>
+					<col style="width:150px">
+					<col>
+					<col style="width:150px">
+					<col>
+				</colgroup>
+				<tr>
+					<th>검색어</th>
+					<td colspan="3">
+						<select name="sf" class="select" style="height:32px;vertical-align:middle;">
+							<option value="ob.order_num">주문번호</option>
+							<option value="" disabled style="background-color:#ddd;color:#000;font-weight:700">주문자 정보</option>
+							<option value="ob.buyer_name">주문자명</option>
+							<option value="ob.member_id">주문자ID</option>
+							<option value="ob.buyer_mobile">주문자 휴대폰번호</option>
+							<option value="ob.buyer_ip">주문자IP</option>
+							<option value="" disabled style="background-color:#ddd;color:#000;font-weight:700">받는사람 정보</option>
+							<option value="ob.receiver_name">받는사람 이름</option>
+							<option value="ob.receiver_mobile">수령자휴대폰번호</option>
+							<option value="ob.receiver_addr">배송지주소</option>
+						</select>
+						<textarea class="w500" name="sv" id="search" style="vertical-align:middle;height:32px;box-sizing:border-box"></textarea>
+					</td>
+				</tr>
+				<tr>
+					<th>기간</th>
+					<td colspan="3">
+						<select name="date_field" class="select">
+							<option value="date_order_1">주문일</option>
+							<option value="date_order_2">결제완료일</option>
+							<option value="date_order_4">배송중처리일</option>
+							<option value="date_order_5">배송완료일</option>
+						</select>
+						<input type="text" name="date_s" class="input calendar datepicker" readonly> ~ <input type="text" name="date_e" class="input calendar datepicker" readonly>
+					</td>
+				</tr>
+				<tr>
+					<th>주문위치</th>
+					<td>
+						<label><input type="radio" name="buyer_viewport" value="all" class="hj" checked><span class="lbl">전체</span></label>
+						<label><input type="radio" name="buyer_viewport" value="PC" class="hj" ><span class="lbl">PC</span></label>
+						<label><input type="radio" name="buyer_viewport" value="MOBILE" class="hj" ><span class="lbl">MOBILE</span></label>
+						
+					</td>
+					<th>회원구분</th>
+					<td>
+						<label><input type="radio" name="is_member" value="all" class="hj" checked><span class="lbl">전체</span></label>
+						<label><input type="radio" name="is_member" value="Y"" class="hj" ><span class="lbl">회원</span></label>
+						<label><input type="radio" name="is_member" value="N" class="hj" ><span class="lbl">비회원</span></label>
+					</td>
+				</tr>
+				<tr>
+					<th>결제수단</th>
+					<td>
+						<label><input type="checkbox" class='hj' name="pg_paymethod[]" value="all" checked data-reverse="pg_paymethod[]"><span class="lbl">전체</span></label>
+						<label><input type="checkbox" class='hj' name="pg_paymethod[]" value="card"><span class="lbl">카드결제</span></label>
+						<label><input type="checkbox" class='hj' name="pg_paymethod[]" value="acnt"><span class="lbl">실시간계좌이체</span></label>
+						<label><input type="checkbox" class='hj' name="pg_paymethod[]" value="vcnt"><span class="lbl">가상계좌</span></label>
+					</td>
+					<th>주문금액</th>
+					<td>
+						<input type="text" name="pay_total_s"> 원 ~ <input type="text" name="pay_total_e"> 원
+					</td>
+				</tr>
+			</table>
+
+			<div class="ta_c mt_20">
+				<button type="button" class="btn-point" onclick="OrderStep5.search()">조회</button>
+				<button type="button" class="btn-basic" onclick="OrderStep5.searchReset()">초기화</button>
+			</div>
+			
+		</form>
+	</div>
+
+
+	<!--{* 상단툴:S *}-->
+	<div class="tools mb_10">
+			<div class="pull-left">
+				<img src="/admin/images/icon_8a.gif" border="0"> 전체
+				<span id="count_total">{=number_format(count)}</span>건 조회
+				<button type="button" class="btn-basic dark h-x-small" onclick="OrderStep5.excel()" style="vertical-align:middle">엑셀 다운로드</button>
+			</div>
+			<div class="pull-right">
+				<select name="sort" onchange="OrderStep5.search('sort',this.value)">
+					<option value="reg_desc">주문일 ↓</option>
+					<option value="reg_asc">주문일 ↑</option>
+				</select>
+				<select name="listnum_select" onchange="OrderStep5.search('limit',this.value)">
+					{@ __CONFIG.limit}
+					<option value="{.value_}">{.value_}개씩 보기</option>
+					{/}
+				</select>
+			</div>
+		</div>
+		<!--{* 상단툴:E *}-->
+
+		
+	<!--{* 목록:S *}-->
+	<div id="inner"></div>
+	<!--{* 목록:E *}-->
+
+	<div class="area-bottom ta_l">
+			<span class="tit"><i class="fa fa-check"></i> 선택된 상품을</span>
+			<select id="batch_order_status" class="ml_10">
+				<option value="">== 결제상태 ==</option>
+				<option value="6">{__CONFIG.order_status[6]}</option>
+			</select>
+
+			<button type="button" class="btn-basic dark h-x-small " onclick="OrderStep5.batch('order_status')">일괄적용</button>
+			<!--
+			<span class="bar"></span>
+			<button type="button" onclick="OrderStep5.batch('cancel')">취소처리</button>
+			-->
+		</div>
+
+
+</div>
+<textarea id="searched" style="display:none">{searched}</textarea>
+<script type="text/javascript">
+var OrderStep5 = {
+	init: function() {
+		var me = this;
+		$('.datepicker').datepicker();
+		me.load(1);
+		UI.reverseCheck();
+	},
+	search: function (field, value) {
+		if (field && value) $('#FrmSearchStep1').find('[name="' + field + '"]').val(value);
+		this.load(1);
+	},
+	searchReset: function () {
+		$('#FrmSearchStep1')[0].reset();
+		this.load(1);
+	},
+	load: function(page) {
+		UI.ing('데이터를 불러오는 중입니다...');
+		var p = page || OrderStep5.page;
+		var search = $('#FrmSearchStep1').serialize();
+
+		$('#inner').load('/admin/order/order_step5.inner.php', {
+				page: p,
+				search: search
+			},
+			function () {
+				OrderStep5.page = p;
+				UI.toggleCheck();
+				UI.ing();
+				$('[data-toggle="tooltip"]').tooltip();
+			}
+		);
+	},
+	batch: function(field) {
+		if(field == 'order_status') {
+			var order_status = $('#batch_order_status').val();
+			if (!order_status) {
+				UI.warning('주문상태를 선택하세요.');
+				return false;
+			}
+		}
+		
+		var checked = UI.getChecked('checked[]');
+		if (checked.length < 1) {
+			UI.warning('적용할 주문서를 선택하세요.');
+			return false;
+		}
+
+		UI.confirm("일괄변경하시겠습니까?", function() {
+			var order_num = checked.map(function() {return this.value}).get().join();
+			$.ajax({
+				url: '/admin/proc/order.proc.php',
+				data: {
+					mode:'change',
+					act:'batch',
+					order_status:order_status,
+					order_num:order_num
+				},
+				dataType: 'json',
+				type: 'POST',
+				success: function (r) {
+					if(r.success) {
+						UI.alert(r.msg, function() {
+							OrderStep5.load();
+						});
+					}
+					else {
+						UI.error(r.msg);
+					}
+				}
+			})
+		})
+	},
+    excel: function () {
+        var search = $('#searched').val();
+        UI.modal('/admin/common/excel.php', '엑셀다운로드', {
+            type:'order_step5',
+            search: search
+        }, 800);
+    }
+}
+
+$(function() {
+	OrderStep5.init();
+})
+</script>

@@ -1,0 +1,488 @@
+<div id="contents">
+	<div class="mypage-page">
+		<h2 class="page-title">주문상품 취소 신청<h2>
+				<div class="inner-align page-frm clear">
+					{=include("mypage_TEM01_left.php")}
+					<article class="my-content order-detail">
+						<form name="FrmCancel" id="FrmCancel" onsubmit="return false;">
+						<input type="hidden" name="mode" value="order_cancel">
+						<input type="hidden" name="order_num" value="{basic.order_num}">
+						<input type="hidden" name="order_status" id="order_status" value="{basic.order_status}">
+						<input type="hidden" id="paymethod" value="{basic.pg_paymethod}">
+						<input type="hidden" id="escrow_yn" value="{payment.escrow_yn}">
+						<section class="mt-50">
+								<header class="my-title">
+									<h3 class="fz-0">주문 목록</h3>
+									<div class="count">전체 <strong>{total}</strong></div>
+									<p class="ord-no"><span class="fz-13">주문번호</span> : {basic.order_num}<span class="fz-13 pl-30">주문날짜</span> : {=format(basic.date_insert,'Y-m-d')}
+									</p>
+								</header>
+
+								<table class="th-top">
+									<caption>주문 목록</caption>
+									<colgroup>
+										<col style="width:auto">
+										<col style="width:80px">
+										<col style="width:120px">
+										<col style="width:105px">
+
+									</colgroup>
+									<thead>
+										<tr>
+											<th scope="col">주문상품</th>
+											<th scope="col">수량</th>
+											<th scope="col">결제금액</th>
+											<th scope="col">상태</th>
+
+										</tr>
+									</thead>
+
+									<tbody>
+										{@ product}
+										{? .index_ < 1}
+										<tr class="bold" >
+											<td class="pl-5">
+												<div class="goods-in-td">
+													<div class="thumb-img"><a href="/front/productdetail.php?productcode={.productcode}"><img src="{=preview(.product_info.tinyimage,'default')}" alt=""></a></div>
+													<div class="info">
+														<p class="goods-nm">{? .option_type == 'product'}<span class="point-color fw-normal">[추가] </span>{/}{.product_info.productname}</p>
+														{? .option_type == 'option'}<p class="opt">{.option_info.option_name}</p>{/}
+													</div>
+												</div>
+											</td>
+											<td class="txt-toneB">{=number_format(.cnt)}개</td>
+											<td class="txt-toneA fw-bold">{=number_format(.price_sell*.cnt)}원</td>
+
+											<td rowspan="{total}">{.status_info.msg}</td>
+										</tr>
+										{:}
+										<tr class="bold">
+											<td class="pl-5">
+												<div class="goods-in-td">
+													<div class="thumb-img"><a href="/front/productdetail.php?productcode={.productcode}"><img src="{=preview(.product_info.tinyimage,'default')}" alt=""></a></div>
+													<div class="info">
+														<p class="goods-nm">{? .option_type == 'product'}<span class="point-color fw-normal">[추가] </span>{/}{.product_info.productname}</p>
+														{? .option_type == 'option'}<p class="opt">{.option_info.option_name}</p>{/}
+													</div>
+												</div>
+											</td>
+											<td class="txt-toneB">{=number_format(.cnt)}개</td>
+											<td class="txt-toneA fw-bold">{=number_format(.price_sell*.cnt)}원</td>
+										</tr>
+										{/}
+									{/}
+									</tbody>
+
+									<tfoot>
+										<tr>
+											<td colspan="6" class="reset">
+												<div class="cart-total-price ta-l clear">
+
+													<div class="select">
+														<select id="cancel_reason" name="cancel_reason" style="min-width:176px" tabindex="7" >
+															<option value="etc">취소 사유를 선택해주세요</option>
+															{@__CONFIG.cancel_reason}
+															<option value="{.value_}">{.value_}</option>
+															{/}
+														</select>
+													</div>
+													<br>
+													<div class="input w100-per mt-5">
+														<input type="text" id="cancel_reason_etc" name="cancel_reason_etc" class="w100-per validate[required]" data-errormessage-value-missing="취소사유를 선택하세요." >
+													</div>
+												</div>
+											</td>
+										</tr>
+									</tfoot>
+								</table>
+								<ul class="fz-13 mt-15 txt-toneB">
+									<li>* 주문 취소할 상품의 사유를 선택해 주세요.</li>
+									<li class="pt-5">* 사은품 포함 주문의 경우, 부분 취소/반품은 불가능합니다. 전체 취소/반품 후 재주문 바랍니다.</li>
+								</ul>
+
+						</section>
+						{? gift_list}
+						<div class="order-infoDetail clear mt-60">
+							<section class="mt-50">
+								<header class="my-title">
+									<h3>사은품 ({gift_total})</h3>
+								</header>
+								<table class="th-left">
+									<caption>사은품</caption>
+									<colgroup>
+										<col style="width:300px">
+										<col style="width:auto">
+									</colgroup>
+									<tbody>
+									{@ gift_list}
+									<tr>
+										<th scope="row"><label>{.gift_info.giftname}</label></th>
+										<td class="ta_l">{.gift_info.gift_comment}</td>
+									</tr>
+									{/}
+									</tbody>
+								</table>
+							</section>
+						</div>
+						{/}
+						<div class="order-infoDetail clear mt-60">
+							<section class="mt-50">
+								<header class="my-title">
+									<h3 class="d-iblock">배송지 정보</h3>
+									<!--<button class="btn-line btn-pop-address" id="delivery-change" type="button"><span>배송지 변경</span></button>-->
+								</header>
+								<table class="th-left">
+									<caption>배송지 정보 확인</caption>
+									<colgroup>
+										<col style="width:168px">
+										<col style="width:auto">
+									</colgroup>
+									<tbody>
+									<tr>
+										<th scope="row"><label>받는사람</label></th>
+										<td>{basic.receiver_name}</td>
+									</tr>
+									<tr>
+										<th scope="row"><label>휴대전화</label></th>
+										<td>{basic.receiver_mobile}</td>
+									</tr>
+
+									<tr>
+										<th scope="row"><label>전화번호(선택)</label></th>
+										<td>{? basic.receiver_tel !='--'}{basic.receiver_tel}{:}-{/}</td>
+									</tr>
+									<tr>
+										<th scope="row"><label>주소</label></th>
+										<td>
+											<ul class="input-multi">
+												{basic.receiver_zipcode}<br>
+												{basic.receiver_addr} {basic.receiver_addr_detail}
+											</ul>
+										</td>
+									</tr>
+									<tr>
+										<th scope="row"><label>배송 요청사항</label></th>
+										<td>{? basic.receiver_memo}{basic.receiver_memo}{:}-{/}</td>
+									</tr>
+									</tbody>
+								</table>
+							</section><!-- //.inner-delivery -->
+						</div>
+						<div class="order-infoDetail clear mt-60">
+							<section class="inner-payment">
+								<header class="my-title">
+									<h3>할인 및 결제정보</h3>
+								</header>
+								<table class="th-left">
+									<caption>할인 및 결제 확인</caption>
+									<colgroup>
+										<col style="width:168px">
+										<col style="width:auto">
+									</colgroup>
+									<tbody>
+										<tr>
+											<th scope="row"><label>총 상품금액</label></th>
+											<td class="fw-bold">
+												{=number_format(basic.sum_consumer)} 원
+											</td>
+										</tr>
+										<tr>
+											<th scope="row"><label class="txt-toneC fz-12">할인 (-)</label></th>
+											<td class="point-color">- {=number_format(basic.sum_discount)} 원</td>
+										</tr>
+										<tr>
+											<th scope="row"><label class="txt-toneC fz-12">쿠폰 할인 (-)</label></th>
+											<td class="point-color">- {=number_format(basic.coupon_product_discount)} 원</td>
+										</tr>
+										<tr>
+											<th scope="row"><label class="txt-toneC fz-12">마일리지 사용 (-)</label></th>
+											<td class="point-color">- {=number_format(basic.use_mileage)} M</td>
+										</tr>
+										<tr>
+											<th scope="row"><label class="txt-toneC fz-12">포인트 사용 (-)</label></th>
+											<td class="point-color">- {=number_format(basic.use_point)} P</td>
+										</tr>
+										<tr>
+											<th scope="row"><label class="txt-toneC fz-12">배송비 (+)</label></th>
+											<td class="point-color"> {=number_format(basic.pay_delivery-basic.coupon_delivery_discount)} 원</td>
+										</tr>
+										<tr>
+											<th scope="row"><label>총 결제금액</label></th>
+											<td><span class="fw-bold point-color">{=number_format(basic.pay_pg)} 원</span><!--p class="mt-5">적립 차감 마일리지 6,100 M</p--></td>
+										</tr>
+										<tr>
+											<th scope="row">
+												<label>
+													{? payment.pay_method == 'vcnt'}
+													무통장입금(가상계좌)
+													{: payment.pay_method == 'card'}
+													카드결제
+													{:}
+													실시간계좌이체
+													{/}
+												</label>
+											</th>
+											<td class="fz-13 ta-r">
+												{? payment.pay_method == 'vcnt'}
+												
+												<div class="mt-5">
+													{payment.detail}
+												</div>
+												{: payment.pay_method == 'acnt'}
+												{? payment.escrow_yn=='Y'} / 에스크로{/}
+												{:}
+												<div class="mt-5">
+													{payment.res_info.card_name} {payment.detail}
+												</div>
+												{/}
+											</td>
+										</tr>
+									</tbody>
+								</table>
+							</section><!-- //.inner-payment -->
+							<section class="inner-delivery">
+								<header class="my-title">
+									<h3 class="d-iblock">환불 정보 결제 수단</h3>
+								</header>
+								<table class="th-left">
+									<caption>환불 정보 확인</caption>
+									<colgroup>
+										<col style="width:200px">
+										<col style="width:auto">
+									</colgroup>
+									<tbody>
+										<tr>
+											<th scope="row"><label>취소 금액</label></th>
+											<td class="fw-bold">{=number_format(basic.pay_total)} 원</td>
+										</tr>
+										<tr>
+											<th scope="row"><label class="txt-toneC fz-12">마일리지 복원(+)</label></th>
+											<td class="point-color">
+												{=number_format(refund.mileage)} M
+												{? expire.mileage > 0}<div class="txt-toneC mt-5 fz-11">소멸마일리지 : {=number_format(expire.mileage)} M</div>{/}
+											</td>
+										</tr>
+										<tr>
+											<th scope="row"><label class="txt-toneC fz-12">포인트 복원(+)</label></th>
+											<td class="point-color">
+												{=number_format(refund.point)} P
+												{? expire.point > 0}<div class="txt-toneC mt-5 fz-11">소멸포인트 : {=number_format(expire.point)} P</div>{/}
+											</td>
+										</tr>
+										<tr>
+											<th scope="row"><label class="txt-toneC fz-12">배송비</label></th>
+											<td>{=number_format(basic.pay_delivery)} 원</td>
+										</tr>
+										<tr>
+											<th scope="row"><label>환불예정금액</label></th>
+											<td><span class="fw-bold">{=number_format(refund.total)} 원</span><!--p class="mt-5">적립 차감 마일리지 6,100 M</p--></td>
+										</tr>
+										{? basic.order_status >= '2' && basic.pg_paymethod != 'card'}
+										<tr>
+											<td colspan="2" class="pl-25 ta-l">
+												<div class="mt-10"><strong class="txt-toneA fz-14">무통장입금(환불계좌)</strong></div>
+												<div class="mt-10">
+													<div class="select refund_account" >
+														<select id="bank_code" title="은행 선택"  data-vcnt="bankcode" class="validate[required]" data-errormessage-value-missing="환불은행을 선택하세요.">
+															<option value="">은행을 선택해주세요.</option>
+															{@ _kcp_bank_code}
+															<option value="{.key_}" {=checked(.key_, bank.bank_code,'selected')}>{.value_}</option>
+															{/}
+															
+														</select>
+													</div>
+													<input type="text" class="refund_account validate[required]" title="예금주명 입력자리" value="{bank.depositor}"  data-errormessage-value-missing="예금주명을 입력하세요." id="depositor" name="bank[depositor]" placeholder="예금주명" style="width:100px" data-vcnt="depositor">
+													<div class="mt-5">
+													<input type="text" class="refund_account validate[required]" title="계좌번호 입력자리"  value="{bank.account}" id="account_num" name="bank[account]" data-errormessage-value-missing="계좌번호를 입력하세요." placeholder="'-' 없이 입력해주세요." style="width:300px" data-vcnt="account">
+														<button id="confirm_account" class="btn-line cancel h-medium no-margin va-t" type="button"  onclick="Account.acnt_chk()"><span>본인계좌 인증</span></button>
+														<button type="button" class="btn-basic hide" id="re_auth" onclick="Account.acnt_del()"><span>재인증</span></button>
+														<input type="hidden" id="bank_checked" value="0">
+														<input type="hidden" id="bank_code_val" class="refund_account" name="bank[code]" value="0">
+													</div>
+												</div>
+											</td>
+										</tr>
+										{/}
+									</tbody>
+								</table>
+							</section><!-- //.inner-delivery -->
+						</div>
+
+						<div class="btnPlace mt-40">
+							<a class="btn-line h-large w200" href="javascript:history.back();"><span>취소</span></a>
+							<button type="submit" class="btn-point h-large w200">취소신청</button>
+						</div>
+						</form>
+					</article><!-- //.my-content -->
+				</div><!-- //.page-frm -->
+
+	</div>
+</div><!-- //#contents -->
+
+<!--계좌인증스크립트-->
+<script src="/static/js/account.js"></script>
+
+<script type="text/javascript">
+	var CancelList = {
+		proc_url:'/proc/order.proc.php',
+		init: function() {
+			var me = this;
+			$('#cancel_reason').on('change', function() {
+				var val = $(this).val();
+				if(val =='etc'){
+					$('#cancel_reason_etc').show();
+				}else{
+					$('#cancel_reason_etc').hide();
+				}
+			});
+			var option = $.extend({}, validation_option, {
+
+				validateNonVisibleFields: false,
+				onValidationComplete: function (form, status) {
+					if (status) me.save();
+				}
+			});
+			$("#FrmCancel").validationEngine('attach', option);
+
+		},
+		save: function () {
+			var bank_checked = $('#bank_checked').val();
+
+			if(bank_checked =="0"){
+				UI.alert("본인계좌인증이 필요합니다");
+				return false;
+			}
+			UI.confirm('주문상품을 취소하시겠습니까?', function () {
+				$('[data-vcnt]').each(function(i,e) {
+					var field = $(this).data('vcnt');
+					$('[data-name="'+field+'"]').val(e.value);
+				});
+
+				var escrow_yn = $('#escrow_yn').val();
+				if(escrow_yn == 'Y') { //에스크로 취소(배송전취소)
+					var formdata = $('#FrmCancelEscrow').serialize();
+					$.ajax({
+						url: '/third_party/pg/NHNKCP/hub_escrow.php',
+						data: formdata,
+						dataType: 'json',
+						type: 'POST',
+						success: function (r) {
+							if (r.success) {
+								CancelList.act();
+							} else {
+								UI.error(r.msg + '<div>' + r.data.res_msg + '</div>');
+							}
+						}
+					});
+				}
+				else {
+					var paymethod = $('#paymethod').val();
+					if(paymethod == 'vcnt') { //가상계좌
+						
+						var formdata = $('#FrmCancelVant').serialize();
+						$.ajax({
+							url:'/third_party/pg/NHNKCP/hub_cancel_vcnt.php',
+							data:formdata,
+							dataType:'json',
+							type:'POST',
+							success: function(r) {
+								if(r.success) {
+									CancelList.act();
+								}
+								else {
+									UI.error(r.msg+'<div>'+r.data.res_msg+'</div>');
+								}
+							}
+						});
+					}
+					else {
+						var formdata = $('#FrmCancelCard').serialize();
+						$.ajax({
+							url:'/third_party/pg/NHNKCP/hub_cancel.php',
+							data:formdata,
+							dataType:'json',
+							type:'POST',
+							success: function(r) {
+								if(r.success) {
+									CancelList.act();
+								}
+								else {
+									UI.error(r.msg+'<div>'+r.data.res_msg+'</div>');
+								}
+							}
+						})
+					}
+
+				}
+				
+				
+			})
+		},
+		act: function() {
+			var formdata = $('#FrmCancel').serialize();
+			$.ajax({
+				url:CancelList.proc_url,
+				type:'POST',
+				data:formdata,
+				dataType:'json',
+				success : function(r) {
+					if(r.success) {
+						//UI.modal('/front/mypage/cancel_complete.php', '주문취소 완료',{order_num:r.msg});
+						document.location.href="/front/mypage_complete.php?oid="+r.msg+"&order_status=cancel";
+					}else{
+						UI.alert(r.msg);
+					}
+				}
+			});
+		}
+	}
+
+	$(function() {
+		CancelList.init();
+	})
+</script>
+
+
+<!--{* 카드/실시간계좌이체 취소폼:S *}-->
+<form id="FrmCancelCard">
+	<input type="hidden" name="order_status" value="{basic.order_status}">
+	<input type="hidden" name="req_tx" value="mod">
+	<input type="hidden" name="mod_type" value="STSC"> <!--{* 부분 취소 : STPC , 전체취소 : STSC  *}-->
+	<input type="hidden" name="tno" value="{basic.pg_tno}">
+</form>
+<!--{* 카드/실시간계좌이체 취소폼:E *}-->
+
+<!--{* 가상계좌 취소 폼:S *}-->
+<form id="FrmCancelVant" name="FrmCancelVant">
+	<input type="hidden" name="order_status" value="{basic.order_status}">
+	<input type="hidden" name="req_tx" value="mod">
+	<input type="hidden" name="mod_type" value="STHD"> <!--{*부분 환불 : STPD , 전체환불 : STHD  *}-->
+	<input type="hidden" name="tno" value="{basic.pg_tno}"> <!--{* 거래번호 *}-->
+	<input type="hidden" name="mod_account" value="" data-name="account"> <!--{* 계좌인증 및 환불 받을 계좌번호 *}-->
+	<input type="hidden" name="mod_depositor" value="" data-name="depositor"> <!--{* 환불요청예금주 *}-->
+	<input type="hidden" name="mod_bankcode" value="" data-name="bankcode"> <!--{* 환불요청 은행코드 *}-->
+</form>
+<!--{* 가상계좌취소폼:E *}-->
+
+<!--{* 에스크로 배송전취소폼(STE2):S  *}-->
+<form id="FrmCancelEscrow" name="FrmCancelEscrow">
+	<input type="hidden" name="req_tx" value="mod_escrow">
+	<input type="hidden" name="mod_type" value="STE2">
+	<input type="hidden" name="tno" value="{basic.pg_tno}"> <!-- 거래번호 -->
+	<input type="hidden" name="mod_account" value="" data-name="account"> <!-- 환불받을계좌번호 -->
+	<input type="hidden" name="mod_depositor" value="" data-name="depositor"> <!-- 환불받은계좌 예금주 -->
+	<input type="hidden" name="mod_bankcode" value="" data-name="bankcode"> <!-- 환불받은 은행 -->
+</form>
+<!--{* 에스크로 배송전취소폼(STE2):E  *}-->
+
+
+<!-- 주문 > 매장안내 -->
+<div class="layer-dimm-wrap pop-infoStore">
+	<div class="layer-inner">
+		<h2 class="layer-title">매장 위치정보</h2>
+		<button class="btn-close" type="button"><span>닫기</span></button>
+		<div class="layer-content store_view">
+
+		</div><!-- //.layer-content -->
+	</div>
+</div><!-- //주문 > 매장안내 -->

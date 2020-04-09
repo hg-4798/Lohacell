@@ -1,0 +1,67 @@
+<style>
+	.table_style02 table {
+		border-collapse: collapse;
+	}
+
+	.table_style02 td,
+	.table_style02 th {
+
+		border-collapse: collapse;
+		border: solid 1px #ddd;
+	}
+
+	.table_style02 tfoot td {
+		background-color: #EFEFEF;
+	}
+
+	.th-sub {
+		background-color: #616161 !important;
+	}
+</style>
+<div class="table_style02 table-hover">
+	<table width=100% cellpadding=0 cellspacing=0 border=0 style="table-layout:fixed">
+		<colgroup>
+			<col style="width:150px" />
+			<col>
+			<col>
+			<col>
+			<col style="width:100px" />
+
+		</colgroup>
+		<thead>
+			<tr>
+				<th>결제수단</th>
+				<th>구매</th>
+				<th>환불</th>
+				<th>순매출</th>
+				<th>비율</th>
+			</tr>
+		</thead>
+		<tbody>
+
+			{@ list}
+			<tr>
+				<td>{? .key_ == 'card'}카드결제{: .key_ == 'vcnt'}가상계좌{:}실시간계좌이체{/}</td>
+				<td>{=number_format(.buy.pg)}</td>
+				<td>{=number_format(.refund.pg)}</td>
+				<td>{=number_format(.sales.pg)}</td>
+				<td>{.rate}%</td>
+			</tr>
+			{:}
+			<tr>
+				<td colspan="19">검색된 주문건수가 없습니다.</td>
+			</tr>
+			{/}
+
+		</tbody>
+		<tfoot>
+			<tr>
+				<td colspan="1">합계</td>
+				<td>{=number_format(total.buy.pg)}</td>
+				<td>{=number_format(total.refund.pg)}</td>
+				<td>{=number_format(total.sales.pg)}</td>
+				<td>100%</td>
+			</tr>
+		</tfoot>
+	</table>
+</div>

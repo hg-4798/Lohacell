@@ -1,0 +1,176 @@
+<table class="tbl-list">
+	<colgroup>
+		<col style="width:50px"> <!-- 선택 -->
+		<col style="width:50px"> <!-- 번호 -->
+		<col style="width:50px"> <!-- 상품이미지 -->
+		<col> <!-- 주문상품명 -->
+		<col style="width:80px"> <!-- 수량 -->
+		<col style="width:100px"> <!-- 상품금액 -->
+		<col style="width:100px"> <!--  -->
+		<col style="width:120px"> <!-- 처리상태 -->
+
+		<col style="width:150px"> <!-- 송장번호 -->
+	</colgroup>
+	<thead>
+		<th><input type="checkbox" class="hj" data-all="checked_basic[]"><span class="lbl"></span></th>
+		<th>번호</th>
+		<th colspan="2">주문상품</th>
+		<th>수량</th>
+		<th>상품금액</th>
+		<th>쿠폰할인</th>
+		<th>처리상태</th>
+		<th>송장번호</th>
+	</thead>
+	<tbody>
+		{@ product}
+		<tr data-idx="{.idxs}">
+			<td><input type="checkbox" class="hj" name="checked_basic[]"  value="{.idxs}" data-batch='{cfg.batch}' {=checked(.order_status,'6', 'disabled')}><span class="lbl"></span></td>
+			<td>{.num}</td>
+			<td><img src="{=preview(.product_info.tinyimage,'default')}" alt="" class="thumb-50"></td>
+			<td class="ta-l">
+				{? .option_type=='product'}
+				<div class="m-b-5"><span class="label label-xs prtype-4 m-b-5">추가구매상품</span></div>
+				{/}
+				<b><a href="javascript:;" class="link" onclick="ADMIN.product('{.product_info.pr_type}','{.product_info.productcode}')">{.product_info.productname}</a></b>
+				{? .option_type=='option'}<div>{.option_info.option_name}</div>{/}
+			</td>
+			<td>
+				{.cnt}개
+				{? .option_info.stock < .cnt} 
+				<div class="text-danger">재고부족</div>
+				{/}
+				<div class="text-muted">현재고:{=number_format(.option_info.stock)} </div>
+			
+			</td>
+			<td>
+				{=number_format(.price_sell*.cnt)}원
+				<div>({=number_format(.price_sell)}원/개)</div>
+			</td>
+
+			{? .coupon_discount > 0 //@TODO 사용쿠폰이 있는경우 사용쿠폰정보 링크}
+			<td><a href="javascript:;" onclick="UI.alert('[준비중]사용한쿠폰정보')" class="link">{=number_format(.coupon_discount)}</a></td>
+			{:}
+			<td class="text-muted">{=number_format(.coupon_discount)}</td>
+			{/}
+
+			{? .order_status == '1'}
+			{? .index_==0}
+			<td rowspan="{rowspan}">
+				<a href="javascript:;" onclick="OrderView.log('{.idxs}')" class="link">{.status_info.msg}</a>
+				<div class=" btn-status-wrap">
+					<button type="button" class="btn-basic h-xs" onclick="OrderView.changeStatus(2, '{order_num}')" >입금확인</button>
+				</div>
+			</td>
+			{/}
+			{:}
+			<td>
+				<a href="javascript:;" onclick="OrderView.log('{.idxs}')" class="link">{.status_info.msg}</a>
+				<!--{*
+				<div class=" btn-status-wrap">
+					{? .order_status == 1 //입금대기중}
+					<button type="button" class="btn-basic h-xs" onclick="OrderView.changeStatus(2, '{order_num}')" >입금확인</button>
+					{: .order_status == 2 //결제완료}
+					<button type="button" class="btn-basic h-xs" onclick="OrderView.changeStatus(3, this)" >배송준비중</button>
+					{: .order_status == 3 //배송준비중}
+					<button type="button" class="btn-basic h-xs" onclick="OrderView.changeStatus(2, this)" >결제완료</button>
+					<button type="button" class="btn-basic h-xs" onclick="OrderView.changeStatus(4, this)" >배송중</button>
+					{: .order_status == 4 //배송중}
+					<button type="button" class="btn-basic h-xs" onclick="OrderView.changeStatus(3, this)" >배송준비중</button>
+					<button type="button" class="btn-basic h-xs" onclick="OrderView.changeStatus(5, this)" >배송완료</button>
+					{: .order_status == 5 //배송완료}
+					<button type="button" class="btn-basic h-xs" onclick="OrderView.changeStatus(4, this)" >배송준비중</button>
+					<button type="button" class="btn-basic h-xs" onclick="OrderView.changeStatus(6, this)" >구매확정</button>
+					{: .order_status == 6 //구매확정}
+					<button type="button" class="btn-basic h-xs" onclick="OrderView.changeStatus(5, this)" >배송완료</button>
+					{/}
+				</div>
+				*}-->
+			</td>
+			{/}
+			
+			<td>
+				<input type="text" class="input w-100" value="{.delivery_company_name}" readonly>
+				<div class="m-t-5">
+				<input type="text" class="input w-100" value="{.delivery_no}" readonly>
+				</div>
+			</td>
+		</tr>
+		{:}
+		<tr>
+			<td colspan="9">주문상품이 없습니다.</td>
+		</tr>
+		{/}
+	</tbody>
+	{? product}
+	<tfoot>
+		<tr>
+			<td colspan="7">
+				<form id="FrmDelivery" onsubmit="return false">
+					<input type="hidden" name="mode" value="detail" />
+					<input type="hidden" name="act" value="batch" />
+					<input type="hidden" name="order_num" value="{order_num}" />
+					<input type="hidden" name="idx" id="delivery_idx" value="">
+					<i class="fa fa-check text-danger"></i> 선택한 상품을 
+					<select name="order_status" class="select validate[groupRequired[batch]]" data-errormessage-value-missing="일괄처리 항목을 선택하세요.">
+						<option value="">== 처리상태 ==</option>
+						{@ enable_status}
+						<option value="{.value_}">{__CONFIG.order_status[.value_]}</option>
+						{/}
+					</select>
+					<select name="delivery_company" id="delivery_company" class="select validate[groupRequired[batch]]" data-errormessage-value-missing="일괄처리 항목을 선택하세요.">
+						<option value="">== 택배사 ==</option>
+						{@ cfg.deli_company}
+						<option value="{.key_}">{.company_name}</option>
+						{/}
+					</select>
+					<input type="text" class="input validate[condRequired[delivery_company],custom[numeric]]" data-errormessage-value-missing="송장번호를 입력하세요." name="delivery_no" placeholder="송장번호">
+					<button type="submit" class="btn-basic h-small" >일괄변경</button>
+				</form>
+			</td>
+			<td colspan="2" class="text-right">
+				{? in_array('cancel',tool)}
+				<button type="button" class="btn-basic dark h-xs" onclick="ADMIN.cancel('{order_num}')">주문취소</button>
+				{/}
+				{? in_array('refund',tool)}
+				<button type="button" class="btn-basic dark h-xs" onclick="ADMIN.refund('{order_num}')">주문취소</button>
+				{/}
+				{? in_array('exchange',tool)}
+				<button type="button" class="btn-basic dark h-xs" onclick="ADMIN.exchange('{order_num}')">교환접수</button>
+				{/}
+				{? in_array('return',tool)}
+				<button type="button" class="btn-basic dark h-xs" onclick="ADMIN.return('{order_num}')">반품접수</button>
+				{/}
+			</td>
+		</tr>
+	</tfoot>
+	{/}
+</table>
+
+
+<script type="text/javascript">
+var OrdevViewProduct = {
+	batch:'{cfg.batch}',
+	init: function() {
+		var me = this;
+		//송장번호입력
+		var option_delivery = $.extend({}, validation_option, {
+			validateNonVisibleFields: false,
+			onValidationComplete: function (form, status) {
+				if (status) OrderView.changeDelivery();
+			}
+		});
+		$("#FrmDelivery").validationEngine('attach', option_delivery);
+		UI.toggleCheck();
+
+		$('[name="checked_basic[]"]').on('click', function() {
+			if(me.batch) {
+				$('[name="checked_basic[]"]').prop('checked',this.checked);
+			}
+		})
+	}
+}
+
+$(function() {
+	OrdevViewProduct.init();
+})
+</script>

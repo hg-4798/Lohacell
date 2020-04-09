@@ -1,0 +1,18 @@
+########################################## START 2016-03-07 12:21:46
+sql = 213
+########################################## END 2016-03-07 12:21:46
+
+########################################## START 2016-03-07 13:48:15
+sql = SELECT	group_code, group_name, group_level, group_orderprice_s, group_orderprice_e, group_ordercnt_s, group_orercnt_e
+		FROM 	tblmembergroup 
+		ORDER BY group_code
+##########################################
+
+########################################## END 2016-03-07 13:48:15
+
+########################################## START 2016-03-07 13:59:44
+sql = SELECT	group_code, group_name, group_level, group_orderprice_s, group_orderprice_e, group_ordercnt_s, group_ordercnt_e
+		FROM 	tblmembergroup 
+		ORDER BY group_code desc
+##########################################
+

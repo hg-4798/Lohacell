@@ -1,0 +1,101 @@
+<div class="p_20" style="max-height:500px">
+	<form id="FrmProductInputSize" onsubmit="return false">
+	<input type="hidden" name="mode" value="product">
+	<input type="hidden" name="act" value="size">
+	<input type="hidden" name="productcode" value="{productcode}">
+	<table class="table-list">
+		<colgroup>
+			<col style="width:120px">
+			<col>
+			<col style="width:50px">
+		</colgroup>
+		<tbody>
+			<tr>
+				<th>항목명</th>
+				<th colspan="2">항목값</th>
+				
+			</tr>
+		</tbody>
+		<tbody id="size_tbody">
+			<tr>
+				<td>사이즈 <input type="hidden" name="size[label][]" value="사이즈"> </td>
+				<td style="border-right:0px;padding-right:0px"><input type="text" name="size[value][]" value="{size.value}" class="input_bd_st01 full validate[required]" data-errormessage-value-missing="사이즈 항목값을 입력하세요."></td>
+				<td style="border-left:0px;padding:0px"><button type="button" class="btn-calc btn-add" onclick="InputSize.addRow()"><span></span></button></td>
+			</tr>
+			{@ list}
+			<tr>
+				<td><input type="text" name="size[label][]" class="input_bd_st01 full validate[required]" value="{.label}" data-errormessage-value-missing="항목명을 입력하세요."></td>
+				<td style="border-right:0px;padding-right:0px"><input type="text" name="size[value][]" value="{.value}" class="input_bd_st01 full validate[required]" data-errormessage-value-missing="항목값을 입력하세요."></td>
+				<td style="border-left:0px;padding:0px"><button type="button" class="btn-calc btn-minus" onclick="InputSize.removeRow(this)"><span></span></button></td>
+			</tr>
+			{/}
+			
+		</tbody>
+	</table>
+	
+	<div class="field-comment mt_10">
+		<ul>
+			<li>※ 항목별값 구분은 ","로 구분하여 입력해주세요.</li>
+			<li>※ 삭제시 삭제 후 하단에 '저장'버튼을 눌러야 적용됩니다.</li>
+		</ul>
+	</div>
+
+	<div class="ta_r mt_10">
+		<button type="submit" class="btn-point h-small">저장</button>
+		<button type="button" class="btn-basic h-small" onclick="UI.modalClose();">취소</button>
+	</div>
+	</form>
+</div>
+
+<textarea style="display:none" id="tpl_tr">
+<tr>
+	<td><input type="text" name="size[label][]" class="input_bd_st01 full validate[required]" data-errormessage-value-missing="항목명을 입력하세요."></td>
+	<td style="border-right:0px;padding-right:0px"><input type="text" name="size[value][]" value="" class="input_bd_st01 full validate[required]" data-errormessage-value-missing="항목값을 입력하세요."></td>
+	<td style="border-left:0px;padding:0px"><button type="button" class="btn-calc btn-minus" onclick="InputSize.removeRow(this)"><span></span></button></td>
+</tr>
+</textarea>
+
+<script type="text/javascript">
+var InputSize = {
+	init: function() {
+		var me = this;
+		var option = $.extend({}, validation_option, {
+			validateNonVisibleFields: false,
+			onValidationComplete: function (form, status) {
+				if (status) me.save();
+			}
+		});
+		$("#FrmProductInputSize").validationEngine('attach', option);
+
+	},
+	addRow: function() {
+		var target = $('#size_tbody');
+		target.append($('#tpl_tr').val());
+	},
+	removeRow: function(ele) {
+		var tr = $(ele).closest('tr');
+		tr.remove();
+	},
+	save: function() {
+		if(!confirm('저장하시겠습니까?')) return false;
+		var formdata = $('#FrmProductInputSize').serialize();
+		$.ajax({
+			url:'/admin/proc/product.proc.php',
+			data:formdata,
+			dataType:'json',
+			type:'POST',
+			success: function(r){
+				alert(r.msg);
+				if(r.success) {
+					UI.modalClose();
+				}
+				console.log(r);
+			}
+		})
+	}
+}
+
+$(function() {
+	InputSize.init();
+})
+</script>

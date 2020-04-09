@@ -1,0 +1,74 @@
+<div id="page">
+	<div id="content" class="promotion">
+		<section class="page_local is-line">
+			<h2 class="page_title">
+				<a href="javascript:history.back();" class="prev">이전페이지</a>
+				<span>좋아요</span>
+			</h2>
+		</section>
+
+		<div class="event_tab tab_type1" data-ui="TabMenu">
+			<div class="tab-menu clear">
+				<a data-content="menu" data-id="product" class="active" title="선택됨">상품</a>
+				<a data-content="menu" data-id="event" >이벤트</a>
+			</div>
+
+			<!--{ * 탭컨텐츠:S *}-->
+			<div class="tab-content active goods_list_wrp" data-content="content" class="mt-50 my-main-list active" id="list_product"></div>
+			<div class="tab-content" data-content="content" class="mt-50 my-main-list" id="list_event"></div>
+			<!--{ * 탭컨텐츠:S *}-->
+		</div>
+	</div>
+</div>
+
+<script type="text/javascript" src="/static/js/blazy.min.js"></script>
+<script type="text/javascript">
+    var MypageGood = {
+        page:1,
+        tab_id:'product',
+        init: function() {
+            var me = this;
+            $('[data-content="menu"]').on('click.tab', function() {
+                me.page = 1;
+                me.load($(this).data('id'),me.page);
+            });
+            me.load();
+            new Blazy();
+            PRODUCT.like(); //좋아요 바인딩
+        },
+        load: function(tab_id, page) {
+            //UI.loading('event_inner');
+            var p = page || MypageGood.page;
+            var tab_id = tab_id || MypageGood.tab_id;
+            var uri;
+            switch(tab_id) {
+                case 'event':
+                    uri = "mypage_good.event.php";
+                    break;
+                case 'product':
+                default :
+                    uri = "mypage_good.product.php";
+                    break;
+            }
+            $('#list_'+tab_id).load("{C.DIR_M}/"+uri, {section:tab_id, page:p},
+                function() {
+                    //UI.modalCenter();
+                    //UI.toggleCheck();
+                    //UI.loading('list_area');
+                    MypageGood.page = p;
+                    MypageGood.tab_id = tab_id;
+                    new Blazy(); //이미지 바인딩
+                    //@TODO 처음로드시 이미지 안보이는 현상 간혈적으로 발생 (강제새로고침일경우)
+                    PRODUCT.like(); //좋아요 바인딩
+                }
+            );
+        },
+        paging: function(page) {
+            MypageGood.load(MypageGood.tab_id, page);
+        }
+    }
+
+    $(function() {
+        MypageGood.init();
+    })
+</script>

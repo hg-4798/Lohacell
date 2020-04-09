@@ -1,0 +1,92 @@
+@charset "utf-8";
+
+/*
+css name : component
+use : list,title,btn,table,select,input,page,linemap
+*/
+
+
+/* component.css 는 버튼,테이블,인풋,페이징,타이틀등 요소별로 가져다 쓰기 편하게 모아놓습니다. */
+
+
+
+
+/* ==================================================
+	btn
+================================================== */
+.btn-dib {display:inline-block; padding:0 20px; height:38px; border:1px solid #747474; background:#222; color:#fefefe; text-align:center; vertical-align:middle; cursor:pointer; box-sizing:border-box;}
+	.btn-dib.line {background:#fff;color:#222;}
+
+/* 버튼 > 라인형 */
+.btn-basic {display:inline-block; padding:0 5px; min-width:62px; line-height:23px; border:1px solid #888; background:#888; text-align:center; color:#fff !important; font-size:12px; box-sizing:border-box;}
+
+/* 버튼 > 포인트컬러형 */
+.btn-point {display:inline-block; padding:0 5px; min-width:62px; line-height:23px; border:1px solid #292929; background:#292929; text-align:center; color:#fff !important; font-size:12px; box-sizing:border-box;}
+
+/* 버튼 > 기능성 (상세보기,우편번호찾기,옵션변경 등) */
+.btn-function {display:inline-block; padding:0 5px; line-height:19px; background:#a8a8a8; color:#fff !important; font-size:11px; box-sizing:border-box;}
+
+
+/* ==================================================
+	check & radio
+================================================== */
+input[type="checkbox"],
+input[type="radio"] {vertical-align:middle; padding:0; margin:-2px 4px 0 0;}
+
+
+/* ==================================================
+	select box
+================================================== */
+select {height:23px; border:1px solid #ddd; color:#777; box-sizing:border-box;}
+
+
+/* ==================================================
+	Layer pop
+================================================== */
+.layer-dimm-wrap {display:none; position:fixed; z-index:500; width:100%; height:100%; top:0; left:0;}
+	.layer-dimm-wrap .dimm-bg {position:absolute; width:100%; height:100%; }
+	.layer-dimm-wrap .layer-inner {position:absolute; top:50%; left:50%; border:1px solid #515151; background:#fff; box-sizing:border-box;}
+	.layer-dimm-wrap .layer-inner .layer-title {height:38px; background:#515151 _url(../img/common/layer_pop_title.png) center no-repeat; }
+	.layer-dimm-wrap .layer-inner .btn-close {position:absolute; top:27px; right:58px; width:28px; height:28px; background:url(../img/btn/btn_layer_close.png) center no-repeat; text-indent:-9999px; cursor:pointer}
+
+	.layer-content {color:#868686;}
+		.layer-content .btn-place .btn-dib {margin:0 3px; padding:0; width:110px;}
+		.layer-content h5{color:#4b4b4b;}
+
+
+/* ==================================================
+	테이블
+================================================== */
+/* 항목 왼쪽 스타일 */
+.member-th-left {width:100%;border-top:1px solid #000;border-collapse:collapse;}
+.member-th-left caption {visibility:hidden; font-size:0; height:0px; text-indent:-9999px;}
+.member-th-left tr {height:33px; border-bottom:1px solid #ccc;}
+.member-th-left th {padding:0 20px;background-color:#f4f4f4;color:#000;font-family:dotum;font-weight:normal;text-align:left;}
+.member-th-left td {padding:5px 20px;color:#777;font-family:dotum;}
+.member-th-left td input[type="text"],
+.member-th-left td input[type="password"] {width:174px ;height:23px;padding:0 5px;border:1px solid #ddd;vertical-align:middle; box-sizing:border-box;}
+.member-th-left td input[type="text"].short {width:67px;}
+.member-th-left td select {min-width:67px;vertical-align:middle;}
+.member-th-left .line-duble {height:65px;}
+.member-th-left .line-triple {height:97px;}
+.member-th-left .dash {padding:0 3px; vertical-align:middle;}
+.member-th-left .btn-basic {height:23px; line-height:23px; font-size:11px; vertical-align:middle;}
+.member-th-left .btn-point {height:23px; line-height:23px; vertical-align:middle;}
+
+/* 필수 입력 항목 */
+.required {color:#d77526;}
+
+
+/* ==================================================
+	테이블 타이틀
+================================================== */
+/* 마이페이지 & 주문 사용 */
+.title-box {position:relative; margin-bottom:10px; font-size:0;}
+	.title-box h2 {display:inline-block; margin-right:13px; font-size:16px; font-weight:bold;}
+	.title-box h3 {display:inline-block; color:#777; font-size:12px; line-height:1.4; font-weight:normal;}
+	.title-box .more {float:right; margin-top:5px; color:#777; font-size:12px; }
+	.title-box .more:before {display:inline-block; margin-right:5px; content:"+"; font-size:14px; vertical-align:-1px;}
+	.title-box .atts li {margin-top:10px;font-size:12px;color:#777;}
+	.title-box .date-sort {float:right; margin:-5px 0 0 0 !important;}
+	.title-box .ment {position:absolute;right:0;bottom:0;color:#777;font-family:dotum;font-size:12px;}
+	

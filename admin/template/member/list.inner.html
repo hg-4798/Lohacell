@@ -1,0 +1,99 @@
+<div class="pull-left mb_10">
+	<img src="/admin/images/icon_8a.gif" border="0"> 전체 <span id="count_total">{count.total}</span>건
+	<img src="/admin/images/icon_8a.gif" border="0"><span id="count_search">{count.search}</span>건 조회
+	<button type="button" class="btn-basic dark h-x-small" onclick="MemberList.excel()" style="vertical-align:middle">엑셀 다운로드</button>
+</div>
+<div class="table_style02">
+	<table width="100%" cellpadding=0 cellspacing=0 style="table-layout:fixed" class="tbl-hover tbl-stripe">
+		<colgroup>
+			<!--<col style="width:50px" />-->
+			<col style="width:50px" />
+			<col style="width:150px" /><!-- 아이디 -->
+			<col style="width:100px" /><!-- 이름 -->
+			<col style="width:100px"><!-- 구분 -->
+			<col style="width:100px"><!-- 그룹 -->
+			<col style="width:200px"><!-- 관리 -->
+			<col>
+			<!--{* 마일리지 *}-->
+			<col>
+			<!--{* 포인트 *}-->
+			<col>
+			<!--{* 주문누적금액 *}-->
+			<col>
+			<!--{* 주문횟수 *}-->
+			<col>
+			<!--{* 최근로그인 *}-->
+			<col style="width:100px">
+			<!--{* 가입일 *}-->
+			<col style="width:100px">
+			<!--{* 수정 *}-->
+		</colgroup>
+
+		<tr>
+			<!--<th><label class="single"><input type="checkbox" class="hj" data-all="checked[]"><span class="lbl"></span></label></th>-->
+			<th>No</th>
+			<th>아이디</th>
+			<th>이름</th>
+			<th>구분</th>
+			<th>그룹</th>
+			<th>관리</th>
+			<th>마일리지</th>
+			<th>포인트</th>
+			<th>주문누적금액</th>
+			<th>주문횟수</th>
+			<th>최근로그인</th>
+			<th>가입일</th>
+			<th>수정</th>
+		</tr>
+		{@ list}
+		<tr data-id="{.id}" data-name="{.name}">
+			<!--<td><input type="checkbox" class="hj"><span class="lbl"></span></td>-->
+			<td>{.no}</td>
+			<td><a href="javascript:;" onclick="MemberList.crm(this)" class="link">{.id}</a></td>
+			<td>{.name}</td>
+			<td>{?.staff_yn == 'Y'}임직원{:}일반{/}</td>
+			<td>{.group_name}</td>
+			<td>
+				<!--{*<button type="button" class="btn btn-sm btn-outline-info" title="문자메세지" data-toggle="tooltip">SMS</button>*}-->
+				<button type="button" class="btn btn-sm btn-outline-info phone_num" title="전화번호" data-toggle="tooltip" data-phonenum="{.mobile}"><i class="fa fa-phone"></i></button>
+				<button type="button" class="btn btn-sm btn-outline-info" onclick="MemberList.crm_memo(this)" title="회원메모" data-toggle="tooltip"><i class="fa fa-pencil"></i></button>
+				<button type="button" onclick="MemberList.changePwd(this)" class="btn btn-sm btn-outline-info" title="임시 비밀번호 발급" data-toggle="tooltip"><i class="fa fa-lock"></i></button>
+			</td>
+			<td><a href="javascript:;" onclick="MemberList.mileage(this)" class="link">{=number_format(.reserve)} M</a></td>
+			<td><a href="javascript:;" onclick="MemberList.point(this)" class="link">{=number_format(.act_point)} P</a></td>
+			<td>{=number_format(.sum_buy_price)} 원</td>
+			<td>{=number_format(.sum_buy_count)} 회</td>
+
+			<td>{=format(.logindate, 'Y-m-d H:i:s')}</td>
+			<td>{=format(.date, 'Y-m-d')}</td>
+			<td>
+				<button type="button" onclick="MemberList.crm(this)" class="btn btn-sm btn-outline-success">수정</button>
+
+			</td>
+		</tr>
+		{:}
+		<tr>
+			<td colspan="13">조회된 데이터가 없습니다.</td>
+		</tr>
+		{/}
+	</table>
+
+	{this->xprint('include/pagination.html')}
+</div>
+
+<script type="text/javascript">
+	var MemberListInner = {
+		init: function () {
+			$('[data-toggle="tooltip"]').tooltip();
+
+			$('.phone_num').click(function () {
+				MemberList.showPhoneNum($(this).data('phonenum'));
+			});
+			$('#searched').val('{_POST.search}');
+		}
+	}
+
+	$(function () {
+		MemberListInner.init();
+	})
+</script>

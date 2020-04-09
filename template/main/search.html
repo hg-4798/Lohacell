@@ -1,0 +1,153 @@
+
+<div id="contents">
+	<div class="search-form">
+		<p class="fz-14"><strong class="point-color">'{searchword}'</strong>의 검색결과 <strong class="point-color">총 {list.count.search}개</strong>입니다.</p>
+		<form class="mt-20" id="FrmSearch" name="FrmSearch" onsubmit="return false;">
+			<fieldset>
+				<legend>상품검색하기</legend>
+				<!--
+				<div class="checkbox va-m">
+					<input type="checkbox" id="re_search">
+					<label for="re_search">결과 내 재검색</label>
+				</div>
+			-->
+				<input type="text" class="w350 ml-15 validate[required]" id="search_keyword" name="search" title="검색어 입력자리" placeholder="검색어를 입력해 주세요" data-errormessage-value-missing="검색어를 입력하세요" value="{searchword}">
+				<button type="submit" class="btn-point"><span>검색</span></button>
+			</fieldset>
+		</form>
+	</div>
+
+	<div class="goodsList-page mt-50">
+		<article class="clear">
+
+			{? list.count.search >0 }
+			<div class="goods_list_wrp">
+				<div class="select_area">
+					<div class="select is-custom">
+						<select title="sort by" id="sort">
+							<option value="recent">신상품순</option>
+							<option value="hit">인기순</option>
+							<option value="review">상품평순</option>
+							<option value="like">좋아요순</option>
+							<option value="price_asc">낮은가격순</option>
+							<option value="price_desc">높은가격순</option>
+						</select>
+					</div>
+				</div>
+				<ul class="goods_list loading-inner" id="goodslist">
+					{=this->xprint('/product/list.inner.html')}
+				</ul>
+			</div>
+
+			{:}
+			<!-- 검색결과 없는 경우 노출 -->
+			<div class="search_result_none">
+				<p class="ment">입력하신 검색어 <span class="point-color">‘{searchword}’</span>와 일치하는 상품을 찾지 못했습니다.</p>
+				<ul class="dot_list">
+				<li>단어의 철자 및 띄어쓰기가 정확한지 확인해 주세요.</li>
+				<li>검색어의 단어 수를 줄이거나, 다른 검색어로 검색해 보세요.</li>
+				<li>특수문자를 제외하고 검색해 보세요.</li>
+			</ul>
+			</div>
+			{/}
+		</article>
+
+	</div>
+</div><!-- //#contents -->
+
+<script type="text/javascript" src="/static/js/blazy.min.js"></script>
+<script type="text/javascript">
+var Search = {
+	page:1,
+	page_last:'{list.page.last}',
+	init: function() {
+		var me = this;
+
+        var option = $.extend({}, validation_option, {
+            validateNonVisibleFields: false,
+            onValidationComplete: function (form, status) {
+                if (status) me.submit();
+            }
+        });
+        $("#FrmSearch").validationEngine('attach', option);
+
+		$(window).scroll(function() {
+			Search.scroll();
+		});
+
+        //정렬
+        $('#sort').on('change', function() {
+            me.sort = this.value;
+            me.load(1);
+        });
+
+        new Blazy();
+        PRODUCT.like();
+	},
+	submit: function() {
+		var word = document.FrmSearch.search.value;
+		$.ajax({
+			url:'/proc/widget.proc.php',
+			data:{
+				mode:'search',
+				act:'word_add',
+				word:word
+			},
+			type:'POST',
+			success: function() {
+				document.FrmSearch.submit();
+			}
+		})
+	},
+	search: function(field, value) {
+		if(field && value) {
+			$('#FrmSearch input[name="'+field+'"]').val(value);
+		}
+		this.load(1);
+	},
+	scroll: function() {
+		var me = Search;
+		var scrollHeight= $(window).scrollTop() + $(window).height();
+		var documentHeight = $(document).height()-400;
+		if(scrollHeight > documentHeight && !me.lock) {
+			me.lock = true;
+			if(me.page_last <= me.page) return false;
+
+			var p = me.page+1;
+
+			me.load(p);
+		}
+	},
+	load:function(page) {
+		var me = Search;
+		var p = page || me.page;
+		var search = $('#FrmSearch').serialize();
+		$.ajax({
+			url:'/front/productlist.inner.php',
+			data:{page:p, search:search, sort:me.sort},
+			dataType:'json',
+			type:'GET',
+            success: function(r) {
+                me.page = p;
+                me.page_last = r.data.page.last;
+                if(p == 1) {
+                    $("#goodslist").html(r.data.html);
+                    new Blazy();
+                }
+                else {
+                    $(r.data.html).hide().appendTo("#goodslist").delay(100).fadeIn(500, function() {
+                        new Blazy();
+                    });
+                }
+                PRODUCT.like(); //좋아요바인딩
+
+                me.lock = false;
+            }
+		});
+	}
+}
+
+$(function() {
+	Search.init();
+})
+</script>

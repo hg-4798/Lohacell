@@ -1,0 +1,42 @@
+<div class="p_20">
+	<table class="tbl-list">
+		<colgroup>
+			<col style="width:120px">
+			<col style="width:80px">
+			<col style="width:100px">
+			<col>
+			<col style="width:150px">
+		</colgroup>
+		<thead>
+			<tr>
+				<th>처리일</th>
+				<th>처리수량</th>
+				<th>처리구분</th>
+				<th>변경내용</th>
+				<th>처리자</th>
+			</tr>
+		</thead>
+		<tbody>
+		{@ list}
+			<tr>
+				<td>{=format(.date_insert,'Y-m-d H:i')}</td>
+				<td>{.count}개</td>
+				<td>{.type_txt}</td>
+				<td class="ta_l">
+					{.status_txt}
+					<div class="text-muted">{.msg}</div></td>
+				<td>{? .reg_place == 'admin'} 관리자({.reg_id}){:}{.reg_id}{/}<div class="text-muted">{.reg_ip}</div></td>
+			</tr>
+		{:}
+		<tr>
+			<td colspan="5">내역이 없습니다.</td>
+		</tr>
+		{/}
+		</tbody>
+	</table>
+
+	<div class="mt_10 mb_10 ta_c">
+		<button type="button" class="btn-basic h-small" onclick="UI.modalClose();">닫기</button>
+	</div>
+
+</div>

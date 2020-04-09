@@ -1,0 +1,276 @@
+<!-- header -->
+<header>
+  <div id="header">
+    <div class="topbanner">
+      <a href="#">
+        <img src="../../../jayjun/web/static/img/banner/top_banner.gif" alt="탑 배너">
+      </a>
+    </div>
+    <div class="header_top">
+      <div class="inner-wrap clear">
+        <div class="left">
+          <a href="" class="coop_link">
+            <img src="../../../jayjun/web/static/img/icon/icon_coop.png" alt="제휴 아이콘">
+            CONTACT USㆍ合作ㆍ제휴
+          </a>
+          <a href="" class="kakao_link">
+            <img src="../../../jayjun/web/static/img/icon/icon_plus_ka.png" alt="제휴 아이콘">
+            실시간 1:1상담
+          </a>
+        </div>
+        <div class="right">
+          <ul>
+		  	{? !empty(memId)}
+				<li><a href="/front/logout.php">로그아웃</a></li>
+			{:}
+				<li><a href="/front/login.php">로그인</a></li>
+			{/}
+            <li><a href="">회원정보수정</a></li>
+            <li><a href="">장바구니</a></li>
+            <li><a href="">멤버쉽</a></li>
+            <li><a href="">마이쇼핑</a></li>
+            <li><a href="">주문조회</a></li>
+          </ul>
+        </div>
+      </div>
+    </div>
+    <!-- hdTop -->
+    <div class="hdTop">
+      <div class="inner-wrap">
+        <h1><a href="/index.html"><img src="../../../jayjun/web/static/img/common/logo_lohacell.png" alt="로하셀"
+              title="로하셀"></a></h1>
+        <div class="search">
+          <form action="" method="post" name="search">
+            <fieldset>
+              <legend>상품 검색 폼</legend>
+              <input class="inp-sch" name="search" onkeydown="" value="" class="">
+              <i class="icon-sch"></i>
+            </fieldset>
+          </form>
+        </div>
+
+        <div class="time_deal" style="display: none;">
+          <a href="">
+            <img src="" alt="타임딜">
+          </a>
+        </div>
+      </div>
+
+    </div>
+    <!-- //hdTop -->
+
+    <!-- hdBottom -->
+    <div class="hdBottom">
+      <div class="inner-wrap">
+        <div class="gnbWrap">
+          <ul class="gnb clear">
+            <li><a href="">전체상품</a></li>
+            <li><a href="">스페셜</a></li>
+            <li><a href="">이벤트</a></li>
+            <li><a href="">리뷰</a></li>
+            <li><a href="">브랜드</a></li>
+            <li><a href="">커뮤니티</a></li>
+            <li><a href="">고객센터</a></li>
+          </ul>
+          <ul class="sub">
+            <li>
+              <ul>
+                <li>
+                  <a href="">전체보기</a>
+                </li>
+                <li>
+                  <a href="">스킨케어</a>
+                </li>
+                <li>
+                  <a href="">메이크업</a>
+                </li>
+                <li>
+                  <a href="">선케어</a>
+                </li>
+                <li>
+                  <a href="">마스크팩</a>
+                </li>
+                <li>
+                  <a href="">헤어/바디</a>
+                </li>
+                <li>
+                  <a href="">옴므</a>
+                </li>
+                <li>
+                  <a href="">뷰티소품</a>
+                </li>
+              </ul>
+            </li>
+            <li>
+              <ul>
+                <li>
+                  <a href="">전체보기</a>
+                </li>
+                <li>
+                  <a href="">★~1+2 &amp; 50%★</a>
+                </li>
+                <li>
+                  <a href="">★ 롭스 공식 입점 ★</a>
+                </li>
+                <li>
+                  <a href="">pH라인</a>
+                </li>
+                <li>
+                  <a href="">민감라인</a>
+                </li>
+                <li>
+                  <a href="">드롭샷앰플라인</a>
+                </li>
+                <li>
+                  <a href="">쿠션&amp;립</a>
+                </li>
+                <li>
+                  <a href="">여드름적합</a>
+                </li>
+              </ul>
+            </li>
+  
+            <li>
+              <ul>
+                <li><a href="">기획전</a></li>
+                <li><a href="">이벤트</a></li>
+                <li><a href="">당첨자발표</a></li>
+                <li><a href="">종료된이벤트</a></li>
+              </ul>
+            </li>
+            <li>
+              <ul>
+                <li><a href="">고객후기</a></li>
+                <li><a href="">베스트리뷰</a></li>
+                <li><a href="">로하셀SNS후기</a></li>
+                <li><a href="">로하셀with스타</a></li>
+                <li><a href="">유튜브스타</a></li>
+              </ul>
+            </li>
+            <li>
+              <ul>
+                <li><a href="">브랜드소개</a></li>
+                <li><a href="">회사소개</a></li>
+                <li><a href="">피부과학연구소</a></li>
+                <li><a href="">수상내역</a></li>
+                <li><a href="">로하셀 VOD</a></li>
+                <li><a href="">기부스토리</a></li>
+              </ul>
+            </li>
+            <li>
+              <ul>
+                <li><a href="">로하셀스토리</a></li>
+                <li><a href="">뷰티스토리</a></li>
+                <li><a href="">뷰티매거진</a></li>
+                <li><a href="">로하셀보도자료</a></li>
+              </ul>
+            </li>
+            <li>
+              <ul>
+                <li><a href="">문의하기</a></li>
+                <li><a href="">공지사항</a></li>
+                <li><a href="">자주묻는질문</a></li>
+                <li><a href="">멤버쉽안내</a></li>
+                <li><a href="">채용공고</a></li>
+                <li><a href="">실시간1:1상담</a></li>
+              </ul>
+            </li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="side-icons">
+    <ul>
+      <li>
+        <a href="#">
+          <img src="../../jayjun/web/static/img/icon/icon_kakao.png" alt="카카오톡 아이콘 버튼">
+        </a>
+      </li>
+      <li>
+        <a href="#">
+          <img src="../../jayjun/web/static/img/icon/icon_navertalk.png" alt="네이버톡 아이콘 버튼">
+        </a>
+      </li>
+      <li>
+        <a href="#">
+          <img src="../../jayjun/web/static/img/icon/icon_mail.png" alt="이메일 아이콘 버튼">
+        </a>
+      </li>
+    </ul>
+  </div>
+</header>
+
+<!-- side menu - subpage -->
+<div class="side-area subpage">
+  <button class="btn-top">
+    <img src="../../jayjun/web/static/img/btn/btn-top.png" alt="탑 이동 버튼">
+  </button>
+  <ul class="menu">
+    <li><a href="#">LOGOUT</a></li>
+    <li><a href="#">CART</a></li>
+    <li><a href="#">MY PAGE</a></li>
+    <li><a href="#">ORDER</a></li>
+    <li><a href="#">Q&A</a></li>
+  </ul>
+  <div class="today-view">
+    <p class="title">TODAY VIEW</p>
+    <ul class="list">
+      <li>
+        <a href="#">
+          <img src="../../jayjun/web/static/img/common/today-view-sample.jpg" alt="최근 본 상품">
+        </a>
+      </li>
+      <li>
+        <a href="#">
+          <img src="../../jayjun/web/static/img/common/today-view-sample.jpg" alt="최근 본 상품">
+        </a>
+      </li>
+      <li>
+        <a href="#">
+          <img src="../../jayjun/web/static/img/common/today-view-sample.jpg" alt="최근 본 상품">
+        </a>
+      </li>
+      <li>
+        <a href="#">
+          <img src="../../jayjun/web/static/img/common/today-view-sample.jpg" alt="최근 본 상품">
+        </a>
+      </li>
+      <li>
+        <a href="#">
+          <img src="../../jayjun/web/static/img/common/today-view-sample.jpg" alt="최근 본 상품">
+        </a>
+      </li>
+    </ul>
+  </div>
+</div>
+<!-- //side menu - subpage -->
+
+
+<script>
+$(function(){
+  // 사이드 바 위치 
+  // 최초 로딩시 위치 설정
+  setSidebarPosition();
+
+  // 창 리사이즈시 위치 설정
+  $(window).resize(function(){
+    setSidebarPosition();
+  });
+
+  function setSidebarPosition (){
+    windowWidth = $(window).width();
+    sideLeftPosition = windowWidth / 2 + 610;
+    $('.side-area').css({'left': sideLeftPosition, 'opacity': 1});
+  }
+
+  $(window).scroll(function(){
+    var scrollTop = $(window).scrollTop();
+    if(scrollTop > 780) {
+      $('.side-area.subpage').css({'position':'fixed', 'top':'20px'});
+    } else {
+      $('.side-area.subpage').css({'position':'absolute', 'top':'780px'});
+    }
+  });
+});
+</script>

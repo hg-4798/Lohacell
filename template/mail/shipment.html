@@ -1,0 +1,219 @@
+<!DOCTYPE html PUBtdC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:fb="http://ogp.me/ns/fb#">
+<head>
+<meta http-equiv="X-UA-Compatible" content="IE=8;IE=EDGE">
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<title>상품발송</title>
+</head>
+<body bgcolor="f8f8f8" style="background-color:#f8f8f8;">
+<style type="text/css">
+body {padding:0px; margin:0px;}
+a , a:link , a:visited , a:active , a:hover , img {text-decoration:none; outline:0;border:none;}
+</style>
+<div align="center" style="width:100%;min-height:100%;background-color:#f8f8f8;">
+<table width="800" cellpadding="0" cellspacing="0" border="0" align="center" style="width:800px;margin:0 auto;color:#555;font-family:'돋움',dotum,sans-serif;font-size:12px;">
+	<tr>
+		<td align="center">
+
+<!-- 로고 -->
+<table width="800" cellpadding="0" cellspacing="0" border="0" align="center">
+	<tr>
+		<td height="80" align="center"><a href="" target="_blank"><img src="{C.SHOPURL}/jayjun/web/static/img/mail/h1_logo.png" border="0" title="i KNOW iONE" alt="i KNOW iONE"></a></td>
+	</tr>
+</table>
+<!-- //로고 -->
+
+<!-- 내용 -->
+<table width="800" cellpadding="0" cellspacing="0" border="0" align="center" bgcolor="ffffff" style="border:1px solid #ebebeb;border-collapse:collapse;">
+	<tr>
+		<td height="20"></td>
+	</tr>
+	<tr>
+		<td align="center">
+			<table width="760" cellpadding="0" cellspacing="0" border="0" align="center">
+				<!-- 제목 -->
+				<tr>
+					<td height="90" align="center" bgcolor="000000" style="color:#fff;font-family:'돋움',dotum,sans-serif;font-size:20px;">주문하신 상품을 발송하였습니다</td>
+				</tr>
+				<!-- //제목 -->
+
+				<tr><td height="40"></td></tr>
+				<tr>
+					<td align="left" style="color:#555;font-family:'돋움',dotum,sans-serif;font-size:12px;line-height:20px;">고객님께서 주문하신 상품을 발송하였습니다.<br>배송중인 상품의 배송내역은 [ MYPAGE > 주문내역조회 > 주문배송조회 ] 에서 확인하실 수 있습니다.</td>
+				</tr>
+				<tr><td height="35"></td></tr>
+				<tr>
+					<td align="left" style="color:#000;font-family:'돋움',dotum,sans-serif;font-size:14px;font-weight:700;">주문정보</td>
+				</tr>
+				<tr><td height="13"></td></tr>
+				<tr>
+					<td height="44" align="center" bgcolor="f1f1f1">
+						<table width="760" align="center" cellpadding="0" cellspacing="0" border="0">
+							<tr>
+								<td width="10"></td>
+								<td align="left" bgcolor="f1f1f1" style="color:#111;font-family:'돋움',dotum,sans-serif;font-size:12px;">주문번호 : <span style="color:#888;font-size:13px;text-decoration:underline;">{order_num}</span></td>
+								<td width="150" align="right" style="color:#555;font-family:'돋움',dotum,sans-serif;font-size:12px;box-sizing:border-box;">주문일 : {date_insert}</td>
+								<td width="10"></td>
+							</tr>
+						</table>
+					</td>
+				</tr>
+				<tr>
+					<td align="center" style="border-top:2px solid #000;border-bottom:1px solid #e5e5e5;border-collapse:collapse;">
+						<table width="760" align="center" cellpadding="0" cellspacing="0" border="0">
+							<tr>
+								<th scope="col" height="50" align="center" style="color:#111;font-family:'돋움',dotum,sans-serif;font-size:12px;font-weight:400;">상품정보</th>
+								<th scope="col" width="120" height="50" align="center" style="color:#111;font-family:'돋움',dotum,sans-serif;font-size:12px;font-weight:400;">수량</th>
+								<th scope="col" width="120" height="50" align="center" style="color:#111;font-family:'돋움',dotum,sans-serif;font-size:12px;font-weight:400;">주문금액</th>
+								<th scope="col" width="120" height="50" align="center" style="color:#111;font-family:'돋움',dotum,sans-serif;font-size:12px;font-weight:400;">적립 마일리지</th>
+							</tr>
+						</table>
+					</td>
+				</tr>
+				<tr>
+					<td align="center">
+						<table width="760" align="center" cellpadding="0" cellspacing="0" border="0">
+							{@product}
+							<tr>
+								<td width="100" align="left" valign="top" style="border-bottom:1px solid #e5e5e5;"><img src="{=preview(.tinyimage)}" alt="상품 썸네일" width="90" border="0"></td>
+								<td align="center" style="border-bottom:1px solid #e5e5e5;">
+									<table width="660" align="center" cellpadding="0" cellspacing="0" border="0">
+										<tr>
+											<td height="50" align="left" style="color:#555;font-family:'돋움',dotum,sans-serif;font-size:12px;">
+												<p style="margin:0;margin-top:3px;padding:0;color:#000;font-size:12px;font-weight:bold;">{.productname}</p>
+												{? .option_type=='option'}<p style="margin:0;padding:0;color:#888;font-size:11px;">{.option_info.option_name}</p>{/}
+											</td>
+											<td width="120" align="center" style="color:#888;font-family:'돋움',dotum,sans-serif;font-size:12px;">{.quantity}</td>
+											<td width="120" align="center" style="color:#888;font-family:'돋움',dotum,sans-serif;font-size:12px;"><span style="color:#111;">{=number_format(.price_end)}</span> 원</td>
+											<td width="120" align="center" style="color:#888;font-family:'돋움',dotum,sans-serif;font-size:12px;">{=number_format(.mileage_expect)}M</td>
+										</tr>
+									</table>
+								</td>
+							</tr>
+							{/}
+						</table>
+					</td>
+				</tr>
+
+				<tr><td height="38"></td></tr>
+
+				<tr>
+					<td align="left" style="color:#000;font-family:'돋움',dotum,sans-serif;font-size:14px;font-weight:700;">배송정보</td>
+				</tr>
+				<tr><td height="10"></td></tr>
+				<tr>
+					<td align="center">
+						<table width="760" align="center" cellpadding="0" cellspacing="0" border="0" style="border-top:1px solid #000;">
+							<tr>
+								<td width="190" height="48" align="left" style="border-bottom:1px solid #eee;color:#000;font-family:'돋움',dotum,sans-serif;font-size:12px;">받으시는분</td>
+								<td align="left" style="border-bottom:1px solid #eee;color:#555;font-family:'돋움',dotum,sans-serif;font-size:12px;">{receiver_name}</td>
+							</tr>
+							<tr>
+								<td width="190" height="48" align="left" style="border-bottom:1px solid #eee;color:#000;font-family:'돋움',dotum,sans-serif;font-size:12px;">연락처</td>
+								<td align="left" style="border-bottom:1px solid #eee;color:#555;font-family:'돋움',dotum,sans-serif;font-size:12px;">{receiver_mobile} / {receiver_tel}</td>
+							</tr>
+							<tr>
+								<td width="190" height="48" align="left" style="border-bottom:1px solid #eee;color:#000;font-family:'돋움',dotum,sans-serif;font-size:12px;">주소</td>
+								<td align="left" style="border-bottom:1px solid #eee;color:#111;font-family:'돋움',dotum,sans-serif;font-size:12px;line-height:17px;">[{receiver_zipcode}]<br><span style="color:#888;">[도로명주소]</span> <span style="color:#555;">{receiver_addr},{receiver_addr_detail}</span></td>
+							</tr>
+							<tr>
+								<td width="190" height="48" align="left" style="border-bottom:1px solid #eee;color:#000;font-family:'돋움',dotum,sans-serif;font-size:12px;">배송요청사항</td>
+								<td align="left" style="border-bottom:1px solid #eee;color:#555;font-family:'돋움',dotum,sans-serif;font-size:12px;">{receiver_memo}</td>
+							</tr>
+						</table>
+					</td>
+				</tr>
+				<tr><td height="38"></td></tr>
+
+				<tr>
+					<td align="left" style="color:#000;font-family:'돋움',dotum,sans-serif;font-size:14px;font-weight:700;">택배사정보</td>
+				</tr>
+				<tr><td height="10"></td></tr>
+				<tr>
+					<td align="center">
+						<table width="760" align="center" cellpadding="0" cellspacing="0" border="0" style="border-top:1px solid #000;">
+							<tr>
+								<td width="190" height="48" align="left" style="border-bottom:1px solid #eee;color:#000;font-family:'돋움',dotum,sans-serif;font-size:12px;">택배사명</td>
+								<td align="left" style="border-bottom:1px solid #eee;color:#555;font-family:'돋움',dotum,sans-serif;font-size:12px;">{deli_com}</td>
+							</tr>
+							<tr>
+								<td width="190" height="48" align="left" style="border-bottom:1px solid #eee;color:#000;font-family:'돋움',dotum,sans-serif;font-size:12px;">송장번호</td>
+								<td align="left" style="border-bottom:1px solid #eee;color:#555;font-family:'돋움',dotum,sans-serif;font-size:12px;">{deli_code}</td>
+							</tr>
+						</table>
+					</td>
+				</tr>
+				<tr><td height="38"></td></tr>
+
+				<tr>
+					<td align="left" style="color:#000;font-family:'돋움',dotum,sans-serif;font-size:14px;font-weight:700;">주문고객정보</td>
+				</tr>
+				<tr><td height="10"></td></tr>
+				<tr>
+					<td align="center">
+						<table width="760" align="center" cellpadding="0" cellspacing="0" border="0" style="border-top:1px solid #000;">
+							<tr>
+								<td width="190" height="48" align="left" style="border-bottom:1px solid #eee;color:#000;font-family:'돋움',dotum,sans-serif;font-size:12px;">주문고객</td>
+								<td align="left" style="border-bottom:1px solid #eee;color:#555;font-family:'돋움',dotum,sans-serif;font-size:12px;">{buyer_name}</td>
+							</tr>
+							<tr>
+								<td width="190" height="48" align="left" style="border-bottom:1px solid #eee;color:#000;font-family:'돋움',dotum,sans-serif;font-size:12px;">이메일</td>
+								<td align="left" style="border-bottom:1px solid #eee;color:#555;font-family:'돋움',dotum,sans-serif;font-size:12px;">{buyer_email}</td>
+							</tr>
+							<tr>
+								<td width="190" height="48" align="left" style="border-bottom:1px solid #eee;color:#000;font-family:'돋움',dotum,sans-serif;font-size:12px;">휴대전화</td>
+								<td align="left" style="border-bottom:1px solid #eee;color:#555;font-family:'돋움',dotum,sans-serif;font-size:12px;">{buyer_mobile}</td>
+							</tr>
+							<tr>
+								<td width="190" height="48" align="left" style="border-bottom:1px solid #eee;color:#000;font-family:'돋움',dotum,sans-serif;font-size:12px;">전화번호</td>
+								<td align="left" style="border-bottom:1px solid #eee;color:#555;font-family:'돋움',dotum,sans-serif;font-size:12px;">{buyer_tel}</td>
+							</tr>
+						</table>
+					</td>
+				</tr>
+
+				<tr><td height="50"></td></tr>
+				<tr>
+					<td align="center">
+						<table width="200" cellpadding="0" cellspacing="0" border="0" align="center">
+							<tr>
+								<td height="46" align="center" bgcolor="000000"><a href="{url}" target="_blank" style="display:block;width:100%;height:46px;color:#fff;font-family:'돋움',dotum,sans-serif;font-size:16px;line-height:46px;font-weight:700;text-decoration:none;">상세정보 확인하기</a></td>
+							</tr>
+						</table>
+					</td>
+				</tr>
+				<tr><td height="50"></td></tr>
+			</table>
+		</td>
+	</tr>
+	<tr>
+		<td height="86" align="center" style="border-top:1px solid #ededed;color:#999;font-family:'돋움',dotum,sans-serif;font-size:12px;line-height:18px;">본 메일은 메일 수신에 동의한 회원에게만 발송되며, 발신전용 메일이므로 회신되지 않습니다.</td>
+	</tr>
+</table>
+<!-- //내용 -->
+
+<!-- 푸터 -->
+<table width="800" cellpadding="0" cellspacing="0" border="0" align="center">
+	<tr><td height="18"></td></tr>
+	<tr>
+		<td align="center">
+			<table width="800" cellpadding="0" cellspacing="0" border="0" align="center">
+				<tr>
+					<td width="280" align="center" style="color:#b1b1b1;font-family:'돋움',dotum,sans-serif;font-size:11px;line-height:18px;"><img src="{C.SHOPURL}/jayjun/web/static/img/mail/ft_logo.png" alt="i KNOW iONE"></td>
+					<td align="left" style="color:#b1b1b1;font-family:'돋움',dotum,sans-serif;font-size:11px;line-height:18px;"><strong>CS CENTER</strong> 080 881 2001 &nbsp;<strong>TEL</strong> 02 2193 9513 &nbsp;<strong>FAX</strong> 02 2193 9595<br>서울특별시 강남구 논현로 526 &nbsp;<strong>대표자</strong> 이진형 &nbsp;<strong>사업자번호</strong> 222-85-12156</td>
+				</tr>
+			</table>
+		</td>
+	</tr>
+	<tr><td height="34"></td></tr>
+</table>
+<!-- //푸터 -->
+
+		</td>
+	</tr>
+</table>
+</div>
+
+
+</body>
+</html>

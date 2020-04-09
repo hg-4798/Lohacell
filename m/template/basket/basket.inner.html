@@ -1,0 +1,135 @@
+<div class="title-section is-function with-border">
+	<div class="option-box dir-flow"><label><input type="checkbox" id="check_all" class="check_def" title="전체선택" checked><strong>전체선택 (<i id="count_checked">{=count(list)}</i>/<i id="count_tab">{=count(list)}</i>)</strong></label></div>
+	<div class="function-area">
+		<button type="button"  onclick="Basket.removeChecked();" class="btn-basic is-small">선택상품삭제</button>
+	</div>
+</div>
+{@ list}
+<div class="box-sector" data-count-option="{.count.option}" data-count-product="{.count.product}">
+	<div class="sector-inner">
+		
+		{@ .children}
+		{? ..index_ ==0}
+		<div class="title-section is-function">
+
+			<div class="option-box is-alone"><label><input type="checkbox" class="check_def" title="선택" value="{.key_}" name="checked_{tab_id}[]" id="checked_{tab_id}_{.key_}"  {? .valid>0} {? .checked=='Y'}checked{/}{:}disabled{/}><span>선택</span></label></div>
+			<div class="function-area">
+				<button type="button" class="like-local" data-hottcode="{.productcode}" data-section="product"><i class="icon_like" {? .is_liked}on{/}></i> <span class="like_count">{.pr_like_cnt}</span></button>
+				<button type="button" class="btn-close" onclick="Basket.remove('{..group_no}', 'group')">삭제</button>
+			</div>
+		</div>
+		<div class="goods-item is-mygoods">
+			<figure>
+				<div class="img"><a href="{C.DIR_M}/productdetail.php?prcode={.productcode}"><img src="{.tinyimage}" alt="상품 썸네일"></a></div>
+				<figcaption>
+					<p class="code">{.prodcode}</p>
+					<p class="goods-nm">{.productname}</p>
+				</figcaption>
+			</figure>
+		</div>
+		
+		{/}
+		<div class="cart-item-opt"  data-stock-max="{..stock.max}" data-stock-min="{..stock.min}" data-basket-no="{..no}">
+			<div class="opt-wrp">
+				{? ..option_type == 'option'}
+				<p class="opt"><span class="point-color">[옵션]</span> {..option_info.option_name}</p>
+				{:}
+				<p class="opt"><span class="point-color">[추가]</span> {..option_info.productname}</p>
+				{/}
+				<div class="price">
+					<strong>{=number_format(..option_info.endprice)}</strong>
+					{? ..option_info.endprice_dc_rate > 0}
+					<del>{=number_format(..option_info.consumerprice)}</del><span class="discount-color">[{..option_info.endprice_dc_rate}%]</span>
+					{/}
+				</div>
+				<div class="quantity">
+					<input type="text" value="{..qty}" readonly>
+					<button class="plus"></button>
+					<button class="minus"></button>
+				</div>
+				<button type="button" class="item-del" onclick="Basket.remove('{..no}','{..option_type}',this)"><i class="btn-close is-small"></i>삭제</button>
+			</div>
+			<div class="cart-item-price clear">
+				<label>주문금액</label>
+
+				
+				<div class="price"><strong>{=number_format(..option_info.endprice*..qty)}</strong>
+					<span class="mileage">
+						{? ..option_info.status == 'normal'}
+						{=number_format(..option_info.mileage)}M
+						{:}
+						0M
+						{/}
+					</span>
+				</div>
+			</div>
+		</div>
+		{/}
+
+		
+		<div class="btn_area">
+			{? .valid>0}
+			<ul class="ea2">
+				<li><button type="button" onclick="Basket.changeOption('{.key_}')" class="btn-line h-input btn_add_option">옵션추가</button></li>
+				<li><button type="button" class="btn-point h-input"  onclick="Basket.order('{.key_}')">바로구매</button></li>
+			</ul>
+			{:}
+			<ul>
+				<li><button type="button" class="btn-basic h-input" onclick="return false" disabled>품절</button></li>
+			</ul>
+			{/}
+
+		</div>
+		
+	</div>
+</div>
+{/}
+
+
+<div class="box-sector no-line">
+	<div class="sector-inner">
+		<div class="btn_area no-margin">
+			<ul class="ea2">
+				<li><a href="/m/" class="btn-basic h-large">쇼핑 계속하기</a></li>
+				<li><button type="button" onclick="Basket.order();" class="btn-point h-large">선택 상품 주문</a></li>
+			</ul>
+		</div>
+	</div>
+</div>
+
+
+{@ stats_list}
+<!-- AceCounter Mobile eCommerce (Cart_Inout) v7.5 Start -->
+<script language='javascript'>
+    var AM_Cart=(function(){
+        var c={pd:'{.productcode}',pn:'{.productname}',am:'{.endprice*.qty}',qy:'{.qty}',ct:'{.category}'};
+        var u=(!AM_Cart)?[]:AM_Cart; u[c.pd]=c;return u;
+    })();
+</script>
+{/}
+
+<script type="text/javascript">
+var BasketInner = {
+	init: function() {
+		//선택사항변경시 리로드
+		//$('input[name^="checked_"]').off('click.basket').on('click.basket', Basket.reloadTab); 모바일에서는 리로드가 필요없어 보임
+
+		$('button.plus, button.minus').off('click.basket').on('click.basket', Basket.qty); //수량변경
+
+		//전체선택
+		$('#check_all').on('click', function() {
+			if(this.checked) $('input[name="checked_'+Basket.tab+'[]"]').prop('checked',true);
+			else $('input[name="checked_'+Basket.tab+'[]"]').prop('checked',false);
+
+			//Basket.reloadTab(); 모바일에서는 리로드가 필요없어 보임
+		})
+
+		$('#count_'+Basket.tab).text('{=count(list)}');
+	}
+}
+
+$(function() {
+	BasketInner.init();
+})
+</script>
+

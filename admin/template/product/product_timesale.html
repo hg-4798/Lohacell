@@ -1,0 +1,82 @@
+<div class="content-wrap">
+	<div class="title_depth3">기간할인설정<span>상품의 기간별 할인율을 관리합니다.</span></div>
+
+	<form id="FrmTimesaleSearch"></form>
+	<div class="btn_right" style="margin-bottom:10px">
+		<select name="limit">
+			{@ cfg.limit}
+			<option value="{.value_}">{.value_}개</option>
+			{/}
+		</select>
+	</div>
+
+	<!--{* 기간할인목록:S *}-->
+	<div id="inner"></div>
+	<!--{* 기간할인목록:E *}-->
+
+	<div class="sub_manual_wrap mt_100">
+		<div class="title"><p>매뉴얼</p></div>
+		<dl>
+			<dt><span>동일상품처리</span></dt>
+			<dd>
+				- 동일한 상품에 여러 기간할인이 적용된 경우 <b>최근 설정된 기간할인</b>이 우선 적용됩니다.
+			</dd>
+		</dl>
+	</div>
+</div>
+
+
+
+<script type="text/javascript">
+var ProductTimesale ={
+	page:1,
+	proc_url:'/admin/proc/product.proc.php',
+	init: function(){
+		this.load();
+	},
+	
+	load:function(page) {
+		var p = page || ProductTimesale.page;
+		var search = $('#FrmSizeShowSearch').serialize();
+		$('#inner').load('/admin/product/product_timesale.inner.php',{page:p, search:search},
+			function() {
+				ProductTimesale.page = p;
+				$('[data-toggle="tooltip"]').tooltip();
+			}
+		);
+	},
+	remove: function(idx) {
+		if(!confirm('삭제하시겠습니까?')) return false;
+		$.ajax({
+			url:this.proc_url,
+			data:{
+				mode:'timesale',
+				act:'delete',
+				idx:idx
+			},
+			dataType:'json',
+			type:'POST',
+			success: function(r) {
+				alert(r.msg);
+				if(r.success){
+					ProductTimesale.load(1);
+				}
+			}
+		})
+	},
+	register: function(idx) {
+		var href = '/admin/product/product_timesale.register.php';
+		if(idx>0) href+='?idx='+idx;
+		document.location.href=href;
+	},
+	product: function(idx) { //할인적용상품보기
+		UI.modal('/admin/product/product_timesale.product.php','할인율 적용상품', {idx:idx}, 500);
+	}
+
+}
+
+
+$(function() {
+	ProductTimesale.init();
+});
+</script>

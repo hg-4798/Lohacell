@@ -1,0 +1,22 @@
+<!-- 진행중이벤트 -->
+<ul class="list-photoType clear" id="getEventList">
+	{@ list}
+	<li>
+		<a href="{C.DIR_FRONT}/promotion/{? .event_type == 2 || .event_type == 3}event{:}promo{/}_detail.php?idx={.idx}&status={type}">
+			<figure>
+				<div class="thumb-img">
+					<img src="{? .thumb_img}/data/shopimages/timesale/{.thumb_img}{:}{=preview(.thumb_img,'blank')}{/}" alt="이벤트 이미지">
+				</div>
+				<figcaption>
+					<p class="ellipsis subject">{.title}</p>
+					<p class="date">{=format(.start_date,'Y-m-d')}~{=format(.end_date,'Y-m-d')}</p>
+				</figcaption>
+			</figure>
+		</a>
+	</li>
+	{:}
+	<li class="no-content">컨텐츠가 없습니다.</li>
+	{/}
+</ul>
+
+{= this->xfetch('_include/pagination.html')}

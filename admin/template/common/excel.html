@@ -1,0 +1,281 @@
+<form id="FrmExcelFormat" name="FrmExcelFormat" method="POST" onsubmit="return false">
+	<input type="hidden" name="type" value="{type}">
+	<input type="hidden" name="column" id="column" value="">
+	<textarea name="search" class="hide">{search}</textarea>
+	<div class="container m-b-30 m-t-10 order-view inc">
+		<div class="row ta-l rel">
+			<div class="excel-tool">
+				<ul>
+					<li><button type="button" class="btn btn-sm" onclick="ExcelFormat.move('right_all')"><i class="fa fa-angle-double-right"></i></button></li>
+					<li><button type="button" class="btn btn-sm" onclick="ExcelFormat.move('right')"><i class="fa fa-angle-right"></i></button></li>
+					<li><button type="button" class="btn btn-sm" onclick="ExcelFormat.move('left')"><i class="fa fa-angle-left"></i></button></li>
+					<li><button type="button" class="btn btn-sm" onclick="ExcelFormat.move('left_all')"><i class="fa fa-angle-double-left"></i></button></li>
+				</ul>
+
+				<ul class="m-t-20">
+					<li><button type="button" class="btn btn-sm" onclick="ExcelFormat.move('up')"><i class="fa fa-angle-up"></i></button></li>
+					<li><button type="button" class="btn btn-sm" onclick="ExcelFormat.move('down')"><i class="fa fa-angle-down"></i></button></li>
+				</ul>
+			</div>
+			<div class="col-6">
+				<div class="inc-tit-sub">다운로드 가능한 리스트 항목</div>
+				<!--{*
+				<ul id="column_from" class="excel-column">
+					{@ column}
+					<li data-column="{.key_}">{.name}<i class="fa fa-chevron-right"></i></li>
+					{/}
+				</ul>
+				*}-->
+
+				<select name="" id="column_from" class="excel-column" multiple>
+					{@ column}
+					<option value="{.key_}">{.name}</option>
+					{/}
+				</select>
+				<div class="m-t-5">
+					<select class="select" name="format" id="format_list" style="width:314px">
+						<option value="">다운로드 양식선택</option>
+						{@ format}
+						<option value="{.eid}">{.item_name}</option>
+						{/}
+					</select>
+					<button type="button" onclick="ExcelFormat.removeFormat()" class="btn btn-sm btn-danger" style="height:28px;vertical-align:0px">삭제</button>
+				</div>
+			</div>
+			<div class="col-6 text-right">
+				<div class="inc-tit-sub text-left m-l-10">다운로드 되는 리스트 항목</div>
+				<div>
+					<select name="column_to" id="column_to" class="excel-column" multiple>
+						
+					</select>
+
+				</div>
+				<div class="m-t-5">
+					<input type="text" name="format_name" class="input validate[required]" data-errormessage-value-missing="양식이름을 입력하세요." style="width:314px" placeholder="양식추가">
+					<button type="submit" class="btn btn-sm btn-success" style="height:28px;vertical-align:0px">추가</button>
+				</div>
+			</div>
+		</div>
+	</div>
+
+	<div class="ta-c m-b-40">
+		<button type="button" class="btn btn-dark btn-md m-r-10" onclick="ExcelFormat.download()">다운로드</button>
+		<button type="button" class="btn btn-md" onclick="UI.modalClose()">취소</button>
+	</div>
+
+</form>
+
+<script type="text/javascript">
+	var ExcelFormat = {
+		url:'{C.DIR_ADMIN}/proc/common.proc.php',
+		type:'{type}',
+		init: function () {
+			var me = this;
+			$('#column_from option').dblclick(function () {
+				me.move('right');
+			});
+
+			$('#column_to option').dblclick(function () {
+				me.move('left');
+			});
+
+			var me = this;
+			var option = $.extend({}, validation_option, {
+				validateNonVisibleFields: false,
+				onValidationComplete: function (form, status) {
+					if (status) me.addFormat();
+				}
+			});
+			$("#FrmExcelFormat").validationEngine('attach', option);
+
+			$('#format_list').on('change', function(e) {
+				me.loadColumn(this.value);
+			});
+		},
+		validateColumn: function () {
+			var to = $('#column_to');
+			if(to.find('option').length<1) {
+				UI.alert('항목을 선택하세요.');
+				return false;
+			}
+
+			var column = to.find('option').map(function(){ return this.value;}).get();
+			$('#column').val(column.join());
+			return true;
+		},
+		move: function (mode, e) {
+			var from = $('#column_from');
+			var to = $('#column_to');
+
+			switch (mode) {
+				case 'right_all': //전체추가
+					$.each(from.find('option:not(:disabled)'), function(i,e) {
+						to.append($(e).clone());
+						$(e).attr('disabled', true);
+					});
+					from.find('option').removeAttr('selected');
+					
+					break;
+				case 'right': //선택추가
+					var selected = from.find('option:selected');
+					if(selected.length<1) {
+						UI.alert('추가할 항목을 선택하세요.');
+						return false;
+					}
+
+					$.each(selected, function(i,e) {
+						to.append($(e).clone());
+						$(e).attr('disabled', true);
+					});
+
+					from.find('option').removeAttr('selected');
+
+					break;
+				case 'left_all': //전체삭제
+					to.empty();
+					from.find('option').removeAttr('disabled');
+					to.find('option').removeAttr('selected');
+					break;
+				case 'left': //선택삭제
+					var selected = to.find('option:selected');
+					if(selected.length<1) {
+						UI.alert('삭제할 항목을 선택하세요.');
+						return false;
+					}
+
+					$.each(selected, function(i,e) {
+						$(e).remove();
+						from.find('option[value="'+e.value+'"]').removeAttr('disabled');
+					
+					});
+
+					to.find('option').removeAttr('selected');
+
+					break;
+				case 'up': //위로
+					var selected = to.find('option:selected');
+					if(selected.length<1) {
+						UI.alert('이동할 항목을 선택하세요.');
+						return false;
+					}
+					
+					var prev  = selected.first().prev();
+					prev.before(selected);
+
+					break;
+				case 'down': //아래로
+					var selected = to.find('option:selected');
+					if(selected.length<1) {
+						UI.alert('이동할 항목을 선택하세요.');
+						return false;
+					}
+					
+					var next  = selected.last().next();
+					next.after(selected);
+
+					break;
+			}
+		},
+		loadColumn: function(eid) {
+			$.ajax({
+				url:ExcelFormat.url,
+				data:{
+					mode:'excel_format',
+					act:'load_column',
+					eid:eid
+				},
+				dataType:'json',
+				type:'POST',
+				success: function(r) {
+					if(r.success) {
+						var to = $('#column_to');
+						to.empty();
+						$.each(r.data, function(i,e){
+							to.append('<option value="'+e.id+'">'+e.name+'</option>');
+						});
+						
+					}
+					else {
+						UI.error(r.msg);
+					}
+				}
+			})
+		},
+		removeFormat: function () {
+			var target = $('#format_list');
+			var eid = target.val();
+			if(!eid) {
+				UI.alert('삭제할 엑셀양식을 선택하세요.');
+				return false;
+			}
+
+			$.ajax({
+				url:ExcelFormat.url,
+				data:{
+					mode:'excel_format',
+					act:'delete',
+					eid:eid
+				},
+				dataType:'json',
+				type:'POST',
+				success: function(r) {
+					if(r.success) {
+						UI.alert(r.msg, function() {
+							UI.modalReload();
+						});
+						
+					}
+					else {
+						UI.error(r.msg);
+					}
+				}
+			});
+		},
+		addFormat: function () {
+			var valid = this.validateColumn();
+			if (!valid) return false;
+		
+			var formdata = $('#FrmExcelFormat').serializeArray();
+
+			formdata.push({name:'mode',value:'excel_format'});
+			formdata.push({name:'act',value:'save'});
+			$.ajax({
+				url:ExcelFormat.url,
+				data:formdata,
+				dataType:'json',
+				type:'POST',
+				success: function(r) {
+					if(r.success) {
+						UI.alert(r.msg, function() {
+							UI.modalReload();
+						});
+					}
+					else {
+						UI.error(r.msg);
+					}
+				}
+			})
+		},
+		download: function () {
+			var to = $('#column_to');
+			if(to.find('option').length<1) {
+				UI.alert('항목을 선택하세요.');
+				return false;
+			}
+
+			var column = to.find('option').map(function(){ return this.value;}).get();
+			$('#column').val(column.join());
+
+			var frm = document.FrmExcelFormat;
+			frm.action = "{C.DIR_ADMIN}/common/excel.download.php";
+			frm.submit();
+			//document.location.href = ;
+
+		}
+
+	}
+
+	$(function () {
+		ExcelFormat.init();
+	})
+</script>

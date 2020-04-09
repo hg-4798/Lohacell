@@ -1,0 +1,225 @@
+<form id="FrmCancel" onsubmit="return false">
+<input type="hidden" name="mode" value="cancel" />
+<input type="hidden" name="act" value="each">
+<input type="hidden" name="checked" value='{checked}' />
+<input type="hidden" name="order_num" value="{basic.order_num}">
+<!--{* 취소신청폼:S *}-->
+<div class="inc-tit-sub">취소사유</div>
+<table class="tbl-form">
+	<colgroup>
+		<col style="width:100px">
+		<col>
+	</colgroup>
+	<tr>
+		<th>취소사유</th>
+		<td>
+			<select name="cancel_resaon" id="cancel_resaon" class="validate[required]" data-errormessage-value-missing="취소사유를 선택하세요"> 
+				<option value="">== 취소사유선택 ==</option>
+				<option value="관리자취소">관리자 임의 취소</option>
+				{@ __CONFIG.cancel_reason}
+				<option value="{.value_}">{.value_}</option>
+				{/}
+				<option value="etc">기타</option>
+			</select>
+
+			<input type="text" name="cancel_reason_etc" id="cancel_reason_etc" class="w500 hide" />
+		</td>
+	</tr>
+	<tr>
+		<th>관리메모</th>
+		<td>
+			<textarea name="memo"  rows="2" class="textarea w-100"></textarea>
+		</td>
+	</tr>
+</table>
+<!--{* 취소신청폼:E *}-->
+
+<!--{* 취소금액:S *}-->
+<div class="inc-tit-sub">취소금액</div>
+<table class="tbl-form">
+	<colgroup>
+		<col style="width:120px">
+		<col>
+		<col style="width:120px">
+		<col>
+	</colgroup>
+	<tr>
+		<th>상품금액</th>
+		<td colspan="3">
+			{=number_format(refund.total)} 원
+			<input type="hidden" name="refund[product]" value="{refund.total}" />
+		</td>
+	</tr>
+	<tr>
+		<th>배송비</th>
+		<td {? basic.pay_delivery >= 0 }colspan="3"{/}>
+			<span style="width:200px;display:inline-block" id="pay_delivery_txt">{=number_format(basic.pay_delivery_end)} 원</span>
+			<input type="hidden" name="pay_delivery" id="pay_delivery" value="{basic.pay_delivery}">
+			<input type="hidden" name="pay_delivery_discount" id="pay_delivery_discount" value="{basic.coupon_delivery_discount}" data-calc="minus">
+
+		</td>
+		{? basic.pay_delivery < 0}
+		<th>배송비 재설정</th>
+		<td>
+			<input type="text" name="pay_delivery_add" class="w100" value="0" data-calc="minus"  data-filter="price"> 원
+		</td>
+		{/}
+	</tr>
+	
+	{? coupon.delivery}
+	<tr>
+		<th>무료배송쿠폰</th>
+		<td colspan="3">
+			<span style="width:300px;display:inline-block">{coupon.delivery.info.coupon_name}</span>
+			<label><input type="radio" name="coupon[delivery]" value="" class="hj" data-discount="{basic.coupon_delivery_discount}" checked><span class="lbl">적용</span></label>
+			<label><input type="radio" name="coupon[delivery]" value="{coupon.delivery.ci_no}" class="hj"  data-discount="0"><span class="lbl">적용취소</span></label>
+		</td>
+	</tr>
+	{/}
+</table>
+<table class="tbl-form m-t-5">
+	<colgroup>
+		<col style="width:120px">
+		<col>
+		<col style="width:120px">
+		<col>
+	</colgroup>
+	<tr>
+		<th>사용 마일리지</th>
+		<td>
+			{=number_format(basic.use_mileage)} M
+		</td>
+		<th>환불 마일리지</th>
+		<td>
+			<input type="text" name="refund[mileage]" value="0" class="w100 text-danger validate[max[{refund.mileage}], min[0]]" data-filter="price" data-errormessage-range-overflow="최대 {=number_format(refund.mileage)} M 까지 환불가능합니다."> M <span>(환불가능 마일리지: <b>{=number_format(refund.mileage)}</b> P)</span>
+		</td>
+	</tr>
+	<tr>
+		<th>사용 포인트</th>
+		<td>
+			{=number_format(basic.use_point)} P
+		</td>
+		<th>환불 포인트</th>
+		<td>
+			<input type="text" name="refund[point]" value="0" class="w100 text-danger validate[max[{refund.point}], min[0]]" data-filter="price" data-errormessage-range-overflow="최대 {=number_format(refund.point)} P 까지 환불가능합니다."> P <span>(환불가능 포인트: <b>{=number_format(refund.point)}</b> P)</span>
+		</td>
+	</tr>
+
+	{@ coupon.product}
+	<tr>
+		{? .index_==0}
+		<th rowspan="{=count(coupon.product)}">상품쿠폰</th>
+		{/}
+		<td colspan="3">
+			<span style="width:300px;display:inline-block">{.coupon_name}</span>
+			<label><input type="radio" name="coupon[{.key_}]" value="{.ci_no}" class="hj" checked><span class="lbl">복원</span></label>
+			<label><input type="radio" name="coupon[{.key_}]" value="" class="hj"><span class="lbl">복원안함</span></label>
+		</td>
+	</tr>
+	{/}
+
+	{? coupon.basket}
+	<tr>
+		<th rowspan="2">장바구니쿠폰</th>
+		<td colspan="3">
+			<span style="width:300px;display:inline-block">{coupon.basket.info.coupon_name}</span>
+			<label><input type="radio" name="coupon[basket]" value="{coupon.basket.ci_no}" class="hj" checked><span class="lbl">복원</span></label>
+			<label><input type="radio" name="coupon[basket]" value="" class="hj"><span class="lbl">복원안함</span></label>
+		</td>
+	</tr>
+	<tr>
+		<td>
+			{=number_format(coupon.basket.discount)}원 할인
+		</td>
+		<th>할인금액 조정</th>
+		<td>
+			<input type="text" name="discount[basket]" id="discount_basket" disabled value="{=number_format(coupon.basket.discount)}" data-filter="price"> 원
+		</td>
+	</tr>
+	{/}
+</table>
+<!--{* 취소금액:E *}-->
+
+
+
+<div class="text-center m-t-20 m-b-50">
+	<button type="submit" class="btn-basic dark">취소완료</button>
+</div>
+</form>
+
+<script type="text/javascript">
+var CancelForm = {
+	init: function() {
+		var me = this;
+		var option = $.extend({}, validation_option, {
+			validateNonVisibleFields: false,
+			onValidationComplete: function (form, status) {
+				if (status) me.save(form);
+			}
+		});
+		$("#FrmCancel").validationEngine('attach',option);
+
+		$('#cancel_resaon').on('change', function() {
+			if(this.value == 'etc') $('#cancel_reason_etc').removeClass('hide');
+			else $('#cancel_reason_etc').addClass('hide');
+		});
+
+		//숫자체크
+		$('[data-filter="numeric"], [data-filter="price"]').on('keydown.row input.row', function (evt) {
+			var v = $(this).val();
+			v = v.replace(/[^0-9]/g, '');
+			v = v.replace(/^0+(?!$)/, '');
+
+			var filter = $(this).data('filter');
+			if (filter == 'price') v = UI.numberFormat(v);
+			$(this).val(v);
+		});
+
+		//장바구니쿠폰
+		$('[name="coupon[basket]"]').on('click', function() {
+			var target = $('#discount_basket');
+			if(this.value) target.attr('disabled',true);
+			else target.removeAttr('disabled');
+		});
+
+		//무료배송쿠폰
+		$('[name="coupon[delivery]"]').on('click', function() {
+			var discount = $(this).data('discount');
+			var pay_delivery = $('#pay_delivery').val();
+			var p = parseInt(pay_delivery)-parseInt(discount);
+			$('#pay_delivery_discount').val(parseInt(discount));
+			$('#pay_delivery_txt').text(UI.numberFormat(p)+' 원');
+		})
+
+		
+	},
+	save: function() {
+		UI.confirm('취소처리하시겠습니까?', function() {
+			var formdata = $('#FrmCancel').serialize();
+			$.ajax({
+				url:'/admin/proc/order.proc.php',
+				data:formdata,
+				dataType:'json',
+				type:'POST',
+				success: function(r) {
+					if(r.success) {
+						UI.alert(r.msg, function() {
+							opener.location.reload();
+							window.close();
+							
+						})
+					}
+					else {
+						UI.error(r.msg);
+					}
+				}
+			})
+		})
+	}
+}
+
+$(function() {
+	CancelForm.init();
+})
+</script>
+

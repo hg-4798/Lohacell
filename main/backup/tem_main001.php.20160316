@@ -1,0 +1,1009 @@
+<?php
+/********************************************************************* 
+// 파 일 명		: tem_main001.php 
+// 설     명	: 메인 템플릿
+// 상세설명	    : 메인 템플릿
+// 작 성 자		: hspark
+// 수 정 자		: 2015.11.02 - 김재수
+// 
+// 
+*********************************************************************/ 
+?>
+<?php
+
+/*if(basename($_SERVER['SCRIPT_NAME'])===basename(__FILE__)) {
+	header("HTTP/1.0 404 Not Found");
+	exit;
+}*/
+
+// ==========================================================================
+// 플로팅배너DO
+// ==========================================================================
+
+/*
+
+$main_floating_banner_html = '';
+if ( isset($_COOKIE['main_floating_banner']) && $_COOKIE['main_floating_banner'] == "1" ) {
+    // 쿠키가 존재하면 플로팅 배너를 노출하지 않는다.
+} else {
+    $sql  = "SELECT * FROM tblmainbannerimg ";
+    $sql .= "WHERE banner_no = 107 and banner_hidden='1' ";
+    $sql .= "ORDER BY banner_sort LIMIT 1 ";
+    $result = pmysql_query($sql);
+    $row = pmysql_fetch_object(pmysql_query($sql));
+
+    if ( $row ) {
+        $main_floating_banner_html = '
+            <div class="popbanner" data-ui="PopUp">
+              <div><img src="/data/shopimages/mainbanner/' . $row->banner_img . '" alt="팝업"></div>
+              <div class="footer">
+              <input type="checkbox" value="" id="popbanner_close"><label for="close">오늘 하루 열지 않음</label>
+              <button type="button" class="close" data-function="popupclose"><img src="../static/img/btn/close.png" alt="닫기" onClick="javascript:close_popup();"></button>
+              </div>
+              </div>
+            </div>';
+    }
+}
+
+*/
+
+$today = date("Ymd");
+
+$sql  = "SELECT * FROM tbleventpopup ";
+$sql .= "WHERE frame_type = '3' AND is_mobile = 'N' AND ( '{$today}' >= start_date AND '{$today}' <= end_date ) ";
+$sql .= "ORDER BY num desc ";
+$sql .= "LIMIT 1 ";
+
+$result = pmysql_query($sql,get_db_conn());
+$row=pmysql_fetch_object($result);
+pmysql_free_result($result);
+
+$main_floating_banner_html = '';
+if ( $row ) {
+    $cookiename="eventpopup".$row->num;
+
+    if ( empty($_COOKIE[$cookiename]) ) {
+        $cookieTime = $row->cookietime;
+        $closeMent = "";
+        if($cookieTime == '1'){
+            $closeMent = "하루동안 열지 않기";
+        }else if($cookieTime == '2'){
+            $closeMent = "다시 열지 않기";
+        }else{
+            $closeMent = "브라우저 종료까지 열지 않기";
+        }
+
+        $main_floating_banner_html = '
+            <div class="popbanner" data-ui="PopUp" style="left:' . $row->x_to . 'px; top:' . $row->y_to . 'px;">
+              <div>' . $row->content . '</div>
+              <div class="footer">
+              <input type="checkbox" id="not_open_day' . $row->num . '" idx = "' . $row->num . '" time = "' . $row->cookietime . '"/>
+              <label for="close">' . $closeMent . '</label>
+              <button type="button" class="close checkbox-def" data-function="popupclose"></button><img src="../static/img/btn/close.png" alt="닫기" id="close_popup' . $row->num . '" idx = "' . $row->num . '"  time = "' . $row->cookietime . '" onClick="javascript:close_popup(this);">
+              </div>
+              </div>
+            </div>';
+    }
+}
+
+// ==========================================================================
+// 1단 - 상단배너
+// ==========================================================================
+$sql  = "SELECT * FROM tblmainbannerimg ";
+$sql .= "WHERE banner_no = 77 and banner_hidden='1' ORDER BY banner_sort ";
+$result = pmysql_query($sql);
+
+$top_banner_html = '';
+while ($row = pmysql_fetch_array($result)) {
+    $top_banner_html .= '<div class="slide">';
+
+    if ( !empty($row['banner_link']) ) {
+        $top_banner_html .= '<a href="' . $row['banner_link'] . '" target="' . $row['banner_target'] . '">';
+    }
+    $top_banner_html .= '<img src="/data/shopimages/mainbanner/' . $row['banner_img'] . '" alt="">';
+    if ( !empty($row['banner_link']) ) {
+        $top_banner_html .= '</a>';
+    }
+
+    $top_banner_html .= '</div>';
+}
+
+// ==========================================================================
+// 2단 - 카테고리별 상품 리스트
+// ==========================================================================
+
+$sql  = "SELECT no, banner_up_title, banner_sort ";
+$sql .= "FROM tblmainbannerimg ";
+$sql .= "WHERE banner_no = 78 AND banner_hidden = 1 AND banner_up_title <> '' ";
+$sql .= "ORDER BY banner_sort asc, no asc ";
+$result = pmysql_query($sql);
+
+$arrUpTitle = array();
+while ($row = pmysql_fetch_object($result)) {
+    $arrUpTitle[$row->no] = $row->banner_up_title;
+}
+pmysql_free_result($result);
+
+$bFirst = true;
+$categoryHtml = "";
+$arrBannerNo = array(78, 79);
+$arrCagtegorySubTabHtml = array();
+
+foreach ($arrUpTitle as $key => $banner_up_title) {
+
+    $onClass = "";
+    $displayOn = "none";
+    if ( $bFirst ) {
+        $bFirst = false;
+        $onClass = "on";
+        $displayOn = "block";
+    }
+
+    $categoryHtml .= "<li class='{$onClass}'>" . $banner_up_title . "</li>";
+
+    $categorySubTab = '<div class="tab-sub" style="display:' . $displayOn . '">';
+    $categorySubTab .= '<div class="main-dual-rolling">';
+
+	for ( $j = 0; $j <= 1; $j++ ) {
+        if ($j==0) {
+            $categorySubTab .= '<div class="listbox on" data-element="content">';
+        } else {
+            $categorySubTab .= '<div class="listbox" data-element="content">';
+        }
+
+		foreach ($arrBannerNo as $banner_no) {
+			$sql  = "SELECT tblmainbannerimg_product.*, tblmainbannerimg.banner_title ";
+			$sql .= "FROM tblmainbannerimg_product left join tblmainbannerimg on tblmainbannerimg_product.tblmainbannerimg_no = tblmainbannerimg.no ";
+            $sql .= "left join tblproduct on tblmainbannerimg_product.productcode = tblproduct.productcode ";
+			$sql .= "WHERE tblmainbannerimg_no = ";
+			$sql .= "( SELECT no FROM tblmainbannerimg WHERE banner_no = {$banner_no} AND banner_hidden = 1 AND banner_up_title = '{$banner_up_title}' ";
+			$sql .= "ORDER BY banner_number desc limit 1 ) ";
+            $sql .= "AND tblproduct.display = 'Y' ";
+			$sql .= "ORDER BY no asc ";
+            $sql .= "LIMIT 5 OFFSET " . $j * 5;
+			
+			$sub_result = pmysql_query($sql);
+			$arrProdCode = array();
+			$arrProdCodeForWhere = array();
+			$bannerTitle = "";
+			while ($sub_row = pmysql_fetch_array($sub_result)) {
+				array_push($arrProdCode, $sub_row['productcode']);
+				array_push($arrProdCodeForWhere, "'" . $sub_row['productcode'] . "'");
+				$bannerTitle = $sub_row['banner_title'];
+			}
+
+            if ( count($arrProdCodeForWhere) >= 1 ) {
+                $productcodes = (implode(",", $arrProdCodeForWhere));
+                
+                $prod_sql  = "SELECT productcode, productname, sellprice, consumerprice, brand, maximage, minimage, tinyimage, mdcomment, review_cnt, icon ";
+                $prod_sql .= "FROM tblproduct WHERE display = 'Y' and productcode in ( {$productcodes} ) ";
+                if( strlen( $productcodes ) > 0 ){
+                    $arrProd = productlist_print($prod_sql, "W_001", $arrProdCode);
+                }
+                $categorySubTab .= '<div class="list">
+                          <h3>' . $bannerTitle . '</h3>';
+                $categorySubTab .= $arrProd[0];
+                $categorySubTab .= '</div>';
+            } else {
+                ; # do nothing
+            }   
+		}
+
+		$categorySubTab .= '</div>';    // listbox
+	}
+	$categorySubTab .= '</div>';    // main-dual-rolling
+	$categorySubTab .= '</div>';    // tab-sub
+
+    array_push($arrCagtegorySubTabHtml, $categorySubTab);
+}
+
+// ==========================================================================
+// 3단 - 중간 배너별 상품
+// ==========================================================================
+$banner_no = 80;
+
+$sql  = "SELECT * FROM tblmainbannerimg ";
+$sql .= "WHERE banner_no = {$banner_no} and banner_hidden='1' ORDER BY banner_number desc, banner_sort asc ";
+
+$result = pmysql_query($sql);
+
+$middle_banner_html = '';
+while ( $row  = pmysql_fetch_array($result) ) {
+    $middle_banner_html .= '<div class="list">';
+    $middle_banner_html .= '<div class="visual_title">';
+
+    if ( !empty($row['banner_link']) ) {
+        $middle_banner_html .= '<a href="' . $row['banner_link'] . '" target="' . $row['banner_target'] . '">';
+    }
+    $middle_banner_html .= '<img src="/data/shopimages/mainbanner/' . $row['banner_img'] . '" alt="NEW BRAND">';
+    if ( !empty($row['banner_link']) ) {
+        $middle_banner_html .= '</a>';
+    }
+
+    $middle_banner_html .= '</div>';
+
+    $sql  = "SELECT tblmainbannerimg_product.*, tblmainbannerimg.banner_title ";
+    $sql .= "FROM tblmainbannerimg_product left join tblmainbannerimg on tblmainbannerimg_product.tblmainbannerimg_no = tblmainbannerimg.no ";
+    $sql .= "WHERE tblmainbannerimg_no = " . $row['no'] . " ";
+    $sql .= "ORDER BY no asc ";
+
+    $sub_result = pmysql_query($sql);
+    $arrProdCode = array();
+    $arrProdCodeForWhere = array();
+    while ($sub_row = pmysql_fetch_array($sub_result)) {
+        array_push($arrProdCode, $sub_row['productcode']);
+        array_push($arrProdCodeForWhere, "'" . $sub_row['productcode'] . "'");
+    }
+    $productcodes = (implode(",", $arrProdCodeForWhere));
+
+    $prod_sql  = "SELECT productcode, productname, sellprice, consumerprice, brand, maximage, minimage, tinyimage, mdcomment, review_cnt, icon ";
+    $prod_sql .= "FROM tblproduct WHERE display = 'Y' and productcode in ( {$productcodes} ) ";
+    $arrProd = productlist_print($prod_sql, "W_002", $arrProdCode);
+
+    $middle_banner_html .= $arrProd[0];
+    $middle_banner_html .= '</div>';
+}
+
+// ==========================================================================
+// 3단 - 중간 롤링 배너
+// =========================================================================
+
+$arrRollingBannerHtml = array();
+$arrBannerNo = array(85, 99);
+
+foreach ($arrBannerNo as $banner_no) {
+
+    $sql  = "SELECT * FROM tblmainbannerimg ";
+    $sql .= "WHERE banner_no = {$banner_no} and banner_hidden='1' ORDER BY banner_number desc, banner_sort asc";
+    $result = pmysql_query($sql);
+
+    $rolling_banner_html = '';
+    while ($row = pmysql_fetch_array($result)) {
+        $rolling_banner_html .= '<li>';
+
+        if ( !empty($row['banner_link']) ) {
+            $rolling_banner_html .= '<a href="' . $row['banner_link'] . '" target="' . $row['banner_target'] . '">';
+        }
+
+        $rolling_banner_html .= '<img src="/data/shopimages/mainbanner/' . $row['banner_img'] . '" alt="">';
+
+        if ( !empty($row['banner_link']) ) {
+            $rolling_banner_html .= '</a>';
+        }
+
+        $rolling_banner_html .= '</li>';
+    }
+
+    array_push($arrRollingBannerHtml, $rolling_banner_html);
+}
+
+// ==========================================================================
+// 4단 - 브랜드별 상품 리스트
+// =========================================================================
+$banner_no = 87;
+
+/*
+$sql  = "SELECT distinct tblResult.banner_up_title ";
+$sql .= "FROM ";
+$sql .= "( ";
+$sql .= "   SELECT no, banner_up_title, banner_sort ";
+$sql .= "   FROM tblmainbannerimg ";
+$sql .= "   WHERE banner_no = {$banner_no} AND banner_hidden = 1 and banner_up_title <> '' ";
+$sql .= "   ORDER BY banner_sort asc, no asc ";
+$sql .= ") AS tblResult ";
+*/
+
+$sql  = "SELECT no, banner_up_title, banner_sort ";
+$sql .= "FROM tblmainbannerimg ";
+$sql .= "WHERE banner_no = {$banner_no} AND banner_hidden = 1 and banner_up_title <> '' ";
+$sql .= "ORDER BY banner_sort asc, no asc ";
+$result = pmysql_query($sql);
+
+$arrDupChk = array();
+$arrUpTitle = array();
+while ($row = pmysql_fetch_object($result)) {
+    if ( !isset($arrDupChk[$row->banner_up_title]) ) {
+        array_push($arrUpTitle, $row->banner_up_title);
+        $arrDupChk[$row->banner_up_title] = "";
+    }
+}
+pmysql_free_result($result);
+
+$bFirst = true;
+$new_brand_categoryHtml = "";
+$arrBrandSubTabHtml = array();
+foreach ($arrUpTitle as $key => $banner_up_title) {
+    $onClass = "";
+    $displayOn = "none";
+    if ( $bFirst ) {
+        $bFirst = false;
+        $onClass = "on";
+        $displayOn = "block";
+    }
+
+    $new_brand_categoryHtml .= "<li class='{$onClass}'>" . $banner_up_title . "</li>";
+
+    $banner_sql  = "SELECT * ";
+    $banner_sql .= "FROM tblmainbannerimg ";
+    $banner_sql .= "WHERE banner_no = {$banner_no} AND banner_hidden = 1 AND banner_up_title = '{$banner_up_title}' ";
+    $banner_sql .= "ORDER BY banner_sort asc, banner_date desc ";
+
+    $banner_result = pmysql_query($banner_sql);
+
+    $idx = 0;
+    $brandSubTab = '';
+    while ( $banner_row = pmysql_fetch_array($banner_result) ) {
+        $bannerLink         = $banner_row['banner_link'];
+        $bannerLinkTarget   = $banner_row['banner_target'];
+        $bannerTitle        = $banner_row['banner_title'];
+        $bannerImg          = $banner_row['banner_img'];
+
+        $brandSubTab .= '<div class="listbox on" style="float:none; width:auto !important; display:block !important">';
+
+        $sql  = "SELECT tblmainbannerimg_product.*, tblmainbannerimg.banner_title, ";
+        $sql .= "tblmainbannerimg.banner_img, tblmainbannerimg.banner_link, tblmainbannerimg.banner_target ";
+        $sql .= "FROM tblmainbannerimg_product left join tblmainbannerimg ";
+        $sql .= "on tblmainbannerimg_product.tblmainbannerimg_no = tblmainbannerimg.no ";
+        $sql .= "WHERE tblmainbannerimg_no = " . $banner_row['no'] . " ";
+        $sql .= "ORDER BY no asc ";
+
+        $sub_result = pmysql_query($sql);
+        $arrProdCode = array();
+        $arrProdCodeForWhere = array();
+
+        while ($sub_row = pmysql_fetch_array($sub_result)) {
+            array_push($arrProdCode, $sub_row['productcode']);
+            array_push($arrProdCodeForWhere, "'" . $sub_row['productcode'] . "'");
+        }
+        $productcodes = (implode(",", $arrProdCodeForWhere));
+
+        $prod_sql  = "SELECT productcode, productname, sellprice, consumerprice, brand, maximage, minimage, tinyimage, mdcomment, review_cnt, icon ";
+        $prod_sql .= "FROM tblproduct WHERE display = 'Y' and productcode in ( {$productcodes} ) ";
+        $arrProd = productlist_print($prod_sql, "W_003", $arrProdCode);
+
+        $brandSubTab .= '<h3>' . $bannerTitle . '</h3>';
+        $brandSubTab .= '<div class="list">';
+        $brandSubTab .= '   <ul class="goods_list">';
+
+        $brandSubTab .= '   <li class="title">';
+        if ( !empty($bannerLink) ) {
+           $brandSubTab .= '   <a href="' . $bannerLink . '" target="' . $bannerLinkTarget . '">';
+        }
+        $brandSubTab .= '<img src="/data/shopimages/mainbanner/' . $bannerImg . '" alt="dohnhahn">';
+        if ( !empty($bannerLink) ) {
+            $brandSubTab .= '</a>';
+        }
+        $brandSubTab .= '   </li>';
+
+        // 요기를 수정해 주세요. ===> 나중에 수정해야 함.
+/*
+        $brandSubTab .= '   
+        
+			<div class="brand">
+				<p class="brand_img"><img src="../static/img/test/@main_brand_sum.gif" width="222" height="215" alt=""/></p>
+				<div>
+					<dl>
+						<dt>DOHNHAHN</dt>
+						<dd>2010년 서울컬렉션에서 
+데뷔한 디자이너 한동우의 브랜드입니다.<br/><br/>
+
+믹스듀얼리티를 표방합니다.<br/>
+미니멀하지만 구조적이며 <br/>
+클래식하지만 캐쥬얼합니다.<br/>
+자켓과 점퍼의 조합, 밀리터리와 클래식의 조합,
+서로 다른패브릭의 과하지 않은 믹스 앤 매치로
+활동적이고 편안한 실루엣을 추구 합니다.</dd>
+					</dl>
+				</div>
+				<div class="btn-place">
+					<button class="btn-dib-function" type="button">
+					<span>BRAND VIEW</span>
+					</button>
+				</div>
+			</div>
+        ';
+*/
+
+
+        $brandSubTab .= $arrProd[0];
+        $brandSubTab .= '   </li>';
+        $brandSubTab .= '</div>';
+
+        $brandSubTab .= '</div>';
+
+        $idx++;
+    }
+
+    $result_html  = '<div class="tab-sub2" style="display:' . $displayOn . '">';
+
+    if ( $idx >= 2 ) {
+        $result_html .= '   <div class="main-goods7-wrap">';
+    } else {
+        $result_html .= '   <div>';
+    }
+
+    $result_html .= $brandSubTab;
+    $result_html .= '   </div>';
+    $result_html .= '</div>';
+
+    array_push($arrBrandSubTabHtml, $result_html);
+}
+
+// ==========================================================================
+// LOOKBOOK
+// =========================================================================
+$banner_no = 88;
+
+$sql  = "SELECT * FROM tblmainbannerimg ";
+$sql .= "WHERE banner_no = {$banner_no} and banner_hidden='1' ORDER BY banner_sort asc limit 2 ";
+$result = pmysql_query($sql);
+
+$idx = 1;
+$lookbook_banner_title = "";
+$lookbook_html = '';
+while ($row = pmysql_fetch_array($result)) {
+    if ( $idx == 1 ) {
+        $lookbook_banner_title = $row['banner_title'];
+    }
+
+    $sql  = "SELECT tblmainbannerimg_product.*, tblmainbannerimg.banner_title ";
+    $sql .= "FROM tblmainbannerimg_product left join tblmainbannerimg on tblmainbannerimg_product.tblmainbannerimg_no = tblmainbannerimg.no ";
+    $sql .= "WHERE tblmainbannerimg_no = " . $row['no'] . " ";
+    $sql .= "ORDER BY no asc ";
+
+    $sub_result = pmysql_query($sql);
+    $arrProdCode = array();
+    $arrProdCodeForWhere = array();
+    $bannerTitle = "";
+    while ($sub_row = pmysql_fetch_array($sub_result)) {
+        array_push($arrProdCode, $sub_row['productcode']);
+        array_push($arrProdCodeForWhere, "'" . $sub_row['productcode'] . "'");
+        $bannerTitle = $sub_row['banner_title'];
+    }
+    $productcodes = (implode(",", $arrProdCodeForWhere));
+
+    $prod_sql  = "SELECT productcode, productname, sellprice, consumerprice, brand, maximage, minimage, tinyimage, mdcomment, review_cnt, icon ";
+    $prod_sql .= "FROM tblproduct WHERE display = 'Y' and productcode in ( {$productcodes} ) ";
+    $arrProd = productlist_print($prod_sql, "W_004", $arrProdCode);
+
+    $lookbook_html .= '
+            <div class="lookbook' . $idx . '">
+            <div class="lookbook-bg-banner"><img src="/data/shopimages/mainbanner/' . $row['banner_img'] . '" alt=""></div>
+            <div class="look">
+            <h4>' . $row['banner_name'] . '<br>
+               <span>' . $row['banner_subname'] . '</span></h4>';
+
+    $lookbook_html .= $arrProd[0];
+
+    $lookbook_html .= '</div>
+            </div>';
+
+    $idx++;
+}
+
+// ==========================================================================
+// CELEB STAGE
+// =========================================================================
+$banner_no = 89;
+
+$sql  = "SELECT * FROM tblmainbannerimg ";
+$sql .= "WHERE banner_no = {$banner_no} and banner_hidden='1' ORDER BY banner_sort asc ";
+$result = pmysql_query($sql);
+
+$celeb_html = '';
+$celeb_banner_title = "";
+while ($row = pmysql_fetch_array($result)) {
+    $celeb_banner_title = $row['banner_title'];
+
+    $celeb_html .= '<li>';
+
+    if ( !empty($row['banner_link']) ) {
+        $celeb_html .= '<a href="' . $row['banner_link'] . '" target="' . $row['banner_target'] . '">';
+    }
+
+    $celeb_html .= '<span class="img"><img src="/data/shopimages/mainbanner/' . $row['banner_img'] . '" alt=""></span>
+      <div class="info_con">
+      <span class="title">' . $row['banner_name'] . '</span>
+      <span class="cate">' . $row['banner_subname'] . '</span>
+      <span class="nm">' . $row['banner_subname2'] . '</span>
+      </div>';
+
+    if ( !empty($row['banner_link']) ) {
+        $celeb_html .= '</a>';
+    }
+
+    $celeb_html .= '</li>';
+}
+
+// ==========================================================================
+// INSTAGRAM STAGE
+// =========================================================================
+$banner_no = 109;
+
+$sql  = "SELECT * FROM tblmainbannerimg ";
+$sql .= "WHERE banner_no = {$banner_no} and banner_hidden='1' ORDER BY banner_sort asc ";
+$sql .= "LIMIT 1 ";
+$result = pmysql_query($sql);
+$row = pmysql_fetch_object($result);
+pmysql_free_result($result);
+
+$title = "INSTAGRM C.A.S.H STORE";
+if ( $row->banner_title != "" ) {
+    $title = $row->banner_title;
+}
+
+$more_link = "/front/sns.php";
+if ( $row->banner_t_link != "" ) {
+    $more_link = $row->banner_t_link;
+}
+
+$instagram_html = '
+    <h3>' . $title . '<br>
+    <!--span>instagrm id : cashstores</span--></h3>
+    <a type="button" class="more" href="javascript:location.href=\'' . $more_link . '\';">SEE MORE</a>
+';
+
+
+
+$sql  = "SELECT im.*, iml.productcode FROM tblsnsinstamedialink iml RIGHT JOIN  tblsnsinstamedia im ON iml.media_id=im.media_id ";
+$sql .= "ORDER BY im.media_id DESC ";
+$sql .= "LIMIT 10 ";
+$result = pmysql_query($sql);
+
+while( $row = pmysql_fetch_array( $result ) ){
+	// 이미지
+	$s_img = $row['image_row'];
+	$instagram_list_html .= "<li><span class=\"img\"><img src=\"".$s_img."\" alt=\"\"></span>";
+	$instagram_list_html .= "	<p>".nl2br($row['text'])."</p>";
+	$instagram_list_html .= "	<div class=\"btn\">";
+	$pro_link	= "javascript:;";
+	if ($row['productcode'])  $pro_link	= "javascript:location.href='/front/productdetail.php?productcode=".$row['productcode']."';";
+	$instagram_list_html .= "	<button class=\"btn-dib-function\" type=\"button\" onClick=\"{$pro_link}\"><span>PRODUCT</span></button>";
+	$instagram_list_html .= "	<button class=\"btn-dib-function\" type=\"button\" onClick=\"javascript:window.open('".$row['link']."','instagram','');\"><span>INSTAGRAM</span></button>";
+	$instagram_list_html .= "	</div>";
+	$instagram_list_html .= "</li>";
+}
+pmysql_free_result($result);
+
+?>
+<?include ($Dir.MainDir.$_data->menu_type.".php");?>
+
+<div id="contents" class="mainPage">
+  <div class="visual_box section_scroll" id="one">
+		<div class="visual_wrap">
+            <?=$top_banner_html?>
+		</div>
+		<!-- <div class="scroll-move-wrap">
+			<ul class="scroll-move section1">
+				<li><button class="up" type="button"></button></li>
+				<li><button class="down" type="button"></button></li>
+				<li><button class="top" type="button"></button></li>
+			</ul>
+		</div> -->
+	</div>
+
+
+<!-- (D) 20160113 - 스크립트 수정 -->
+<script>
+	//$(function() { 요소 아래 넣을 때는 레디 함수 제거
+		
+		$(".visual_wrap").each(function() {
+
+			var $ui = $(this);
+			var $wrapper;
+			var $pager;
+			var $pagerLink;
+			var $slide = $ui.find(".slide");
+			var pageTotal =$slide.length;
+			var pageIndex = 0;
+			var maxSlides = 3;
+			var slideWidth;
+			var slideHeight = 470; // 화면 높이
+			var isChange = false;
+			var timer;
+			var timerDuration = 5; // 자동전환 시간
+			
+			$ui.wrap('<div class="bx-wrapper"><div class="bx-viewport" aria-live="polite" /></div>');
+			$wrapper = $ui.closest(".bx-wrapper");
+			$wrapper.height(slideHeight)
+			.append('<div class="bx-controls bx-has-controls-direction bx-has-pager">'
+			+ '<div class="bx-controls-direction"><a class="bx-prev" href="">Prev</a><a class="bx-next" href="">Next</a></div>'
+			+ '<div class="bx-pager bx-default-pager"></div>'
+			+ '</div>'
+			);
+
+			slideWidth = $ui.width();
+			
+			// 화살표
+			$wrapper.find(".bx-controls-direction a").on("click", function(_e) {
+
+				_e.preventDefault();
+				if (!isChange) {
+					if ($(this).hasClass("bx-prev")) pageIndex--;
+					else pageIndex++;
+					slide_change();
+				}
+
+			});
+			if (pageTotal <= 1) $wrapper.find(".bx-controls-direction a").hide();
+			
+			// 페이징
+			$pager = $wrapper.find(".bx-pager");
+			for (var i = 0; i < pageTotal; i++) {
+				var $pagerItem = $('<div class="bx-pager-item"><a class="bx-pager-link" href="#" data-slide-index="' + i + '">' + (i + 1) + '</a></div>').appendTo($pager);
+				if (i == pageIndex) $pagerItem.children().addClass("active");
+			}
+			$pagerLink = $pager.find(".bx-pager-link")
+			.on("click", function(_e) {
+
+				_e.preventDefault();
+				var temp = $pagerLink.index(this);
+				if (!isChange && pageIndex != temp) {
+					pageIndex = temp;
+					slide_change();
+				}
+
+			});
+			
+			// 슬라이드
+			for (var i = 0; i < Math.ceil(maxSlides / 2); i++) {
+				$slide.eq(- i - 1).clone().addClass("bx-clone").prependTo($ui);
+				$slide.eq(i).clone().addClass("bx-clone").appendTo($ui);
+			}
+			$slide = $ui.find(".slide").attr("aria-hidden", "true").css({ float:"left" });
+			$slide.not(".bx-clone").eq(pageIndex).attr("aria-hidden", "false").css({ height:slideHeight, marginTop:0 });//.addClass("on");
+			$ui.css({ position:"relative", width:slideWidth * $slide.length, marginLeft:-slideWidth * Math.ceil(maxSlides / 2) });
+			if (pageTotal <= 1) $ui.css({ marginLeft:-slideWidth });
+			
+			function slide_change() {
+				
+				isChange = true;
+				var offObj = { height:420, marginTop:25, ease:Cubic.easeInOut }; // 모션 기본 위치
+				var onObj = { height:slideHeight, marginTop:0, ease:Cubic.easeInOut }; // 모션 선택 위치
+
+				if (pageIndex == pageTotal) {
+					pageIndex = 0;
+					$ui.css({ left:slideWidth });
+					TweenMax.set($slide, offObj);
+					TweenMax.set($slide.not(".bx-clone").eq(pageIndex).prev(), onObj);
+				}
+				if (pageIndex < 0) {
+					pageIndex = pageTotal - 1;
+					$ui.css({ left:-slideWidth * pageTotal });
+					TweenMax.set($slide, offObj);
+					TweenMax.set($slide.not(".bx-clone").eq(pageIndex).next(), onObj);
+				}
+
+				var time = 0.5;
+				TweenMax.to($slide, time, offObj);
+				TweenMax.to($slide.not(".bx-clone").eq(pageIndex), time, onObj);
+				TweenMax.to($ui, time, { left:-slideWidth * pageIndex, ease:Cubic.easeInOut, onComplete:slide_change_complete });
+
+				$pagerLink.removeClass("active").eq(pageIndex).addClass("active");
+
+			}
+
+			function slide_change_complete() {
+
+				isChange = false;
+
+			}
+
+			// 타이머
+			$wrapper.on("mouseenter mouseleave focusin focusout", function(_e) {
+
+				timer_stop();
+				switch(_e.type) {
+					case "mouseleave":
+					case "focusout":
+						timer_start();
+					break;
+				}
+
+			});
+			timer_start();
+
+			if (pageTotal <= 1) {
+				$wrapper.off("mouseenter mouseleave focusin focusout");
+				timer_stop();
+			}
+
+			function timer_start() {
+				
+				timer = setInterval(function() {
+
+					pageIndex++;
+					slide_change();
+
+				}, timerDuration * 1000);
+
+			}
+
+			function timer_stop() {
+
+				clearInterval(timer);
+
+			}
+			
+		});
+		
+	//});
+</script>
+  <div class="containerBody pt-0 section_scroll main_pd moveDirectLayer" data-ui="TabMenu" id="two">
+	<div class="scroll-move-wrap" style = 'z-index:10000000;'>
+		<ul class="scroll-move section2">
+			<li><button class="up" type="button"></button></li>
+			<li><button class="down" type="button"></button></li>
+			<li><button class="top" type="button"></button></li>
+		</ul>
+	</div>
+    <div class="category-tab-wrap">
+        <div class="category-underline"></div>
+        <ul class="category-tab moveLayerLine">
+            <?=$categoryHtml?>
+        </ul>
+    </div>
+
+    <?php 
+        for ($i = 0; $i < count($arrCagtegorySubTabHtml); $i++) {
+            echo $arrCagtegorySubTabHtml[$i];
+        }
+    ?>
+
+    <script>
+    $('.main-dual-rolling').bxSlider({
+        moveSlides: 1,
+        slideMargin: 0,
+        pager:false,
+		touchEnabled:false,
+        infiniteLoop:false
+    });
+
+/*
+$(function() {	
+	
+	$(".picwrap .listwrap").each(function (e) {		
+		var $ui = $(this);
+		var $list = $ui.find(".listbox");
+		var $content = $ui.find("ul");
+        var $prv = $list.find(".toggleslide .prev");
+	    var $nxt = $list.find(".toggleslide .next");	  
+    	var swipes = []
+
+$content.each(function (i, obj) {
+    swipes[i] = $(this).bxSlider({
+        mode: 'horizontal',
+        slideWidth: 231,
+        startSlide:0,
+		minSlides: 5,
+        maxSlides: 5,
+        moveSlides: 5,	
+        slideMargin: 0,
+		infiniteLoop: false,
+        hideControlOnEnd: true,
+        pager: false,
+        controls:false
+    })
+
+    $prv.on('click', function (e) {
+        e.preventDefault()
+        swipes[i].goToPrevSlide()
+    })
+    
+    $nxt.on('click', function (e) {
+        e.preventDefault()
+        swipes[i].goToNextSlide()
+    })
+});
+});
+});  
+*/
+
+
+  </script>
+
+  </div>
+  <!-- //1단 -->
+  <div class="section_container section_scroll moveDirectLayer" id="three">
+	<!-- <div class="scroll-move-wrap">
+		<ul class="scroll-move section3">
+			<li><button class="up" type="button"></button></li>
+			<li><button class="down" type="button"></button></li>
+			<li><button class="top" type="button"></button></li>
+		</ul>
+	</div> -->
+    <div class="new_wrap">
+      <div class="new_box">
+        <?=$middle_banner_html?>
+      </div>
+      <!-- //new --> 
+        <script>
+            $(document).ready(function(){
+                if ( $(".new_box > div").length >= 2 ) {
+                    $('.new_box').bxSlider({
+                        auto: false,
+                        pager: false,
+						touchEnabled:false,
+                        controls:true   
+                    });  
+                }
+            });
+        </script>
+
+      <div class="banner_box">
+        <div class="banner1">
+			<ul class="main-fade-banner">
+                <?=$arrRollingBannerHtml[0]?>
+			</ul>
+        </div>
+        <div class="banner2">
+			<ul class="main-fade-banner">
+                <?=$arrRollingBannerHtml[1]?>
+			</ul>
+		 </div>
+		</div>
+
+
+    </div>
+
+  </div>
+  <!-- //2단 -->
+  <div class="section_scroll best-section moveDirectLayer" id="four">
+	<!-- <div class="scroll-move-wrap">
+		<ul class="scroll-move section4">
+			<li><button class="up" type="button"></button></li>
+			<li><button class="down" type="button"></button></li>
+			<li><button class="top" type="button"></button></li>
+		</ul>
+	</div> -->
+    <div class="containerBody pt-0 height-auto">
+	<div class="category-tab-wrap2">
+        <div class="category-underline2"></div>
+        <ul class="category-tab">
+            <?=$new_brand_categoryHtml?>
+        </ul>
+    </div></div>
+
+  <div class="tabwrap bestwrap "  data-ui="TabMenu">
+    <?php 
+        for ($i = 0; $i < count($arrBrandSubTabHtml); $i++) {
+            echo $arrBrandSubTabHtml[$i];
+        }
+    ?>
+  
+   <script>
+$(function() {	
+	$(".bestwrap .listwrap").each(function (e) {		
+		var $ui = $(this);
+		var $list = $ui.find(".list");
+		var $content = $ui.find(".list");
+        //var $prv = $list.find(".toggleslide .prev");
+	    //var $nxt = $list.find(".toggleslide .next");	  
+    	var swipes = []
+
+$content.each(function (i, obj) {
+    swipes[i] = $(this).bxSlider({
+        mode: 'horizontal',
+        startSlide:0,
+		minSlides: 1,
+        maxSlides: 1,
+        moveSlides: 1,	
+		touchEnabled: false,
+        slideMargin: 0,	
+		infiniteLoop: false,
+        hideControlOnEnd: true,	
+        pager: false,
+        touchEnabled:false,
+        controls:true
+    })
+	});
+});
+});  
+</script> 
+  
+<script>
+	$(document).ready(function(){
+		$('.celeb_wrap ul').bxSlider({
+			pager: false,
+			controls:true,
+			slideWidth: 389,
+			minSlides: 3,
+			touchEnabled:false,
+			maxSlides: 3,
+			moveSlides: 3,
+			speed: 1000
+		});  
+	});
+</script> 
+  </div>
+  </div>
+
+  <!-- //3단 -->
+  <div class="section_container  section_scroll moveDirectLayer" id="five">
+	<!-- <div class="scroll-move-wrap">
+		<ul class="scroll-move section5">
+			<li><button class="up" type="button"></button></li>
+			<li><button class="down" type="button"></button></li>
+			<li><button class="top" type="button"></button></li>
+		</ul>
+	</div> -->
+    <div class="look_wrap">
+      <h3><?=$lookbook_banner_title?></h3>
+      <button type="button" class="more" onClick="javascript:location.href='/front/lookbook_list.php';">SEE MORE</button>
+      <div class="lookbook_box">
+        <?=$lookbook_html?>
+      </div>
+    </div>
+  </div>
+
+  <!-- //4단 -->
+  <div class="sns_container  section_scroll moveDirectLayer" id="six"> 
+	<!-- <div class="scroll-move-wrap">
+		<ul class="scroll-move section6">
+			<li><button class="up" type="button"></button></li>
+			<li><button class="down" type="button"></button></li>
+			<li><button class="top" type="button"></button></li>
+		</ul>
+	</div> -->
+  <div class="celeb_wrap">
+  <h3><?=$celeb_banner_title?></h3>
+  <ul>
+    <?=$celeb_html?>
+  </ul>
+  </div>
+
+ <div class="insta_wrap moveDirectLayer" id="seven">
+    <?=$instagram_html?>
+<ul>
+<?=$instagram_list_html?>
+</ul>
+  </div>
+
+  </div>
+  <!-- //5단 --> 
+ <!-- 팝업 -->
+<?=$main_floating_banner_html?>
+
+<script type="text/javascript">
+    function close_popup(obj) {
+        var closeLayerId = $(obj).attr('idx');
+        var closeLayerTimeCheck = $(obj).attr('time');
+        var closeLayerTime = 1;
+
+        if(closeLayerTimeCheck == '1'){
+            closeLayerTime = "1";
+        }else if(closeLayerTimeCheck == '2'){
+            closeLayerTime = "720";
+        }else{
+            closeLayerTime = "-1";
+        }
+
+        if ( $("#not_open_day" + closeLayerId).is(":checked") === true ) {
+            // 쿠키 생성
+            setCookie("eventpopup"+closeLayerId, "1", closeLayerTime);
+        }
+
+        $(".popbanner").hide();
+    }
+</script>
+
+<div id="create_openwin" style="display:none"></div>
+
+<!-- 메인 스크롤 스크립트 -->
+<script type="text/javascript" src = "/static/js/mainScroll.js"></script>
+
+<?php
+    include_once($Dir."lib/eventpopup.php");
+    include_once($Dir."lib/eventlayer.php");
+    include ($Dir."lib/bottom.php");
+?>
+
+<SCRIPT LANGUAGE="JavaScript">
+<!--
+<?=$onload?>
+//-->
+</SCRIPT>
+
+</BODY>
+</HTML>
+ 

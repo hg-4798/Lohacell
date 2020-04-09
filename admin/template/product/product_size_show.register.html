@@ -1,0 +1,123 @@
+<div class="p_20">
+	<form id="FrmSizeShowRegister" onsubmit="return false">
+	<input type="hidden" name="mode" value="size_show">
+	<input type="hidden" name="act" value="register">
+	<input type="hidden" name="show_idx" value="{row.idx}">
+	<table cellspacing="0" cellpadding="0" width="100%" border="0" class="table-view">
+		<colgroup>
+			<col width="140">
+			<col width="">
+		</colgroup>
+		<tbody>
+			<tr>
+				<th><span>노출카테고리</span></th>
+				<td>
+					{? act == 'insert'}
+					<select name="category[]" style="width:170px;" class="validate[required]" data-errormessage-value-missing="카테고리(1차)를 선택하세요." onchange="ProductSizeShowRegister.loadCategory(this)">
+						<option value="">〓〓 1차 카테고리 〓〓</option>
+						{@ category.c2}
+						<option value="{.code_all}">{.code_name}</option>
+						{/}
+					</select>
+
+					<select name="category[]" style="width:170px;" class="validate[required]" data-errormessage-value-missing="카테고리(2차)를 선택하세요."  onchange="ProductSizeShowRegister.loadCategory(this)">
+						<option value="">〓〓 2차 카테고리 〓〓</option>
+					</select>
+
+					<select name="category[]" style="width:170px;">
+						<option value="">〓〓 3차 카테고리 〓〓</option>
+					</select>
+					{:}
+					<b>{=implode(' &gt; ', array_column(row.product_category_nav, 'name'))}</b>
+					{/}
+				</td>
+			</tr>
+			<tr>
+				<th><span>조견표 선택</span></th>
+				<td>
+					<select name="size_idx" class="validate[required] full" data-errormessage-value-missing="조견표를 선택하세요." style="min-width:300px">
+						<option value="">조견표를 선택하세요.</option>
+						{@ cfg.size}
+						<option value="{.idx}" {=checked(row.size_idx, .idx, 'selected')}>{.size_grp} &gt; {.size_name}</option>
+						{:}
+						<option value="">등록된 조견표가 없습니다.</option>
+						{/}
+					</select>
+				</td>
+			</tr>
+		</tbody>
+	</table>
+	<div class="area-button mb_10">
+		{? act == 'update'}
+		<button type="submit" class="btn-point">수정</button>
+		{:}
+		<button type="submit" class="btn-point">등록</button>
+		{/}
+		<button type="button" onclick="UI.modalClose()" class="btn-basic">닫기</button>
+	</div>
+	</form>
+
+</div>
+
+<script>
+var ProductSizeShowRegister = {
+	proc_url:'/admin/proc/product_size.proc.php',
+	init: function() {
+		var me = this;
+		var option = $.extend({},validation_option, {
+			validateNonVisibleFields:true,
+			onValidationComplete: function(form, status){
+				if(status) me.save();
+			}
+		});
+		$("#FrmSizeShowRegister").validationEngine('attach',option);
+	},
+	loadCategory: function(ele) { //자식카테고리 로드
+		var el = $(ele);
+		var parent_code = el.val();
+		var target = el.next('select');
+		el.nextAll('select').find('option[value!=""]').remove();
+
+		$.ajax({
+			url:'/admin/proc/product.proc.php',
+			data:{
+				mode:'category',
+				act:'get_children',
+				parent_code:parent_code
+			},
+			dataType:'json',
+			type:'POST',
+			success: function(r) {
+				if(r.success){
+					$.each(r.data, function(i,e){
+						var opt = $('<option value="'+e.code_all+'">'+e.code_name+'</option>');
+						target.append(opt);
+					})
+				}
+
+			}
+		})
+	},
+	save: function() {
+		var formdata = $('#FrmSizeShowRegister').serialize();
+		$.ajax({
+			url:this.proc_url,
+			data:formdata,
+			dataType:'json',
+			type:'POST',
+			success: function(r) {
+				// alert(r.msg);
+				if(r.success) {
+					UI.modalClose();
+					ProductSizeShow.load(1);
+				}
+				else alert(r.msg);
+			}
+		})
+	}
+}
+
+$(function() {
+	ProductSizeShowRegister.init();
+})
+</script>

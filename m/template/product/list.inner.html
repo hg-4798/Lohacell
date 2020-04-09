@@ -1,0 +1,40 @@
+{@ list.goods}
+<li>
+	<a href="{url.view}?productcode={.productcode}&code={code}" class="goods-item">
+		<figure>
+			<div class="like-local"><button type="button" data-hottcode="{.productcode}" data-section="product"><i class="icon_like {? .is_liked}on{/}"></i> <span class="like_count">{.pr_like_cnt}</span></button></div>
+			<div class="img"><img class="already b-lazy" data-src="{=preview(.minimage)}" src="/admin/images/product/noimg.jpg" ></div>
+			<figcaption>
+				<p class="goods-nm">{.productname}</p>
+				<p class="opt">{.phrase_etc}</p>
+				<p class="price">{=number_format(.endprice)}<span>원</span></p>
+				{? .option_type=='C'}
+				<div class="color-chip">
+					{@.option_valid}
+						{? ..colorchip.color_img}
+						<span>
+							<img src="{..colorchip.color_img}" alt="{..colorchip.color_name}">
+						</span>
+						{/}
+					{/}
+				</div>
+				{/}
+
+					<div class="tag">
+					{@ .icon_arr}
+					<span>
+						<img src="{..icon_pc}" alt="{..icon_name}">
+					</span>
+					{/}
+					</div>
+			</figcaption>
+		</figure>
+	</a>
+</li>
+{:}
+<li class="no-content">
+	등록된 상품이 없습니다.
+</li>
+{/}
+
+

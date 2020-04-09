@@ -1,0 +1,55 @@
+
+<!-- 사용가능 쿠폰 -->
+<div class="active" data-content="content">
+	<div class="list_coupon"><!-- [D] 5개 페이징 -->
+		<ul>
+			{@ list}
+			<li {? .index_ =='0'}class="on"{/}>
+				<div class="coupon_info">
+					<div class="coupon_num">
+						<button type="button" class="status point-color target">[{=format(.issue.sale_price,'price')}{? .issue.sale_type=='K'}원{:}%{/} 할인] <span class="tit">{.issue.coupon_name}</span></button>
+					</div>
+				</div>
+				<div class="target_more ">
+					<p>- 사용일 : {=format(.order.date_insert,'Y-m-d')}</p>
+					<p>- 주문번호 : {.order.order_num}</p>
+				</div>
+			</li>
+			{:}
+			<li>
+				<div class="history_none">내역이 없습니다.</div>
+			</li>
+			{/}
+		</ul>
+	</div><!-- //.list_coupon -->
+</div>
+
+<div class="list-paginate mt-10">
+	{this->xprint('_include/pagination.html')}
+</div><!-- //.list-paginate -->
+
+<script type="text/javascript">
+
+    var CouponInner = {
+        init: function(){
+           $('.mypage_coupon .list_coupon li').each(function(){
+                var cList = $(this);
+                var btnTarget = $(this).find('.target');
+                var targetMore = $(this).find('.target_more');
+                btnTarget.click(function(){
+                    if( targetMore.css('display') == 'none' ){
+                        cList.addClass('on');
+                    }else{
+                        cList.removeClass('on');
+                    }
+                });
+            });
+        },
+    }
+
+    $(function() {
+        CouponInner.init();
+    })
+</script>
+
+

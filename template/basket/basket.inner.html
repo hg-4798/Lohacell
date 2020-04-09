@@ -1,0 +1,198 @@
+
+
+<table class="th-top mt-20">
+	<caption>장바구니 담긴 품목</caption>
+	<colgroup>
+		<col style="width:58px">
+		<col style="width:96px">
+		<col style="width:auto">
+		<col style="width:170px">
+		<col style="width:110px">
+		<col style="width:140px">
+		<col style="width:140px">
+		<col style="width:116px">
+	</colgroup>
+	<thead>
+		<tr>
+			<th scope="col"></th>
+			<th scope="col" colspan="2">상품정보</th>
+			<th scope="col">판매금액</th>
+			<th scope="col">수량</th>
+			<th scope="col">주문금액</th>
+			<th scope="col">마일리지 적립</th>
+			<th scope="col">선택</th>
+		</tr>
+	</thead>
+	<tbody>
+		
+		{@ list}
+		<tr>
+			<td style="vertical-align: top">
+				<!-- --> 
+				<div class="checkbox"><input type="checkbox" value="{.key_}" name="checked_{tab_id}[]" id="checked_{tab_id}_{.key_}"  {? .valid>0} {? .checked=='Y'}checked{/}{:}disabled{/}><label for="checked_{tab_id}_{.key_}"></label></div>
+			</td>
+			<td style="vertical-align: top">
+				<div class="goods-in-td">
+					<div class="thumb-img"><a href="{C.DIR_FRONT}/productdetail.php?productcode={.productcode}"><img src="{.tinyimage}" alt="썸네일"></a></div> <!-- /jayjun/web/static/img/test/@goods_290_01.jpg -->
+				</div>
+			</td>
+			<td colspan="6" class="ta-l">
+				<ul class="goods-in-ul" data-count-option="{.count.option}" data-count-product="{.count.product}">
+					{@ .children}
+					{? ..index_ ==0}
+					<li>
+						<p class="code">{.prodcode}</p>
+						<p class="goods-nm">{.productname}
+							<button type="button" class="btn-like-count ml-10" data-hottcode="{.productcode}" data-section="product"><span><i class="icon-like {? .is_liked}on{/}">좋아요</i></span><span>{.pr_like_cnt} </span></button>
+						</p>
+						<div class="td-btnGroup ta-r" style="padding-right:14px">
+							{? .valid>0}
+							<button type="button" class="btn-point h-small" onclick="Basket.order('{.key_}')"><span>바로구매</span></button>
+							<button type="button" class="btn-basic h-small" type="button" onclick="Basket.changeOption('{.key_}')"><span>옵션추가</span></button>
+							{/}
+							<button type="button" onclick="Basket.remove('{..group_no}', 'group')" class="btn-line h-small"><span>삭제하기</span></button>
+						</div>
+						
+					</li>
+					{/}
+					<li class="cell" data-stock-max="{..stock.max}" data-stock-min="{..stock.min}" data-basket-no="{..no}">
+						<div class="info">
+							{? ..option_type == 'option'}
+							<span class="opt"><span class="point-color">[옵션]</span> {..option_info.option_name}</span> <!--{* {? ..option_info.status == 'normal'}<button type="button" class="btn-line h-small btn_opt_change"><span>옵션변경</span></button>{/} *}-->
+							{:}
+							<span class="txt-toneA">[추가]</span> {..option_info.productname}
+							{/}
+							<div class="soldout">
+								{? ..option_info.status == 'soldout'} 
+								<span class="mt-10 point-color">SOLD OUT</span>
+								{: ..option_info.status == 'soldout_temp'}
+								<span class="mt-10 point-color">일시품절</span>
+								{/}
+							</div>
+							
+						</div>
+						
+						<div class="txt-toneA">
+							{=number_format(..option_info.endprice)}
+							{? ..option_info.status == 'normal' //품절,일시품절시 숨김}
+							
+							{? ..option_info.endprice_dc_rate > 0}
+							<span class="txt-toneC mt-5"><del>{=number_format(..option_info.consumerprice)}</del></span>
+							<span class="point-color mt-5">[{..option_info.endprice_dc_rate}%]</span>
+							{/}
+							{/}
+						</div>
+						<div class="change-quantity">
+							{? ..option_info.status == 'normal'}
+							<div class="quantity">
+								<input type="text" value="{..qty}" readonly="">
+								<button class="plus"></button>
+								<button class="minus"></button>
+							</div>
+							{:}
+							<div class="quantity">
+								<input type="text" value="0" readonly="">
+							</div>
+							{/}
+							
+						</div>
+						<div class="txt-toneA">
+							{? ..option_info.status == 'normal'}
+							<strong>{=number_format(..option_info.endprice*..qty)}</strong>
+							{:}
+							<strong>0</strong>
+							{/}
+
+							
+						</div>
+						<div class="txt-toneB">
+							{? ..option_info.status == 'normal'}
+							{=number_format(..option_info.mileage)}M
+							{:}
+							0M
+							{/}
+						</div>
+						<div class="td-btnGroup"><button class="item-del" type="button" onclick="Basket.remove('{..no}','{..option_type}',this)"><span>장바구니에서 삭제</span></button></div>
+					</li>
+					{/}
+				</ul>
+			</td>
+		</tr>
+		
+		{/}
+	</tbody>
+	<tfoot id="foot_type0_zone">
+		<tr>
+			<td colspan="8" class="reset">
+				<div class="cart-total-price clear">
+					<dl>
+						<dt>총 상품금액</dt>
+						<dd id="sum_div_sellprice0">{=number_format(total.price_consumer)}원</dd>
+					</dl>
+					<span class="txt">-</span>
+					<dl>
+						<dt>총 할인금액</dt>
+						<dd id="">{=number_format(total.price_sale)}원</dd>
+					</dl>
+					<span class="txt">+</span>
+					<dl>
+						<dt>배송비</dt>
+						<dd id="sum_div_basong0">{=number_format(total.price_delivery)}원
+							<div class="question-btn">
+								<i class="icon-question">배송비설명</i>
+								<div class="comment" style="width:350px">
+									<p>- {=number_format(cfg.delivery.miniprice)}원 이상 구매시 무료배송됩니다.</p>
+									<p>- {=number_format(cfg.delivery.miniprice)}원 미만 구매시 배송비 {=number_format(cfg.delivery.basefee)}원이 부과됩니다.</p>
+									<p>- 도서산간 지역은 배송비가 추가될 수 있습니다.</p>
+								</div>
+							</div>
+						</dd>
+					</dl>
+					<span class="txt">=</span>
+					<dl class="sum">
+						<dt>총 주문금액</dt>
+						<dd><span id="sum_div_totalprice0" class="point-color fz-18">{=number_format(total.price_total)}</span>원</dd>
+					</dl>
+					<span class="ml-10">(적립 마일리지 <strong>{=number_format(total.price_mileage)}M</strong>)</span>
+				</div>
+			</td>
+		</tr>
+	</tfoot>
+</table>
+
+<div class="btnPlace mt-45">
+		<button type="button" class="btn-line h-large w200" onclick="Basket.removeChecked();return false;"><span>선택상품 삭제</span></button>
+		<a href="/front/" class="btn-line h-large w200" onclick="location.href='/'">쇼핑 계속하기</a>
+		<button type="button" class="btn-point h-large w200" onclick="Basket.order();">선택 상품 주문</button>
+	</div>
+
+
+{@ stats_list}
+<!-- AceCounter eCommerce (Product_Detail) v7.5 Start -->
+<!-- Data Allocation (Product_Detail) -->
+<script language='javascript'>
+	_A_amt[_ace_countvar]='{.endprice*.qty}'; //제품소계
+	_A_nl[_ace_countvar]='{.qty}'; //수량
+	_A_pl[_ace_countvar]='{.productcode}'; //제품ID
+	_A_pn[_ace_countvar]='{.productname}'; //제품명
+	_A_ct[_ace_countvar]='{.category}'; //제품카테고리명
+	_ace_countvar++;
+</script>
+<!-- AceCounter eCommerce (Cart_InOut) v7.5 Start -->
+{/}
+
+<script type="text/javascript">
+var BasketInner = {
+	init: function() {
+		//선택사항변경시 리로드
+		$('input[name^="checked_"]').off('click.basket').on('click.basket', Basket.reloadTab);
+
+		$('button.plus, button.minus').off('click.basket').on('click.basket', Basket.qty); //수량변경
+
+	}
+}
+
+$(function() {
+	BasketInner.init();
+})
+</script>

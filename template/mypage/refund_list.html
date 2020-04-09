@@ -1,0 +1,343 @@
+<div id="contents">
+	<div class="mypage-page">
+		<h2 class="page-title">주문상품 반품 신청<h2>
+				<div class="inner-align page-frm clear">
+					{=include("mypage_TEM01_left.php")}
+					<article class="my-content order-detail">
+						<form name="FrmReturn" id="FrmReturn" onsubmit="return false;">
+							<input type="hidden" name="mode" value="order_return">
+							<input type="hidden" name="order_num" value="{basic.order_num}">
+							<input type="hidden" name="order_status" value="{basic.order_status}">
+							<input type="hidden" name="batch" value="{? batch}Y{:}N{/}">
+							<input type="hidden" name="order_product_idxs" id="order_product_idxs" value="">
+						<ul class="fz-13 mt-5 txt-toneB">
+							<li>* 반품할 상품의 사유를 선택해 주세요.</li>
+							{? count(gift) > 0 //사은품이 있는경우에만 노출}
+							<li class="pt-5">* 사은품 포함 주문의 경우, 부분 반품은 불가능합니다. 전체 취소/반품 후 재주문 바랍니다.</li>
+							{/}
+							{? basic.coupon_basket_discount > 0 //장바구니쿠폰이 적용된 경우에만 노출}
+							<li class="pt-5">* 장바구니쿠폰이 사용된 주문의 경우, 부분 반품은 불가능합니다. 전체 취소/반품 후 재주문 바랍니다.</li>
+							{/}
+						</ul>
+						<section class="mt-15">
+							<header class="my-title">
+								<h3 class="fz-0">주문 목록</h3>
+								<div class="count">전체 <strong>{total}</strong></div>
+								<p class="ord-no"><span class="fz-13">주문번호</span> : {basic.order_num}<span class="fz-13 pl-30">주문날짜</span> : {=format(basic.date_insert,'Y-m-d')}
+								</p>
+							</header>
+							<table class="th-top">
+								<caption>주문 목록</caption>
+								<colgroup>
+									<col style="width:80px">
+									<col style="width:auto">
+									<col style="width:80px">
+									<col style="width:120px">
+									<col style="width:105px">
+								</colgroup>
+								<thead>
+									<tr>
+										<th scope="col">
+											<div class="checkbox">
+												<input type="checkbox" title="전체 선택" id="checked_all" data-all="product[checked][]" {? batch}checked disabled{/}>
+												<label for="checked_all"></label>
+											</div>
+										</th>
+										<th scope="col">주문상품</th>
+										<th scope="col">수량</th>
+										<th scope="col">결제금액</th>
+										<th scope="col">상태</th>
+									</tr>
+								</thead>
+								<tbody>
+									{@ product}
+									<tr class="bold" data-id="product_{.index_}">
+										<td>
+											<div class="checkbox">
+												<input type="checkbox" name="product[checked][]" id="{.index_}" value="{.idxs}" {? batch}checked data-disabled="true"{/}>
+												<label for="{.index_}"></label>
+											</div>
+										</td>
+										<td class="pl-5">
+											<div class="goods-in-td">
+												<div class="thumb-img"><a href="/front/productdetail.php?productcode={.productcode}"><img src="{=preview(.product_info.tinyimage,'default')}" alt=""></a></div>
+												<div class="info">
+													<p class="goods-nm">{? .option_type == 'product'}<span class="point-color fw-normal">[추가] </span>{/}{.product_info.productname}</p>
+													{? .option_type == 'option'}<p class="opt">{.option_info.option_name}</p>{/}
+												</div>
+											</div>
+										</td>
+										<td class="txt-toneB">
+											<div class="select">
+												{? batch}
+												<input type="text" name="product[count][]" value="{.cnt}" style="width:50px" readonly>
+												{:}
+												<select id="" name="product[count][]" style="min-width:50px" disabled>
+													{@ range(.cnt,1)}
+													<option value="{..value_}">{..value_}</option>
+													{/}
+												</select>
+												{/}
+											</div>
+										</td>
+										<td class="txt-toneA fw-bold">{=number_format(.price_sell*.cnt)}원</td>
+
+										<td>{.status_info.msg}</td>
+									</tr>
+									<tr data-id="product_{.index_}">
+										<td colspan="6" class="reset">
+											<div class="cart-total-price ta-l clear">
+												<div class="select">
+													<select id="return_reason_{.index_}" name="product[reason][]" style="min-width:176px" class="validate[required]" data-errormessage-value-missing="반품사유를 선택해주세요."  {? !batch}disabled{/}>
+														<option value="">반품 사유를 선택해주세요</option>
+														{@__CONFIG.return_reason}
+														<option value="{..text}|{..charger}" >{..text}</option>
+														{/}
+													</select>
+												</div>
+												<br>
+												<div class="input w100-per mt-5" id="reason_etc_{.index_}" >
+													<input type="text" name="product[reason_etc][]" {? !batch}disabled{/} class="w100-per" placeholder="반품 사유를 적어주세요.">
+												</div>
+											</div>
+										</td>
+									</tr>
+								{/}
+								</tbody>
+							</table>
+						</section>
+						{? gift}
+						<div class="order-infoDetail clear mt-60">
+							<section class="mt-50">
+								<header class="my-title">
+									<h3>사은품</h3>
+								</header>
+								<table class="th-left">
+									<caption>사은품</caption>
+									<colgroup>
+										<col style="width:400px">
+										<col style="width:auto">
+									</colgroup>
+									<tbody>
+									{@ gift}
+									<tr>
+										<th scope="row"><label>{.gift_info.gift_comment}</label></th>
+										<td >
+											{.gift_info.giftname}
+										</td>
+									</tr>
+									{/}
+									</tbody>
+								</table>
+							</section>
+						</div>
+						{/}
+						
+						<div class="order-infoDetail clear mt-60">
+							<section class="mt-50">
+								<header class="my-title">
+									<h3 class="d-iblock">배송지 정보</h3>
+									<!--<button class="btn-line btn-pop-address" id="delivery-change" type="button"><span>배송지 변경</span></button>-->
+								</header>
+								<table class="th-left">
+									<caption>배송지 정보 확인</caption>
+									<colgroup>
+										<col style="width:168px">
+										<col style="width:auto">
+									</colgroup>
+									<tbody>
+									<tr>
+										<th scope="row"><label>받는사람</label></th>
+										<td>{basic.receiver_name}</td>
+									</tr>
+									<tr>
+										<th scope="row"><label>휴대전화</label></th>
+										<td>{basic.receiver_mobile}</td>
+									</tr>
+
+									<tr>
+										<th scope="row"><label>전화번호(선택)</label></th>
+										<td>{? basic.receiver_tel !='--'}{basic.receiver_tel}{:}-{/}</td>
+									</tr>
+									<tr>
+										<th scope="row"><label>주소</label></th>
+										<td>
+											<ul class="input-multi">
+												{basic.receiver_zipcode}<br>
+												{basic.receiver_addr} {basic.receiver_addr_detail}
+											</ul>
+										</td>
+									</tr>
+									<tr>
+										<th scope="row"><label>배송 요청사항</label></th>
+										<td>{? basic.receiver_memo}{basic.receiver_memo}{:}-{/}</td>
+									</tr>
+									</tbody>
+								</table>
+							</section><!-- //.inner-delivery -->
+						</div>
+
+						<div class="board-title is-button mt-50">
+							<div class="title fz-20">반품상품 수거정보</div>
+							<div class="button">
+								<div class="radio option-box">
+									<input type="radio" id="delivery_choice1" name="delivery_choice" value="member" onclick="OrderAddress.setAddress('member')" checked><label for="delivery_choice1">회원정보동일</label>
+									<input type="radio" id="delivery_choice2" name="delivery_choice" value="lastest" onclick="OrderAddress.setAddress('lastest')"><label for="delivery_choice2">최근배송지</label>
+									<input type="radio" id="delivery_choice3" name="delivery_choice" value="reset" onclick="OrderAddress.setAddress('reset')"><label for="delivery_choice3">새로입력</label>
+								</div>
+								<button type="button" onclick="OrderAddress.open()" class="btn-basic h-small">배송지목록</button>
+
+							</div>
+						</div>
+						<table class="th-left" id="section_receiver">
+							<caption>배송지 정보 등록</caption>
+							<colgroup>
+								<col style="width:210px">
+								<col style="width:auto">
+							</colgroup>
+							<tbody>
+							<tr>
+								<th scope="row"><label class="essential" for="receiver_name">받는분</label></th>
+								<td><input type="text" title="받는분 입력자리" placeholder="이름을 입력하세요." name="receiver_name" value="{member.name}" id="receiver_name" style="width:296px" class="validate[required]" data-errormessage-value-missing="받는분 이름을 입력해주세요."></td>
+							</tr>
+							<tr>
+								<th scope="row"><label class="essential" for="order_address">주소</label></th>
+								<td>
+									<div class="form-multi">
+										<input type="text" id="order_address" class="validate[required]" data-errormessage-value-missing="주소를 입력해주세요." title="우편번호 입력자리" value="{member.home_post}" style="width:130px" name="receiver_zipcode" data-post="zonecode" readonly="" onclick="OrderAddress.post()">
+										<button type="button" class="btn-basic" style="min-width:90px" onclick="OrderAddress.post()"><span>우편번호찾기</span></button>
+									</div>
+									<div class="form-multi"><input type="text" name="receiver_addr" class="validate[required]" data-errormessage-value-missing="주소를 입력해주세요." title="주소 입력자리" value="{member.home_addr}" style="width:470px" data-post="address" onclick="OrderAddress.post()" readonly=""></div>
+									<div class="form-multi"><input type="text" name="receiver_addr_detail" title="상세주소 입력자리" placeholder="상세 주소를 입력하세요." data-post="buildingName" value="{member.home_addr_detail}" style="width:470px"></div>
+								</td>
+							</tr>
+							<tr>
+								<th scope="row"><label class="essential" for="receiver_mobile_2">휴대전화</label></th>
+								<td>
+									<div class="form-multi">
+										<div class="select" style="width:102px">
+											<select name="receiver_mobile[0]" title="휴대전화 첫번째 번호" id="receiver_mobile_1">
+												<option value="">선택</option>
+												{@ _arrMobile}
+												<option value="{.value_}" {=checked(member.mobile_arr[0],.value_,'selected')}>{.value_}</option>
+												{/}
+											</select>
+										</div>
+										<span class="txt">-</span>
+										<input type="text" name="receiver_mobile[1]" title="휴대전화 중간 번호" value="{member.mobile_arr[1]}" style="width:102px" id="receiver_mobile_2" data-filter="numeric" class="validate[required, minSize[4], maxSize[4]]" data-errormessage-value-missing="휴대전화번호를 입력해주세요." maxlength="4">
+										<span class="txt">-</span>
+										<input type="text" name="receiver_mobile[2]" title="휴대전화 마지막 번호" value="{member.mobile_arr[2]}" style="width:102px" id="receiver_mobile_3" data-filter="numeric" class="validate[required, minSize[4], maxSize[4]]" data-errormessage-value-missing="휴대전화번호를 입력해주세요." maxlength="4">
+									</div>
+								</td>
+							</tr>
+							<tr>
+								<th scope="row"><label for="receiver_tel_2">전화번호</label></th>
+								<td>
+									<div class="form-multi">
+										<div class="select" style="width:102px">
+											<select name="receiver_tel[0]" title="전화번호 첫번째 번호" id="receiver_tel_1">
+												<option value="">선택</option>
+												{@ _arrTel}
+												<option value="{.value_}" {=checked(member.home_tel_arr[0],.value_,'selected')}>{.value_}</option>
+												{/}
+											</select>
+										</div>
+										<span class="txt">-</span>
+										<input type="text" name="receiver_tel[1]" value="{member.home_tel_arr[1]}" title="전화번호 중간 번호" style="width:102px" id="receiver_tel_2" data-filter="numeric" maxlength="4">
+										<span class="txt">-</span>
+										<input type="text" name="receiver_tel[2]" value="{member.home_tel_arr[2]}" title="전화번호 마지막 번호" style="width:102px" id="receiver_tel_3" data-filter="numeric" maxlength="4">
+									</div>
+								</td>
+							</tr>
+							</tbody>
+						</table>
+
+						<div class="btnPlace mt-40">
+							<a class="btn-line h-large w200" href="javascript:history.back();"><span>취소</span></a>
+							<button type="submit" class="btn-point h-large w200" >반품신청</button>
+						</div>
+						</form>
+					</article><!-- //.my-content -->
+				</div><!-- //.page-frm -->
+
+	</div>
+</div><!-- //#contents -->
+
+
+<script type="text/javascript" src="{C.POST_JS}"></script>
+<script type="text/javascript" src='/static/js/jayjun/order_address.js'></script>
+<script type="text/javascript">
+	var RefundList = {
+		proc_url:'/proc/order.proc.php',
+		changed:false,
+        batch: '{batch}',
+		init: function() {
+			var me = this;
+
+			UI.toggleCheck();
+
+			$('[name="product[checked][]"]').on('click', function () { //교환신청체크
+
+				if($(this).data('disabled') == true) {
+					$(this).prop('checked',true); 
+					return false;
+				}
+
+				var tr = $('[data-id="product_' + this.id + '"]');
+				if (this.checked) {
+					
+					tr.find('select, input').removeAttr('disabled').data('count', '');
+
+
+				}
+				else tr.find('select, input[type=text]').attr('disabled', true);
+
+				if($('[name="product[checked][]"]:checked').length == $('[name="product[checked][]"]').length) $('[data-all]').prop('checked', true);
+				else $('[data-all]').prop('checked', false);
+
+			});
+
+			$('[data-all]').on('click', function () { //전체선택시 trigger checked
+				$('[name="product[checked][]"]').prop('checked', !this.checked);
+				$('[name="product[checked][]"]').trigger('click');
+			});
+
+			$('#return_reason_0').on('change', function() { //최상단 사유변경시 일괄적용(최초1회만 허용)
+				if(me.changed) return false;
+				$('[name="product[reason][]"]').val(this.value);
+				me.changed = true;
+			});
+
+			var option = $.extend({}, validation_option, {
+				validateNonVisibleFields: false,
+				onValidationComplete: function (form, status) {
+					if (status) me.open();
+				}
+			});
+			$("#FrmReturn").validationEngine('attach', option);
+
+
+
+		},
+		open: function () {
+			var checked = UI.getChecked('product[checked][]');
+			if(checked.length < 1) {
+				UI.error('반품신청할 주문상품을 선택하세요.');
+				return false;
+			}
+			if(RefundList.batch){
+                $("select[name='product[count][]']").removeAttr('disabled');
+			}
+			var formdata = $('#FrmReturn').serializeArray();
+			UI.modal('/front/mypage/refund.php', '반품신청', formdata);
+            if(RefundList.batch){
+                $("select[name='product[count][]']").attr('disabled', true);
+            }
+
+		}
+	}
+	
+	$(function() {
+		RefundList.init();
+	})
+</script>

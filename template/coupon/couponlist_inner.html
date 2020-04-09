@@ -1,0 +1,90 @@
+<div class="active" data-content="content" >
+	<header class="my-title mt-40">
+	<h3 class="fz-0">사용완료 쿠폰 내역</h3>
+	<div class="count">전체 <strong><span id="total"></span></strong></div>
+	</header>
+	<table class="th-top">
+		<caption>통합포인트 목록</caption>
+		<colgroup>
+			<col style="width:auto">
+			<col style="width:100px;">
+			<col style="width:200px">
+			<col style="width:80px">
+			<col style="width:130px">
+			<col style="width:160px">
+		</colgroup>
+		<thead>
+		<tr>
+			<th scope="col">쿠폰명</th>
+			<th scope="col">사용혜택</th>
+			<th scope="col">사용조건</th>
+			<th scope="col">적용대상</th>
+			<th scope="col">사용처</th>
+			<th scope="col">남은일자</th>
+		</tr>
+		</thead>
+		<tbody>
+		{@ list}
+		<tr>
+			<td >{.info.coupon_name}</td>
+			<td class="point-color fw-bold">{=format(.info.sale_price,'price')}{? .info.sale_type=='K'}원{:}%{/} 할인</td>
+			<td>
+				{? .info.sale_type =='K' && .info.sale_min_price==0}
+					조건없음
+				{: .info.sale_type =='K' && .info.sale_min_price > 0}
+					{=format(.info.sale_min_price,'price')} 원 이상 결제시
+				{: .info.sale_type =='R' && .info.sale_max_price == 0 && .info.sale_min_price == 0}
+					조건없음
+				{: .info.sale_type =='R' && .info.sale_max_price > 0 && .info.sale_min_price == 0}
+					최대 {=format(.info.sale_max_price,'price')} 원 할인
+				{: .info.sale_type =='R' && .info.sale_max_price == 0 && .info.sale_min_price > 0}
+					{=format(.info.sale_min_price,'price')} 원 이상 결제시
+				{: .info.sale_type =='R' && .info.sale_max_price > 0 && .info.sale_min_price > 0}
+					{=format(.info.sale_min_price,'price')} 원 이상 결제시, 최대 {=format(.info.sale_max_price,'price')} 원 할인
+				{/}
+			</td>
+			<td >{? .info.use_part=='A'}제한 없음{:}일부상품 제외{/}</td>
+			<td >{? .info.use_device=='A'}PC|Mobile{: .info.use_device=='P'}PC{:}Mobile{/}</td>
+			<td >
+				{? .info.use_period_type=='U'}
+				제한없음
+				{: .info.use_period_type=='D'}
+				{.date_cnt}일
+				<br>
+				{=format(.info.use_period_start, 'Y-m-d')} ~ {=format(.info.use_period_end, 'Y-m-d')}
+				{:}
+				{.date_cnt}일
+				<br>
+				{=format(.issue.date, 'Y-m-d')} ~ {=format(.issue.date_end, 'Y-m-d')}
+				{/}
+			</td>
+		</tr>
+		{:}
+		<tr>
+			<td colspan="7">내역이 없습니다.</td>
+		</tr>
+		{/}
+		</tbody>
+	</table>
+	<div class="list-paginate mt-20">
+		{this->xprint('_include/pagination.html')}
+	</div>
+</div>
+
+
+<script type="text/javascript">
+
+    var CouponInner = {
+		total:'{total}',
+        init: function(){
+            var me = this;
+			$('#total').html(me.total);
+        },
+    }
+
+    $(function() {
+        CouponInner.init();
+    })
+</script>
+
+

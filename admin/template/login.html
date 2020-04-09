@@ -1,0 +1,95 @@
+<html>
+
+<head>
+	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+	<script src="/admin/static/js/jquery.min.js"></script>
+	<script type="text/javascript" src="/admin/static/js/ui.js"></script>
+	<script type="text/javascript" src="/admin/static/js/jquery.validationEngine.js"></script>
+	<script type="text/javascript" src="/admin/static/js/jquery.validationEngine-kr.js"></script>
+	<link href="webdoc/css/style.css" rel="stylesheet">
+</head>
+
+<body style="background-color:#222;">
+
+	<form name="loginform" id="FrmLogin" onsubmit="return false;" autocomplete="off">
+		<input type="hidden" name="mode" value="login" />
+		<?php if($_data->ssl_type=="Y" && ord($_data->ssl_domain) && ord($_data->ssl_port) && $_data->ssl_pagelist["ADMIN"]=="Y") {?>
+		<input type="hidden" name="shopurl" value="<?=$_SERVER['HTTP_HOST']?>">
+		<?php }?>
+
+		<div class="admin_login_wrap">
+			<div class="admin_login">
+				<h1 class="logo">AJASHOP</h1>
+				<p>관리자 페이지 입니다.
+					<br>관리자모드는 관리자 아이디를 이용한 접속만 가능합니다.</p>
+				<div class="table_s02" style="padding-top:30px;">
+					<table cellpadding=0 cellspacing=0 border=0 class="field">
+						<colgroup>
+							<col width="" />
+							<col width="200" />
+							<col width="100" />
+						</colgroup>
+						<tr>
+							<td class="none">
+								<input name="mem_id" id="mem_id" type="text" class="inp validate[required]" data-errormessage-value-missing="관리자 아이디를 입력하세요." value='' placeholder="관리자 아이디" style="width:310px;">
+							</td>
+						</tr>
+						<tr>
+							<td>
+								<input name="mem_pw" type="password" class="inp validate[required]" value='' placeholder="비밀번호" data-errormessage-value-missing="관리자 비밀번호를 입력하세요." style="width:310px;">
+							</td>
+						</tr>
+						<tr>
+							<td>
+								<input type="submit" value="관리자로그인" class="btn_login" />
+							</td>
+						</tr>
+					</table>
+				</div>
+			</div>
+		</div>
+
+	</form>
+
+	<script type="text/javascript">
+		var Login = {
+			init: function () {
+				$('#mem_id').focus();
+
+				var me = this;
+				var option = $.extend({}, validation_option, {
+					validateNonVisibleFields: false,
+					onValidationComplete: function (form, status) {
+						if (status) me.login();
+					}
+				});
+				$("#FrmLogin").validationEngine('attach', option);
+
+			},
+			login: function() {
+				var formdata = $('#FrmLogin').serialize();
+				$.ajax({
+					url:'/admin/proc/login.proc.php',
+					data:formdata,
+					dataType:'json',
+					type:'POST',
+					success: function(r) {
+						if(r.success) {
+							document.location.href="/admin/";
+						}
+						else {
+							alert(r.msg);
+						}
+					}
+				})
+			}
+		}
+
+		$(function() {
+			Login.init();
+		})
+	</script>
+
+</body>
+
+</html>

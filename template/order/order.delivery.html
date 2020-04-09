@@ -1,0 +1,62 @@
+<!-- 배송지선택팝업 -->
+<div class="layer-content js-scroll">
+	<div class="layer-contents">
+		<p class="board-attention is-multi" style="margin:14px 0 10px">배송지 목록은 최대 5개까지 등록 가능합니다. 배송지 정보 수정/삭제는 마이페이지>배송지관리에서
+			가능합니다.</p>
+		<table class="th-top">
+			<caption>배송지 목록</caption>
+			<colgroup>
+				<col style="width:54px">
+				<col style="width:94px">
+				<col style="width:80px">
+				<col style="width:126px">
+				<col style="width:auto">
+			</colgroup>
+			<thead>
+				<tr>
+					<th scope="col">선택</th>
+					<th scope="col">배송지명</th>
+					<th scope="col">수령인</th>
+					<th scope="col">휴대전화</th>
+					<th scope="col">주소</th>
+				</tr>
+			</thead>
+			<tbody>
+				{@ list}
+				<tr>
+					<td>
+						<div class="radio is-alone"><input type="radio" id="deliver_select_{.no}" name="delivery_list" value="{.no}" {=checked(.base_chk,'Y')}><label for="deliver_select_{.no}">배송지목록</label></div>
+					</td>
+					<td><span class="text-tone-b fz-12 ">{? .base_chk=='Y'}<span class="point-color">[기본]</span> {/}{.destination_name}</span></td>
+					<td><strong class="emphasis-color">{.get_name}</strong></td>
+					<td><span class="emphasis-color fz-12 ">{.mobile}</span></td>
+					<td class="ta-l"><span class="emphasis-color fz-12">{.addr1} {.addr2}</span></td>
+				</tr>
+				{/}
+			</tbody>
+		</table>
+		<div class="btnPlace mt-40">
+			<button type="button" class="btn-line h-large" data-toggle="close"><span>취소</span></button>
+			<button type="button" class="btn-point h-large" onclick="OrderDelivery.apply()"><span>적용</span></button>
+		</div>
+	</div>
+</div><!-- //.layer-content -->
+
+<script type="text/javascript">
+var OrderDelivery = {
+	init: function() {
+		$('[data-toggle="close"]').on('click', function() {
+			$('.btn-close').trigger('click');
+		});
+	},
+	apply: function() {
+		var no = $('[name="delivery_list"]:checked').val();
+		OrderAddress.getAddress({mode:'address',act:'delivery',no:no});
+		$('[data-toggle="close"]').trigger('click');
+	}
+}
+
+$(function(){
+	OrderDelivery.init();
+})
+</script>

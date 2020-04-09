@@ -1,0 +1,70 @@
+<div class="layer-contents layer_shipping_list">
+
+	<div class="delivery-before">
+		<div class="title-section">
+			<span class="comment">배송지 목록은 최대 5개까지 등록 가능합니다. 배송지 정보 수정/삭제는 마이페이지>배송지관리에서 가능합니다.</span>
+		</div>
+		<table class="th-top">
+			<caption>배송지 목록</caption>
+			<colgroup>
+				<col style="width:40px">
+				<col style="width:75px">
+				<col style="width:auto">
+			</colgroup>
+			<thead class="v-hidden">
+				<tr>
+					<th scope="col">선택</th>
+					<th scope="col">배송지명</th>
+					<th scope="col">배송지</th>
+				</tr>
+			</thead>
+			<tbody>
+				{@ list}
+				<tr>
+					<td>
+						<div class="option-box is-alone"><label><input type="radio" id="deliver_select_{.no}" name="delivery_list" class="radio_def" value="{.no}" name="pop_delivery_list" {=checked(.base_chk,'Y')}><span>선택</span></label></div>
+					</td>
+					<td>
+						{? .base_chk=='Y'}<p class="point-color">[기본]</p>{/} {.destination_name}
+					</td>
+					<td class="ta-l">
+						<ul class="address">
+							<li class="name"><strong>{.get_name}</strong><span>{.mobile}</span></li>
+							<li>
+								<p>{.addr1} {.addr2}</p>
+							</li>
+						</ul>
+					</td>
+				</tr>
+				{/}
+			</tbody>
+		</table>
+	</div>
+
+	<div class="btn_area">
+		<ul class="ea2">
+			<li><button type="button" class="btn-line h-large" data-toggle="popup-close">취소</button></li>
+			<li><button type="button" class="btn-point h-large"  onclick="OrderDelivery.apply()">적용</button></li>
+		</ul>
+	</div>
+</div>
+
+
+<script type="text/javascript">
+	var OrderDelivery = {
+		init: function() {
+			$('[data-toggle="popup-close"]').on('click', function() {
+				$('#jayjun_popup .btn_close').trigger('click');
+			});
+		},
+		apply: function() {
+			var no = $('[name="delivery_list"]:checked').val();
+            OrderAddress.getAddress({mode:'address',act:'delivery',no:no});
+			$('#jayjun_popup .btn_close').trigger('click');
+		}
+	}
+	
+	$(function(){
+		OrderDelivery.init();
+	})
+	</script>

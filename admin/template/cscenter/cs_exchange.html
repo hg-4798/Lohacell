@@ -1,0 +1,188 @@
+<div class="content-wrap">
+	<div class="title_depth3">{__NAV.page_tit}<span></span>
+		<div class="pull-right">
+			
+			<button type="button" class="btn {? cnt.status_1>0}btn-danger{/} btn-sm" onclick="Exchange.search('step[]','4E1\',\'5E1')">교환신청 :  {=number_format(cnt.status_1)}</button>
+			<button type="button" class="btn {? cnt.status_2>0}btn-danger{/} btn-sm" onclick="Exchange.search('step[]','4E2\',\'5E2')">교환접수 :  {=number_format(cnt.status_2)}</button>
+			<button type="button" class="btn {? cnt.status_3>0}btn-danger{/} btn-sm" onclick="Exchange.search('step[]','4E3\',\'5E3')">교환처리중 :  {=number_format(cnt.status_3)}</button>
+			
+		</div>
+	</div>
+
+	<div class=" m-t-20">
+		<!--{* 검색폼:S *}-->
+		<form id="FrmExchangeSearch">
+			<input type="hidden" name="sort" value="exchange_date_desc">
+			<input type="hidden" name="limit" value="20">
+			<table class="tbl-search">
+				<colgroup>
+					<col style="width:150px">
+					<col>
+					<col style="width:150px">
+					<col>
+				</colgroup>
+				<tr>
+					<th>
+						<span>검색어</span>
+					</th>
+					<td colspan="3">
+						<select name="sf" class="select" style="height:32px;vertical-align:middle;">
+							<option value="ob.order_num">주문번호</option>
+							<option value="" disabled style="background-color:#ddd;color:#000;font-weight:700">주문자 정보</option>
+							<option value="ob.buyer_name">주문자명</option>
+							<option value="ob.member_id">주문자ID</option>
+							<option value="ob.buyer_mobile">주문자 휴대폰번호</option>
+							<option value="ob.buyer_ip">주문자IP</option>
+							<option value="" disabled style="background-color:#ddd;color:#000;font-weight:700">받는사람 정보</option>
+							<option value="ob.receiver_name">받는사람 이름</option>
+							<option value="ob.receiver_mobile">수령자휴대폰번호</option>
+							<option value="ob.receiver_addr">배송지주소</option>
+						</select>
+						<textarea class="w500" name="sv" id="search" style="vertical-align:middle;height:32px;box-sizing:border-box"></textarea>
+					</td>
+				</tr>
+
+				<tr>
+					<th>
+						<span>기간선택</span>
+					</th>
+					<td colspan="3">
+						<select name="date_field" class="select">
+							<option value="date_order_1">주문일</option>
+							<option value="date_order_exchange">교환신청일</option>
+						</select>
+						<input class="input datepicker calendar" type="text" name="date_s" value="" readonly /> ~
+						<input class="input datepicker calendar" type="text" name="date_v" value="" readonly />
+					</td>
+				</tr>
+
+				<tr>
+					<th>
+						<span>상품</span>
+					</th>
+					<td>
+						<select name="product_field" class="select">
+							<option value="productname">상품명</option>
+							<option value="productcode">상품코드</option>
+						</select>
+						<input type="text" name="product_value" value="" class="w200">
+					</td>
+					<th>
+						<span>상품유형</span>
+					</th>
+					<td>
+						<label><input type="checkbox" name="pr_type[]" value="all" class="hj" data-reverse="pr_type[]" checked><span class="lbl">전체</span></label>
+						<label><input type="checkbox" name="pr_type[]" value="1" class="hj"><span class="lbl">일반상품</span></label>
+						<label><input type="checkbox" name="pr_type[]" value="3" class="hj"><span class="lbl">임직원상품</span></label>
+						<label><input type="checkbox" name="pr_type[]" value="2" class="hj"><span class="lbl">바로구매상품</span></label>
+					</td>
+				</tr>
+				<tr>
+					<th>
+						<span>교환상태</span>
+					</th>
+					<td colspan="3">
+						<label><input type="checkbox" class='hj' name="step[]" value="all" checked data-reverse="step[]"><span class="lbl">전체</span></label>
+						<label><input type="checkbox" class='hj' name="step[]" value="4E1','5E1"><span class="lbl">교환신청</span></label>
+						<label><input type="checkbox" class='hj' name="step[]" value="4E2','5E2"><span class="lbl">교환접수</span></label>
+						<label><input type="checkbox" class='hj' name="step[]" value="4E3','5E3"><span class="lbl">교환처리중</span></label>
+						<label><input type="checkbox" class='hj' name="step[]" value="4E4','5E4"><span class="lbl">교환완료</span></label>
+					</td>
+				</tr>
+			</table>
+
+			<div class="ta_c mt_20">
+				<button type="button" class="btn-point" onclick="Exchange.search()">조회</button>
+				<button type="button" class="btn-basic" onclick="Exchange.searchReset()">초기화</button>
+			</div>
+		</form>
+		<!--{* 검색폼:E *}-->
+	</div>
+
+	<!--{* 상단툴:S *}-->
+	<div class="tools mb_10">
+		<div class="pull-left">
+			<img src="/admin/images/icon_8a.gif" border="0"> 전체
+			<span id="count_total"></span>건 조회
+			<button type="button" class="btn-basic dark h-x-small" onclick="Exchange.excel()" style="vertical-align:middle">엑셀 다운로드</button>
+		</div>
+		<div class="pull-right">
+			<select name="sort" onchange="Exchange.search('sort',this.value)">
+				<option value="exchange_date_desc">교환신청일 ↓</option>
+				<option value="exchange_date_asc">교환신청일 ↑</option>
+				<option value="reg_desc">주문일 ↓</option>
+				<option value="reg_asc">주문일 ↑</option>
+			</select>
+			<select name="listnum_select" onchange="Exchange.search('limit',this.value)">
+				{@ __CONFIG.limit}
+				<option value="{.value_}">{.value_}개씩 보기</option>
+				{/}
+			</select>
+		</div>
+	</div>
+	<!--{* 상단툴:E *}-->
+
+
+	<!--{* 목록:S *}-->
+	<div id="inner"></div>
+	<!--{* 목록:E *}-->
+
+</div>
+<textarea id="searched" style="display:none">{searched}</textarea>
+<script type="text/javascript">
+	var Exchange = {
+		page: 1,
+		proc_url: '/admin/proc/order.proc.php',
+		init: function () {
+			var me = this;
+			$('.datepicker').datepicker();
+			me.load(1);
+			UI.reverseCheck();
+		},
+		search: function (field, value) {
+			if (field && value) {
+				var el =$('#FrmExchangeSearch').find('[name="' + field + '"]');
+				if(el.attr('type') == 'checkbox') {
+					el.prop('checked',false);
+					$('#FrmExchangeSearch').find('[name="' + field + '"][value="'+value+'"]').prop('checked',true);
+				}
+				else $('#FrmExchangeSearch').find('[name="' + field + '"]').val(value);
+				
+			}
+			this.load(1);
+		},
+		searchReset: function () {
+			$('#FrmExchangeSearch')[0].reset();
+			$('[data-reverse]').prop('checked', true);
+			this.load(1);
+		},
+		load: function (page) {
+			UI.ing('데이터를 불러오는 중입니다...');
+			var p = page || Exchange.page;
+			var search = $('#FrmExchangeSearch').serialize();
+
+			$('#inner').load('/admin/cscenter/cs_exchange.inner.php', {
+					page: p,
+					search: search
+				},
+				function () {
+					Exchange.page = p;
+					UI.toggleCheck();
+					UI.ing();
+					$('[data-toggle="tooltip"]').tooltip();
+				}
+			);
+		},
+        excel: function () {
+            var search = $('#searched').val();
+            UI.modal('/admin/common/excel.php', '엑셀다운로드', {
+                type:'cs_exchange',
+                search: search
+            }, 800);
+        }
+	}
+
+	$(function () {
+		Exchange.init();
+	})
+</script>

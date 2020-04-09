@@ -1,0 +1,357 @@
+<form id="FrmExchange" onsubmit="return false">
+	<input type="hidden" name="mode" value="exchange" />
+	<input type="hidden" name="act" value="each">
+	<!-- <input type="hidden" name="product_idx" value='{checked}' /> -->
+	<input type="hidden" name="order_num" value="{basic.order_num}">
+	<!--{* 환불신청폼:S *}-->
+	<div class="inc-tit-sub">교환사유</div>
+	<table class="tbl-form">
+		<colgroup>
+			<col style="width:300px">
+			<col>
+		</colgroup>
+		<thead>
+			<th class="text-center">상품명/옵션</th>
+			<th class="text-center">교환옵션/교환사유</th>
+		</thead>
+		<tbody>
+			{@ product}
+			<tr>
+				<td rowspan="2">{.productname} <span class="text-muted">{.option.option_name}</span></td>
+				<td class="text-left">
+					<select name="product[reason][{.key_}]" data-rel="charge" class="select validate[required]" data-errormessage-value-missing="교환사유를 선택하세요"> 
+						<option value="">== 교환사유선택 ==</option>
+						<option value="관리자 임의 교환|seller">관리자 임의 교환</option>
+						{@ (__CONFIG.exchange_reason)}
+						<option value="{..text}|{..charger}">{..text}</option>
+						{/}
+						<option value="etc">기타</option>
+					</select>
+					
+					<input type="text" name="product[reason_etc][{.key_}]" class="" style="width:400px" placeholder="교환상세사유를 입력하세요."/>
+					<input type="hidden" name="product[idx][{.key_}]" value="{.key_}" />
+				</td>
+			</tr>
+			<tr>
+				<td>
+					<select name="product[option][{.key_}]" class="validate[required]" data-errormessage-value-missing="교환옵션을 선택하세요.">
+						<option value="">== 교환옵션선택 ==</option>
+						{@ .option_valid}
+						<option value="{..option_num}">{..option_name} (현재고:{..option_quantity-..option_quantity_sales}개{? ..option_use=='N'}, 숨김{/}{? ..option_soldout=='Y'}, 품절표시{/})</option>
+						{/}
+						
+					</select>
+				</td>
+			</tr>
+			{/}
+		</tbody>
+	</table>
+	<table class="tbl-form m-t-5">
+		<colgroup>
+			<col style="width:120px">
+			<col>
+		</colgroup>
+		<tr>
+			<th>관리메모</th>
+			<td>
+				<textarea name="memo"  rows="2" class="textarea w-100"></textarea>
+			</td>
+		</tr>
+	</table>
+
+	<!--{* 교환배송비:S *}-->
+	<div class="inc-tit-sub">교환배송비</div>
+	<table class="tbl-form">
+		<colgroup>
+			<col style="width:120px">
+			<col>
+		</colgroup>
+		
+		<tbody>
+			<tr>
+				<th>배송비</th>
+				<td><input type="text" name="delivery_pay" id="delivery_price" value="0" data-filter="price"> 원 <span id="delivery_charger"></span></td>
+			</tr>
+			<tr>
+				<th>지불방법</th>
+				<td>
+					<div>
+						<label><input type="radio" class="hj" name="delivery_pay_method" value="append" checked><span class="lbl">동봉</span></label>
+					</div>
+					<div>
+						<label><input type="radio" class="hj" name="delivery_pay_method" value="bank" ><span class="lbl">계좌입금 : 신한은행 140-011-167492 | 예금주 : 제이준코스메틱(주)</span></label>
+					</div>
+				</td>
+			</tr>
+		</tbody>
+	</table>
+	<!--{* 사은품정보:E *}-->
+
+	<!--{* 교환상품 수거정보:S *}-->
+	<div class="row" >
+		<div class="col-6">
+			<div class="inc-tit-sub ta-l">배송지정보</div>
+			<div>
+				<table class="tbl-form">
+					<colgroup>
+						<col style="width:120px">
+						<col>
+					</colgroup>
+					<tr>
+						<th>받는사람 이름</th>
+						<td>{basic.receiver_name}</td>
+					</tr>
+					<tr>
+						<th>주소</th>
+						<td>
+							<div>{basic.receiver_zipcode}</div>
+							<div>{basic.receiver_addr} {basic.receiver_addr_detail}</div>
+							
+						</td>
+
+					</tr>
+					<tr>
+						<th>휴대전화</th>
+						<td>
+							{basic.receiver_mobile}
+						</td>
+					</tr>
+					<tr>
+						<th>전화번호</th>
+						<td>
+							{basic.receiver_tel}
+						</td>
+					</tr>
+					<tr>
+						<th>배송메모</th>
+						<td>
+							{basic.receiver_memo}
+						</td>
+					</tr>
+				</table>
+			</div>
+		</div>
+
+		<div class="col-6 ta-l">
+			<div class="inc-tit-sub">교환배송지 정보
+				<div class="right">
+					<label class="s"><input type="checkbox" id="address_sync" class="hj"> <span class="lbl"> 배송지정보와 동일</span></label>
+				</div>
+			</div>
+			<div>
+				<table class="tbl-form">
+					<colgroup>
+						<col style="width:120px">
+						<col>
+					</colgroup>
+					<tr>
+						<th>보내는 이름</th>
+						<td><input type="text" name="receiver_name" value="{basic.receiver_name}" class="validate[required]" data-errormessage-value-missing="받는사람명을 입력하세요." data-receiver="{basic.receiver_name}"></td>
+					</tr>
+					<tr>
+						<th rowspan="2">주소</th>
+						<td>
+							<input type="text" name="receiver_zipcode" id="receiver_zipcode" data-post="zonecode" value="{basic.receiver_zipcode}" class="w80 validate[required]" data-errormessage-value-missing="주소를 입력하세요." data-receiver="{basic.receiver_zipcode}"> <button type="button" class="btn btn-form" onclick="ExchangeForm.post();">우편번호찾기</button> <input type="text" name="receiver_addr" data-post="address" id="receiver_addr" value="{basic.receiver_addr}" class="mt-1 w-100 validate[required]" data-errormessage-value-missing="주소를 입력하세요." data-receiver="{basic.receiver_addr}">
+						</td>
+
+					</tr>
+					<tr>
+						<td>
+							<input type="text" name="receiver_addr_detail" id="receiver_addr_detail" data-post="buildingName" value="{basic.receiver_addr_detail}" class="w-100 validate[required]" data-errormessage-value-missing="상세주소를 입력하세요." data-receiver="{basic.receiver_addr_detail}">
+						</td>
+					</tr>
+					<tr>
+						<th>휴대전화</th>
+						<td>
+							<select name="receiver_mobile[]" id="receiver_mobile" style="width:60px" data-receiver="{basic.receiver_mobile_arr[0]}">
+								{@ _arrMobile}
+								<option value="{.value_}" {? .value_==basic.receiver_mobile_arr[0]}selected{/}>{.value_}</option>
+								{/}
+							</select> - <input type="text" name="receiver_mobile[]" maxlength="4" value="{basic.receiver_mobile_arr[1]}" class="w80 validate[required,minSize[3]]" data-errormessage-value-missing="휴대전화을 입력하세요." data-receiver="{basic.receiver_mobile_arr[1]}"> - <input type="text" name="receiver_mobile[]"  maxlength="4" value="{basic.receiver_mobile_arr[2]}" class="w80 validate[required,minSize[3]]" data-errormessage-value-missing="휴대전화을 입력하세요." data-receiver="{basic.receiver_mobile_arr[2]}">
+						</td>
+					</tr>
+					<tr>
+						<th>전화번호</th>
+						<td>
+							<select name="receiver_tel[]" id="receiver_tel" style="width:60px" data-receiver="{basic.receiver_tel_arr[0]}">
+								<option value="">선택</option>
+								{@ _arrTel}
+								<option value="{.value_}" {? .value_== basic.receiver_tel_arr[0]}selected{/}>{.value_}</option>
+								{/}
+							</select> - <input type="text" name="receiver_tel[]" class="w80" maxlength="4" value="{basic.receiver_tel_arr[1]}" data-receiver="{basic.receiver_tel_arr[1]}"> - <input type="text" name="receiver_tel[]" class="w80" maxlength="4" value="{basic.receiver_tel_arr[2]}" data-receiver="{basic.receiver_tel_arr[2]}">
+						</td>
+					</tr>
+				</table>
+			</div>
+		</div>
+	</div>
+
+	<div class="text-center m-t-20 m-b-50">
+		<button type="submit" class="btn-basic dark">교환접수</button>
+	</div>
+	</form>
+
+	
+	<script type="text/javascript">
+	var ExchangeForm = {
+		changed:false,
+		delivery_price:'{calc_deliprice}', //기본배송비 @todo 관리자연동
+		init: function() {
+			var me = this;
+			var option = $.extend({}, validation_option, {
+				validateNonVisibleFields: false,
+				onValidationComplete: function (form, status) {
+					if (status) me.return(form);
+				}
+			});
+			$("#FrmExchange").validationEngine('attach',option);
+	
+			$('[data-rel="charge"]').on('change', function() {
+				me.calcDelivery();
+			});
+
+			//교환배송지 정보 변경시 지역배송비 체크
+			$('#receiver_zipcode').on('change', function () {
+				ExchangeForm.calcDelivery();
+			});
+			
+			//숫자체크
+			$('[data-filter="numeric"], [data-filter="price"]').on('keydown.row input.row', function (evt) {
+				var v = $(this).val();
+				v = v.replace(/[^0-9]/g, '');
+				v = v.replace(/^0+(?!$)/, '');
+	
+				var filter = $(this).data('filter');
+				if (filter == 'price') v = UI.numberFormat(v);
+				$(this).val(v);
+			});
+
+			//교환수거지정보
+			$('#address_sync').on('click', function() {
+				if(this.checked) {
+					$('[data-receiver]').each(function() {
+						var v = $(this).data('receiver');
+						if(!v) return true;
+						$(this).val(v);
+					});
+					me.calcDelivery();
+				}
+			})
+
+			me.setUI();
+		},
+		calcDelivery: function() { //배송비계산(판매자책임우선)
+			var charger = 'buyer';
+			$('[data-rel="charge"]').each(function(i,e){
+				if(!this.value) return true;
+				var arr = this.value.split('|');
+				// if(arr[1])
+
+				if(arr[1] == 'seller') {
+					charger = 'seller';
+					return false;
+				}
+			});
+			if(charger == 'seller') {
+				$('#delivery_charger').text('(판매자부담)');
+				$('#delivery_price').val('0');
+			}
+			else {
+				$('#delivery_charger').text('(구매자부담)');
+				ExchangeForm.checkDeliveryPrice();
+				$('#delivery_price').val(UI.numberFormat(parseInt(ExchangeForm.delivery_price)*2));
+			}
+
+		},
+		post: function() {
+			var me = this;
+			new daum.Postcode({
+				oncomplete: function (data) {
+					$.each(data, function (i, e) {
+						$('input[data-post="' + i + '"]').val(e);
+					});
+					me.calcDelivery();
+				}
+			}).open();
+		},
+		return: function() {
+
+			UI.confirm('교환접수하시겠습니까?', function() {
+				var formdata = $('#FrmExchange').serialize();
+				$.ajax({
+					url:'/admin/proc/order.proc.php',
+					data:formdata,
+					dataType:'json',
+					type:'POST',
+					success: function(r) {
+						if(r.success) {
+							UI.alert(r.msg, function() {
+								opener.location.reload();
+								window.close();
+							})
+						}
+						else {
+							UI.error(r.msg);
+						}
+					}
+				})
+			})
+		},
+		setUI: function () {
+			$('[data-cond]').each(function (i, e) {
+				var cond = $(e).data('cond');
+				var child = $(e).data('condChild');
+
+				$('[name="' + cond + '"]').on('click, change', function () {
+					$(e).addClass('hide');
+					$(e).filter('[data-cond-value~="' + this.value + '"]').removeClass('hide');
+
+					if(child) {
+						$('[data-cond="'+child+'"]').addClass('hide');
+						
+						var child_el = $('[name="'+child+'"]');
+						if(!child_el.is(':visible')) return false;
+
+						switch(child_el.prop('tagName')) {
+							case 'SELECT':
+								child_el.trigger('change');
+								break;
+							default:
+								child_el.trigger('click');
+								break;
+						}
+					}
+				});
+			});
+		},
+		checkDeliveryPrice: function() {
+			//지역배송비체크
+			$.ajax({
+				url:'/proc/order.proc.php',
+				dataType:'json',
+				type:'POST',
+				data:{
+					mode:'address',
+					act:'fee',
+					zipcode:$('#receiver_zipcode').val()
+				},
+				async: false,
+				success: function(r) {
+					if(r.success) {
+						UI.alert("지역별 추가 배송비 부과지역입니다.");
+						ExchangeForm.delivery_price = r.data.fee;
+					}
+					else {
+						ExchangeForm.delivery_price = '{cfg.deli.deli_basefee}'
+					}
+				}
+			});
+		}
+	}
+	
+	$(function() {
+		ExchangeForm.init();
+	})
+	</script>
+	
+	

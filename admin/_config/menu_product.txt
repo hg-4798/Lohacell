@@ -1,0 +1,20 @@
+[상품관리]
+
+<카테고리>
+카테고리 관리 = /admin/product/product_code.php
+라인관리 = /admin/product/product_line.php
+
+<상품관리>
+상품목록 = /admin/product/product_list.php
+MD's CHOICE 관리 = /admin/product/product_mdchoice.php
+기간할인설정 = /admin/product/product_timesale.php
+
+<상품 일괄관리>
+판매가 일괄 변경 = /admin/product/product_price_change.php
+상품 일괄 간편수정 = /admin/product/product_batch_update.php
+아이콘 일괄수정 = /admin/product/product_batch_icon.php
+
+
+<기타관리>
+상품 키워드 검색 = /admin/product/product_keywordsearch.php
+상품 아이콘 관리 = /admin/product/product_icon.php

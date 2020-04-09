@@ -1,0 +1,533 @@
+<?php
+/**
+ * 메뉴별 엑셀다운로드포맷(column)
+ */
+
+$config_excel = array();
+
+$config_excel['product'] = array(
+	'productcode'=>array(
+		'name'=>'상품코드'
+	),
+	'productname'=>array(
+		'name'=>'상품명'
+	),
+	'endprice'=>array(
+		'name'=>'판매가격'
+	)
+);
+
+$config_excel['point'] = array(
+	'mem_id'=>array(
+		'name'=>'회원아이디'
+	),
+	'name'=>array(
+		'name'=>'회원명'
+	),
+	'group_code'=>array(
+		'name'=>'등급'
+	),
+	'point_reason'=>array(
+		'name'=>'발생사유'
+	),
+	'order_num'=>array(
+		'name'=>'주문번호'
+	),
+	'point'=>array(
+		'name'=>'포인트'
+	),
+	'date_insert'=>array(
+		'name'=>'날짜'
+	)
+);
+
+$config_excel['mileage'] = array(
+	'mem_id'=>array(
+		'name'=>'회원아이디'
+	),
+	'name'=>array(
+		'name'=>'회원명'
+	),
+	'group_code'=>array(
+		'name'=>'등급'
+	),
+	'mileage_reason'=>array(
+		'name'=>'발생사유'
+	),
+	'order_num'=>array(
+		'name'=>'주문번호'
+	),
+	'mileage'=>array(
+		'name'=>'마일리지'
+	),
+	'date_insert'=>array(
+		'name'=>'날짜'
+	)
+);
+
+$config_excel['member'] = array(
+	'id'=>array(
+		'name'=>'회원아이디'
+	),
+	'name'=>array(
+		'name'=>'회원명'
+	),
+	'group_code'=>array(
+		'name'=>'등급'
+	),
+	'staff_yn'=>array(
+		'name'=>'구분'
+	),
+	'email'=>array(
+		'name'=>'이메일'
+	),
+	'mobile'=>array(
+		'name'=>'휴대번호'
+	),
+	'birth'=>array(
+		'name'=>'생일'
+	),
+	'home_addr'=>array(
+		'name'=>'주소'
+	),
+	'sum_buy_price'=>array(
+		'name'=>'주문누적금액'
+	),
+	'sum_buy_count'=>array(
+		'name'=>'주문횟수'
+	),
+	'reserve'=>array(
+		'name'=>'마일리지'
+	),
+	'act_point'=>array(
+		'name'=>'포인트'
+	),
+	'logindate'=>array(
+		'name'=>'최근로그인'
+	),
+	'date'=>array(
+		'name'=>'가입일'
+	)
+);
+
+$config_excel['memberout'] = array(
+	'id'=>array(
+		'name'=>'회원아이디'
+	),
+	'name'=>array(
+		'name'=>'회원명'
+	),
+	'email'=>array(
+		'name'=>'이메일'
+	),
+	'tel'=>array(
+		'name'=>'휴대번호'
+	),
+	'out_reason'=>array(
+		'name'=>'탈퇴사유'
+	),
+	'out_reason_content'=>array(
+		'name'=>'상세탈퇴사유'
+	),
+	'outdate'=>array(
+		'name'=>'탈퇴일'
+	),
+	'date'=>array(
+		'name'=>'가입일'
+	)
+);
+
+$config_excel['colorchip'] = array(
+	'color_code'=>array(
+		'name'=>'컬러코드'
+	),
+	'color_name'=>array(
+		'name'=>'컬러명칭'
+	),
+	'color_group'=>array(
+		'name'=>'컬러계열'
+	),
+	'use_yn'=>array(
+		'name'=>'사용여부'
+	),
+	'date_insert'=>array(
+		'name'=>'등록일'
+	),
+	'admin_id'=>array(
+		'name'=>'관리자'
+	)
+);
+
+
+$config_excel['event_comment'] = array(
+	'c_mem_id'=>array(
+		'name'=>'회원아이디'
+	),
+	'name'=>array(
+		'name'=>'회원명'
+	),
+	'mobile'=>array(
+		'name'=>'휴대폰번호'
+	),
+	'email'=>array(
+		'name'=>'이메일'
+	),
+	'comment'=>array(
+		'name'=>'댓글'
+	),
+	'photo'=>array(
+		'name'=>'사진'
+	),
+	'writetime'=>array(
+		'name'=>'작성일'
+	)
+);
+
+$config_excel['order_all'] = array(
+	'order_num'=>array(
+		'name'=>'주문번호'
+	),
+	'member_id'=>array(
+		'name'=>'주문자아이디'
+	),
+	'buyer_name'=>array(
+		'name'=>'주문자명'
+	),
+	'productname'=>array(
+		'name'=>'주문상품'
+	),
+	'price_end'=>array(
+		'name'=>'상품금액'
+	),
+	'pg_paymethod'=>array(
+		'name'=>'결제방법'
+	),
+	'order_status'=>array(
+		'name'=>'처리상태'
+	),
+	'date_order_1'=>array(
+		'name'=>'주문일시'
+	),
+	'delivery_company'=>array(
+		'name'=>'송장번호'
+	),
+	'prodcode'=>array(
+		'name'=>'상품코드'
+	),
+	'option_name'=>array(
+		'name'=>'옵션'
+	),
+	'receiver_name'=>array(
+		'name'=>'수령자'
+	),
+	'receiver_zipcode'=>array(
+	'name'=>'우편번호'
+	),
+	'receiver_full_address'=>array(
+		'name'=>'주소'
+	),
+	'receiver_mobile'=>array(
+		'name'=>'휴대전화'
+	),
+	'receiver_tel'=>array(
+		'name'=>'일반전화'
+	)
+);
+
+$config_excel['order_step1'] = array(
+	'order_num'=>array(
+		'name'=>'주문번호'
+	),
+	'member_id'=>array(
+		'name'=>'주문자아이디'
+	),
+	'buyer_name'=>array(
+		'name'=>'주문자명'
+	),
+	'productname'=>array(
+		'name'=>'주문상품'
+	),
+	'price_end'=>array(
+		'name'=>'상품금액'
+	),
+	'pg_paymethod'=>array(
+		'name'=>'결제방법'
+	),
+	'order_status'=>array(
+		'name'=>'처리상태'
+	),
+	'date_order_1'=>array(
+		'name'=>'주문일시'
+	)
+);
+
+$config_excel['order_step2'] = array(
+	'order_num'=>array(
+		'name'=>'주문번호'
+	),
+	'member_id'=>array(
+		'name'=>'주문자아이디'
+	),
+	'buyer_name'=>array(
+		'name'=>'주문자명'
+	),
+	'productname'=>array(
+		'name'=>'주문상품'
+	),
+	'price_end'=>array(
+		'name'=>'상품금액'
+	),
+	'pg_paymethod'=>array(
+		'name'=>'결제방법'
+	),
+	'order_status'=>array(
+		'name'=>'처리상태'
+	),
+	'date_order_1'=>array(
+		'name'=>'주문일시'
+	)
+);
+
+$config_excel['order_step3'] = array(
+	'order_num'=>array(
+		'name'=>'주문번호'
+	),
+	'member_id'=>array(
+		'name'=>'주문자아이디'
+	),
+	'buyer_name'=>array(
+		'name'=>'주문자명'
+	),
+	'quantity'=>array(
+		'name'=>'수량'
+	),
+	'productname'=>array(
+		'name'=>'주문상품'
+	),
+	'option_name'=>array(
+		'name'=>'옵션'
+	),
+	'price_end'=>array(
+		'name'=>'상품금액'
+	),
+	'pg_paymethod'=>array(
+		'name'=>'결제방법'
+	),
+	'order_status'=>array(
+		'name'=>'처리상태'
+	),
+	'date_order_1'=>array(
+		'name'=>'주문일시'
+	),
+	'delivery_company'=>array(
+		'name'=>'택배사'
+	),
+	'delivery_no'=>array(
+		'name'=>'송장번호'
+	)
+);
+
+$config_excel['order_step4'] = array(
+	'order_num'=>array(
+		'name'=>'주문번호'
+	),
+	'member_id'=>array(
+		'name'=>'주문자아이디'
+	),
+	'buyer_name'=>array(
+		'name'=>'주문자명'
+	),
+	'productname'=>array(
+		'name'=>'주문상품'
+	),
+	'price_end'=>array(
+		'name'=>'상품금액'
+	),
+	'pg_paymethod'=>array(
+		'name'=>'결제방법'
+	),
+	'order_status'=>array(
+		'name'=>'처리상태'
+	),
+	'date_order_1'=>array(
+		'name'=>'주문일시'
+	),
+	'delivery_company'=>array(
+		'name'=>'송장번호'
+	)
+);
+
+$config_excel['order_step5'] = array(
+	'order_num'=>array(
+		'name'=>'주문번호'
+	),
+	'member_id'=>array(
+		'name'=>'주문자아이디'
+	),
+	'buyer_name'=>array(
+		'name'=>'주문자명'
+	),
+	'productname'=>array(
+		'name'=>'주문상품'
+	),
+	'price_end'=>array(
+		'name'=>'상품금액'
+	),
+	'pg_paymethod'=>array(
+		'name'=>'결제방법'
+	),
+	'order_status'=>array(
+		'name'=>'처리상태'
+	),
+	'date_order_1'=>array(
+		'name'=>'주문일시'
+	),
+	'delivery_company'=>array(
+		'name'=>'송장번호'
+	)
+);
+
+$config_excel['cs_cancel'] = array(
+	'order_num'=>array(
+		'name'=>'주문번호'
+	),
+	'member_id'=>array(
+		'name'=>'주문자아이디'
+	),
+	'buyer_name'=>array(
+		'name'=>'주문자명'
+	),
+	'productname'=>array(
+		'name'=>'주문상품'
+	),
+	'price_end'=>array(
+		'name'=>'상품금액'
+	),
+	'pg_paymethod'=>array(
+		'name'=>'결제방법'
+	),
+	'order_status'=>array(
+		'name'=>'처리상태'
+	),
+	'reason'=>array(
+		'name'=>'취소사유'
+	),
+	'date_insert'=>array(
+		'name'=>'주문일시'
+	),
+	'date_cancel_insert'=>array(
+		'name'=>'취소일시'
+	)
+);
+
+$config_excel['cs_exchange'] = array(
+	'order_num'=>array(
+		'name'=>'주문번호'
+	),
+	'member_id'=>array(
+		'name'=>'주문자아이디'
+	),
+	'buyer_name'=>array(
+		'name'=>'주문자명'
+	),
+	'productname'=>array(
+		'name'=>'주문상품'
+	),
+	'price_end'=>array(
+		'name'=>'상품금액'
+	),
+	'exchange_option'=>array(
+		'name'=>'교환옵션'
+	),
+	'order_status'=>array(
+		'name'=>'처리상태'
+	),
+	'reason'=>array(
+		'name'=>'교환사유'
+	),
+	'date_insert'=>array(
+		'name'=>'주문일시'
+	),
+	'date_status_1'=>array(
+		'name'=>'교환신청일'
+	),
+	'delivery_pay'=>array(
+		'name'=>'교환배송비'
+	)
+);
+
+
+$config_excel['cs_return'] = array(
+	'order_num'=>array(
+		'name'=>'주문번호'
+	),
+	'member_id'=>array(
+		'name'=>'주문자아이디'
+	),
+	'buyer_name'=>array(
+		'name'=>'주문자명'
+	),
+	'productname'=>array(
+		'name'=>'주문상품'
+	),
+	'price_end'=>array(
+		'name'=>'상품금액'
+	),
+	'order_status'=>array(
+		'name'=>'처리상태'
+	),
+	'reason'=>array(
+		'name'=>'반품사유'
+	),
+	'date_insert'=>array(
+		'name'=>'주문일시'
+	),
+	'date_status_1'=>array(
+		'name'=>'반품신청일'
+	),
+	'pay_delivery'=>array(
+		'name'=>'반품배송비'
+	),
+	'pg_paymethod'=>array(
+		'name'=>'결제방법'
+	)
+);
+
+$config_excel['deli_area'] = array(
+	'area_name'=>array(
+		'name'=>'특수지역명'
+	),
+	'deli_price'=>array(
+		'name'=>'추가배송비'
+	),
+	'st_zipcode'=>array(
+		'name'=>'우편번호 범위(시작)'
+	),
+	'en_zipcode'=>array(
+		'name'=>'우편번호 범위(끝)'
+	)
+);
+
+
+$config_excel['membersleep'] = array(
+	'id'=>array(
+		'name'=>'회원아이디'
+	),
+	'name'=>array(
+		'name'=>'회원명'
+	),
+	'email'=>array(
+		'name'=>'이메일'
+	),
+	'mobile'=>array(
+		'name'=>'휴대번호'
+	),
+	'date'=>array(
+		'name'=>'가입일'
+	),
+	'logindate'=>array(
+	'name'=>'최근로그인'
+	)
+);
+
+?>

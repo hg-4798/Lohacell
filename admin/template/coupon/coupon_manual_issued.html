@@ -1,0 +1,285 @@
+<div class="content-wrap">
+	<div class="title_depth3">쿠폰 수동 발급</div>
+	<div class="title_depth4 m-t-30">
+		<i class="fa fa-chevron-circle-right"></i> 쿠폰내용</div>
+		<div class="table_style01 pt_10">
+
+			<table cellpadding="0" cellspacing="0" border="0" width="100%">
+				<colgroup>
+					<col style="width: 15%;">
+					<col style="width: 35%;">
+					<col style="width: 15%;">
+					<col style="width: 35%;">
+				</colgroup>
+				<tbody>
+					<tr>
+						<th>
+							<span>쿠폰명</span>
+						</th>
+						<td colspan="3">
+							<span>{list.coupon_name}</span>
+						</td>
+					</tr>
+					<tr>
+						<th>
+							<span>쿠폰설명</span>
+						</th>
+						<td colspan="3">
+							<span>{list.coupon_description}</span>
+						</td>
+					</tr>
+					<tr>
+						<th>
+							<span>사용기간</span>
+						</th>
+						<td>
+							<span>{? list.use_period_type=='D'}{=format(list.use_period_start,'Y-m-d')}~{=format(list.use_period_end,'Y-m-d')}{:}무제한{/}</span>
+						</td>
+						<th>
+							<span>쿠폰유형</span>
+						</th>
+						<td>
+							<span>{? list.type_use=='P'}상품별쿠폰{: list.type_use=='B'}장바구니쿠폰{: list.type_use=='D'}무료배송쿠폰{/}</span>
+						</td>
+					</tr>
+					<tr>
+						<th>
+							<span>발급구분</span>
+						</th>
+						<td>
+							<span>
+								{type_publish[list.type_publish]}
+							</span>
+						</td>
+						<th>
+							<span>쿠폰혜택</span>
+						</th>
+						<td>
+							<span>{?list .type_use!='D'}
+									{list.sale_price}
+									{? list .sale_type=='R'}
+										%
+										{? list .sale_max_price > 0 }
+											{=format(list .sale_max_price,'price')}원까지
+										{/}
+									{:}원{/}
+								{:}
+									무료배송
+								{/}</span>
+						</td>
+					</tr>
+
+				</tbody>
+			</table>
+		</div>
+	<div class="title_depth4 m-t-30">
+		<i class="fa fa-chevron-circle-right"></i> 발급 방법선택</div>
+		<div class="table_style01 pt_10">
+
+			<table cellpadding="0" cellspacing="0" border="0" width="100%">
+				<colgroup>
+					<col style="width: 15%;">
+					<col />
+				</colgroup>
+				<tbody>
+				<tr>
+					<th>
+						<span>발급방식</span>
+					</th>
+					<td >
+						<label>
+							<input type="radio" name="mem_type_chk" value="S" class="hj" checked>
+							<span class="lbl">검색된 회원 전체 발급</span>
+						</label>
+						<label>
+							<input type="radio" name="mem_type_chk" value="C" class="hj">
+							<span class="lbl">선택된 회원발급</span>
+						</label>
+					</td>
+				</tr>
+			</tbody>
+			</table>
+		</div>
+
+
+	<div class="title_depth4 m-t-30">
+		<i class="fa fa-chevron-circle-right"></i> 발급 대상 검색</div>
+	<form id="FrmMemberSearch" name="FrmMemberSearch" onsubmit="return false;">
+		<input type="hidden" name="sort" value="reg_desc">
+		<!-- 정렬기준 -->
+		<input type="hidden" name="coupon_idx" value="{list.idx}">
+		<!-- 페이지당노출개수 -->
+		<input type="hidden" name="limit" value="15">
+	<div class="table_style01 pt_10">
+		<table cellpadding="0" cellspacing="0" border="0" width="100%">
+			<colgroup>
+				<col style="width: 15%;">
+				<col style="width: 35%;">
+				<col style="width: 15%;">
+				<col style="width: 35%;">
+			</colgroup>
+			<tbody>
+			<tr>
+				<th>
+					<span>검색어</span>
+				</th>
+				<td colspan="3">
+					<select name="sf" style="">
+						<option value="id">아이디</option>
+						<option value="name">이름</option>
+					</select>
+					<input type="text" name="sv" id="sv" class="input " value="">
+				</td>
+
+			</tr>
+			<tr>
+				<th>
+					<span>회원등급</span>
+				</th>
+				<td>
+					<select name="group_code">
+						<option value="">선택</option>
+						{@ membergroup}
+						<option value="{.grpup_code}">{.group_name}</option>
+						{/}
+					</select>
+
+				</td>
+				<th>
+					<span>회원가입일</span>
+				</th>
+				<td colspan="3">
+					<input type="text" name="date_start" onclick="Calendar(event)" value="" class="input calendar" autocomplete="off"> ~
+					<input type="text" name="date_end" onclick="Calendar(event)" value="" class="calendar input" autocomplete="off">
+					<a href="javascript:;" onclick="CouponManualIssues.setPeriod('today')">
+						<img src="/admin/images/btn_today01.gif" class="middle">
+					</a>
+					<a href="javascript:;" onclick="CouponManualIssues.setPeriod('7_days')">
+						<img src="/admin/images/btn_day07.gif" class="middle">
+					</a>
+					<a href="javascript:;" onclick="CouponManualIssues.setPeriod('14_days')">
+						<img src="/admin/images/btn_day14.gif" class="middle">
+					</a>
+					<a href="javascript:;" onclick="CouponManualIssues.setPeriod('1_months')">
+						<img src="/admin/images/btn_day30.gif" class="middle">
+					</a>
+					<a href="javascript:;" onclick="CouponManualIssues.setPeriod('all')">
+						<img src="/admin/images/btn_day_total.gif" class="middle">
+					</a>
+				</td>
+
+			</tr>
+		</tbody>
+		</table>
+
+		<div class="ta_c mt_20">
+			<button type="button" class="btn-point" onclick="CouponManualIssues.search()">조회</button>
+			<button type="button" class="btn-basic" onclick="CouponManualIssues.searchReset()">초기화</button>
+			<button type="button" class="btn-point" onclick="CouponManualIssues.save()">쿠폰발급</button>
+		</div>
+	</form>
+	</div>
+
+	<!--{* 상단툴:S *}-->
+	<div class="row mb_10">
+		<div class="pull-left">
+			<img src="/admin/images/icon_8a.gif" border="0"> 전체
+			<span id="count_total">0</span>건 조회
+			<!-- <button type="button" class="btn-basic dark h-x-small" onclick="ProductList.excel()" style="vertical-align:middle">엑셀 다운로드</button> -->
+		</div>
+		<div class="pull-right">
+			
+		</div>
+	</div>
+	<!--{* 상단툴:E *}-->
+	
+	<div id="inner"></div>
+
+
+</div>
+<script type="text/javascript" src="/admin/static/js/moment.js"></script>
+<script type="text/javascript" src="/admin/static/js/calendar.js"></script>
+<script type="text/javascript">
+	var CouponManualIssues = {
+		page: 1,
+		proc_url: '/admin/proc/coupon.proc.php',
+		coupon_idx:'{list.idx}',
+		init: function () {
+			var me = this;
+			me.load(1);
+		},
+		load: function (page) {
+			UI.ing('데이터를 불러오는 중입니다...');
+			var p = page || CouponManualIssues.page;
+			var search = $('#FrmMemberSearch').serialize();
+
+
+			$('#inner').load('/admin/coupon/coupon_manual_issued.inner.php', {
+					page: p,
+					search: search
+				},
+				function () {
+                    CouponManualIssues.page = p;
+
+					UI.ing();
+                    UI.toggleCheck();
+					$('[data-toggle="tooltip"]').tooltip();
+				}
+			);
+		},
+        loadPage: function (page) {
+            CouponManualIssues.load(page);
+        },
+
+        search: function (field, value) {
+            if (field && value) $('#FrmMemberSearch').find('[name="' + field + '"]').val(value);
+            this.load(1);
+        },
+        searchReset: function () {
+            $('#FrmMemberSearch')[0].reset();
+            this.load(1);
+        },
+        setPeriod: function (sub) {
+            var period = UTIL.period('<?=TIMESTAMP?>', sub);
+            document.FrmCouponSearch.date_start.value = period.start;
+            document.FrmCouponSearch.date_end.value = period.end;
+        },
+        save: function () {
+		    var member_data='';
+		    var cnt = '';
+		    var mem_type_chk = $('input[name="mem_type_chk"]:checked').val();
+            if(mem_type_chk == 'S'){
+                member_data = $('#member_data').val();
+                cnt = CouponInner.total;
+			}else{
+                var checked = UI.getChecked('checked[]');
+                if (checked.length < 1) {
+                    alert('적용할 대상을 선택하세요.');
+                    return false;
+                }
+                member_data = checked.map(function () { return this.value}).get();
+                cnt = checked.length;
+            }
+            if (!confirm(cnt + "개의 쿠폰을 발급하시겠습니까?")) return false;
+
+            $.ajax({
+                url: this.proc_url,
+                data: {member_data:member_data,mode:'issue',type:mem_type_chk,coupon_idx:this.coupon_idx},
+                dataType: 'json',
+                type: 'POST',
+                success: function (r) {
+                    UI.alert(r.msg, function() {
+                        CouponManualIssues.goList();
+                    })
+                }
+            })
+        },
+        goList: function() {
+            document.location.href="/admin/coupon_lists.php";
+        }
+	}
+
+	$(function () {
+        CouponManualIssues.init();
+	})
+</script>

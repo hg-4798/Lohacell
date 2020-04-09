@@ -1,0 +1,16 @@
+<ul class="event_list"><!-- [D] 15개 페이징 -->
+	{@ list}
+	<li>
+		<a href="{C.DIR_M}/promotion/{? .event_type == 2 || .event_type == 3}event{:}promo{/}_detail.php?idx={.idx}&status={type}">
+			<div class="img"><img src="{C.SHOPURL}/data/shopimages/timesale/{.thumb_img_m}" alt="이벤트 이미지"></div>
+			<div class="info">
+				<p class="subject">{.title}</p>
+				<p class="period">{=format(.start_date,'Y-m-d')}~{=format(.end_date,'Y-m-d')}</p>
+			</div>
+		</a>
+	</li>
+	{:}
+	<li class="no-content">컨텐츠가 없습니다.</li>
+	{/}
+</ul><!-- //.event_list -->
+{= this->xfetch('_include/pagination.html')}
